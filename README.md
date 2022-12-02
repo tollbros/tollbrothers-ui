@@ -8,10 +8,10 @@
 5. Created the `index.js` file in `packages/tollbrothers-ui`, this matches the default `package.json` (see `main` key).
 
 ## How was this package tested locally?
-1. Within the `packages/tollbrothers-ui` directory, run `sudo npm link`. This created the `package-lock.json` file.
+1. Within the `packages/tollbrothers-ui` directory, run `npm link`. This created the `package-lock.json` file.
 2. Went back to the `packages` directory and created a `tollbrothers-ui-TEST` directory.
 3. Created the `script.js` file in `packages/tollbrothers-ui-TEST`.
-4. Within the `packages/tollbrothers-ui-TEST` directory, run `sudo npm link tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.
+4. Within the `packages/tollbrothers-ui-TEST` directory, run `npm link @tollbrothers/tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.
 5. Run the script via `node script.js`
 
 ## How do we publish changes?

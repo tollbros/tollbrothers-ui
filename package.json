@@ -18,5 +18,9 @@
   "homepage": "https://github.com/tollbros/tollbrothers-ui#readme",
   "devDependencies": {
     "semantic-release": "^19.0.5"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

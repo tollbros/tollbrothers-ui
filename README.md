@@ -5,14 +5,20 @@
 2. Locally created a `packages` directory.
 3. Checked out the `tollbrothers-ui` repo in the `packages` directory.
 4. Within the `packages/tollbrothers-ui` directory, run `npm init --scope=tollbrothers` and chose all the defaults.
-5. Created the `index.js` file in `packages/tollbrothers-ui`, this matches the default `package.json` (see `main` key).
+5. Run `npx create-react-library tollbrothers-ui` in the directory and modify the `package.json` file in the created directory to include what's in the root directory.
+6. Move all files from created directory into the root.
+7. Run `npm install next` and `npm install sass` to add NextJS and SASS to the project.
+8. Change `dependencies` to `peerDependencies` in the `package.json` file.
 
 ## How was this package tested locally?
 1. Within the `packages/tollbrothers-ui` directory, run `npm link`. This created the `package-lock.json` file.
-2. Went back to the `packages` directory and created a `tollbrothers-ui-TEST` directory.
-3. Created the `script.js` file in `packages/tollbrothers-ui-TEST`.
-4. Within the `packages/tollbrothers-ui-TEST` directory, run `npm link @tollbrothers/tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.
-5. Run the script via `node script.js`
+2. Went back to the `packages` directory and run `npx create-next-app tollbrothers-ui-test`
+3. Within the `packages/tollbrothers-ui-test` directory, run `npm link @tollbrothers/tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.
+4. Add `import '@tollbrothers/tollbrothers-ui/dist/index.css` in `packages/tollbrothers-ui-test/pages/_app.js`.
+5. Add `import { HeroComponent } from '@tollbrothers/tollbrothers-ui'` in `packages/tollbrothers-ui-test/pages/index.js`.
+6. Create a `heroSlides` array of objects that contain an `image`, `title`, and `URL` parameter for each slide.
+7. Add `<HeroComponent>` to return statement and pass in `slides={heroSlides}` and `darkness={true or false}` to component. It will resize to fit whatever container it is in.
+8. Verify that the component shows on the page via `npm run dev`.
 
 ## How do we publish changes?
 1. Publishing has been automated by the Semantic Release Workflow

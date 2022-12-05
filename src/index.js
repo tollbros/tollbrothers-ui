@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import styles from './styles.module.scss';
+import Link from "next/dist/client/link";
 
 export const HeroComponent = ({ children, slides, darkness }) => {
 
@@ -26,6 +27,44 @@ export const HeroComponent = ({ children, slides, darkness }) => {
 
     }
   }
+
+  useEffect(() => { // Handles Random Start Index
+    if (slides.length > 1) {
+
+      let randomStartIndex = Math.floor(Math.random() * slides.length)
+
+      setCurrentSlideIndex(randomStartIndex);
+      setCurrentSlide(slides[randomStartIndex]);
+
+      if (randomStartIndex == (slides.length - 1)) {
+        setNextSlideIndex(0);
+        setNextSlide(slides[0]);
+      } else {
+        setNextSlideIndex(randomStartIndex + 1);
+        setNextSlide(slides[randomStartIndex + 1]);
+      }
+
+    }
+  }, []);
+
+  useEffect(() => { // Handles Slideshow Timer
+    if (slides.length > 1) {
+
+      let fader = document.getElementById("frontImage");
+      const interval = setInterval(() => {
+        
+        fader.classList.add(styles.fadeIn);
+
+        const timer = setTimeout(() => {
+          changeSlides();
+          fader.classList.remove(styles.fadeIn);
+        }, 1000);
+        
+      }, 10000);
+      return () => clearInterval(interval);
+
+    }
+  }, [changeSlides]);
 
   return (
     <div className={styles.heroContainer}>
@@ -58,9 +97,16 @@ export const HeroComponent = ({ children, slides, darkness }) => {
         }
 
       </div>
-      
+
       {
-        console.log(slides)
+        slides.length > 0 && currentSlide.URL && currentSlide.title ?
+          <Link href={currentSlide.URL}>
+            <a className={styles.caption} title={currentSlide.title}>
+              {currentSlide.title}
+            </a>
+          </Link>
+        :
+          null
       }
 
     </div>

@@ -21,7 +21,7 @@
 8. Verify that the component shows on the page via `npm run dev`.
 
 ## How do we publish changes?
-1. Publishing has been automated by the Semantic Release Workflow
+1. Publishing has been automated by the Semantic Release Workflow.
 
 ## Semantic Release Workflow
 Basically, follow the commit message format below. Then when the commit is posted on the `main` branch semantic-release will do its thing and publish a new version on `merge to main` or a direct commit to `main`.

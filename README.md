@@ -1,6 +1,5 @@
 # tollbrothers-ui package
 
-
 ## How was this package created?
 1. Created the `tollbrothers-ui` project on Github as an empty repo for the `tollbros` Github org.
 2. Locally created a `packages` directory.
@@ -16,7 +15,6 @@
 12. In `src/styles.module.scss`, add `@import './components/Component.module.scss';` for each component you've made.
 13. Run `npm start` in the root directory to transpile your code into the `dist` folder.
 
-
 ## How was this package tested locally?
 ### General Setup
 1. Within the `packages/tollbrothers-ui` directory, run `npm link`. This created the `package-lock.json` file.
@@ -30,16 +28,13 @@
 3. Add `<HeroComponent>` to return statement and pass in `slides={heroSlides}` and `darkness={true or false}` to component. It will resize to fit whatever container it is in.
 4. Verify that the component shows on the page via `npm run dev`.
 
-
 ## How do we publish changes?
 1. Publishing has been automated by the Semantic Release Workflow.
 
-
 ## Semantic Release Workflow
-Basically, follow the commit message format below. Then when the commit is posted on the `main` branch semantic-release will do its thing and publish a new version on `merge to main` or a direct commit to `main`.
+Basically, follow the commit message format below. Then when the commit is posted on the `master` branch semantic-release will do its thing and publish a new version on `merge to master` or a direct commit to `master`.
 * [Commit message format](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type)
 * [How does it work?](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type) 
-
 
 ## Things to consider
 - You can publish code without commiting it. Not sure why you would but there are no guards to prevent you from doing so.

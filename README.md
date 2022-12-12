@@ -18,6 +18,7 @@
 
 
 ## How was this package tested locally?
+### General Setup
 1. Within the `packages/tollbrothers-ui` directory, run `npm link`. This created the `package-lock.json` file.
 2. Went back to the `packages` directory and run `npx create-next-app tollbrothers-ui-test`
 3. Within the `packages/tollbrothers-ui-test` directory, run `npm link @tollbrothers/tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.

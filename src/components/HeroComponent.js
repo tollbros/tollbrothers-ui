@@ -23,7 +23,7 @@ export function HeroComponent ({ children, slides, darkness }) {
           setNextSlide(slides[nextSlideIndex + 1]);
           setNextSlideIndex(nextSlideIndex + 1);
         }
-      }, 1000);
+      }, 1000); 
 
     }
   }

@@ -18,7 +18,7 @@ export function HeroComponent ({ children, slides, darkness }) {
       const timer = setTimeout(() => {
         if (nextSlideIndex == (slides.length - 1)) {
           setNextSlide(slides[0]);
-          setNextSlideIndex(0);
+          setNextSlideIndex(0); 
         } else {
           setNextSlide(slides[nextSlideIndex + 1]);
           setNextSlideIndex(nextSlideIndex + 1);

@@ -100,10 +100,8 @@ export function HeroComponent ({ children, slides, darkness }) {
 
       {
         slides.length > 0 && currentSlide.URL && currentSlide.title ?
-          <Link href={currentSlide.URL}>
-            <a className={styles.caption} title={currentSlide.title}>
-              {currentSlide.title}
-            </a>
+          <Link href={currentSlide.URL} className={styles.caption}>
+            {currentSlide.title}
           </Link>
         :
           null

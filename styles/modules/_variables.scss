@@ -1,0 +1,81 @@
+$base_font_family: "proxima-nova", sans-serif;
+$alt_font_family: "Gotham Narrow", sans-serif;
+$special_font_family: "Gotham", sans-serif;
+$nimbus_font_family: "nimbus-sans-extended",sans-serif;
+$font_weight_light: 200;
+$font_weight_book: 300;
+$font_weight_medium: 400;
+$font_weight_bold: 500;
+
+$base_font_size: 0.9em;
+$base_line_height: 1.5;
+
+$cubic-bezier: cubic-bezier(0.075, 0.82, 0.165, 1);
+$page_margins: 60px;
+
+// ---- Official B&C Colors----
+
+//STORYBOOK:
+$storybook_green: #00828A;
+$storybook_light_green: #7CBF92;
+$teal: #00828A;
+$button: #7EC093;
+$focus: #7EC093;
+$gray: #8195a2;
+$beige: #FDF6EE;
+$medium_blue: #39474F;
+
+//PRIMARY:
+$navy_blue: #0c223f;
+$dark_blue: #041327;
+$medium_blue2: #0050c5;
+
+//Nuetral:
+$dark_gray: #858585;
+$medium_gray: #d8d8d8;
+$light_gray: #e9edf0;
+
+//points of interst:
+$schools: #583a71;
+$shops: #323f75;
+$restaurants: #bb3446;
+$health: #e3854a;
+$entertainment: #e2ad50;
+$transit: #4e8a89;
+
+//Alerts:
+$error: #a31f34;
+$success: #009d47;
+
+$black: #000000; 
+$white: #ffffff;
+
+$cat1: #583a71;
+$cat2: #323f75;
+$cat3: #bb3446;
+$cat4: #e3854a;
+$cat5: #e2ad50;
+$cat6: #4e8a89;
+$cat7: #51893f;
+$cat99: #25678e;
+
+$available_marker: #00a651;
+$qmi_marker: #83399a;
+$model_marker: #00828A;
+$depost_marker: #ffd200;
+$sold_marker: #d3212a;
+$poi_marker_fill: rgba(228, 220, 50, 0.4);
+$poi_marker_border: #e0e068;
+$star_marker: #f9ca0c;
+
+//== Media queries breakpoints
+//
+//## Define the breakpoints at which your layout will change, adapting to different screen sizes.
+
+// Extra small screen / phone
+//** Deprecated `$screen-xs` as of v3.0.1
+$screen-xs: 480px !default;
+$screen-sm: 768px !default;
+$screen-md: 992px !default;
+$screen-lg: 1200px !default;
+$screen-xlg: 1400px !default;

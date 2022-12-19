@@ -1,0 +1,51 @@
+@import "styles/globals";
+
+.mediaWrapper {
+  position: relative;
+  width: 100%;
+  height: 90%;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s $cubic_bezier;
+
+  &.show {
+    opacity: 1;
+  }
+
+  .mediaCapInline {
+    font-size: 14px;
+    line-height: 16px;
+    margin: 2px 4px;
+  }
+
+  .modelLink {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 12px;
+    color: #004876;
+    background-color: #ffffff;
+    padding: 6px 22px;
+    border-radius: 17px;
+  }
+
+  iframe {
+    background: black;
+  }
+
+  .iframeCover {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+}

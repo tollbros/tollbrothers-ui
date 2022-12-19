@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "Gotham Narrow";
+  src: local("GothamNarrSSm-Light"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff2/GothamNarrSSm-Light_Web.woff2") format("woff2"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff/GothamNarrSSm-Light_Web.woff") format("woff");
+  font-weight: 200 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gotham Narrow";
+  src: local("GothamNarrSSm-Medium"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff2/GothamNarrSSm-Medium_Web.woff2") format("woff2"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff/GothamNarrSSm-Medium_Web.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gotham";
+  src: local("GothamSSm-Book"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff2/GothamSSm-Book_Web.woff2") format("woff2"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff/GothamSSm-Book_Web.woff") format("woff");
+  font-weight: 200 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gotham";
+  src: local("GothamNarrSSm-Medium"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff2/GothamSSm-Bold_Web.woff2") format("woff2"),
+    url("https://cdn.tollbrothers.com/fonts/gotham/woff/GothamSSm-Bold_Web.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+h1.heading {
+    position: relative;
+    margin: 0;
+    padding: 0 17.5px;
+    font-size: 2.8em;
+    letter-spacing: 1.13px;
+    line-height: 54px;
+    text-align: center;
+    z-index: 22;
+    color: $white;
+  }
+
+  .pageWrapper {
+
+  h2 {
+    font-size: 2.1em;
+    line-height: 54px;
+    margin: 0 auto 14px auto;
+    color: $medium_blue;
+    font-weight: 300;
+    text-align: center;
+  
+    @include breakpoint(sm) {
+      font-size: 1.5em;
+    }
+  
+    @include breakpoint(md) {
+      font-size: 2.07em;
+      line-height: 54px;
+      letter-spacing: 0.85px;
+    }
+  }
+
+  h3 {
+    font-family: $base_font_family;
+    font-weight: 500;
+    font-size: 21px;
+    color: $teal;
+    text-align: center;
+    line-height: 30px;
+    margin: 0 auto 54px auto;
+  }
+
+  h4 {
+    font-family: $base_font_family;
+    font-weight: 500;
+    font-size: 15px;
+    color: $teal;
+    line-height: 22px;
+  }
+
+  h5 {
+    font-family: $base_font_family;
+    font-size: 15px;
+    color: #000000;
+    letter-spacing: 0;
+    text-align: left;
+    line-height: 22px;
+    font-weight: bold;
+    margin: 0;
+    padding: 42px 0 18px 0;
+  }
+
+
+  p {
+    font-family: $base_font_family;
+    font-size: 0.94em;
+    line-height: 22px;
+    font-weight: 400;
+  }
+
+  ul {
+      font-family: $base_font_family;
+      font-size: 0.94em;
+      line-height: 22px;
+      font-weight: 400;
+      margin: 0 0 30px 0;
+      padding: 0 0 0 0; 
+
+      @include breakpoint(lg) {
+        padding: 0 0 0 16px; 
+      }
+    }
+}

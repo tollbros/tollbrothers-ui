@@ -1,0 +1,71 @@
+@mixin placeholder($color, $font_weight: null) {
+  &::-webkit-input-placeholder {
+    color: $color;
+
+    @if $font_weight {
+      font-weight: $font_weight;
+    }
+  }
+
+  &:-moz-placeholder {
+    color: $color;
+
+    @if $font_weight {
+      font-weight: $font_weight;
+    }
+  }
+
+  &::-moz-placeholder {
+    color: $color;
+
+    @if $font_weight {
+      font-weight: $font_weight;
+    }
+  }
+
+  &:-ms-input-placeholder {
+    color: $color;
+
+    @if $font_weight {
+      font-weight: $font_weight;
+    }
+  }
+}
+
+@mixin customScrollBars() {
+  /* width */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: lighten($black, 90);
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: lighten($black, 60);
+  }
+}
+
+@mixin customScrollBars2() {
+  /* width */
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: lightgrey;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: grey;
+  }
+
+  //kinda for firefox
+  scrollbar-width: thin;
+  scrollbar-color: lightgrey white;
+}

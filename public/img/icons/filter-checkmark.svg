@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="17px" viewBox="0 0 11 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>icon/checkmark</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0.962962951 6.56953488 1.95447889 5.55226529 4.74875107 8.21776917 4.93160206 8.39289406 5.10930232 8.21004307 10.8343411 2.37941429 11.8438846 3.37865632 4.94705426 10.3939535"></polygon>
+    </defs>
+    <g id="Toll-Brothers-Dot-Com-Library" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="search" transform="translate(-704.000000, -238.000000)">
+            <g id="icon/checkmark" transform="translate(703.000000, 236.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="checkmark" fill-rule="nonzero"></g>
+                <g id="color/light-blue" mask="url(#mask-2)" fill="#0070CD" fill-rule="evenodd">
+                    <rect id="Rectangle" x="0" y="0" width="13" height="13"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

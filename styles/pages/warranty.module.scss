@@ -1,0 +1,85 @@
+@import "../../styles/modules/all";
+
+ul.list {
+  margin: 0 0 30px 14px;
+  padding: 0;
+
+  li {
+    display: block;
+    padding: 0 0 0 21px;
+    position: relative;
+
+    &:before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 0px;
+      width: 8px;
+      height: 1px;
+      background-color: $black;
+    }
+  }
+}
+
+/* ===========================================================
+	TOP COPY
+============================================================*/
+
+.pageWrapper {
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+
+  @include breakpoint(sm) {
+    padding-left: 162px;
+    padding-right: 162px;
+  }
+
+  h2 {
+    margin: 0 auto 37px auto;
+  }
+
+  h3 {
+    text-align: left;
+    margin: 70px auto 34px auto;
+  }
+
+  h5 {
+    padding: 0;
+  }
+
+  a {
+    display: block;
+  }
+
+  .emailCopy {
+    margin: 0;
+  }
+
+  a.email {
+    margin: 0 0 32px 0;
+    color: $teal;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  a.downloadBtn {
+    display: block;
+    border: 1px solid $teal;
+    font-family: $alt_font_family;
+    font-size: 14px;
+    font-weight: bold;
+    color: $teal;
+    padding: 13px 0;
+    text-align: center;
+    line-height: 22px;
+    margin: 43px 0 0 0;
+
+    &:hover {
+      cursor: pointer;
+      background-color: $teal;
+      color: $white;
+    }
+
+  }
+  
+} // end pageWrapper

@@ -1,0 +1,43 @@
+.lotStatusColor {
+  &:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    margin-top: -8px;
+  }
+
+  &.available {
+    &:after {
+      background-color: $available_marker;
+    }
+  }
+
+  &.qmi {
+    &:after {
+      background-color: $qmi_marker;
+    }
+  }
+
+  &.model {
+    &:after {
+      background-color: $model_marker;
+    }
+  }
+
+  &.deposit {
+    &:after {
+      background-color: $depost_marker;
+    }
+  }
+
+  &.sold {
+    &:after {
+      background-color: $sold_marker;
+    }
+  }
+}

@@ -1,0 +1,137 @@
+button.tollButton,
+.tollButton {
+  /* .tollButton can be used to transform a or span tags to look like buttons */
+  content: "";
+  display: block;
+  padding: 14px 12px;
+  color: white;
+  font-weight: $font_weight_book;
+  letter-spacing: 1px;
+  line-height: initial;
+  text-transform: uppercase;
+  text-align: center;
+  border: thin solid $medium_blue;
+  background-color: $storybook_green;
+  box-shadow: none;
+  //vertical-align: top;
+  overflow: hidden;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($storybook_green, 10);
+  }
+
+  &:active {
+    background-color: lighten($storybook_green, 10);
+  }
+
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+  }
+
+  &.with-arrow {
+    position: relative;
+
+    &:after {
+      position: absolute;
+      content: "";
+      top: 50%;
+      right: 10px;
+      width: 10px;
+      height: 15px;
+      margin-top: -7px;
+    }
+  }
+
+  &.is-sending,
+  &.is-loading {
+    white-space: nowrap;
+  }
+
+  &.is-sending:after,
+  &.is-loading:after {
+    right: 14px;
+    background: none;
+  }
+
+  &.is-sending:before,
+  &.is-loading:before {
+    content: "loading...";
+    display: inline-block;
+    width: 150%;
+    height: 100%;
+  }
+
+  &.is-sending:before {
+    content: "sending...";
+  }
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none !important;
+}
+
+button,
+.button,
+.tollButton {
+  &.white {
+    color: $medium_blue2;
+    border: 1px solid $storybook_green;
+    background: $white;
+
+    &:hover,
+    &:focus {
+      background: #f2f2f2;
+    }
+  }
+}
+
+.clear-styles {
+  padding: 0;
+  text-transform: none;
+  text-align: left;
+  letter-spacing: normal;
+  color: $black;
+  font-size: $base_font_size;
+  line-height: $base_line_height;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  vertical-align: baseline;
+  overflow: visible;
+
+  &:active,
+  &:hover,
+  &:focus {
+    background-color: #FFF;
+  }
+}
+
+.closeButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background: white;
+  z-index: 1;
+  background: center/18px url(public/img/icons/close.svg) no-repeat;
+
+
+  &:active,
+  &:hover,
+  &:focus {
+    background-color: #CCC;
+    background: center/18px url(public/img/icons/close.svg) no-repeat
+
+  }
+}
+
+.secondaryButton {
+  color: $medium_blue;
+  padding: 10px;
+  font-size: 0.8em;
+  text-align: center;
+  border: 1px solid $dark_gray;
+  background: white;
+}

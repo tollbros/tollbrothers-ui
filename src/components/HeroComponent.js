@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import styles from './HeroComponent.module.scss';
 import Link from "next/dist/client/link";
 
-export function HeroComponent ({ children, slides, darkness }) {
+export function HeroComponent ({ children, slides, darkness, test }) {
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(slides[0]);
@@ -18,12 +18,12 @@ export function HeroComponent ({ children, slides, darkness }) {
       const timer = setTimeout(() => {
         if (nextSlideIndex == (slides.length - 1)) {
           setNextSlide(slides[0]);
-          setNextSlideIndex(0); 
+          setNextSlideIndex(0);
         } else {
           setNextSlide(slides[nextSlideIndex + 1]);
           setNextSlideIndex(nextSlideIndex + 1);
         }
-      }, 1000); 
+      }, 1000);
 
     }
   }
@@ -52,14 +52,14 @@ export function HeroComponent ({ children, slides, darkness }) {
 
       let fader = document.getElementById("frontImage");
       const interval = setInterval(() => {
-        
+
         fader.classList.add(styles.fadeIn);
 
         const timer = setTimeout(() => {
           changeSlides();
           fader.classList.remove(styles.fadeIn);
         }, 1000);
-        
+
       }, 10000);
       return () => clearInterval(interval);
 
@@ -82,7 +82,7 @@ export function HeroComponent ({ children, slides, darkness }) {
             <img src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} loading="lazy" />
           : slides.length > 1 ?
             <>
-              
+
               {
                 currentSlide && <img src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} loading="lazy" id="frontImage" className={styles.currentImage} />
               }

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="10" height="6" viewBox="0 0 10 6">
-  <defs>
-    <polygon id="caret-a" points="324.236 4.501 323.499 5.176 326.826 8.283 327.06 8.501 326.826 8.72 323.499 11.826 324.236 12.501 328.499 8.501"/>
-  </defs>
-  <use stroke="#000" transform="rotate(-90 162.749 166.251)" xlink:href="#caret-a"/>
-</svg>

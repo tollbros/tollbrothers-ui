@@ -1,40 +1,42 @@
-# tollbrothers-ui package
+## Tollbrothers UI
+React library for Tollbrothers.
 
-## How was this package created?
-1. Created the `tollbrothers-ui` project on Github as an empty repo for the `tollbros` Github org.
-2. Locally created a `packages` directory.
-3. Checked out the `tollbrothers-ui` repo in the `packages` directory.
-4. Within the `packages/tollbrothers-ui` directory, run `npm init --scope=tollbrothers` and chose all the defaults.
-5. Run `npx create-react-library tollbrothers-ui` in the directory and modify the `package.json` file in the created directory to include what's in the root directory.
-6. Move all files from created directory into the root.
-7. Run `npm install next` and `npm install sass` to add NextJS and SASS to the project.
-8. Change `dependencies` to `peerDependencies` in the `package.json` file.
-9. Change `styles.css` to `styles.module.scss` in the `src` folder.
-10. Create a `components` folder within the `src` folder. Add a `.js` and `.module.scss` file for each component you are making.
-11. In `src/index.js`, add `export { Component } from './components/Component.js';` for each component you've made.
-12. In `src/styles.module.scss`, add `@import './components/Component.module.scss';` for each component you've made.
-13. Run `npm start` in the root directory to transpile your code into the `dist` folder.
+## Installation
+```bash
+npm i next react react-dom sass blaze-slider react-blaze-slider
+```
 
-## How was this package tested locally?
-### General Setup
-1. Within the `packages/tollbrothers-ui` directory, run `npm link`. This created the `package-lock.json` file.
-2. Went back to the `packages` directory and run `npx create-next-app tollbrothers-ui-test`
-3. Within the `packages/tollbrothers-ui-test` directory, run `npm link @tollbrothers/tollbrothers-ui`. This linked the `tollbrothers-ui` package to the test script.
-4. Add `import '@tollbrothers/tollbrothers-ui/dist/index.css` in `packages/tollbrothers-ui-test/pages/_app.js`.
+## Local development
+```bash
+npx create-next-app@latest && npm i sass blaze-slider react-blaze-slider
+npm install <path to tollbrothers-ui>
+```
 
-### Hero Component
-1. Add `import { HeroComponent } from '@tollbrothers/tollbrothers-ui'` in `packages/tollbrothers-ui-test/pages/index.js`.
-2. Create a `heroSlides` array of objects that contain an `image`, `title`, and `URL` parameter for each slide.
-3. Add `<HeroComponent>` to return statement and pass in `slides={heroSlides}` and `darkness={true or false}` to component. It will resize to fit whatever container it is in.
-4. Verify that the component shows on the page via `npm run dev`.
+## Required CSS
 
-## How do we publish changes?
-1. Publishing has been automated by the Semantic Release Workflow.
+```javascript
+// ./pages/_app.js
+import '@tollbrothers/tollbrothers-ui/dist/index.modern.css'
+import 'blaze-slider/dist/blaze.css'
+```
 
-## Semantic Release Workflow
+## Required next.config.js
+
+```javascript
+const nextConfig = {
+  experimental: {
+    esmExternals: true
+  }
+}
+```
+
+## Publish changes
+Publishing has been automated by the Semantic Release Workflow.
+
+### Semantic Release Workflow
 Basically, follow the commit message format below. Then when the commit is posted on the `master` branch semantic-release will do its thing and publish a new version on `merge to master` or a direct commit to `master`.
 * [Commit message format](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type)
-* [How does it work?](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type) 
+* [How does it work?](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type)
 
 ## Things to consider
 - You can publish code without commiting it. Not sure why you would but there are no guards to prevent you from doing so.

@@ -1,11 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-import {
-  getWalkthroughURL,
-  getVideoURL,
-  getImage
-} from '../helper-components/utils'
+import { getWalkthroughURL, getVideoURL, getImage } from '../lib/utils'
 
 import styles from './GalleryMedia.module.scss'
 
@@ -106,17 +102,6 @@ function GalleryMedia({
         {caption && showCaption && (
           <figcaption className={styles.mediaCapInline}>{caption}</figcaption>
         )}
-
-        {/* <span className={styles.overlay} onClick={closePopup}></span>
-
-                        <button className={styles.close_btn} onClick={closePopup}>X</button> */}
-
-        {/* <span className={styles.video_launch} onClick={imageClicked}>
-                              <img className={styles.play_button} src="/img/icons/play3.png" alt="" />
-                        </span> */}
-
-        {/* {openIframe && <IframeModal src={props.videoLink} />}
-                        {openIframe && <Overlay onCloseModal={closeIframeHandler} />} */}
       </figure>
     </div>
   )

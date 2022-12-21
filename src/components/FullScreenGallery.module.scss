@@ -1,4 +1,4 @@
-@import "styles/globals";
+@import "styles/modules/all";
 
 .fullScreen {
   width: 100vw;
@@ -15,35 +15,18 @@
     height: 100%;
   }
 
-  //.closeButton {
-  //  width: 40px;
-  //  height: 40px;
-  //  border-radius: 100%;
-  //  background: white;
-  //  z-index: 1;
-  //  background: center/18px url(public/img/icons/close.svg) no-repeat;
-  //
-  //
-  //  &:active,
-  //  &:hover,
-  //  &:focus {
-  //    background-color: #CCC;
-  //    background: center/18px url(public/img/icons/close.svg) no-repeat
-  //
-  //  }
-  //}
-
   .close {
     position: absolute;
     top: 0;
     right: 0;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     z-index: 1;
-    background-color: #004876;
     border-radius: 0;
-    background-image: url(public/img/icons/close-white.svg);
+    background: #004876 center/18px url(https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/svg/close-white.svg) no-repeat;
     box-shadow: none;
+    border: none;
+    cursor: pointer;
   }
 
   .fullscreenMedia {

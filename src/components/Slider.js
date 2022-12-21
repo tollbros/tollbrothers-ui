@@ -1,6 +1,5 @@
 import React from 'react'
 import { useBlazeSlider } from 'react-blaze-slider'
-import 'blaze-slider/dist/blaze.css'
 import ArrowLeft from '../icons/ArrowLeft'
 import ArrowRight from '../icons/ArrowRight'
 import styles from './Slider.module.scss'

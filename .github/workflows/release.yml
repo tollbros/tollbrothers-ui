@@ -23,3 +23,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
+      - name: Update TollBrothers UI Library
+        run: curl -X POST ${{secrets.VERCEL_DEPLOY_URL}}

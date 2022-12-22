@@ -9,15 +9,14 @@ export const FullScreenGallery = ({
   mediaList = [],
   onClose = () => {},
   onNext = () => {},
-  onPrevious = () => {},
-  preventScroll
+  onPrevious = () => {}
 }) => {
   const { Slider } = useSlider({
     disablePagination: true
   })
 
   return (
-    <PopupModal show={show} preventScroll={preventScroll}>
+    <PopupModal show={show}>
       <div className={`${styles.fullScreen}`}>
         <button
           className={`${styles.close} ${styles.closeButton}`}

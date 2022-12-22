@@ -15,8 +15,8 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "build": "microbundle-crl --tsconfig tsconfig.json --compress --format modern,cjs",
-    "start": "microbundle-crl --tsconfig tsconfig.json watch --compress --format modern,cjs",
+    "build": "microbundle-crl --tsconfig tsconfig.json --compress --format modern",
+    "start": "microbundle-crl --tsconfig tsconfig.json watch --compress --format modern",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",

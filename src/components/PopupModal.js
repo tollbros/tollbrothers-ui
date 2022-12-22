@@ -19,15 +19,14 @@ const PopupModal = ({ children, show, onClose, siteplan }) => {
     if (onClose) onClose()
   }
 
-  if (!show) {
-    return null
-  }
-
   return (
     <div
-      className={`${styles.popupModal} ${animate ? styles.animate : ''} ${
-        siteplan ? styles.siteplan : ''
-      }`}
+      className={`
+        ${styles.popupModal}
+        ${show ? styles.show : ''}
+        ${animate ? styles.animate : ''}
+        ${siteplan ? styles.siteplan : ''}
+      `}
     >
       {children}
       {onClose && (

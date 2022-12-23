@@ -1,30 +1,27 @@
 import React from 'react'
-import { useSlider } from './Slider'
+import Slider from './Slider'
 import GalleryMedia from './GalleryMedia'
 import PopupModal from './PopupModal'
 import styles from './FullScreenGallery.module.scss'
+import reorder from '../lib/reorder'
 
 export const FullScreenGallery = ({
   show = false,
   mediaList = [],
   onClose = () => {},
   onNext = () => {},
-  onPrevious = () => {}
+  onPrevious = () => {},
+  initialSlide = 0
 }) => {
-  const { Slider } = useSlider({
-    disablePagination: true
-  })
+  const newMediaList = reorder(mediaList, initialSlide)
 
   return (
     <PopupModal show={show}>
       <div className={`${styles.fullScreen}`}>
-        <button
-          className={`${styles.close} ${styles.closeButton}`}
-          onClick={onClose}
-        />
-        <Slider onNext={onNext} onPrevious={onPrevious}>
-          {mediaList.length &&
-            mediaList.map(function (media, idx) {
+        <button className={styles.close} onClick={onClose} />
+        <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
+          {newMediaList.length &&
+            newMediaList.map(function (media, idx) {
               return (
                 <div className={`${styles.fullscreenMedia}`} key={idx}>
                   <GalleryMedia media={media} index={idx} showCaption />

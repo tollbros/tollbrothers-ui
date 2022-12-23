@@ -3,12 +3,12 @@ React library for Tollbrothers.
 
 ## Installation
 ```bash
-npm i next react react-dom sass blaze-slider react-blaze-slider
+npm i next react react-dom sass blaze-slider
 ```
 
 ## Local development
 ```bash
-npx create-next-app@latest && npm i sass blaze-slider react-blaze-slider
+npx create-next-app@latest && npm i sass blaze-slider
 npm install <path to tollbrothers-ui>
 ```
 
@@ -18,16 +18,6 @@ npm install <path to tollbrothers-ui>
 // ./pages/_app.js
 import '@tollbrothers/tollbrothers-ui/dist/index.modern.css'
 import 'blaze-slider/dist/blaze.css'
-```
-
-## Required next.config.js
-
-```javascript
-const nextConfig = {
-  experimental: {
-    esmExternals: true
-  }
-}
 ```
 
 ## Publish changes

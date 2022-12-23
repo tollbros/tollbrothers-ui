@@ -3,7 +3,7 @@ import Slider from './Slider'
 import GalleryMedia from './GalleryMedia'
 import PopupModal from './PopupModal'
 import styles from './FullScreenGallery.module.scss'
-import reorder from '../lib/reorder'
+import rotate from '../lib/rotate'
 
 export const FullScreenGallery = ({
   show = false,
@@ -11,25 +11,26 @@ export const FullScreenGallery = ({
   onClose = () => {},
   onNext = () => {},
   onPrevious = () => {},
-  initialSlide = 0
+  initialSlide = 1
 }) => {
-  const newMediaList = reorder(mediaList, initialSlide)
+  const newMediaList = rotate([...mediaList], initialSlide - 1)
 
   return (
-    <PopupModal show={show}>
-      <div className={`${styles.fullScreen}`}>
-        <button className={styles.close} onClick={onClose} />
-        <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
-          {newMediaList.length &&
-            newMediaList.map(function (media, idx) {
+    show && (
+      <PopupModal show>
+        <div className={`${styles.fullScreen}`}>
+          <button className={styles.close} onClick={onClose} />
+          <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
+            {newMediaList.map(function (media, idx) {
               return (
                 <div className={`${styles.fullscreenMedia}`} key={idx}>
                   <GalleryMedia media={media} index={idx} showCaption />
                 </div>
               )
             })}
-        </Slider>
-      </div>
-    </PopupModal>
+          </Slider>
+        </div>
+      </PopupModal>
+    )
   )
 }

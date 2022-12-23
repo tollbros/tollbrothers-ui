@@ -20,6 +20,9 @@ import '@tollbrothers/tollbrothers-ui/dist/index.modern.css'
 import 'blaze-slider/dist/blaze.css'
 ```
 
+## Node version
+Take a look at the `.nvmrc` file.
+
 ## Publish changes
 Publishing has been automated by the Semantic Release Workflow.
 

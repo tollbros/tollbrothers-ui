@@ -18,17 +18,19 @@ export const FullScreenGallery = ({
   return (
     show && (
       <PopupModal show>
-        <div className={`${styles.fullScreen}`}>
+        <div className={`${styles.fullScreen} full`}>
           <button className={styles.close} onClick={onClose} />
-          <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
-            {newMediaList.map(function (media, idx) {
-              return (
-                <div className={`${styles.fullscreenMedia}`} key={idx}>
-                  <GalleryMedia media={media} index={idx} showCaption />
-                </div>
-              )
-            })}
-          </Slider>
+          <div className={styles.container}>
+            <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
+              {newMediaList.map(function (media, idx) {
+                return (
+                  <div className={`${styles.fullscreenMedia}`} key={idx}>
+                    <GalleryMedia media={media} index={idx} showCaption />
+                  </div>
+                )
+              })}
+            </Slider>
+          </div>
         </div>
       </PopupModal>
     )

@@ -46,10 +46,10 @@ const Slider = ({
     }
   }, [])
   return (
-    <div className='blaze-slider' ref={sliderRef}>
-      <div className='blaze-container'>
-        <div className='blaze-track-container'>
-          <div className='blaze-track'>{children}</div>
+    <div className={`blaze-slider ${styles.fullscreen}`} ref={sliderRef}>
+      <div className={`blaze-container ${styles.fullscreen}`}>
+        <div className={`blaze-track-container ${styles.fullscreen}`}>
+          <div className={`blaze-track ${styles.fullscreen}`}>{children}</div>
         </div>
       </div>
       <div className={`controls ${styles.controls}`}>

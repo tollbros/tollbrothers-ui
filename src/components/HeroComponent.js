@@ -8,6 +8,15 @@ export function HeroComponent ({ children, slides, darkness, test }) {
   const [currentSlide, setCurrentSlide] = useState(slides[0]);
   const [nextSlideIndex, setNextSlideIndex] = useState(1);
   const [nextSlide, setNextSlide] = useState();
+  
+  const darknessStyle = {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    backgroundColor: "rgba(0,0,0," + darkness + ")",
+    position: "absolute",
+    zIndex: "0"
+  };
 
   const changeSlides = () => {
     if (slides.length > 1 && nextSlide) {
@@ -72,9 +81,10 @@ export function HeroComponent ({ children, slides, darkness, test }) {
 
         {
           darkness ?
-            <div className={styles.darkness}></div>
+            <div style={darknessStyle}>
+            </div>
           :
-            null
+            <div style={styles.darkness}></div>
         }
 
         {

@@ -1,5 +1,5 @@
 .button {
-  maxWidth: 40px;
+  max-width: 40px;
   color: #fff;
   width: 40px;
   height: 40px;
@@ -23,4 +23,8 @@
   height: fit-content;
   transform: translateY(-50%);
   z-index: 1
+}
+
+.fullscreen {
+  height: 100%;
 }

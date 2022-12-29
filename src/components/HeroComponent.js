@@ -1,13 +1,29 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import styles from './HeroComponent.module.scss';
 import Link from "next/dist/client/link";
 
-export function HeroComponent ({ children, slides, darkness, test }) {
+export function HeroComponent ({ children, slides, overlayOpacity }) {
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState(slides[0]);
+  const [currentSlide, setCurrentSlide] = useState({image: '', title: '', URL: '' });
   const [nextSlideIndex, setNextSlideIndex] = useState(1);
   const [nextSlide, setNextSlide] = useState();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const randomIntFetchedRef = useRef(false);
+  
+  const overlayOpacityStyle = {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    backgroundColor: "rgba(0,0,0," + overlayOpacity + ")",
+    position: "absolute",
+    zIndex: "0"
+  };
+
+  const changeImageLoaded = () => {
+    console.log("Image has loaded!")
+    setImageLoaded(true);
+  }
 
   const changeSlides = () => {
     if (slides.length > 1 && nextSlide) {
@@ -28,28 +44,35 @@ export function HeroComponent ({ children, slides, darkness, test }) {
     }
   }
 
-  useEffect(() => { // Handles Random Start Index
-    if (slides.length > 1) {
+  useEffect(() => { // Handles On Load
+    if (randomIntFetchedRef.current) return;
 
+    randomIntFetchedRef.current = true;
+    if (slides.length > 1) {
+      
       let randomStartIndex = Math.floor(Math.random() * slides.length)
 
+      console.log("setting random start")
       setCurrentSlideIndex(randomStartIndex);
       setCurrentSlide(slides[randomStartIndex]);
 
-      if (randomStartIndex == (slides.length - 1)) {
-        setNextSlideIndex(0);
-        setNextSlide(slides[0]);
-      } else {
-        setNextSlideIndex(randomStartIndex + 1);
-        setNextSlide(slides[randomStartIndex + 1]);
-      }
+      const timer = setTimeout(() => {
+        console.log("back image loaded!!!!!")
+        if (randomStartIndex == (slides.length - 1)) {
+          setNextSlideIndex(0);
+          setNextSlide(slides[0]);
+        } else {
+          setNextSlideIndex(randomStartIndex + 1);
+          setNextSlide(slides[randomStartIndex + 1]);
+        }
+      }, 300);
 
     }
   }, []);
 
   useEffect(() => { // Handles Slideshow Timer
     if (slides.length > 1) {
-
+      console.log('timer restart')
       let fader = document.getElementById("frontImage");
       const interval = setInterval(() => {
 
@@ -64,17 +87,18 @@ export function HeroComponent ({ children, slides, darkness, test }) {
       return () => clearInterval(interval);
 
     }
-  }, [changeSlides]);
+  }, [imageLoaded, changeSlides]);
 
   return (
     <div className={styles.heroContainer}>
       <div className={styles.imageHolder}>
 
         {
-          darkness ?
-            <div className={styles.darkness}></div>
+          overlayOpacity ?
+            <div style={overlayOpacityStyle}>
+            </div>
           :
-            null
+            <div style={styles.overlayOpacity}></div>
         }
 
         {
@@ -84,7 +108,7 @@ export function HeroComponent ({ children, slides, darkness, test }) {
             <>
 
               {
-                currentSlide && <img src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} loading="lazy" id="frontImage" className={styles.currentImage} />
+                currentSlide && <img src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} loading="lazy" id="frontImage" className={styles.currentImage} onLoad={changeImageLoaded} />
               }
 
               {

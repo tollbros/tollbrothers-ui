@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Fragment } from "react";
 import styles from './HeroComponent.module.scss';
 import Link from "next/dist/client/link";
 
-export function HeroComponent ({ children, slides, darkness, test }) {
+export function HeroComponent ({ children, slides, overlayOpacity }) {
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({image: '', title: '', URL: '' });
@@ -11,11 +11,11 @@ export function HeroComponent ({ children, slides, darkness, test }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const randomIntFetchedRef = useRef(false);
   
-  const darknessStyle = {
+  const overlayOpacityStyle = {
     width: "100%",
     height: "100%",
     display: "block",
-    backgroundColor: "rgba(0,0,0," + darkness + ")",
+    backgroundColor: "rgba(0,0,0," + overlayOpacity + ")",
     position: "absolute",
     zIndex: "0"
   };
@@ -94,11 +94,11 @@ export function HeroComponent ({ children, slides, darkness, test }) {
       <div className={styles.imageHolder}>
 
         {
-          darkness ?
-            <div style={darknessStyle}>
+          overlayOpacity ?
+            <div style={overlayOpacityStyle}>
             </div>
           :
-            <div style={styles.darkness}></div>
+            <div style={styles.overlayOpacity}></div>
         }
 
         {

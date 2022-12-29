@@ -58,13 +58,24 @@ const Slider = ({
       {enableControls && (
         <div className={`controls ${styles.controls}`}>
           <button
-            onClick={onPrevious}
+            onClick={() => {
+              onPrevious({
+                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+              })
+            }}
             className={`blaze-prev ${styles.button}`}
           >
             <ArrowLeft fill='#fff' />
           </button>
           {!disablePagination && <div className='blaze-pagination' />}
-          <button onClick={onNext} className={`blaze-next ${styles.button}`}>
+          <button
+            onClick={() =>
+              onNext({
+                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+              })
+            }
+            className={`blaze-next ${styles.button}`}
+          >
             <ArrowRight fill='#fff' />
           </button>
         </div>

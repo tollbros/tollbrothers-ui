@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, Children } from 'react'
 import BlazeSlider from 'blaze-slider'
 import ArrowLeft from '../icons/ArrowLeft'
 import ArrowRight from '../icons/ArrowRight'
@@ -8,6 +8,8 @@ import styles from './Slider.module.scss'
  * Slider component
  * @param cascadingConfig - write any kind of config and even mix and match - just like how you would write a CSS media query.
  * @param disablePagination - disable pagination.
+ * @param onNext - fires when next button is clicked.
+ * @param onPrevious - fires when previous button is clicked.
  * @returns {JSX.Element}
  * @constructor
  */
@@ -18,6 +20,7 @@ const Slider = ({
   onNext = () => {},
   onPrevious = () => {}
 }) => {
+  const enableControls = Children.count(children) > 1
   const defaultConfig = {
     all: {
       slidesToShow: 1,
@@ -52,15 +55,20 @@ const Slider = ({
           <div className={`blaze-track ${styles.fullscreen}`}>{children}</div>
         </div>
       </div>
-      <div className={`controls ${styles.controls}`}>
-        <button onClick={onPrevious} className={`blaze-prev ${styles.button}`}>
-          <ArrowLeft fill='#fff' />
-        </button>
-        {!disablePagination && <div className='blaze-pagination' />}
-        <button onClick={onNext} className={`blaze-next ${styles.button}`}>
-          <ArrowRight fill='#fff' />
-        </button>
-      </div>
+      {enableControls && (
+        <div className={`controls ${styles.controls}`}>
+          <button
+            onClick={onPrevious}
+            className={`blaze-prev ${styles.button}`}
+          >
+            <ArrowLeft fill='#fff' />
+          </button>
+          {!disablePagination && <div className='blaze-pagination' />}
+          <button onClick={onNext} className={`blaze-next ${styles.button}`}>
+            <ArrowRight fill='#fff' />
+          </button>
+        </div>
+      )}
     </div>
   )
 }

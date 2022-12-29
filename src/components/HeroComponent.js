@@ -21,7 +21,6 @@ export function HeroComponent ({ children, slides, overlayOpacity }) {
   };
 
   const changeImageLoaded = () => {
-    console.log("Image has loaded!")
     setImageLoaded(true);
   }
 
@@ -48,16 +47,13 @@ export function HeroComponent ({ children, slides, overlayOpacity }) {
     if (randomIntFetchedRef.current) return;
 
     randomIntFetchedRef.current = true;
-    if (slides.length > 1) {
-      
-      let randomStartIndex = Math.floor(Math.random() * slides.length)
+    let randomStartIndex = Math.floor(Math.random() * slides.length)
 
-      console.log("setting random start")
+    if (slides.length > 1) {
       setCurrentSlideIndex(randomStartIndex);
       setCurrentSlide(slides[randomStartIndex]);
 
       const timer = setTimeout(() => {
-        console.log("back image loaded!!!!!")
         if (randomStartIndex == (slides.length - 1)) {
           setNextSlideIndex(0);
           setNextSlide(slides[0]);
@@ -67,12 +63,14 @@ export function HeroComponent ({ children, slides, overlayOpacity }) {
         }
       }, 300);
 
+    } else {
+      setCurrentSlide(0);
+      setCurrentSlide(slides[randomStartIndex]);
     }
   }, []);
 
   useEffect(() => { // Handles Slideshow Timer
     if (slides.length > 1) {
-      console.log('timer restart')
       let fader = document.getElementById("frontImage");
       const interval = setInterval(() => {
 

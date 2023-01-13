@@ -1,5 +1,4 @@
-import useLocalStorage from '../hooks/useLocalStorage'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './ChatButton.module.scss'
 import Script from 'next/script'
 
@@ -12,7 +11,7 @@ import Script from 'next/script'
  * @constructor
  */
 export const ChatButton = ({ handleOffline, handleEvent, id, jde }) => {
-  const [chat, setChat] = useLocalStorage(null)
+  const [chat, setChat] = useState(null)
 
   useEffect(() => {
     const startChat = async () => {

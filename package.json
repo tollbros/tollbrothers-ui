@@ -12,7 +12,7 @@
   "module": "dist/index.modern.js",
   "source": "src/index.js",
   "engines": {
-    "node": ">=18.12.1"
+    "node": ">=16.19.0"
   },
   "scripts": {
     "build": "microbundle-crl --tsconfig tsconfig.json --compress --format modern --jsxFragment React.Fragment",

@@ -205,6 +205,7 @@ const getImage = (obj, size) => {
 
   if (
     image &&
+    !image.startsWith('https://') &&
     image.indexOf('tollbrothers.com') < 0 &&
     image.indexOf('tollbrothers-static-public') < 0
   ) {

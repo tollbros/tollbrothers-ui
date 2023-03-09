@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, Fragment } from "react";
 import styles from './HeroComponent.module.scss';
 import Link from "next/dist/client/link";
 import ProgressiveImage from "./ProgressiveImage";
-import ArrowLeft from '../icons/ArrowLeft';
 
 export function HeroComponent ({ children, slides, overlayOpacity, placeholderSrc, mainSrc, ...props }) {
 
@@ -92,48 +91,46 @@ export function HeroComponent ({ children, slides, overlayOpacity, placeholderSr
   }, [imageLoaded, changeSlides]);
 
   return (
-    <>
-      <div className={styles.heroContainer}>
-        <div className={styles.imageHolder}>
-
-          {
-            overlayOpacity ?
-              <div style={overlayOpacityStyle}>
-              </div>
-            :
-              <div style={styles.overlayOpacity}></div>
-          }
-
-          {
-            slides.length == 1 ?
-              <ProgressiveImage placeholderSrc={placeholderImgURL} src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} isCurrent={true} id={"frontImage"} />
-            : slides.length > 1 ?
-              <>
-                {
-                  currentSlide && <ProgressiveImage placeholderSrc={placeholderImgURL} src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} isCurrent={true} id={"frontImage"} />
-                }
-
-                {
-                  nextSlide && <ProgressiveImage placeholderSrc={placeholderImgURL} src={nextSlide.image} alt={nextSlide.title ? nextSlide.title : ""} isCurrent={false} id={"backImage"} />
-                }
-              </>
-            :
-              null
-          }
-
-        </div>
+    <div className={styles.heroContainer}>
+      <div className={styles.imageHolder}>
 
         {
-          slides.length > 0 && currentSlide.URL && currentSlide.title ?
-            <Link href={currentSlide.URL} className={styles.caption}>
-              {currentSlide.title}
-            </Link>
+          overlayOpacity ?
+            <div style={overlayOpacityStyle}>
+            </div>
+          :
+            <div style={styles.overlayOpacity}></div>
+        }
+
+        {
+          slides.length == 1 ?
+            <ProgressiveImage placeholderSrc={placeholderImgURL} src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} isCurrent={true} id={"frontImage"} />
+          : slides.length > 1 ?
+            <>
+              {
+                currentSlide && <ProgressiveImage placeholderSrc={placeholderImgURL} src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} isCurrent={true} id={"frontImage"} />
+              }
+
+              {
+                nextSlide && <ProgressiveImage placeholderSrc={placeholderImgURL} src={nextSlide.image} alt={nextSlide.title ? nextSlide.title : ""} isCurrent={false} id={"backImage"} />
+              }
+            </>
           :
             null
         }
 
       </div>
-    </>
+
+      {
+        slides.length > 0 && currentSlide.URL && currentSlide.title ?
+          <Link href={currentSlide.URL} className={styles.caption}>
+            {currentSlide.title}
+          </Link>
+        :
+          null
+      }
+
+    </div>
   )
 }
 

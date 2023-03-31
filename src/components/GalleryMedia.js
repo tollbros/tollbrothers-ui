@@ -9,6 +9,8 @@ function GalleryMedia({
   media,
   showCaption,
   showModelLink = false,
+  showSocials,
+  dataLayerPush,
   clickAction,
   index,
   mediaCount,
@@ -56,14 +58,23 @@ function GalleryMedia({
 
   const openFacebook = () => {
     window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(src)+ '&t=' + encodeURIComponent(caption), 'sharer', 'toolbar=0,status=0,width=626,height=436');
+    if (dataLayerPush) {
+      dataLayerPush({'event': "facebook_share"});
+    }
   }
 
   const openTwitter = () => {
     window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(caption)+'&url='+encodeURIComponent(src),'sharer','toolbar=0,status=0,width=626,height=436');
+    if (dataLayerPush) {
+      dataLayerPush({'event': "twitter_share"});
+    }
   }
 
   const openPinterest = () => {
     window.open('http://www.pinterest.com/pin/create/button/?url='+encodeURIComponent(src)+'&description='+encodeURIComponent(caption),'sharer','toolbar=0,status=0,width=626,height=436');
+    if (dataLayerPush) {
+      dataLayerPush({'event': "twitter_share"});
+    }
   }
 
   useEffect(() => {
@@ -119,11 +130,16 @@ function GalleryMedia({
 
         <div className={styles.bottomRightNav}>
           <p>{imgCount}</p>
-          <div className={styles.mediaShareNav}>
-            <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`} onClick={openFacebook}></button>
-            <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`} onClick={openTwitter}></button>
-            <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`} onClick={openPinterest}></button>
-          </div>
+
+          {
+            showSocials &&
+            <div className={styles.mediaShareNav}>
+              <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`} onClick={openFacebook}></button>
+              <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`} onClick={openTwitter}></button>
+              <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`} onClick={openPinterest}></button>
+            </div>
+          }
+          
         </div>
 
       </figure>

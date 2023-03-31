@@ -8,6 +8,8 @@ import rotate from '../lib/rotate'
 export const FullScreenGallery = ({
   show = false,
   mediaList = [],
+  showSocials = true,
+  dataLayerPush = null,
   onClose = () => {},
   onNext = () => {},
   onPrevious = () => {},
@@ -25,7 +27,7 @@ export const FullScreenGallery = ({
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>
-                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showCaption />
+                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showSocials={showSocials} dataLayerPush={dataLayerPush} showCaption />
                   </div>
                 )
               })}

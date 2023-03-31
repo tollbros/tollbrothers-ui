@@ -25,7 +25,7 @@ export const FullScreenGallery = ({
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>
-                    <GalleryMedia media={media} index={idx} showCaption />
+                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showCaption />
                   </div>
                 )
               })}

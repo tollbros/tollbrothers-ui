@@ -11,6 +11,7 @@ function GalleryMedia({
   showModelLink = false,
   clickAction,
   index,
+  mediaCount,
   onLoad
 }) {
   let isSvg = false
@@ -23,6 +24,7 @@ function GalleryMedia({
   let type = 'image'
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
+  let imgCount = (index + 1).toString() + " / " + mediaCount.toString();
 
   if (media?.type?.includes('video')) {
     modelLink = null
@@ -102,6 +104,16 @@ function GalleryMedia({
         {caption && showCaption && (
           <figcaption className={styles.mediaCapInline}>{caption}</figcaption>
         )}
+
+        <div className={styles.bottomRightNav}>
+          <p>{imgCount}</p>
+          <div className={styles.mediaShareNav}>
+            <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`}></button>
+            <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`}></button>
+            <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`}></button>
+          </div>
+        </div>
+
       </figure>
     </div>
   )

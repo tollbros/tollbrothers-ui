@@ -20,7 +20,7 @@ function GalleryMedia({
   let modelLink = media.link || null
   const modelName = media.title || 'Duke'
   const altName = media.title || media.description || ''
-  let caption = media.description || media.title
+  let caption = media.description || media.title || ''
   let type = 'image'
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
@@ -52,6 +52,18 @@ function GalleryMedia({
 
   const onImageLoad = () => {
     setShowMedia(true)
+  }
+
+  const openFacebook = () => {
+    window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(src)+ '&t=' + encodeURIComponent(caption), 'sharer', 'toolbar=0,status=0,width=626,height=436');
+  }
+
+  const openTwitter = () => {
+    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(caption)+'&url='+encodeURIComponent(src),'sharer','toolbar=0,status=0,width=626,height=436');
+  }
+
+  const openPinterest = () => {
+    window.open('http://www.pinterest.com/pin/create/button/?url='+encodeURIComponent(src)+'&description='+encodeURIComponent(caption),'sharer','toolbar=0,status=0,width=626,height=436');
   }
 
   useEffect(() => {
@@ -108,9 +120,9 @@ function GalleryMedia({
         <div className={styles.bottomRightNav}>
           <p>{imgCount}</p>
           <div className={styles.mediaShareNav}>
-            <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`}></button>
-            <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`}></button>
-            <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`}></button>
+            <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`} onClick={openFacebook}></button>
+            <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`} onClick={openTwitter}></button>
+            <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`} onClick={openPinterest}></button>
           </div>
         </div>
 

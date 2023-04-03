@@ -73,7 +73,7 @@ function GalleryMedia({
   const openPinterest = () => {
     window.open('http://www.pinterest.com/pin/create/button/?url='+encodeURIComponent(src)+'&description='+encodeURIComponent(caption),'sharer','toolbar=0,status=0,width=626,height=436');
     if (dataLayerPush) {
-      dataLayerPush({'event': "twitter_share"});
+      dataLayerPush({'event': "pinterest_share"});
     }
   }
 

@@ -16,6 +16,64 @@
     opacity: 1;
   }
 
+  .bottomRightNav {
+    position: absolute;
+    bottom: 14px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    margin: 4px;
+    font-size: 0.9em;
+
+    .mediaShareNav {
+      margin-left: 30px;
+
+      button {
+        background: none;
+        width: 30px;
+        height: 30px;
+        border: none;
+        margin: 0 8px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        &.mediaFacebookShare{
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg");
+            width: 8px;
+            height: 16px;
+            filter: invert(1);
+            display: inline-block;
+          }
+        }
+
+        &.mediaTwitterShare{
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Twitter.svg");
+            width: 16px;
+            height: 15px;
+            filter: invert(1);
+            display: inline-block;
+          }
+        }
+
+        &.mediaPinterestShare{
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg");
+            width: 16px;
+            height: 16px;
+            filter: invert(1);
+            display: inline-block;
+          }
+        }
+      }
+    }
+
+    
+  }
+
   .mediaCapInline {
     font-size: 14px;
     line-height: 16px;

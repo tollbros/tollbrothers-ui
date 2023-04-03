@@ -129,7 +129,10 @@ function GalleryMedia({
         )}
 
         <div className={styles.bottomRightNav}>
-          <p>{imgCount}</p>
+          {
+            imgCount > 1 &&
+            <p>{imgCount}</p>
+          }          
 
           {
             showSocials &&

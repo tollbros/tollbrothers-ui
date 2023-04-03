@@ -8,7 +8,7 @@ import rotate from '../lib/rotate'
 export const FullScreenGallery = ({
   show = false,
   mediaList = [],
-  showSocials = true,
+  showSocials = false,
   dataLayerPush = null,
   onClose = () => {},
   onNext = () => {},

@@ -18,7 +18,7 @@ const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id }) => {
         alt={alt || ""}
         {
             ...isCurrent ?
-                {className: styles.currentImage}
+                {className: `${styles.currentImage} tracking_heroimage`}
             :
                 {className: styles.nextImage}
         }

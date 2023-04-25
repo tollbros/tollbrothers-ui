@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from './ProgressiveImage.module.scss';
 
-const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id }) => {
+const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id, isFading = false }) => {
     const [imgSrc, setImgSrc] = useState(placeholderSrc || src);
   
     useEffect(() => {
@@ -18,7 +18,7 @@ const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id }) => {
         alt={alt || ""}
         {
             ...isCurrent ?
-                {className: `${styles.currentImage} tracking_heroimage`}
+                {className: `${styles.currentImage} ${isFading && styles.fadeIn} tracking_heroimage`}
             :
                 {className: styles.nextImage}
         }

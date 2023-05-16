@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from './ProgressiveImage.module.scss';
 
-const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id, isFading = false }) => {
-    const [imgSrc, setImgSrc] = useState(placeholderSrc || src);
-  
+const ProgressiveImage = ({ src, alt, isCurrent, id, isFading = false }) => {
+    const [imgSrc, setImgSrc] = useState(src);
+
     useEffect(() => {
         const img = new Image();
         img.src = src;
@@ -11,7 +11,7 @@ const ProgressiveImage = ({ placeholderSrc, src, alt, isCurrent, id, isFading = 
             setImgSrc(src);
         };
     }, [src]);
-  
+
     return (
       <img
         src={imgSrc}

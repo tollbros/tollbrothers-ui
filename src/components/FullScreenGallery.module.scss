@@ -51,12 +51,16 @@
 
       figcaption {
         position: absolute;
-        bottom: 14px;
+        bottom: 22px;
         left: 20px;
         right: 20px;
-        width: calc(100% - 300px);
+        width: calc(100% - 180px);
         font-size: 0.8em;
         pointer-events: none;
+
+        @include breakpoint(sm) {
+          width: calc(100% - 320px);
+        }
       }
     }
 

@@ -48,17 +48,17 @@
 
       button {
         background: none;
-        width: 20px;
+        width: 30px;
         height: 30px;
         border: none;
-        margin: 0 8px;
+        margin: 0 2px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
 
         @include breakpoint(sm) {
-          width: 30px;
+          margin: 0 8px;
         }
 
         &.mediaFacebookShare {

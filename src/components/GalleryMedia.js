@@ -137,9 +137,9 @@ function GalleryMedia({
           {
             showSocials &&
             <div className={styles.mediaShareNav}>
-              <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton}`} onClick={openFacebook}></button>
-              <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton}`} onClick={openTwitter}></button>
-              <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton}`} onClick={openPinterest}></button>
+              <button className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`} onClick={openFacebook}></button>
+              {/* <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton} js-twitter-share-analytics-trig`} onClick={openTwitter}></button> */}
+              <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`} onClick={openPinterest}></button>
             </div>
           }
           

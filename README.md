@@ -40,9 +40,6 @@ Basically, follow the commit message format below. Then when the commit is poste
 
 
 
-
-
-
 keep in mind we use the semantic release package
 ---------
 

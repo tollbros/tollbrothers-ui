@@ -35,3 +35,19 @@ Basically, follow the commit message format below. Then when the commit is poste
 - You can publish code without commiting it. Not sure why you would but there are no guards to prevent you from doing so.
 - On github, the org is `tollbros`
 - On npm, the org is `tollbrothers`
+
+
+
+
+
+
+
+
+keep in mind we use the semantic release package
+---------
+
+so if you want to bump it a specific way you need to prefix your commit
+e.g. fix:*
+e.g feat:*
+
+if not, i think it defaults to a minor release

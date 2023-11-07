@@ -7,7 +7,7 @@ export const TollButton = ({ children }) => {
 
   return (
     <div className={styles.tollButton}>
-        Imma button!
+        Button
     </div>
   )
 }

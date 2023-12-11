@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import styles from './DragSlider.module.scss'
 
 export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
-    //const [number, setNumber] = useState(initalNum);
     
 
     const handleDrag = (e) => {

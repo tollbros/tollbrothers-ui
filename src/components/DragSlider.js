@@ -34,7 +34,7 @@ export const DragSlider = ({ initalNum, step, minValue, maxValue }) => {
         >
 
             <div className={styles.track} id="track">
-            <span className={`${styles.values} ${styles.current}`}>My Number: {number}</span>
+            
                 <span 
                     className={styles.dragHandle}
                     style={{
@@ -44,8 +44,7 @@ export const DragSlider = ({ initalNum, step, minValue, maxValue }) => {
                 >
                 </span>
             </div>
-            <span className={`${styles.values} ${styles.minValue}`}>Min: {minValue}</span>
-            <span className={`${styles.values} ${styles.maxValue}`}>Max: {maxValue}</span>
+           
             
         </div>
     )

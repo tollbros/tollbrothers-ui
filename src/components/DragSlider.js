@@ -3,7 +3,8 @@ import styles from './DragSlider.module.scss'
 
 export const DragSlider = ({ initalNum, step, minValue, maxValue }) => {
     const [number, setNumber] = useState(initalNum);
-    let trackGuide = document.getElementById('track');
+    
+
     const handleDrag = (e) => {
         const dragTrack = document.getElementById('track');
         const trackWidth = dragTrack.offsetWidth;
@@ -33,17 +34,18 @@ export const DragSlider = ({ initalNum, step, minValue, maxValue }) => {
         >
 
             <div className={styles.track} id="track">
+            <span className={`${styles.values} ${styles.current}`}>My Number: {number}</span>
                 <span 
                     className={styles.dragHandle}
                     style={{
                         left: `${((number - minValue) / (maxValue - minValue)) * 100}% ` 
                     }}
                     
-                ><span className={`${styles.values} ${styles.current}`}>{number}</span>
+                >
                 </span>
             </div>
-            <span className={`${styles.values} ${styles.minValue}`}>{minValue}</span>
-            <span className={`${styles.values} ${styles.maxValue}`}>{maxValue}</span>
+            <span className={`${styles.values} ${styles.minValue}`}>Min: {minValue}</span>
+            <span className={`${styles.values} ${styles.maxValue}`}>Max: {maxValue}</span>
             
         </div>
     )

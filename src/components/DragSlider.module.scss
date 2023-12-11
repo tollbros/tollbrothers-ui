@@ -1,8 +1,8 @@
 .dragSliderWrapper {
     position: relative;
-    width: 90%;
-    max-width: 500px;
+    width: 100%;
     background-color: transparent;
+    padding: 25px 0;
 }
 
 .dragHandle {
@@ -40,7 +40,7 @@
 .values {
     position: absolute;
     font-size: 12px;
-    top: 20px;
+    top: 65px;
 
     &.minValue {
         left: 0;
@@ -52,7 +52,7 @@
 
     &.current {
         text-align: center;
-        top: -20px;
+        top: -35px;
         left: 0;
         right: 0;
         margin: 0 auto;

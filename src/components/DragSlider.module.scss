@@ -19,22 +19,63 @@
 
 .track {
     font-size: 12px;
-    position: relative;
     padding: 2px 0;
     cursor: grab;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 6px;
+    margin-bottom: 16px;
+    z-index: 0;
+    background: #0070cd;
+    border-radius: 20px;
 
-    &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        background: blue;
+    input {
         width: 100%;
-        height: 4px;
-        left: 0;
-        top: 10px;
-        z-index: 1;
-        border-radius: 5px;
+        position: absolute;
+        width: 100%;
+        padding: 0;
+        overflow: visible;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        pointer-events: none;
+        color: #000;
+
+        &::-webkit-slider-runnable-track {
+            background: none !important;
+        }
+
     }
+
+    .rangeInput::-webkit-slider-thumb {
+        position: relative;
+        width: 33px;
+        height: 33px;
+        margin-top: -16px;
+        border: 1px solid #c2c2c2;
+        border-radius: 100%;
+        z-index: 2;
+        pointer-events: all;
+        background: white no-repeat url(https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/slider.svg);
+        box-shadow: none;
+        background-size: 6px;
+        background-position: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+        overflow: visible;
+    }
+
+    .rangeInput::-moz-range-thumb {
+        @include thumb;
+    }
+}
+
+.rangeInput,
+.rangeInput::-webkit-slider-runnable-track,
+.rangeInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: none;
 }
 
 .values {

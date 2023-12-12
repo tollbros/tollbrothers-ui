@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import styles from './DragSlider.module.scss'
 
 export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
-    
 
     const handleDrag = (e) => {
         const dragTrack = document.getElementById('track');
@@ -12,10 +11,10 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
         const newValue = Math.round((mouseX / trackWidth) * (maxValue - minValue)) + minValue;
         const slideValue = Math.max(minValue, Math.min(maxValue, newValue));
         const steppededValue = Math.round(slideValue / step) * step;
-        setNumber(steppededValue);        
+        setNumber(steppededValue);
     }
 
-    
+
     return (
         <div className={styles.dragSliderWrapper}
             onMouseDown={(e) => {
@@ -24,7 +23,7 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
                 window.addEventListener('mouseup', () => {
                     window.removeEventListener('mousemove', handleDrag);
                 });
-                
+
                 window.addEventListener('touchstart', handleDrag);
                 window.addEventListener('touchend', () => {
                     window.removeEventListener('touchmove', handleDrag);
@@ -33,18 +32,19 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
         >
 
             <div className={styles.track} id="track">
-            
-                <span 
-                    className={styles.dragHandle}
-                    style={{
-                        left: `${((number - minValue) / (maxValue - minValue)) * 100}% ` 
-                    }}
-                    
-                >
-                </span>
+                <input
+                    className={styles.rangeInput}
+                    name="minDragSlider"
+                    type="range"
+                    min={minValue}
+                    max={maxValue}
+                    step={step}
+                    value={number}
+                />                
+               
             </div>
-           
-            
+
+
         </div>
     )
 

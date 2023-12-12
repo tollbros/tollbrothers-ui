@@ -66,9 +66,7 @@
         overflow: visible;
     }
 
-    .rangeInput::-moz-range-thumb {
-        @include thumb;
-    }
+    
 }
 
 .rangeInput,

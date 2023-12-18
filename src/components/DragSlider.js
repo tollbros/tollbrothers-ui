@@ -8,10 +8,19 @@ const sliderChange = (e) => {
     setNumber(e.target.value)
 }
 
+const sliderClick = (e) => {
+        const trackWidth = e.target.clientWidth;
+        const clickSpot = e.clientX - e.target.getBoundingClientRect().left;
+        const value = (clickSpot / trackWidth) * 100;
+        console.log(value);
+        setNumber(value);
+}
+
     return (
         <div className={styles.dragSliderWrapper}>
 
-            <div className={styles.track} id="track">
+            <div className={styles.track} id="track" >
+                 
                 <input
                     className={styles.rangeInput}
                     name="minDragSlider"
@@ -21,10 +30,10 @@ const sliderChange = (e) => {
                     step={step}
                     defaultValue={number}
                     onInput={sliderChange}
+                    //onClick={sliderClick}
                 />                
                
             </div>
-
 
         </div>
     )

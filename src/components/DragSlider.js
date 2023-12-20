@@ -1,28 +1,25 @@
 import React from 'react'
 import styles from './DragSlider.module.scss'
 
-export const DragSlider = ({ number, setNumber, step, minValue, maxValue }) => {
-
+export const DragSlider = ({ number, setNumber, step, minValue, maxValue, className }) => {
 
 const sliderChange = (e) => {
     setNumber(e.target.value)
 }
-
 const sliderClick = (e) => {
         const trackWidth = e.target.clientWidth;
         const clickSpot = e.clientX - e.target.getBoundingClientRect().left;
         const value = (clickSpot / trackWidth) * 100;
-        console.log(value);
+        //console.log(value);
         setNumber(value);
 }
 
     return (
         <div className={styles.dragSliderWrapper}>
-
             <div className={styles.track} id="track" >
                  
                 <input
-                    className={styles.rangeInput}
+                    className={`${styles.rangeInput} ${className}`}
                     name="minDragSlider"
                     type="range"
                     min={minValue}

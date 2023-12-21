@@ -27,14 +27,24 @@ export const MortgageCalculator = ({
     interestStep,
     interestMin,
     interestMax,
-    interestCallOut }) => {
+    interestCallOut,
+    estimatedPayment }) => {
 
 
     const convertToMoney = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
-    
 
+    const getPercentage = (down, price) => {
+        let percentage = (down / price) * 100;
+        return percentage.toFixed(0);
+    };
+
+    const getEstimate = (down, price) => {
+        let estimate = (price, down)
+        estimate = estimate.toFixed(2)
+        return estimate
+    };
 
     return (
         <div className={styles.calculatorWrapper}>
@@ -43,13 +53,15 @@ export const MortgageCalculator = ({
                     <p>{salesCallOut}</p>
                     <p>${convertToMoney(salesNumber)}</p>
                 </div>
-                <DragSlider
-                    step={salesStep}
-                    minValue={salesMin}
-                    maxValue={salesMax}
-                    number={salesNumber}
-                    setNumber={setSalesNumber}
-                />
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        step={salesStep}
+                        minValue={salesMin}
+                        maxValue={salesMax}
+                        number={salesNumber}
+                        setNumber={setSalesNumber}
+                    />
+                </div>
 
             </div>
             <div className={styles.sliderWrapper}>
@@ -57,26 +69,30 @@ export const MortgageCalculator = ({
                     <p>{loanCallOut}</p>
                     <p>{loanNumber} Years</p>
                 </div>
-                <DragSlider
-                    step={loanStep}
-                    minValue={loanMin}
-                    maxValue={loanMax}
-                    number={loanNumber}
-                    setNumber={setLoanNumber}
-                />
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        step={loanStep}
+                        minValue={loanMin}
+                        maxValue={loanMax}
+                        number={loanNumber}
+                        setNumber={setLoanNumber}
+                    />
+                </div>
             </div>
             <div className={styles.sliderWrapper}>
-                <div className={styles.callOutWrapper}>
+                <div className={`${styles.callOutWrapper} ${styles.down}`}>
                     <p>{downPaymentCallOut}</p>
-                    <p><span>down percent</span>${convertToMoney(downPaymentNumber)}</p>
+                    <p><span>({getPercentage(downPaymentNumber, salesNumber)}%)</span> ${convertToMoney(downPaymentNumber)}</p>
                 </div>
-                <DragSlider
-                    step={downPaymentStep}
-                    minValue={downPaymentMin}
-                    maxValue={downPaymentMax}
-                    number={downPaymentNumber}
-                    setNumber={setDownPaymentNumber}
-                />
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        step={downPaymentStep}
+                        minValue={downPaymentMin}
+                        maxValue={downPaymentMax}
+                        number={downPaymentNumber}
+                        setNumber={setDownPaymentNumber}
+                    />
+                </div>
             </div>
             <div className={styles.sliderWrapper}>
 
@@ -84,17 +100,21 @@ export const MortgageCalculator = ({
                     <p>{interestCallOut}</p>
                     <p>{interestNumber}%</p>
                 </div>
-                <DragSlider
-                    step={interestStep}
-                    minValue={interestMin}
-                    maxValue={interestMax}
-                    number={interestNumber}
-                    setNumber={setInterestNumber}
-                />
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        step={interestStep}
+                        minValue={interestMin}
+                        maxValue={interestMax}
+                        number={interestNumber}
+                        setNumber={setInterestNumber}
+                    />
+                </div>
             </div>
-
-
-
+            {/* const [estimatedPayment, setEstimatedPayment] = useState(salesNumber); */}
+            <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
+                <p>Estimated Monthly Payment<span>(Principal and Interest)</span></p>
+                {/* <p>${convertToMoney(getEstimate(downPaymentNumber,salesNumber))}</p> */}
+            </div>
 
         </div>
 

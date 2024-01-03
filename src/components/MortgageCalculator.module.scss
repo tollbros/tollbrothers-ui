@@ -1,0 +1,44 @@
+.dragSliderWrapper {
+    border: 1px solid #667;
+    margin: 5px 0;
+
+}
+.sliderWrapper {
+    position: relative;
+    border: 1.5px solid #aaa;
+    padding: 0 15px;
+    margin: 25px 0;
+}
+
+.dragWrapper {
+    width: 100%;
+    left: 0;
+    position: absolute;
+    bottom: -19px;
+    z-index: 2;
+}
+
+.callOutWrapper {
+    display: flex;
+    justify-content: space-between;
+
+    p {
+        span {
+            display: block;
+            font-size: 13px;
+            font-weight: 200;
+        }
+    }
+
+    &.down {
+        p {
+            span {
+                display: inline;
+            }
+        }
+    }
+
+    &.estimatedPayment {
+        margin-top: 50px;
+    }
+}

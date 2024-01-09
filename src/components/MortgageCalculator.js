@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
@@ -67,17 +67,27 @@ export const MortgageCalculator = ({
         const numberOfPayments = loanNumber * 12;
         const total = loanAmount * monthlyInterestRate;
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments);
-        const monthlyPaymentResult = total / divisor < 0 ? 0 : total / divisor + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
-        setMonthlyPayment(convertToMoney(monthlyPaymentResult.toFixed(0)));
+        return total / divisor < 0 ? 0 : total / divisor;
     };
 
-    calculateMonthlyPayment();
     let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
     let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) *360);
     let taxPercent = (parseFloat(taxNumber*100 ) / parseFloat(graphicTotal) *360);
 
-
+    
    
+    useEffect(() => {
+        const calculatedMonthlyPayment = calculateMonthlyPayment();
+        const totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
+        setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)));
+
+        const taxPercent = parseInt((taxNumber /totalPayment) * 100);
+        const insurancePercent = parseInt((insuranceNumber /totalPayment) * 100);
+        const hoaPercent = parseInt((hoaNumber /totalPayment) * 100);
+
+        console.log(taxPercent, insurancePercent, hoaPercent)
+
+    }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
    
     return (
         <div className={styles.calculatorWrapper}>
@@ -87,7 +97,7 @@ export const MortgageCalculator = ({
                         <p>{salesCallOut}</p>
                         <p>${convertToMoney(salesNumber)}</p>
                     </div>
-                    <div className={styles.dragWrapper} onChange={calculateMonthlyPayment}>
+                    <div className={styles.dragWrapper}>
                         <DragSlider
                             step={salesStep}
                             minValue={salesMin}

@@ -71,8 +71,7 @@ export const MortgageCalculator = ({
     };
 
     let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
-   let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) *360);
-     /* let taxPercent = (parseFloat(taxNumber*100 ) / parseFloat(graphicTotal) *360); */
+    let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) * 360);
 
     const [taxDegrees, setTaxDegrees] = useState(0);
     const [insuranceDegrees, setInsuranceDesgrees] = useState(0);
@@ -83,9 +82,9 @@ export const MortgageCalculator = ({
         const totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
         setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)));
 
-        const taxPercent = taxNumber /totalPayment;
+        const taxPercent = taxNumber / totalPayment;
         const insurancePercent = insuranceNumber / totalPayment;
-        const hoaPercent = hoaNumber /totalPayment;
+        const hoaPercent = hoaNumber / totalPayment;
 
         setTaxDegrees(360 * taxPercent);
         setInsuranceDesgrees((360 * insurancePercent));
@@ -93,7 +92,7 @@ export const MortgageCalculator = ({
 
 
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
-   
+
     return (
         <div className={styles.calculatorWrapper}>
             <div className={styles.left}>
@@ -161,10 +160,6 @@ export const MortgageCalculator = ({
                     </div>
                 </div>
 
-
-
-
-
                 {showAdvancedToggle &&
                     <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
                         <button>Advanced Options</button>
@@ -219,29 +214,19 @@ export const MortgageCalculator = ({
 
                     </div>
 
-
-
                 }
 
             </div>
 
-            {
-
-
-            }
             <div className={styles.right}>
 
                 <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
                     <p>Estimated Monthly Payment</p>
+
                     <div className={styles.graphic}>
-                   
-                        {/* <p className={styles.taxes} style={{background: 'conic-gradient(#7cbf92 300deg, #008289 60deg)'}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> */}
-                        
-                        <p className={styles.taxes} 
-                        style={{background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #ff0000 ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #00ff00 ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)`}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> 
-                      
-                        
-</div>
+                        <p className={styles.taxes}
+                            style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
+                    </div>
                     <div className={styles.details}>
                         <div>
                             <span>Principal and Interest</span>

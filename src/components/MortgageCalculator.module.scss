@@ -1,13 +1,204 @@
+.calculatorWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    .left,
+    .right {
+        width: 46%;
+    }
+}
+
+.right {
+    position: relative;
+
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 1px;
+        height: 90%;
+        left: -18px;
+        top: 10px;
+        background-color: #aaa;
+    }
+
+    .estimatedPayment {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .graphic {
+            width: 100%;
+            height: 290px;
+            position: relative;
+
+            p {
+                width: 290px;
+                height: 290px;
+                position: absolute;
+                border-radius: 50%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                top: 0;
+                left: 0;
+                //margin: 0;
+            }
+
+            p.principal {
+                background-color: #008289;
+                z-index: 1;
+            }
+
+            p.taxes {
+                z-index: 2;
+
+                span {
+                    font-size: 54px;
+                    font-weight: bold;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    width: 240px;
+                    height: 240px;
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                    justify-content: center;
+
+                    span {
+                        font-size: 15px;
+                        line-height: 20px;
+                        font-weight: 300;
+                        display: block;
+                        max-width: 120px;
+                        text-align: center;
+                        margin-top: 20px;
+                        background-color: transparent;
+                        height: auto;
+                    }
+                }
+            }
+        }
+
+        p:nth-child(1) {
+            font-size: 27px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        p:nth-child(2) {
+            width: 290px;
+            height: 290px;
+            //border: 18px solid #00828a;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            
+        }
+
+        .details {
+            width: 80%;
+            margin-top: 25px;
+
+            >div {
+                width: 100%;
+                text-align: center;
+                display: flex;
+                justify-content: space-between;
+                border-top: 1px solid #cdcbcb;
+                padding: 3px 10px 3px 20px;
+
+
+                span {
+                    font-size: 13px;
+                    color: #39484F;
+                    font-weight: 400;
+                    position: relative;
+
+                    &:nth-child(1) {
+
+                        &::before {
+                            content: '';
+                            display: block;
+                            position: absolute;
+                            width: 12px;
+                            height: 12px;
+                            background-color: #008289;
+                            border-radius: 100%;
+                            left: -17px;
+                            top: 4px;
+                        }
+                    }
+
+                    &:nth-child(2) {
+                        &::after {
+                            width: 14px;
+                            height: 14px;
+                            content: '';
+                            background-image: url('https://cdn.tollbrothers.com/sites/icons/informationIcon.svg');
+                            background-size: 100%;
+                            display: block;
+                            position: absolute;
+                            right: -30px;
+                            top: 3px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                &:nth-child(2) {
+                    span {
+                        &:nth-child(1) {
+                            &::before {
+                                background-color: #7CBF92;
+                            }
+                        }
+                    }
+                }
+
+                &:nth-child(3) {
+                    span {
+                        &:nth-child(1) {
+                            &::before {
+                                background-color: #39484F;
+                            }
+                        }
+                    }
+                }
+
+                &:nth-child(4) {
+                    span {
+                        &:nth-child(1) {
+                            &::before {
+                                background-color: #CEC18B;
+                            }
+                        }
+                    }
+                }
+
+                &:last-child {
+                    border-bottom: 1px solid #cdcbcb;
+                }
+            }
+        }
+    }
+}
+
 .dragSliderWrapper {
     border: 1px solid #667;
     margin: 5px 0;
 
 }
+
 .sliderWrapper {
     position: relative;
     border: 1.5px solid #aaa;
     padding: 0 15px;
-    margin: 25px 0;
+    margin: 10px 0 40px;
 }
 
 .dragWrapper {
@@ -38,7 +229,65 @@
         }
     }
 
-    &.estimatedPayment {
-        margin-top: 50px;
+    // &.estimatedPayment {
+    //     margin-top: 50px;
+
+    //     p:nth-child(2) {
+    //         span {
+    //             font-size: 26px;
+    //             font-weight: bold;
+    //         }
+    //     }
+    // }
+}
+
+.advancedButtonWrapper {
+
+
+    button {
+        background-color: transparent;
+        border: none;
+        color: #00828A;
+        font-weight: bold;
+        position: relative;
+        cursor: pointer;
+
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #00828A;
+            border-bottom: 2px solid #00828A;
+            right: -7px;
+            top: 8px;
+            transition: transform, .2s;
+            transform: rotate(45deg);
+        }
+    }
+
+    .sliderWrapper {
+        height: 0px;
+        overflow: hidden;
+        visibility: collapse;
+        transition: height, .2s;
+    }
+
+    &.isOpened {
+
+        button {
+
+            &::after {
+                transform: rotate(-130deg);
+                top: 12px;
+            }
+        }
+
+        .sliderWrapper {
+            height: 60px;
+            overflow: visible;
+            visibility: visible;
+        }
     }
 }

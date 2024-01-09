@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
@@ -67,17 +67,32 @@ export const MortgageCalculator = ({
         const numberOfPayments = loanNumber * 12;
         const total = loanAmount * monthlyInterestRate;
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments);
-        const monthlyPaymentResult = total / divisor < 0 ? 0 : total / divisor + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
-        setMonthlyPayment(convertToMoney(monthlyPaymentResult.toFixed(0)));
+        return total / divisor < 0 ? 0 : total / divisor;
     };
 
-    calculateMonthlyPayment();
     let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
-    let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) *360);
-    let taxPercent = (parseFloat(taxNumber*100 ) / parseFloat(graphicTotal) *360);
+   let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) *360);
+     /* let taxPercent = (parseFloat(taxNumber*100 ) / parseFloat(graphicTotal) *360); */
+
+    const [taxDegrees, setTaxDegrees] = useState(0);
+    const [insuranceDegrees, setInsuranceDesgrees] = useState(0);
+    const [hoaDegrees, setHoaDegrees] = useState(0);
+
+    useEffect(() => {
+        const calculatedMonthlyPayment = calculateMonthlyPayment();
+        const totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
+        setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)));
+
+        const taxPercent = taxNumber /totalPayment;
+        const insurancePercent = insuranceNumber / totalPayment;
+        const hoaPercent = hoaNumber /totalPayment;
+
+        setTaxDegrees(360 * taxPercent);
+        setInsuranceDesgrees((360 * insurancePercent));
+        setHoaDegrees((360 * hoaPercent));
 
 
-   
+    }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
    
     return (
         <div className={styles.calculatorWrapper}>
@@ -87,7 +102,7 @@ export const MortgageCalculator = ({
                         <p>{salesCallOut}</p>
                         <p>${convertToMoney(salesNumber)}</p>
                     </div>
-                    <div className={styles.dragWrapper} onChange={calculateMonthlyPayment}>
+                    <div className={styles.dragWrapper}>
                         <DragSlider
                             step={salesStep}
                             minValue={salesMin}
@@ -222,7 +237,8 @@ export const MortgageCalculator = ({
                    
                         {/* <p className={styles.taxes} style={{background: 'conic-gradient(#7cbf92 300deg, #008289 60deg)'}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> */}
                         
-                        <p className={styles.taxes} style={{background: `conic-gradient( #7cbf92 ${taxPercent}deg, #008289 ${taxPercent}deg ${principalPercent}deg)`}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> 
+                        <p className={styles.taxes} 
+                        style={{background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #ff0000 ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #00ff00 ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)`}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> 
                       
                         
 </div>

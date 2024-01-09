@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
@@ -72,7 +72,13 @@ export const MortgageCalculator = ({
     };
 
     calculateMonthlyPayment();
+    let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
+    let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) *360);
+    let taxPercent = (parseFloat(taxNumber*100 ) / parseFloat(graphicTotal) *360);
 
+
+   
+   
     return (
         <div className={styles.calculatorWrapper}>
             <div className={styles.left}>
@@ -203,12 +209,34 @@ export const MortgageCalculator = ({
                 }
 
             </div>
+
+            {
+
+
+            }
             <div className={styles.right}>
 
                 <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
                     <p>Estimated Monthly Payment</p>
-                    <p><span>${monthlyPayment}</span><span>Total Estimated Monthly Payment</span></p>
+                    <div className={styles.graphic}>
+                    {/* let principalPercent = '60';
+    let taxPercent = '300';
+    let gradientType = 'conic-gradient'
 
+    const gradientColor1 = '#7cbf92';
+    const gradientColor2 = '#008289'; */}
+                        {/* <p className={styles.principal}></p> */}
+                        {/* <p className={styles.taxes} style={{background: 'conic-gradient(#7cbf92 300deg, #008289 60deg)'}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> */}
+                        {/* <p className={styles.taxes} style={{background: `conic-gradient(#7cbf92 ${taxPercent}deg, #008289 ${principalPercent}deg)`}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> */}
+                        <p className={styles.taxes} style={{background: `conic-gradient( #7cbf92 ${taxPercent}deg, #008289 ${taxPercent}deg ${principalPercent}deg)`}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> 
+                        {/* <p className={styles.taxes} style={{background: 'conic-gradient( red 6deg, orange 6deg 360deg)'}}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>  */}
+                        {/* // style={{
+                        //      background: 'linear-gradient(90deg, #008289 50%, #7cbf92 50%)',
+
+                        //   }}
+                        ><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p> */}
+                        
+</div>
                     <div className={styles.details}>
                         <div>
                             <span>Principal and Interest</span>

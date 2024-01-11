@@ -6,47 +6,41 @@ import { DragSlider } from './DragSlider'
 export const MortgageCalculator = ({
     salesNumber,
     setSalesNumber,
-    salesStep,
-    salesMin,
-    salesMax,
-    salesCallOut,
     loanNumber,
     setLoanNumber,
-    loanStep,
-    loanMin,
-    loanMax,
-    loanCallOut,
     downPaymentNumber,
     setDownPaymentNumber,
-    downPaymentStep,
-    downPaymentMin,
-    downPaymentMax,
-    downPaymentCallOut,
     interestNumber,
     setInterestNumber,
-    interestStep,
-    interestMin,
-    interestMax,
-    interestCallOut,
     setMonthlyPayment,
     monthlyPayment,
-    showAdvancedToggle,
-    taxNumber,
-    setTaxNumber,
-    taxesStep,
-    taxesMin,
-    taxesMax,
-    insuranceStep,
-    insuranceMin,
-    insuranceMax,
-    insuranceNumber,
-    setInsuranceNumber,
-    hoaStep,
-    hoaMin,
-    hoaMax,
-    hoaNumber,
-    setHoaNumber }) => {
-
+    showAdvancedToggle
+}) => {
+    const [taxNumber, setTaxNumber] = useState(0); 
+    const [insuranceNumber, setInsuranceNumber] = useState(0);
+    const [hoaNumber, setHoaNumber] = useState(0);
+    
+    let insuranceStep = 10;
+    let insuranceMin = 0;
+    let insuranceMax = 1000;
+    let hoaStep = 10;
+    let hoaMin = 0;
+    let hoaMax = 1000;
+    let taxesStep = 10;
+    let taxesMin = 0;
+    let taxesMax = 1000;
+    let salesMin = 100000;
+    let salesMax = 1000000;
+    let salesStep = 10000;
+    let downPaymentMin = 0;
+    let downPaymentMax = 500000;
+    let downPaymentStep = 1000;
+    let loanMin = 10;
+    let loanMax = 30;
+    let loanStep = 1;
+    let interestMin = 0.1;   
+    let interestMax = 10;
+    let interestStep = 0.1;
 
     const convertToMoney = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -64,6 +58,7 @@ export const MortgageCalculator = ({
     const calculateMonthlyPayment = () => {
         const loanAmount = salesNumber - downPaymentNumber;
         const monthlyInterestRate = interestNumber / 1200; // monthly interest
+        
         const numberOfPayments = loanNumber * 12;
         const total = loanAmount * monthlyInterestRate;
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments);
@@ -98,7 +93,7 @@ export const MortgageCalculator = ({
             <div className={styles.left}>
                 <div className={styles.sliderWrapper}>
                     <div className={styles.callOutWrapper}>
-                        <p>{salesCallOut}</p>
+                        <p>Sales Price</p>
                         <p>${convertToMoney(salesNumber)}</p>
                     </div>
                     <div className={styles.dragWrapper}>
@@ -115,7 +110,7 @@ export const MortgageCalculator = ({
                 </div>
                 <div className={styles.sliderWrapper}>
                     <div className={styles.callOutWrapper}>
-                        <p>{loanCallOut}</p>
+                        <p>Loan Term</p>
                         <p>{loanNumber} Years</p>
                     </div>
                     <div className={styles.dragWrapper}>
@@ -130,7 +125,7 @@ export const MortgageCalculator = ({
                 </div>
                 <div className={styles.sliderWrapper}>
                     <div className={`${styles.callOutWrapper} ${styles.down}`}>
-                        <p>{downPaymentCallOut}</p>
+                        <p>Down Payment</p>
                         <p><span>({getPercentage(downPaymentNumber, salesNumber)}%)</span> ${convertToMoney(downPaymentNumber)}</p>
                     </div>
                     <div className={styles.dragWrapper}>
@@ -143,10 +138,11 @@ export const MortgageCalculator = ({
                         />
                     </div>
                 </div>
+
                 <div className={styles.sliderWrapper}>
 
                     <div className={styles.callOutWrapper}>
-                        <p>{interestCallOut}</p>
+                        <p>Interest Rate</p>
                         <p>{interestNumber}%</p>
                     </div>
                     <div className={styles.dragWrapper}>
@@ -174,7 +170,7 @@ export const MortgageCalculator = ({
                                     step={taxesStep}
                                     minValue={taxesMin}
                                     maxValue={taxesMax}
-                                    number={taxNumber}
+                                    number={0}
                                     setNumber={setTaxNumber}
                                 />
                             </div>

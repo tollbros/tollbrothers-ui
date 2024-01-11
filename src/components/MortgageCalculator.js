@@ -137,7 +137,7 @@ export const MortgageCalculator = ({
                             setNumber={setDownPaymentNumber}
                         />
                     </div>
-                </div>
+                </div> 
 
                 <div className={styles.sliderWrapper}>
 

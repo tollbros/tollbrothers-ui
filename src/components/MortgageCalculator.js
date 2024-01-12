@@ -19,6 +19,8 @@ export const MortgageCalculator = ({
     const [taxNumber, setTaxNumber] = useState(0); 
     const [insuranceNumber, setInsuranceNumber] = useState(0);
     const [hoaNumber, setHoaNumber] = useState(0);
+    const [piNumber, setPiNumber] = useState(0); // principal and interest
+    const [showLegendToggle, setShowLegendToggle] = useState(false);
     
     let insuranceStep = 10;
     let insuranceMin = 0;
@@ -55,6 +57,10 @@ export const MortgageCalculator = ({
         e.target.parentNode.classList.toggle(styles.isOpened);
     }
 
+    const showLegend = (e) => {
+        setShowLegendToggle(!showLegendToggle);
+    }
+
     const calculateMonthlyPayment = () => {
         const loanAmount = salesNumber - downPaymentNumber;
         const monthlyInterestRate = interestNumber / 1200; // monthly interest
@@ -84,6 +90,7 @@ export const MortgageCalculator = ({
         setTaxDegrees(360 * taxPercent);
         setInsuranceDesgrees((360 * insurancePercent));
         setHoaDegrees((360 * hoaPercent));
+        setPiNumber(calculatedMonthlyPayment.toFixed(0));
 
 
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
@@ -158,7 +165,7 @@ export const MortgageCalculator = ({
 
                 {showAdvancedToggle &&
                     <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
-                        <button>Advanced Options</button>
+                        <button onClick={showLegend}>Advanced Options</button>
 
                         <div className={styles.sliderWrapper}>
                             <div className={styles.callOutWrapper}>
@@ -223,10 +230,11 @@ export const MortgageCalculator = ({
                         <p className={styles.taxes}
                             style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
                     </div>
+                    {showLegendToggle &&
                     <div className={styles.details}>
                         <div>
                             <span>Principal and Interest</span>
-                            <span>${convertToMoney(salesNumber)}</span>
+                            <span>${convertToMoney(piNumber)}</span>
                         </div>
                         <div>
                             <span>Taxes</span>
@@ -241,6 +249,7 @@ export const MortgageCalculator = ({
                             <span>${convertToMoney(hoaNumber)}</span>
                         </div>
                     </div>
+}
                 </div>
             </div>
 

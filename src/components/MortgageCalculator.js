@@ -34,6 +34,7 @@ export const MortgageCalculator = ({
     const [insuranceInputShow, setInsuranceInputShow] = useState(false);
     const [hoaInputShow, setHoaInputShow] = useState(false);
     const [salesMax, setSalesMax] = useState(1000000);
+    //const [salesMin, setSalesMin] = useState(1000);
 
     let insuranceStep = 10;
     let insuranceMin = 0;
@@ -44,7 +45,7 @@ export const MortgageCalculator = ({
     let taxesStep = 10;
     let taxesMin = 0;
     let taxesMax = 1000;
-    let salesMin = 100000;
+    let salesMin = 0;
     //let salesMax = 1000000;
     let salesStep = 10000;
     let downPaymentMin = 0;
@@ -89,16 +90,15 @@ export const MortgageCalculator = ({
         return total / divisor < 0 ? 0 : total / divisor;
     };
 
-    //let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
-   // let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) * 360);
 
     const handleSalePriceDirectInput = (value) => {
         //value > 5000000 ? value = 5000000 : value = value;
-
+        //setSalesNumber(value);
         const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
         valueType === 'string' ? setError('Please enter a number') : (setError(''), setSalesNumber(value));
         setSalesMax(value * 2);
-        console.log(value);
+        //setSalesMin(value / 10);
+        //console.log(value);
     }
 
     // useEffect(() => {
@@ -123,17 +123,12 @@ export const MortgageCalculator = ({
         setInsuranceDesgrees((360 * insurancePercent));
         setHoaDegrees((360 * hoaPercent));
         setPiNumber(calculatedMonthlyPayment.toFixed(0));
-        // setSalesNumber(salesNumber);
-        // console.log(salesNumber+' sdfkj');
+      
 
 
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
 
-    // const test = (value) => {
-    //     console.log(value+' test');
-    //     //setSalesNumber(e.target.value);
-    // }
-
+    
 
     return (
         <div className={styles.calculatorWrapper}>
@@ -146,7 +141,7 @@ export const MortgageCalculator = ({
                     </div>
                     <div className={styles.dragWrapper} onClick={hideInput}>
                         <DragSlider
-                            step={salesStep}
+                            //step={salesStep}
                             minValue={salesMin}
                             maxValue={salesMax}
                             //maxValue={salesNumber * 2}

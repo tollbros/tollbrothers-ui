@@ -16,12 +16,25 @@ export const MortgageCalculator = ({
     monthlyPayment,
     showAdvancedToggle
 }) => {
-    const [taxNumber, setTaxNumber] = useState(0); 
+   // const [setNumber, setSetNumber] = useState(0);
+    const [taxNumber, setTaxNumber] = useState(0);
     const [insuranceNumber, setInsuranceNumber] = useState(0);
     const [hoaNumber, setHoaNumber] = useState(0);
     const [piNumber, setPiNumber] = useState(0); // principal and interest
     const [showLegendToggle, setShowLegendToggle] = useState(false);
-    
+    const [taxDegrees, setTaxDegrees] = useState(0);
+    const [insuranceDegrees, setInsuranceDesgrees] = useState(0);
+    const [hoaDegrees, setHoaDegrees] = useState(0);
+    const [error, setError] = useState('');
+    const [salePriceInputShow, setSalePriceInputShow] = useState(false);
+    const [loanInputShow, setLoanInputShow] = useState(false);
+    const [downInputShow, setDownInputShow] = useState(false);
+    const [interestInputShow, setInterestInputShow] = useState(false);
+    const [taxInputShow, setTaxInputShow] = useState(false);
+    const [insuranceInputShow, setInsuranceInputShow] = useState(false);
+    const [hoaInputShow, setHoaInputShow] = useState(false);
+    const [salesMax, setSalesMax] = useState(1000000);
+
     let insuranceStep = 10;
     let insuranceMin = 0;
     let insuranceMax = 1000;
@@ -32,7 +45,7 @@ export const MortgageCalculator = ({
     let taxesMin = 0;
     let taxesMax = 1000;
     let salesMin = 100000;
-    let salesMax = 1000000;
+    //let salesMax = 1000000;
     let salesStep = 10000;
     let downPaymentMin = 0;
     let downPaymentMax = 500000;
@@ -40,9 +53,10 @@ export const MortgageCalculator = ({
     let loanMin = 10;
     let loanMax = 30;
     let loanStep = 1;
-    let interestMin = 0.1;   
+    let interestMin = 0.1;
     let interestMax = 10;
     let interestStep = 0.1;
+    //let test = 0;
 
     const convertToMoney = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -61,22 +75,40 @@ export const MortgageCalculator = ({
         setShowLegendToggle(!showLegendToggle);
     }
 
+    const showInput = (e) => {
+        setSalePriceInputShow(!salePriceInputShow);
+    }
+
     const calculateMonthlyPayment = () => {
         const loanAmount = salesNumber - downPaymentNumber;
         const monthlyInterestRate = interestNumber / 1200; // monthly interest
-        
+
         const numberOfPayments = loanNumber * 12;
         const total = loanAmount * monthlyInterestRate;
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments);
         return total / divisor < 0 ? 0 : total / divisor;
     };
 
-    let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
-    let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) * 360);
+    //let graphicTotal = parseFloat(salesNumber) + parseFloat(taxNumber);
+   // let principalPercent = (parseFloat(salesNumber) / parseFloat(graphicTotal) * 360);
 
-    const [taxDegrees, setTaxDegrees] = useState(0);
-    const [insuranceDegrees, setInsuranceDesgrees] = useState(0);
-    const [hoaDegrees, setHoaDegrees] = useState(0);
+    const handleSalePriceDirectInput = (value) => {
+        //value > 5000000 ? value = 5000000 : value = value;
+
+        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+        valueType === 'string' ? setError('Please enter a number') : (setError(''), setSalesNumber(value));
+        setSalesMax(value * 2);
+        console.log(value);
+    }
+
+    // useEffect(() => {
+    //     console.log('testing');
+    //     setSalesMax(salesNumber * 2);
+    // }, [salesNumber]);
+
+    const hideInput = (e) => {
+        setSalePriceInputShow(false)
+    }
 
     useEffect(() => {
         const calculatedMonthlyPayment = calculateMonthlyPayment();
@@ -91,9 +123,17 @@ export const MortgageCalculator = ({
         setInsuranceDesgrees((360 * insurancePercent));
         setHoaDegrees((360 * hoaPercent));
         setPiNumber(calculatedMonthlyPayment.toFixed(0));
+        // setSalesNumber(salesNumber);
+        // console.log(salesNumber+' sdfkj');
 
 
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
+
+    // const test = (value) => {
+    //     console.log(value+' test');
+    //     //setSalesNumber(e.target.value);
+    // }
+
 
     return (
         <div className={styles.calculatorWrapper}>
@@ -101,18 +141,31 @@ export const MortgageCalculator = ({
                 <div className={styles.sliderWrapper}>
                     <div className={styles.callOutWrapper}>
                         <p>Sales Price</p>
-                        <p>${convertToMoney(salesNumber)}</p>
+                        <p onClick={showInput}>${convertToMoney(salesNumber)}</p>
+                        <span className={styles.error}>{error}</span>
                     </div>
-                    <div className={styles.dragWrapper}>
+                    <div className={styles.dragWrapper} onClick={hideInput}>
                         <DragSlider
                             step={salesStep}
                             minValue={salesMin}
                             maxValue={salesMax}
+                            //maxValue={salesNumber * 2}
                             number={salesNumber}
                             setNumber={setSalesNumber}
                             setPayment={setMonthlyPayment}
+                           
                         />
+                        {/* <span className={styles.error}>{error}</span> */}
                     </div>
+
+                    {salePriceInputShow &&
+                        <input
+                            type="text"
+                            onChange={(e) => handleSalePriceDirectInput(e.target.value)}
+                            className={styles.inputAdjust}
+                            value={salesNumber}
+                        />
+                    }
 
                 </div>
                 <div className={styles.sliderWrapper}>
@@ -127,6 +180,7 @@ export const MortgageCalculator = ({
                             maxValue={loanMax}
                             number={loanNumber}
                             setNumber={setLoanNumber}
+                           // test={test}
                         />
                     </div>
                 </div>
@@ -144,7 +198,7 @@ export const MortgageCalculator = ({
                             setNumber={setDownPaymentNumber}
                         />
                     </div>
-                </div> 
+                </div>
 
                 <div className={styles.sliderWrapper}>
 
@@ -177,7 +231,7 @@ export const MortgageCalculator = ({
                                     step={taxesStep}
                                     minValue={taxesMin}
                                     maxValue={taxesMax}
-                                    number={0}
+                                    number={taxNumber}
                                     setNumber={setTaxNumber}
                                 />
                             </div>
@@ -231,25 +285,25 @@ export const MortgageCalculator = ({
                             style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
                     </div>
                     {showLegendToggle &&
-                    <div className={styles.details}>
-                        <div>
-                            <span>Principal and Interest</span>
-                            <span>${convertToMoney(piNumber)}</span>
+                        <div className={styles.details}>
+                            <div>
+                                <span>Principal and Interest</span>
+                                <span>${convertToMoney(piNumber)}</span>
+                            </div>
+                            <div>
+                                <span>Taxes</span>
+                                <span>${convertToMoney(taxNumber)}</span>
+                            </div>
+                            <div>
+                                <span>Insurance</span>
+                                <span>${convertToMoney(insuranceNumber)}</span>
+                            </div>
+                            <div>
+                                <span>HOA</span>
+                                <span>${convertToMoney(hoaNumber)}</span>
+                            </div>
                         </div>
-                        <div>
-                            <span>Taxes</span>
-                            <span>${convertToMoney(taxNumber)}</span>
-                        </div>
-                        <div>
-                            <span>Insurance</span>
-                            <span>${convertToMoney(insuranceNumber)}</span>
-                        </div>
-                        <div>
-                            <span>HOA</span>
-                            <span>${convertToMoney(hoaNumber)}</span>
-                        </div>
-                    </div>
-}
+                    }
                 </div>
             </div>
 

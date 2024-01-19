@@ -30,7 +30,7 @@ const sliderClick = (e) => {
                     min={minValue}
                     max={maxValue}
                     step={step}
-                    defaultValue={number}
+                    //defaultValue={number}
                     onInput={sliderChange}
                     value={number}
                     //onClick={sliderClick}

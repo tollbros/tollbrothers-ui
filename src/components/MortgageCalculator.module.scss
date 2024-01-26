@@ -88,7 +88,7 @@
         }
 
         p:nth-child(1) {
-            font-size: 27px;
+            font-size: 1.3em;
             font-weight: 500;
             margin: 0 auto;
         }
@@ -115,6 +115,7 @@
                 justify-content: space-between;
                 border-top: 1px solid #cdcbcb;
                 padding: 3px 10px 3px 20px;
+                position: relative;
 
 
                 span {
@@ -139,17 +140,74 @@
                     }
 
                     &:nth-child(2) {
-                        &::after {
-                            width: 14px;
-                            height: 14px;
-                            content: '';
-                            background-image: url('https://cdn.tollbrothers.com/sites/icons/informationIcon.svg');
-                            background-size: 100%;
-                            display: block;
+                        // &::after {
+                        //     width: 14px;
+                        //     height: 14px;
+                        //     content: '';
+                        //     background-image: url('https://cdn.tollbrothers.com/sites/icons/informationIcon.svg');
+                        //     background-size: 100%;
+                        //     display: block;
+                        //     position: absolute;
+                        //     right: -30px;
+                        //     top: 3px;
+                        //     cursor: pointer;
+                        // }
+                    }
+
+                    &.toolTipLaunch {
+                        position: absolute;
+                        width: 14px;
+                        height: 14px;
+                        background-image: url('https://cdn.tollbrothers.com/sites/icons/informationIcon.svg');
+                        background-size: 100%;
+                        display: block;
+                        position: absolute;
+                        right: -16px;
+                        top: 6px;
+                        cursor: pointer;
+                        z-index: 2;
+                        
+                    }
+
+                    &.toolTip {
+                        position: absolute;
+                        bottom: -50%;
+                        right: -85%;
+                        width: 200px;
+                        border-radius: 15px;
+                        padding: 12px;
+                        opacity: 0;
+                        z-index: 1;
+                        background-color: white;
+                        box-shadow: 0 0 4px 0px rgba(0,0,0,.25);
+                        transition: opacity, .5s;
+                        text-align: left;
+                        font-weight: 400;
+
+                        &.isActive {
+                            opacity: 1;
+                            z-index: 3;
+                        }
+
+                        .close {
+                            display: none;
                             position: absolute;
-                            right: -30px;
-                            top: 3px;
-                            cursor: pointer;
+                            right: 10px;
+                            top: 0;
+                            font-size: 18px;
+                            font-weight: 600;
+
+                            &::before {
+                                display: none;
+                            }
+                        }
+
+                        @media (max-width: 1024px) {
+                            right: 0;
+
+                            .close {
+                                display: block;
+                            }
                         }
                     }
                 }
@@ -210,7 +268,7 @@
     left: 0;
     position: absolute;
     bottom: -19px;
-    z-index: 2;    
+    z-index: 2;
 }
 
 .error {
@@ -248,6 +306,11 @@
         }
     }
 
+    select {
+        border: none;
+        cursor: pointer;
+    }
+
     // &.estimatedPayment {
     //     margin-top: 50px;
 
@@ -261,10 +324,12 @@
 }
 
 .inputAdjust {
-    width: 125px;
+    width: 100px;
     position: absolute;
-    bottom:  -37px;
+    bottom: -37px;
     right: 0;
+    text-align: right;
+    padding-right: 5px;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {

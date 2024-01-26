@@ -2,27 +2,30 @@ import React, { useState } from 'react'
 
 import styles from './DragSlider.module.scss'
 
-export const DragSlider = ({ number, setNumber, step, minValue, maxValue, className }) => {
+export const DragSlider = ({ number, setNumber, step, minValue, maxValue, className, loanTerm, onSliderChange, select }) => {
+   
+   
 
-    //const [sliderUpdate, setSliderUpdate] = useState(number);
-   // test > 0 ?  setSliderUpdate(test) :  setSliderUpdate(number);
+    const sliderChange = (e) => {
+        setNumber(e.target.value)
+    }
+    const [currentTerm, setCurrentTerm] = useState(0);
+    const [prevTerm, setPrevTerm] = useState(0);
 
-//console.log(test  + ' 9' )
-const sliderChange = (e) => {
-    setNumber(e.target.value)
-}
-const sliderClick = (e) => {
-        const trackWidth = e.target.clientWidth;
-        const clickSpot = e.clientX - e.target.getBoundingClientRect().left;
-        const value = (clickSpot / trackWidth) * 100;
-        //console.log(value);
-        setNumber(value);
-}
+    const handleLoanSliderChange = (e) => {
+        console.log(select.options[0]);
+        const values = [10, 15, 20, 30];
+        setNumber(e.target.value);
+        select.options[0].innerHTML = '10 years';
+
+        
+    };
+
 
     return (
         <div className={styles.dragSliderWrapper}>
             <div className={styles.track} id="track" >
-                 
+
                 <input
                     className={`${styles.rangeInput} ${className}`}
                     name="minDragSlider"
@@ -30,11 +33,11 @@ const sliderClick = (e) => {
                     min={minValue}
                     max={maxValue}
                     step={step}
-                    //defaultValue={number}
-                    onInput={sliderChange}
                     value={number}
-                    //onClick={sliderClick}
-                />                
+                    //onChange={sliderChange}
+                    onChange={loanTerm ? handleLoanSliderChange : sliderChange}
+                   
+                />
                
             </div>
 

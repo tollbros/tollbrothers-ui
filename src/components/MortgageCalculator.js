@@ -192,7 +192,7 @@ export const MortgageCalculator = ({
     const loanTermArray = [10, 15, 20, 30];
     const [loanTermIndex, setLoanTermIndex] = useState(3);
     const loadDropDown = (e) => {
-        setLoanNumber(e.target.value)
+        //setLoanNumber(e.target.value)
         let arrayIndex = loanTermArray.indexOf(parseInt(e.target.value));
         setLoanTermIndex(arrayIndex);
     }
@@ -265,7 +265,7 @@ export const MortgageCalculator = ({
                     </div>
                     <div className={styles.dragWrapper}>
                         <DragSlider
-                            step={0}
+                            minValue={0}
                             maxValue={loanTermArray.length - 1}
                             number={loanTermIndex}
                             setNumber={setLoanTermIndex}

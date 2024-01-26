@@ -42,7 +42,7 @@ export const MortgageCalculator = ({
     const [taxInputShow, setTaxInputShow] = useState(false);
     const [insuranceInputShow, setInsuranceInputShow] = useState(false);
     const [hoaInputShow, setHoaInputShow] = useState(false);
-    const [dropDown, setDropDown] = useState(0);
+
 
     const [salesMax, setSalesMax] = useState(1000000);
     const [loanMax, setLoanMax] = useState(30);
@@ -189,19 +189,16 @@ export const MortgageCalculator = ({
         e.target.parentNode.classList.remove(styles.isActive);
     }
 
-    const handleLoanSliderChange = (e) => {
-        // alert('parent');
-        // console.log('parent');
-        
-        // const values = [1, 3, 5, 10, 20, 50, 100];
-
-        
-
-        // setNumber(values[e.target])
-
-    };
-
-    const output = document.getElementById('loanSelect');
+    const loanTermArray = [10, 15, 20, 30];
+    const [loanTermIndex, setLoanTermIndex] = useState(3);
+    const loadDropDown = (e) => {
+        setLoanNumber(e.target.value)
+        let arrayIndex = loanTermArray.indexOf(parseInt(e.target.value));
+        setLoanTermIndex(arrayIndex);
+    }
+    useEffect(() => {
+        setLoanNumber(loanTermArray[loanTermIndex]);
+    }, [loanTermIndex]);
 
 
     useEffect(() => {
@@ -258,7 +255,7 @@ export const MortgageCalculator = ({
                 <div className={`${styles.sliderWrapper} ${styles.loanTerm}`}>
                     <div className={styles.callOutWrapper}>
                         <p>Loan Term</p>
-                        <select className={styles.select} name="loanSelect" id="loanSelect" onChange={(e) => setLoanNumber(e.target.value)} value={loanNumber}>
+                        <select className={styles.select} name="loanSelect" id="loanSelect" onChange={loadDropDown} value={loanNumber}>
                             <option value="10">10 Years</option>
                             <option value="15">15 Years</option>
                             <option value="20">20 Years</option>
@@ -268,17 +265,10 @@ export const MortgageCalculator = ({
                     </div>
                     <div className={styles.dragWrapper}>
                         <DragSlider
-                            step={1}
-                            // minValue={loanMin}
-                            // maxValue={loanMax}
-                            minValue={10}
-                            maxValue={30}
-                            //onSliderChange={handleLoanSliderChange}
-                            number={loanNumber}
-                            setNumber={setLoanNumber}
-                            onChange={handleLoanSliderChange}
-                            loanTerm={true}
-                            select={output}
+                            step={0}
+                            maxValue={loanTermArray.length - 1}
+                            number={loanTermIndex}
+                            setNumber={setLoanTermIndex}
                         />
 
                     </div>

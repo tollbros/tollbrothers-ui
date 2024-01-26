@@ -16,7 +16,6 @@ export const MortgageCalculator = ({
     monthlyPayment,
     showAdvancedToggle
 }) => {
-    // const [setNumber, setSetNumber] = useState(0);
     const [taxNumber, setTaxNumber] = useState(0);
     const [insuranceNumber, setInsuranceNumber] = useState(0);
     const [hoaNumber, setHoaNumber] = useState(0);
@@ -52,29 +51,14 @@ export const MortgageCalculator = ({
     const [insuranceMax, setInsuranceMax] = useState(1000);
     const [hoaMax, setHoaMax] = useState(1000);
 
-    //let loanStep = 50;
-
     let insuranceStep = 10;
     let insuranceMin = 0;
-    //let insuranceMax = 1000;
-    //let hoaStep = 10;
     let hoaMin = 0;
-    //let hoaMax = 1000;
-    //let taxesStep = 10;
     let taxesMin = 0;
-    //let taxesMax = 1000;
     let salesMin = 0;
-    //let salesMax = 1000000;
-    //let salesStep = 10000;
     let downPaymentMin = 0;
-    //let downPaymentMax = 500000;
-    //let downPaymentStep = 1000;
     let loanMin = 1;
-    //let loanMax = 30;
-    //let loanStep = 1;
     let interestMin = 0;
-    //let interestMax = 10;
-    //let interestStep = 0.1;
 
     const convertToMoney = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -96,10 +80,6 @@ export const MortgageCalculator = ({
     const showSalesInput = (e) => {
         setSalePriceInputShow(!salePriceInputShow);
     }
-
-    // const showLoanInput = (e) => {
-    //     setLoanInputShow(!loanInputShow);
-    // }
 
     const showDownInput = (e) => {
         setDownInputShow(!downInputShow);
@@ -128,7 +108,6 @@ export const MortgageCalculator = ({
         const total = loanAmount * monthlyInterestRate;
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, - numberOfPayments);
         let amount = total / divisor < 0 ? 0 : total / divisor;
-        //(amount === Infinity || isNaN(amount)) ? amount = 0 : amount = amount;
         amount === Infinity ? amount = 0 : amount = parseInt(amount);
         return amount;
     };

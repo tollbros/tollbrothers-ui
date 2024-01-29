@@ -64,7 +64,7 @@ export const MortgageCalculator = ({
     };
 
     const getPercentage = (down, price) => {
-        let percentage = (down / price) * 100;
+         let percentage = (parseInt(down) / parseInt(price)) * 100;
         return percentage.toFixed(0);
     };
 
@@ -108,6 +108,7 @@ export const MortgageCalculator = ({
         const divisor = 1 - Math.pow(1 + monthlyInterestRate, - numberOfPayments);
         let amount = total / divisor < 0 ? 0 : total / divisor;
         amount === Infinity ? amount = 0 : amount = parseInt(amount);
+        console.log(loanAmount+ ' ui - 111');
         return amount;
     };
 
@@ -226,7 +227,6 @@ export const MortgageCalculator = ({
         let totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
         isNaN(totalPayment) ? totalPayment = 0 : totalPayment = totalPayment;
         setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)));
-
         const taxPercent = taxNumber / totalPayment;
         const insurancePercent = insuranceNumber / totalPayment;
         const hoaPercent = hoaNumber / totalPayment;

@@ -16,8 +16,6 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
         console.log(select.options[0]);
         const values = [10, 15, 20, 30];
         setNumber(e.target.value);
-        select.options[0].innerHTML = '10 years';
-
         
     };
 
@@ -34,8 +32,7 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
                     max={maxValue}
                     step={step}
                     value={number}
-                    //onChange={sliderChange}
-                    onChange={loanTerm ? handleLoanSliderChange : sliderChange}
+                    onChange={loanTerm ? handleLoanSliderChange : sliderChange}                   
                    
                 />
                

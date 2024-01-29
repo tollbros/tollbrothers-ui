@@ -35,7 +35,6 @@ export const MortgageCalculator = ({
     const [hoaError, setHoaError] = useState('');
 
     const [salePriceInputShow, setSalePriceInputShow] = useState(false);
-    ///const [loanInputShow, setLoanInputShow] = useState(false);
     const [downInputShow, setDownInputShow] = useState(false);
     const [interestInputShow, setInterestInputShow] = useState(false);
     const [taxInputShow, setTaxInputShow] = useState(false);
@@ -113,47 +112,89 @@ export const MortgageCalculator = ({
     };
 
     const handleSalePriceDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setPriceError('Please enter a number') :
-            value.startsWith('0') ? setPriceError('number cannot start with 0') : (setPriceError(''), setSalesNumber(value));
-        setSalesMax(value * 2);
+        if (parseInt(value) > 10000000) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setPriceError('Please enter a number') :
+                value.startsWith('0') ? setPriceError('number cannot start with 0') : (setPriceError(''), setSalesNumber(value));
+            setSalesMax(value * 2);
+        }
     }
 
     const handleDownDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setDownError('Please enter a number') :
-            value.startsWith('0') ? setDownError('number cannot start with 0') : (setDownError(''), setDownPaymentNumber(value));
-        setDownMax(value * 2);
+        if (parseInt(value) > salesNumber) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setDownError('Please enter a number') :
+                value.startsWith('0') ? setDownError('number cannot start with 0') : (setDownError(''), setDownPaymentNumber(value));
+            setDownMax(value * 2);
+        }
     }
     const handleInterestDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setInterestError('Please enter a number') :
-            value.startsWith('0') ? setInterestError('number cannot start with 0') : (setInterestError(''), setInterestNumber(value));
-        // value === ' ' ? setInterestMax(0) : setInterestMax(value * 2);
-        // value === '' ? console.log('nan') : console.log(value);
-        setHoaMax(value * 2);
+        if (parseInt(value) > 15) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setInterestError('Please enter a number') :
+                value.startsWith('0') ? setInterestError('number cannot start with 0') : (setInterestError(''), setInterestNumber(value));
+            setHoaMax(value * 2);
+        }
     }
     const handleTaxDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setTaxError('Please enter a number') :
-            value.startsWith('0') ? setTaxError('number cannot start with 0') : (setTaxError(''), setTaxNumber(value));
-        setTaxesMax(value * 2);
+        if (parseInt(value) > 10000) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setTaxError('Please enter a number') :
+                value.startsWith('0') ? setTaxError('number cannot start with 0') : (setTaxError(''), setTaxNumber(value));
+            setTaxesMax(value * 2);
+        }
     }
     const handleInsuranceDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setInsuranceError('Please enter a number') :
-            value.startsWith('0') ? setInsuranceError('number cannot start with 0') : (setInsuranceError(''), setInsuranceNumber(value));
-        setInsuranceMax(value * 2);
+        if (parseInt(value) > 10000) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setInsuranceError('Please enter a number') :
+                value.startsWith('0') ? setInsuranceError('number cannot start with 0') : (setInsuranceError(''), setInsuranceNumber(value));
+            setInsuranceMax(value * 2);
+        }
     }
     const handleHoaDirectInput = (value) => {
-        const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
-        valueType === 'string' ? setHoaError('Please enter a number') :
-            value.startsWith('0') ? setHoaError('number cannot start with 0') : (setHoaError(''), setHoaNumber(value));
-        setHoaMax(value * 2);
+        if (parseInt(value) > 10000) {
+            return false;
+        } else {
+            const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
+            valueType === 'string' ? setHoaError('Please enter a number') :
+                value.startsWith('0') ? setHoaError('number cannot start with 0') : (setHoaError(''), setHoaNumber(value));
+            setHoaMax(value * 2);
+        }
     }
 
-    const hideInput = (e) => {
+    const hideSaleInput = (e) => {
         setSalePriceInputShow(false)
+    }
+
+    const hideDownInput = (e) => {
+        setDownInputShow(false)
+    }
+
+    const hideInterestInput = (e) => {
+        setInterestInputShow(false)
+    }
+
+    const hideTaxesInput = (e) => {
+        setTaxInputShow(false)
+    }
+
+    const hideInsuranceInput = (e) => {
+        setInsuranceInputShow(false)
+    }
+
+    const hideHoaInput = (e) => {
+        setHoaInputShow(false)
     }
 
     const launchToolTip = (e) => {
@@ -171,8 +212,8 @@ export const MortgageCalculator = ({
     const loanTermArray = [10, 15, 20, 30];
     const [loanTermIndex, setLoanTermIndex] = useState(3);
     const loadDropDown = (e) => {
-        //setLoanNumber(e.target.value)
         let arrayIndex = loanTermArray.indexOf(parseInt(e.target.value));
+
         setLoanTermIndex(arrayIndex);
     }
     useEffect(() => {
@@ -194,7 +235,6 @@ export const MortgageCalculator = ({
         setInsuranceDesgrees((360 * insurancePercent));
         setHoaDegrees((360 * hoaPercent));
         setPiNumber(calculatedMonthlyPayment.toFixed(0));
-        //getLoanOptions();
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
 
 
@@ -208,16 +248,13 @@ export const MortgageCalculator = ({
                         <p onClick={showSalesInput}>${convertToMoney(salesNumber)}</p>
                         <span className={styles.error}>{priceError}</span>
                     </div>
-                    <div className={styles.dragWrapper} onClick={hideInput}>
+                    <div className={styles.dragWrapper} onClick={hideSaleInput}>
                         <DragSlider
-                            //step={salesStep}
                             minValue={salesMin}
                             maxValue={salesMax}
-                            //maxValue={salesNumber * 2}
                             number={salesNumber}
                             setNumber={setSalesNumber}
                             setPayment={setMonthlyPayment}
-
                         />
                     </div>
 
@@ -227,6 +264,7 @@ export const MortgageCalculator = ({
                             onChange={(e) => handleSalePriceDirectInput(e.target.value)}
                             className={styles.inputAdjust}
                             value={salesNumber}
+                            onMouseOut={hideSaleInput}
                         />
                     }
 
@@ -239,7 +277,7 @@ export const MortgageCalculator = ({
                             <option value="15">15 Years</option>
                             <option value="20">20 Years</option>
                             <option value="30">30 Years</option>
-                           
+
                         </select>
                     </div>
                     <div className={styles.dragWrapper}>
@@ -249,9 +287,8 @@ export const MortgageCalculator = ({
                             number={loanTermIndex}
                             setNumber={setLoanTermIndex}
                         />
-
                     </div>
-                   
+
                 </div>
                 <div className={styles.sliderWrapper}>
                     <div className={`${styles.callOutWrapper} ${styles.down}`}>
@@ -261,11 +298,11 @@ export const MortgageCalculator = ({
                     </div>
                     <div className={styles.dragWrapper}>
                         <DragSlider
-                            //step={downPaymentStep}
                             minValue={downPaymentMin}
                             maxValue={downMax}
                             number={downPaymentNumber}
                             setNumber={setDownPaymentNumber}
+
                         />
                     </div>
                     {downInputShow &&
@@ -274,6 +311,7 @@ export const MortgageCalculator = ({
                             onChange={(e) => handleDownDirectInput(e.target.value)}
                             className={styles.inputAdjust}
                             value={downPaymentNumber}
+                            onMouseOut={hideDownInput}
                         />
                     }
                 </div>
@@ -287,7 +325,6 @@ export const MortgageCalculator = ({
                     </div>
                     <div className={styles.dragWrapper}>
                         <DragSlider
-                            //step={interestStep}
                             minValue={interestMin}
                             maxValue={interestMax > 100 ? 100 : interestMax.toFixed(3)}
                             number={interestNumber}
@@ -300,6 +337,7 @@ export const MortgageCalculator = ({
                             onChange={(e) => handleInterestDirectInput(e.target.value)}
                             className={styles.inputAdjust}
                             value={interestNumber > 100 ? 100 : interestNumber}
+                            onMouseOut={hideInterestInput}
                         />
                     }
                 </div>
@@ -316,7 +354,6 @@ export const MortgageCalculator = ({
                             </div>
                             <div className={styles.dragWrapper}>
                                 <DragSlider
-                                    //step={taxesStep}
                                     minValue={taxesMin}
                                     maxValue={taxesMax}
                                     number={taxNumber}
@@ -329,6 +366,7 @@ export const MortgageCalculator = ({
                                     onChange={(e) => handleTaxDirectInput(e.target.value)}
                                     className={styles.inputAdjust}
                                     value={taxNumber}
+                                    onMouseOut={hideTaxesInput}
                                 />
                             }
                         </div>
@@ -341,7 +379,6 @@ export const MortgageCalculator = ({
                             </div>
                             <div className={styles.dragWrapper}>
                                 <DragSlider
-                                    //step={insuranceStep}
                                     minValue={insuranceMin}
                                     maxValue={insuranceMax}
                                     number={insuranceNumber}
@@ -354,6 +391,7 @@ export const MortgageCalculator = ({
                                     onChange={(e) => handleInsuranceDirectInput(e.target.value)}
                                     className={styles.inputAdjust}
                                     value={insuranceNumber}
+                                    onMouseOut={hideInsuranceInput}
                                 />
                             }
                         </div>
@@ -366,7 +404,6 @@ export const MortgageCalculator = ({
                             </div>
                             <div className={styles.dragWrapper}>
                                 <DragSlider
-                                    //step={hoaStep}
                                     minValue={hoaMin}
                                     maxValue={hoaMax}
                                     number={hoaNumber}
@@ -379,6 +416,7 @@ export const MortgageCalculator = ({
                                     onChange={(e) => handleHoaDirectInput(e.target.value)}
                                     className={styles.inputAdjust}
                                     value={hoaNumber}
+                                    onMouseOut={hideHoaInput}
                                 />
                             }
                         </div>

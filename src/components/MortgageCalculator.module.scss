@@ -143,21 +143,6 @@
                         }
                     }
 
-                    &:nth-child(2) {
-                        // &::after {
-                        //     width: 14px;
-                        //     height: 14px;
-                        //     content: '';
-                        //     background-image: url('https://cdn.tollbrothers.com/sites/icons/informationIcon.svg');
-                        //     background-size: 100%;
-                        //     display: block;
-                        //     position: absolute;
-                        //     right: -30px;
-                        //     top: 3px;
-                        //     cursor: pointer;
-                        // }
-                    }
-
                     &.toolTipLaunch {
                         position: absolute;
                         width: 14px;
@@ -194,7 +179,6 @@
                         }
 
                         .close {
-                            //display: none;
                             position: absolute;
                             right: 10px;
                             top: 0;
@@ -205,14 +189,6 @@
                                 display: none;
                             }
                         }
-
-                        // @media (max-width: 1024px) {
-                        //     right: 0;
-
-                        //     .close {
-                        //         display: block;
-                        //     }
-                        // }
                     }
                 }
 
@@ -364,26 +340,7 @@ input[type=number] {
     }
 
     .sliderWrapper {
-        height: 0px;
+       height: 60px;
         overflow: hidden;
-        visibility: collapse;
-        transition: height, .2s;
-    }
-
-    &.isOpened {
-
-        button {
-
-            &::after {
-                transform: rotate(-135deg);
-                top: 9px;
-            }
-        }
-
-        .sliderWrapper {
-            height: 60px;
-            overflow: visible;
-            visibility: visible;
-        }
     }
 }

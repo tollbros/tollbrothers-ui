@@ -9,11 +9,8 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
     const sliderChange = (e) => {
         setNumber(e.target.value)
     }
-    const [currentTerm, setCurrentTerm] = useState(0);
-    const [prevTerm, setPrevTerm] = useState(0);
 
     const handleLoanSliderChange = (e) => {
-        console.log(select.options[0]);
         const values = [10, 15, 20, 30];
         setNumber(e.target.value);
         

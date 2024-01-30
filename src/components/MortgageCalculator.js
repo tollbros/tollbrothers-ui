@@ -14,7 +14,8 @@ export const MortgageCalculator = ({
     setInterestNumber,
     setMonthlyPayment,
     monthlyPayment,
-    showAdvancedToggle
+    showAdvancedToggle,
+    setShowAdvancedToggle
 }) => {
     const [taxNumber, setTaxNumber] = useState(0);
     const [insuranceNumber, setInsuranceNumber] = useState(0);
@@ -64,12 +65,12 @@ export const MortgageCalculator = ({
     };
 
     const getPercentage = (down, price) => {
-        let percentage = (down / price) * 100;
+        let percentage = (parseInt(down) / parseInt(price)) * 100;
         return percentage.toFixed(0);
     };
 
     const toggleAdvanced = (e) => {
-        e.target.parentNode.classList.toggle(styles.isOpened);
+        setShowAdvancedToggle(!showAdvancedToggle);
     }
 
     const showLegend = (e) => {
@@ -226,7 +227,6 @@ export const MortgageCalculator = ({
         let totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
         isNaN(totalPayment) ? totalPayment = 0 : totalPayment = totalPayment;
         setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)));
-
         const taxPercent = taxNumber / totalPayment;
         const insurancePercent = insuranceNumber / totalPayment;
         const hoaPercent = hoaNumber / totalPayment;
@@ -342,10 +342,11 @@ export const MortgageCalculator = ({
                     }
                 </div>
 
+                <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
+                    <button onClick={showLegend}>Advanced Options</button>
+                </div>
                 {showAdvancedToggle &&
-                    <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
-                        <button onClick={showLegend}>Advanced Options</button>
-
+                    <>
                         <div className={styles.sliderWrapper}>
                             <div className={styles.callOutWrapper}>
                                 <p>Taxes</p>
@@ -420,9 +421,7 @@ export const MortgageCalculator = ({
                                 />
                             }
                         </div>
-
-                    </div>
-
+                    </>
                 }
 
             </div>
@@ -430,7 +429,7 @@ export const MortgageCalculator = ({
             <div className={styles.right}>
 
                 <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
-                    <p>Estimated Monthly Payment</p>
+
 
                     <div className={styles.graphic}>
                         <p className={styles.taxes}

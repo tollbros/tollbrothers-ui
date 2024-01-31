@@ -1,11 +1,8 @@
-import React, { useState } from 'react'
-
 import styles from './DragSlider.module.scss'
 
 export const DragSlider = ({ number, setNumber, step, minValue, maxValue, className, loanTerm, onSliderChange, select }) => {
    
    
-
     const sliderChange = (e) => {
         setNumber(e.target.value)
     }
@@ -15,7 +12,7 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
         setNumber(e.target.value);
         
     };
-
+  
 
     return (
         <div className={styles.dragSliderWrapper}>
@@ -29,10 +26,10 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
                     max={maxValue}
                     step={step}
                     value={number}
-                    onChange={loanTerm ? handleLoanSliderChange : sliderChange}                   
-                   
+                    onChange={loanTerm ? handleLoanSliderChange : sliderChange}   
+                    style={{backgroundSize: `${(number - minValue) * 100 / (maxValue - minValue)}% 100%`}}                    
                 />
-               
+
             </div>
 
         </div>

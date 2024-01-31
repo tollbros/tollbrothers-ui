@@ -1,22 +1,3 @@
-.dragSliderWrapper {
-    position: relative;
-    width: 100%;
-    background-color: transparent;
-    padding: 18px 0;
-}
-
-.dragHandle {
-    position: absolute;
-    top: 5px;
-    background-color: #fff;
-    outline: 2px solid grey;
-    padding: 7px;
-    border-radius: 100%;
-    cursor: grab;
-    transition: all, .035s;
-    z-index: 2;
-}
-
 .track {
     font-size: 12px;
     padding: 2px 0;
@@ -28,7 +9,6 @@
     height: 6px;
     margin-bottom: 16px;
     z-index: 0;
-    background: #0070cd;
     border-radius: 20px;
 
     input {
@@ -39,20 +19,14 @@
         cursor: pointer;
         outline: none;
         border: none;
-        pointer-events: none;
         color: #000;
-
-        &::-webkit-slider-runnable-track {
-            background: none !important;
-        }
-
     }
+
 
     .rangeInput::-webkit-slider-thumb {
         position: relative;
         width: 33px;
         height: 33px;
-        margin-top: -16px;
         border: 1px solid #c2c2c2;
         border-radius: 100%;
         z-index: 2;
@@ -65,36 +39,14 @@
         overflow: visible;
     }
 
-    
 }
 
 .rangeInput,
 .rangeInput::-webkit-slider-runnable-track,
-.rangeInput::-webkit-slider-thumb {
+.rangeInput::-webkit-slider-thumb,
+.rangeInput::-moz-slider-runnable-track,
+.rangeInput::-moz-slider-thumb {
     -webkit-appearance: none;
     background: none;
 }
 
-.values {
-    position: absolute;
-    font-size: 12px;
-    top: 65px;
-
-    &.minValue {
-        left: 0;
-    }
-
-    &.maxValue {
-        right: 0;
-    }
-
-    &.current {
-        text-align: center;
-        top: -35px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        text-align: left;
-        z-index: 2;
-    }
-}

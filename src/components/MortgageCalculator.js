@@ -55,7 +55,7 @@ export const MortgageCalculator = ({
     let insuranceMin = 0;
     let hoaMin = 0;
     let taxesMin = 0;
-    let salesMin = 0;
+    let salesMin = 1;
     let downPaymentMin = 0;
     let loanMin = 1;
     let interestMin = 0;
@@ -222,6 +222,7 @@ export const MortgageCalculator = ({
     }, [loanTermIndex]);
 
 
+
     useEffect(() => {
         const calculatedMonthlyPayment = calculateMonthlyPayment();
         let totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
@@ -237,238 +238,255 @@ export const MortgageCalculator = ({
         setPiNumber(calculatedMonthlyPayment.toFixed(0));
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
 
+    const rangeInputs = document.querySelectorAll('input[type="range"]');
+    
+    function handleInputChange(e) {
+      let target = e.target;
+      const min = target.min;
+      const max = target.max;
+      const val = target.value;
+      let percentage = (val - min) * 100 / (max - min);
+      target.style.backgroundSize = percentage + '% 100%';
+    }
+    
+    rangeInputs.forEach(input => {
+    input.addEventListener('input', handleInputChange);
+    })
+    
+   
 
 
-    return (
-        <div className={styles.calculatorWrapper}>
-            <div className={styles.left}>
-                <div className={styles.sliderWrapper}>
-                    <div className={styles.callOutWrapper}>
-                        <p>Sales Price</p>
-                        <p onClick={showSalesInput}>${convertToMoney(salesNumber)}</p>
-                        <span className={styles.error}>{priceError}</span>
-                    </div>
-                    <div className={styles.dragWrapper} onClick={hideSaleInput}>
-                        <DragSlider
-                            minValue={salesMin}
-                            maxValue={salesMax}
-                            number={salesNumber}
-                            setNumber={setSalesNumber}
-                            setPayment={setMonthlyPayment}
-                        />
-                    </div>
-
-                    {salePriceInputShow &&
-                        <input
-                            type="text"
-                            onChange={(e) => handleSalePriceDirectInput(e.target.value)}
-                            className={styles.inputAdjust}
-                            value={salesNumber}
-                            onMouseOut={hideSaleInput}
-                        />
-                    }
-
+return (
+    <div className={styles.calculatorWrapper}>
+        <div className={styles.left}>
+            <div className={styles.sliderWrapper}>
+                <div className={styles.callOutWrapper}>
+                    <p>Sales Price</p>
+                    <p onClick={showSalesInput}>${convertToMoney(salesNumber)}</p>
+                    <span className={styles.error}>{priceError}</span>
                 </div>
-                <div className={`${styles.sliderWrapper} ${styles.loanTerm}`}>
-                    <div className={styles.callOutWrapper}>
-                        <p>Loan Term</p>
-                        <select className={styles.select} name="loanSelect" id="loanSelect" onChange={loadDropDown} value={loanNumber}>
-                            <option value="10">10 Years</option>
-                            <option value="15">15 Years</option>
-                            <option value="20">20 Years</option>
-                            <option value="30">30 Years</option>
-
-                        </select>
-                    </div>
-                    <div className={styles.dragWrapper}>
-                        <DragSlider
-                            minValue={0}
-                            maxValue={loanTermArray.length - 1}
-                            number={loanTermIndex}
-                            setNumber={setLoanTermIndex}
-                        />
-                    </div>
-
-                </div>
-                <div className={styles.sliderWrapper}>
-                    <div className={`${styles.callOutWrapper} ${styles.down}`}>
-                        <p>Down Payment</p>
-                        <p onClick={showDownInput}><span>({getPercentage(downPaymentNumber, salesNumber)}%)</span> ${convertToMoney(downPaymentNumber)}</p>
-                        <span className={styles.error}>{downError}</span>
-                    </div>
-                    <div className={styles.dragWrapper}>
-                        <DragSlider
-                            minValue={downPaymentMin}
-                            maxValue={downMax}
-                            number={downPaymentNumber}
-                            setNumber={setDownPaymentNumber}
-
-                        />
-                    </div>
-                    {downInputShow &&
-                        <input
-                            type="text"
-                            onChange={(e) => handleDownDirectInput(e.target.value)}
-                            className={styles.inputAdjust}
-                            value={downPaymentNumber}
-                            onMouseOut={hideDownInput}
-                        />
-                    }
+                <div className={styles.dragWrapper} onClick={hideSaleInput}>
+                    <DragSlider
+                        minValue={salesMin}
+                        maxValue={salesMax}
+                        number={salesNumber}
+                        setNumber={setSalesNumber}
+                        setPayment={setMonthlyPayment}
+                    />
                 </div>
 
-                <div className={styles.sliderWrapper}>
-
-                    <div className={styles.callOutWrapper}>
-                        <p>Interest Rate</p>
-                        <p onClick={showInterestInput}>{interestNumber}%</p>
-                        <span className={styles.error}>{interestError}</span>
-                    </div>
-                    <div className={styles.dragWrapper}>
-                        <DragSlider
-                            minValue={interestMin}
-                            maxValue={interestMax > 100 ? 100 : interestMax.toFixed(3)}
-                            number={interestNumber}
-                            setNumber={setInterestNumber}
-                        />
-                    </div>
-                    {interestInputShow &&
-                        <input
-                            type="text"
-                            onChange={(e) => handleInterestDirectInput(e.target.value)}
-                            className={styles.inputAdjust}
-                            value={interestNumber > 100 ? 100 : interestNumber}
-                            onMouseOut={hideInterestInput}
-                        />
-                    }
-                </div>
-
-                <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
-                    <button onClick={showLegend}>Advanced Options</button>
-                </div>
-                {showAdvancedToggle &&
-                    <>
-                        <div className={styles.sliderWrapper}>
-                            <div className={styles.callOutWrapper}>
-                                <p>Taxes</p>
-                                <p onClick={showTaxInput}>${convertToMoney(taxNumber)}</p>
-                                <span className={styles.error}>{taxError}</span>
-                            </div>
-                            <div className={styles.dragWrapper}>
-                                <DragSlider
-                                    minValue={taxesMin}
-                                    maxValue={taxesMax}
-                                    number={taxNumber}
-                                    setNumber={setTaxNumber}
-                                />
-                            </div>
-                            {taxInputShow &&
-                                <input
-                                    type="text"
-                                    onChange={(e) => handleTaxDirectInput(e.target.value)}
-                                    className={styles.inputAdjust}
-                                    value={taxNumber}
-                                    onMouseOut={hideTaxesInput}
-                                />
-                            }
-                        </div>
-
-                        <div className={styles.sliderWrapper}>
-                            <div className={styles.callOutWrapper}>
-                                <p>Insurance</p>
-                                <p onClick={showInsuranceInput}>${convertToMoney(insuranceNumber)}</p>
-                                <span className={styles.error}>{insuranceError}</span>
-                            </div>
-                            <div className={styles.dragWrapper}>
-                                <DragSlider
-                                    minValue={insuranceMin}
-                                    maxValue={insuranceMax}
-                                    number={insuranceNumber}
-                                    setNumber={setInsuranceNumber}
-                                />
-                            </div>
-                            {insuranceInputShow &&
-                                <input
-                                    type="text"
-                                    onChange={(e) => handleInsuranceDirectInput(e.target.value)}
-                                    className={styles.inputAdjust}
-                                    value={insuranceNumber}
-                                    onMouseOut={hideInsuranceInput}
-                                />
-                            }
-                        </div>
-
-                        <div className={styles.sliderWrapper}>
-                            <div className={styles.callOutWrapper}>
-                                <p>HOA</p>
-                                <p onClick={showHoaInput}>${convertToMoney(hoaNumber)}</p>
-                                <span className={styles.error}>{hoaError}</span>
-                            </div>
-                            <div className={styles.dragWrapper}>
-                                <DragSlider
-                                    minValue={hoaMin}
-                                    maxValue={hoaMax}
-                                    number={hoaNumber}
-                                    setNumber={setHoaNumber}
-                                />
-                            </div>
-                            {hoaInputShow &&
-                                <input
-                                    type="text"
-                                    onChange={(e) => handleHoaDirectInput(e.target.value)}
-                                    className={styles.inputAdjust}
-                                    value={hoaNumber}
-                                    onMouseOut={hideHoaInput}
-                                />
-                            }
-                        </div>
-                    </>
+                {salePriceInputShow &&
+                    <input
+                        type="text"
+                        onChange={(e) => handleSalePriceDirectInput(e.target.value)}
+                        className={styles.inputAdjust}
+                        value={salesNumber}
+                        onMouseOut={hideSaleInput}
+                    />
                 }
 
             </div>
+            <div className={`${styles.sliderWrapper} ${styles.loanTerm}`}>
+                <div className={styles.callOutWrapper}>
+                    <p>Loan Term</p>
+                    <span className={styles.dropDownArrow}></span>
+                    <select className={styles.select} name="loanSelect" id="loanSelect" onChange={loadDropDown} value={loanNumber}>
+                        <option value="10">10 Years</option>
+                        <option value="15">15 Years</option>
+                        <option value="20">20 Years</option>
+                        <option value="30">30 Years</option>
 
-            <div className={styles.right}>
-
-                <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
-
-
-                    <div className={styles.graphic}>
-                        <p className={styles.taxes}
-                            style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
-                    </div>
-                    {showLegendToggle &&
-                        <div className={styles.details}>
-                            <div>
-                                <span>Principal and Interest</span>
-                                <span>${convertToMoney(piNumber)}</span>
-                                <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
-                                <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Principal is the amount borrowed to purchase your home or the amount yet to be repaid. Interest is the cost of borrowing from your lender.</span>
-                            </div>
-                            <div>
-                                <span>Taxes</span>
-                                <span>${convertToMoney(taxNumber)}</span>
-                                <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
-                                <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Your lender typically puts one-twelfth of your home’s estimated annual property taxes into an escrow account to pay on your behalf.</span>
-                            </div>
-                            <div>
-                                <span>Insurance</span>
-                                <span>${convertToMoney(insuranceNumber)}</span>
-                                <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
-                                <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Your lender typically puts one-twelfth of your annual homeowners insurance premium into an escrow account to pay on your behalf. If your down payment is less than 20%, you may also be required to pay private mortgage insurance (PMI).</span>
-                            </div>
-                            <div>
-                                <span>HOA</span>
-                                <span>${convertToMoney(hoaNumber)}</span>
-                                <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
-                                <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>While not part of your mortgage payment, you may be required to pay fees imposed by your homeowners association.</span>
-                            </div>
-                        </div>
-                    }
+                    </select>
+                </div>
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        minValue={0}
+                        maxValue={loanTermArray.length - 1}
+                        number={loanTermIndex}
+                        setNumber={setLoanTermIndex}
+                    />
                 </div>
 
             </div>
+            <div className={styles.sliderWrapper}>
+                <div className={`${styles.callOutWrapper} ${styles.down}`}>
+                    <p>Down Payment</p>
+                    <p onClick={showDownInput}><span>({getPercentage(downPaymentNumber, salesNumber)}%)</span> ${convertToMoney(downPaymentNumber)}</p>
+                    <span className={styles.error}>{downError}</span>
+                </div>
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        minValue={downPaymentMin}
+                        maxValue={downMax}
+                        number={downPaymentNumber}
+                        setNumber={setDownPaymentNumber}
 
-        </div >
+                    />
+                </div>
+                {downInputShow &&
+                    <input
+                        type="text"
+                        onChange={(e) => handleDownDirectInput(e.target.value)}
+                        className={styles.inputAdjust}
+                        value={downPaymentNumber}
+                        onMouseOut={hideDownInput}
+                    />
+                }
+            </div>
 
-    )
+            <div className={styles.sliderWrapper}>
+
+                <div className={styles.callOutWrapper}>
+                    <p>Interest Rate</p>
+                    <p onClick={showInterestInput}>{interestNumber}%</p>
+                    <span className={styles.error}>{interestError}</span>
+                </div>
+                <div className={styles.dragWrapper}>
+                    <DragSlider
+                        minValue={interestMin}
+                        maxValue={interestMax > 100 ? 100 : interestMax.toFixed(3)}
+                        number={interestNumber}
+                        setNumber={setInterestNumber}
+                    />
+                </div>
+                {interestInputShow &&
+                    <input
+                        type="text"
+                        onChange={(e) => handleInterestDirectInput(e.target.value)}
+                        className={styles.inputAdjust}
+                        value={interestNumber > 100 ? 100 : interestNumber}
+                        onMouseOut={hideInterestInput}
+                    />
+                }
+            </div>
+
+            <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
+                <button onClick={showLegend}>Advanced Options</button>
+            </div>
+            {showAdvancedToggle &&
+                <>
+                    <div className={styles.sliderWrapper}>
+                        <div className={styles.callOutWrapper}>
+                            <p>Taxes</p>
+                            <p onClick={showTaxInput}>${convertToMoney(taxNumber)}</p>
+                            <span className={styles.error}>{taxError}</span>
+                        </div>
+                        <div className={styles.dragWrapper}>
+                            <DragSlider
+                                minValue={taxesMin}
+                                maxValue={taxesMax}
+                                number={taxNumber}
+                                setNumber={setTaxNumber}
+                            />
+                        </div>
+                        {taxInputShow &&
+                            <input
+                                type="text"
+                                onChange={(e) => handleTaxDirectInput(e.target.value)}
+                                className={styles.inputAdjust}
+                                value={taxNumber}
+                                onMouseOut={hideTaxesInput}
+                            />
+                        }
+                    </div>
+
+                    <div className={styles.sliderWrapper}>
+                        <div className={styles.callOutWrapper}>
+                            <p>Insurance</p>
+                            <p onClick={showInsuranceInput}>${convertToMoney(insuranceNumber)}</p>
+                            <span className={styles.error}>{insuranceError}</span>
+                        </div>
+                        <div className={styles.dragWrapper}>
+                            <DragSlider
+                                minValue={insuranceMin}
+                                maxValue={insuranceMax}
+                                number={insuranceNumber}
+                                setNumber={setInsuranceNumber}
+                            />
+                        </div>
+                        {insuranceInputShow &&
+                            <input
+                                type="text"
+                                onChange={(e) => handleInsuranceDirectInput(e.target.value)}
+                                className={styles.inputAdjust}
+                                value={insuranceNumber}
+                                onMouseOut={hideInsuranceInput}
+                            />
+                        }
+                    </div>
+
+                    <div className={styles.sliderWrapper}>
+                        <div className={styles.callOutWrapper}>
+                            <p>HOA</p>
+                            <p onClick={showHoaInput}>${convertToMoney(hoaNumber)}</p>
+                            <span className={styles.error}>{hoaError}</span>
+                        </div>
+                        <div className={styles.dragWrapper}>
+                            <DragSlider
+                                minValue={hoaMin}
+                                maxValue={hoaMax}
+                                number={hoaNumber}
+                                setNumber={setHoaNumber}
+                            />
+                        </div>
+                        {hoaInputShow &&
+                            <input
+                                type="text"
+                                onChange={(e) => handleHoaDirectInput(e.target.value)}
+                                className={styles.inputAdjust}
+                                value={hoaNumber}
+                                onMouseOut={hideHoaInput}
+                            />
+                        }
+                    </div>
+                </>
+            }
+
+        </div>
+
+        <div className={styles.right}>
+
+            <div className={`${styles.callOutWrapper} ${styles.estimatedPayment}`}>
+
+
+                <div className={styles.graphic}>
+                    <p className={styles.taxes}
+                        style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
+                </div>
+                {showLegendToggle &&
+                    <div className={styles.details}>
+                        <div>
+                            <span>Principal and Interest</span>
+                            <span>${convertToMoney(piNumber)}</span>
+                            <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
+                            <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Principal is the amount borrowed to purchase your home or the amount yet to be repaid. Interest is the cost of borrowing from your lender.</span>
+                        </div>
+                        <div>
+                            <span>Taxes</span>
+                            <span>${convertToMoney(taxNumber)}</span>
+                            <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
+                            <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Your lender typically puts one-twelfth of your home’s estimated annual property taxes into an escrow account to pay on your behalf.</span>
+                        </div>
+                        <div>
+                            <span>Insurance</span>
+                            <span>${convertToMoney(insuranceNumber)}</span>
+                            <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
+                            <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>Your lender typically puts one-twelfth of your annual homeowners insurance premium into an escrow account to pay on your behalf. If your down payment is less than 20%, you may also be required to pay private mortgage insurance (PMI).</span>
+                        </div>
+                        <div>
+                            <span>HOA</span>
+                            <span>${convertToMoney(hoaNumber)}</span>
+                            <span className={styles.toolTipLaunch} onMouseOver={launchToolTip} onMouseOut={hideToolTip}></span>
+                            <span className={styles.toolTip}><span className={styles.close} onClick={hideMobileToolTip}>x</span>While not part of your mortgage payment, you may be required to pay fees imposed by your homeowners association.</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+    </div >
+
+)
 
 }

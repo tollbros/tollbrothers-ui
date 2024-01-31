@@ -1,3 +1,5 @@
+import React, { useEffect } from 'react'
+
 import styles from './DragSlider.module.scss'
 
 export const DragSlider = ({ number, setNumber, step, minValue, maxValue, className, loanTerm, onSliderChange, select }) => {

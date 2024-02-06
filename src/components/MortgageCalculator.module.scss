@@ -1,3 +1,4 @@
+// default styles are for storybooknewhomes.com. Modifications for other sites are below
 .calculatorWrapper {
     width: 100%;
     display: flex;
@@ -62,6 +63,11 @@
 
             p.taxes {
                 z-index: 2;
+                //display: none;
+
+                &.storyBook {
+                    display: block; 
+                }
 
                 span {
                     font-size: 48px;
@@ -388,5 +394,97 @@ input[type=range]::-webkit-slider-runnable-track {
     .sliderWrapper {
         height: 60px;
         overflow: hidden;
+    }
+}
+
+// tollbrothers.com-specific styles
+.tbdotcom {
+    .sliderWrapper {
+        .callOutWrapper {
+            p {
+                margin: 1em 0;
+                font-size: 14px;
+            }
+        }
+    }
+
+    .right {
+        .estimatedPayment {
+            .graphic {
+                p {
+                    width: 265px;
+                    height: 265px;
+
+                    span {
+                        width: 225px;
+                        height: 225px;
+                        font-size: 40px;
+                    }
+                }
+                .taxes {
+                    span {
+                        span {
+                            font-size: 13px;
+                        }
+                    }
+                }
+            }
+        }
+        .details {
+            width: 90%;
+            div {
+                > span {
+                    font-size: 12px;
+                }
+            }
+
+            > div {
+                span {
+                    &:first-child {
+                        &::before {
+                            background-color: #0070CD;
+                            top: 3px;
+                        }
+                    }
+                }
+
+                &:nth-child(2) {
+                    span {
+                        &:first-child {
+                            &::before {
+                                background-color: #8195A2;
+                            }
+                        }
+                    }
+                }
+                &:nth-child(3) {
+                    span {
+                        &:first-child {
+                            &::before {
+                                background-color: #0C223F;
+                            }
+                        }
+                    }
+                }
+                &:nth-child(4) {
+                    span {
+                        &:first-child {
+                            &::before {
+                                background-color: #CEC18B;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    input[type="range"] {
+        background-image: linear-gradient(#0070CD, #0070CD);
+    }
+
+    .advancedButtonWrapper {
+        button {
+            color: #0070CD;
+        }
     }
 }

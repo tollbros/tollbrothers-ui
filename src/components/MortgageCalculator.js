@@ -15,7 +15,8 @@ export const MortgageCalculator = ({
     setMonthlyPayment,
     monthlyPayment,
     showAdvancedToggle,
-    setShowAdvancedToggle
+    setShowAdvancedToggle,
+    targetClass
 }) => {
     const [taxNumber, setTaxNumber] = useState(0);
     const [insuranceNumber, setInsuranceNumber] = useState(0);
@@ -41,7 +42,7 @@ export const MortgageCalculator = ({
     const [taxInputShow, setTaxInputShow] = useState(false);
     const [insuranceInputShow, setInsuranceInputShow] = useState(false);
     const [hoaInputShow, setHoaInputShow] = useState(false);
-
+    const [showDefalutGraphic, setShowDefalutGraphic] = useState(true);
 
     const [salesMax, setSalesMax] = useState(1000000);
     const [loanMax, setLoanMax] = useState(30);
@@ -50,7 +51,7 @@ export const MortgageCalculator = ({
     const [taxesMax, setTaxesMax] = useState(1000);
     const [insuranceMax, setInsuranceMax] = useState(1000);
     const [hoaMax, setHoaMax] = useState(1000);
-
+    
     let insuranceStep = 10;
     let insuranceMin = 0;
     let hoaMin = 0;
@@ -59,6 +60,8 @@ export const MortgageCalculator = ({
     let downPaymentMin = 0;
     let loanMin = 1;
     let interestMin = 0;
+    let rangeInputs;
+
 
     const convertToMoney = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -221,9 +224,13 @@ export const MortgageCalculator = ({
         setLoanNumber(loanTermArray[loanTermIndex]);
     }, [loanTermIndex]);
 
-
+    
 
     useEffect(() => {
+        rangeInputs = document.querySelectorAll('input[type="range"]');
+        rangeInputs.forEach(input => {
+            input.addEventListener('input', handleInputChange);
+        })
         const calculatedMonthlyPayment = calculateMonthlyPayment();
         let totalPayment = calculatedMonthlyPayment + parseFloat(taxNumber) + parseFloat(insuranceNumber) + parseFloat(hoaNumber);
         isNaN(totalPayment) ? totalPayment = 0 : totalPayment = totalPayment;
@@ -238,7 +245,10 @@ export const MortgageCalculator = ({
         setPiNumber(calculatedMonthlyPayment.toFixed(0));
     }, [salesNumber, loanNumber, downPaymentNumber, interestNumber, taxNumber, insuranceNumber, hoaNumber]);
 
-    const rangeInputs = document.querySelectorAll('input[type="range"]');
+    useEffect(() => {
+        targetClass == 'tbdotcom' ? setShowDefalutGraphic(false) : setShowDefalutGraphic(true);
+    });
+
     
     function handleInputChange(e) {
       let target = e.target;
@@ -248,16 +258,10 @@ export const MortgageCalculator = ({
       let percentage = (val - min) * 100 / (max - min);
       target.style.backgroundSize = percentage + '% 100%';
     }
-    
-    rangeInputs.forEach(input => {
-    input.addEventListener('input', handleInputChange);
-    })
-    
-   
 
 
 return (
-    <div className={styles.calculatorWrapper}>
+    <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
         <div className={styles.left}>
             <div className={styles.sliderWrapper}>
                 <div className={styles.callOutWrapper}>
@@ -450,8 +454,15 @@ return (
 
 
                 <div className={styles.graphic}>
-                    <p className={styles.taxes}
+                    {showDefalutGraphic && 
+                    <p className={`${styles.taxes} ${styles[targetClass]}`}
                         style={{ background: `conic-gradient( #7cbf92 ${taxDegrees}deg, #39484f ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #cec18b ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #008289 ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
+
+                    }
+                    {!showDefalutGraphic && 
+                        <p className={`${styles.taxes} ${styles[targetClass]} `}
+                        style={{ background: `conic-gradient( #8195A2 ${taxDegrees}deg, #0C223F ${taxDegrees}deg ${insuranceDegrees + taxDegrees}deg, #CEC18B ${insuranceDegrees}deg ${insuranceDegrees + taxDegrees + hoaDegrees}deg, #0070cd ${hoaDegrees}deg 360deg)` }}><span>${monthlyPayment}<span>Total Estimated Monthly Payment</span></span></p>
+                     }
                 </div>
                 {showLegendToggle &&
                     <div className={styles.details}>

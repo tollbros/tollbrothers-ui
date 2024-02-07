@@ -23,7 +23,7 @@ export const FullScreenGallery = ({
         <div className={`${styles.fullScreen} full`}>
           <button className={styles.close} onClick={onClose} />
           <div className={styles.container}>
-            <Slider disablePagination onNext={onNext} onPrevious={onPrevious}>
+            <Slider mediaList={newMediaList} disablePagination onNext={onNext} onPrevious={onPrevious}>
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>

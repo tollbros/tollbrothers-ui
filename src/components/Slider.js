@@ -7,6 +7,7 @@ import styles from './Slider.module.scss'
 /**
  * Slider component
  * @param cascadingConfig - write any kind of config and even mix and match - just like how you would write a CSS media query.
+ * @param mediaList - list of media.
  * @param disablePagination - disable pagination.
  * @param onNext - fires when next button is clicked.
  * @param onPrevious - fires when previous button is clicked.
@@ -15,6 +16,7 @@ import styles from './Slider.module.scss'
  */
 const Slider = ({
   children,
+  mediaList = [],
   disablePagination = false,
   cascadingConfig = {},
   onNext = () => {},
@@ -60,6 +62,7 @@ const Slider = ({
           <button
             onClick={() => {
               onPrevious({
+                mediaList,
                 slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
               })
             }}
@@ -71,6 +74,7 @@ const Slider = ({
           <button
             onClick={() =>
               onNext({
+                mediaList,
                 slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
               })
             }

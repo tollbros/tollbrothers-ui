@@ -270,6 +270,8 @@
     justify-content: space-between;
     position: relative;
     z-index: 1;
+    position: sticky;
+    top: 10px;
 
     p {
         span {
@@ -401,6 +403,7 @@ input[type=range]::-webkit-slider-runnable-track {
 .tbdotcom {
     .sliderWrapper {
         .callOutWrapper {
+            
             p {
                 margin: 1em 0;
                 font-size: 14px;
@@ -410,6 +413,7 @@ input[type=range]::-webkit-slider-runnable-track {
 
     .right {
         .estimatedPayment {
+           
             .graphic {
                 p {
                     width: 265px;

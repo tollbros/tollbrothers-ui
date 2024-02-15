@@ -1,0 +1,25 @@
+
+.imageHolder {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+
+} // end imageHolder
+
+.caption {
+    position: absolute;
+    left: 24px;
+    bottom: 14px;
+    z-index: 3;
+    color: white;
+    font-size: 0.74em;
+    text-shadow: 0 1px 1px #000;
+    width: 95%;
+}

@@ -20,6 +20,9 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
         }
     };
 
+    const smallImg = imgSrc.replace("_1920.", "_600.");
+    const srcset = `${smallImg} 600w, ${imgSrc} 800w`
+
     return (
 
         <div className={styles.imageHolder}>
@@ -29,7 +32,11 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
             </Link>
             }
             <div style={overlayOpacityStyle}></div>
-            <img src={imgSrc} alt={alt || ""} onLoad={imageLoaded} />
+            <img 
+            srcSet={srcset}
+            sizes="(max-width: 600px) 600px,
+                   800px"
+            src={imgSrc} alt={alt || ""} onLoad={imageLoaded} />
         </div>
       
     );

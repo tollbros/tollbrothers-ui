@@ -3,6 +3,7 @@ import styles from './HeroComponent.module.scss';
 import HeroSlide from "./HeroSlide";
 
 export function HeroComponent ({ children, slides, overlayOpacity, placeholderSrc, mainSrc, ...props }) {
+  
   const [currentSlide, setCurrentSlide] = useState(slides[0] || {image: '', title: '', URL: '' });
   const [nextSlide, setNextSlide] = useState();
   const [isFading, setIsFading] = useState(false);
@@ -10,6 +11,7 @@ export function HeroComponent ({ children, slides, overlayOpacity, placeholderSr
 
   const waitToFade = useRef(null);
   const flipSlides = useRef(null);
+
 
   useEffect(() => {
     if (slides.length > 1) {
@@ -54,12 +56,12 @@ export function HeroComponent ({ children, slides, overlayOpacity, placeholderSr
     <div className={styles.heroContainer}>
       <div className={`${styles.imageHolder} ${styles.nextImage} ${isFading ? styles.fading : ""}`}>
          {nextSlide &&
-          <HeroSlide src={nextSlide.image} alt={nextSlide.title ? nextSlide.title : ""} title={nextSlide.title} url={nextSlide.URL} opacity={0.212} callBack={nextImageLoaded} />
+          <HeroSlide src={nextSlide.image} alt={nextSlide.title ? nextSlide.title : ""} title={nextSlide.title} url={nextSlide.URL} opacity={overlayOpacity} callBack={nextImageLoaded} />
         } 
 
       </div>
       <div className={styles.imageHolder}>
-        <HeroSlide src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} title={currentSlide.title} url={currentSlide.URL} opacity={0.212} />
+        <HeroSlide src={currentSlide.image} alt={currentSlide.title ? currentSlide.title : ""} title={currentSlide.title} url={currentSlide.URL} opacity={overlayOpacity} />
       </div>
 
     </div>

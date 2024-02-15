@@ -20,6 +20,7 @@
         z-index: 3;
         opacity: 0;
         transition: opacity 0s ease-out;
+        pointer-events: none;
 
         &.fading {
           opacity: 1;

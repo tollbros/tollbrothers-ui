@@ -13,42 +13,21 @@
     .imageHolder {
       width: 100%;
       height: 100%;
-      position: relative;
+      position: absolute;
+      z-index: 1;
 
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+      &.nextImage {
+        z-index: 3;
+        opacity: 0;
+        transition: opacity 0s ease-out;
+        pointer-events: none;
 
-      .currentImage {
-        position: relative;
-        display: block;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: -3;
-        opacity: 1;
-        transition: opacity 1s ease-out;
-      }
-
-      .nextImage {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -4;
+        &.fading {
+          opacity: 1;
+          transition: opacity 1s ease-out;
+        }
       }
 
     } // end imageHolder
 
-    .caption {
-      position: absolute;
-      left: 24px;
-      bottom: 14px;
-      z-index: 0;
-      color: white;
-      font-size: 0.74em;
-      text-shadow: 0 1px 1px #000;
-      width: 95%;
-    }
   }

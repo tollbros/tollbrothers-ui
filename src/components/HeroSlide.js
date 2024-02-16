@@ -48,4 +48,4 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
       
     );
   };
-  export default HeroSlide;
+export default HeroSlide;

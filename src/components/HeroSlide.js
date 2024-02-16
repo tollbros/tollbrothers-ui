@@ -20,8 +20,10 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
         }
     };
 
-    const smallImg = imgSrc.replace("_1920.", "_600.");
-    const srcset = `${smallImg} 600w, ${imgSrc} 800w`
+    const image_300 = imgSrc.replace("_1920.", "_300.");
+    const image_450 = imgSrc.replace("_1920.", "_450.");
+    const image_600 = imgSrc.replace("_1920.", "_600.");
+    const image_920 = imgSrc.replace("_1920.", "_920.");
 
     return (
 
@@ -32,11 +34,16 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
             </Link>
             }
             <div style={overlayOpacityStyle}></div>
-            <img 
-            srcSet={srcset}
-            sizes="(max-width: 600px) 600px,
-                   800px"
-            src={imgSrc} alt={alt || ""} onLoad={imageLoaded} />
+
+            <picture>
+                {/* <source media="(max-width: 300px)" srcset={image_300} />
+                <source media="(max-width: 450px)" srcset={image_450} />
+                <source media="(max-width: 600px)" srcset={image_600} /> */}
+                <source media="(max-width: 920px)" srcset={image_920} />
+                <source media="(min-width: 921px)" srcset={imgSrc} />
+                <img src={image_920} alt={alt || ""} onLoad={imageLoaded}/>
+            </picture>
+
         </div>
       
     );

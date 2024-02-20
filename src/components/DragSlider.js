@@ -14,8 +14,7 @@ export const DragSlider = ({ number, setNumber, step, minValue, maxValue, classN
         setNumber(e.target.value);
         
     };
-  
-
+    
     return (
         <div className={styles.dragSliderWrapper}>
             <div className={styles.track} id="track" >

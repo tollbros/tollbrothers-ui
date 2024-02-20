@@ -16,7 +16,10 @@ export const MortgageCalculator = ({
     monthlyPayment,
     showAdvancedToggle,
     setShowAdvancedToggle,
-    targetClass
+    targetClass,
+    resetDownMax,
+    downMax
+   
 }) => {
     const [taxNumber, setTaxNumber] = useState(0);
     const [insuranceNumber, setInsuranceNumber] = useState(0);
@@ -43,16 +46,15 @@ export const MortgageCalculator = ({
     const [insuranceInputShow, setInsuranceInputShow] = useState(false);
     const [hoaInputShow, setHoaInputShow] = useState(false);
     const [showDefalutGraphic, setShowDefalutGraphic] = useState(true);
+    
 
     const [salesMax, setSalesMax] = useState(1000000);
     const [loanMax, setLoanMax] = useState(30);
-    const [downMax, setDownMax] = useState(100000);
     const [interestMax, setInterestMax] = useState(100000);
     const [taxesMax, setTaxesMax] = useState(1000);
     const [insuranceMax, setInsuranceMax] = useState(1000);
     const [hoaMax, setHoaMax] = useState(1000);
     
-    let insuranceStep = 10;
     let insuranceMin = 0;
     let hoaMin = 0;
     let taxesMin = 0;
@@ -61,6 +63,7 @@ export const MortgageCalculator = ({
     let loanMin = 1;
     let interestMin = 0;
     let rangeInputs;
+
 
 
     const convertToMoney = (number) => {
@@ -133,7 +136,6 @@ export const MortgageCalculator = ({
             const valueType = value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number';
             valueType === 'string' ? setDownError('Please enter a number') :
                 value.startsWith('0') ? setDownError('number cannot start with 0') : (setDownError(''), setDownPaymentNumber(value));
-            setDownMax(value * 2);
         }
     }
     const handleInterestDirectInput = (value) => {
@@ -224,9 +226,9 @@ export const MortgageCalculator = ({
         setLoanNumber(loanTermArray[loanTermIndex]);
     }, [loanTermIndex]);
 
-    
 
     useEffect(() => {
+      //  resetDownMax();
         rangeInputs = document.querySelectorAll('input[type="range"]');
         rangeInputs.forEach(input => {
             input.addEventListener('input', handleInputChange);
@@ -238,7 +240,6 @@ export const MortgageCalculator = ({
         const taxPercent = taxNumber / totalPayment;
         const insurancePercent = insuranceNumber / totalPayment;
         const hoaPercent = hoaNumber / totalPayment;
-
         setTaxDegrees(360 * taxPercent);
         setInsuranceDesgrees((360 * insurancePercent));
         setHoaDegrees((360 * hoaPercent));
@@ -259,7 +260,6 @@ export const MortgageCalculator = ({
       target.style.backgroundSize = percentage + '% 100%';
     }
 
-
 return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
         <div className={styles.left}>
@@ -276,6 +276,7 @@ return (
                         number={salesNumber}
                         setNumber={setSalesNumber}
                         setPayment={setMonthlyPayment}
+                        onChange={resetDownMax()}
                     />
                 </div>
 
@@ -324,7 +325,6 @@ return (
                         maxValue={downMax}
                         number={downPaymentNumber}
                         setNumber={setDownPaymentNumber}
-
                     />
                 </div>
                 {downInputShow &&

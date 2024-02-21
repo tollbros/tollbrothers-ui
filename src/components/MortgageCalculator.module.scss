@@ -400,7 +400,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 // tollbrothers.com-specific styles
-.tbdotcom {
+.tbdotcom, .tbmortgage {
     .sliderWrapper {
         .callOutWrapper {
             
@@ -489,6 +489,16 @@ input[type=range]::-webkit-slider-runnable-track {
     .advancedButtonWrapper {
         button {
             color: #0070CD;
+        }
+    }
+}
+
+// tollbrothersmortgage.com-specific styles
+.tbmortgage {
+    margin-bottom: 50px;
+    .callOutWrapper {
+        p {
+            margin: 15px 0;
         }
     }
 }

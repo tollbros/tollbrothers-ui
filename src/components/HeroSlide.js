@@ -13,7 +13,7 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
         position: "absolute",
         zIndex: "0"
       };
-    
+
     const imageLoaded = (e) => {
         if (callBack) {
             callBack();
@@ -36,16 +36,16 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
             <div style={overlayOpacityStyle}></div>
 
             <picture>
-                {/* <source media="(max-width: 300px)" srcset={image_300} />
-                <source media="(max-width: 450px)" srcset={image_450} />
+                {/* <source media="(max-width: 300px)" srcSet={image_300} />
+                <source media="(max-width: 450px)" srcSet={image_450} />
                 <source media="(max-width: 600px)" srcset={image_600} /> */}
-                <source media="(max-width: 920px)" srcset={image_920} />
-                <source media="(min-width: 921px)" srcset={imgSrc} />
+                <source media="(max-width: 920px)" srcSet={image_920} />
+                <source media="(min-width: 921px)" srcSet={imgSrc} />
                 <img src={image_920} alt={alt || ""} onLoad={imageLoaded}/>
             </picture>
 
         </div>
-      
+
     );
   };
 export default HeroSlide;

@@ -1,0 +1,32 @@
+@import "styles/modules/all";
+
+.horizontalScrollWrap {
+    .viewPort {
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+
+        .scrollWrap {
+            .scrollItem {
+                position: relative;
+                display: inline-block;
+                width: auto;
+                max-width: 50vw;
+                height: 30vw;
+                max-height: 400px;
+                scroll-snap-align: start;
+                margin: 0 5px;
+                overflow: hidden;
+
+                &:nth-child(1),&:last-child {
+                    margin: 0;
+                }
+
+                @include breakpoint(sm) {
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+}

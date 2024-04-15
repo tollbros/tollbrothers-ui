@@ -143,8 +143,6 @@ function GalleryMedia({
               <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`} onClick={openPinterest}></button>
             </div>
           }
-
-
         </div>
         {iframeSrc?.includes('insidemaps') && (
           <span className={styles.vrt_callout}>3D Walkthrough is for representational purposes only. Actual product may differ.</span>

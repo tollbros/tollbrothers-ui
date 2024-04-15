@@ -57,23 +57,23 @@ function GalleryMedia({
   }
 
   const openFacebook = () => {
-    window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(src)+ '&t=' + encodeURIComponent(caption), 'sharer', 'toolbar=0,status=0,width=626,height=436');
+    window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(src) + '&t=' + encodeURIComponent(caption), 'sharer', 'toolbar=0,status=0,width=626,height=436');
     if (dataLayerPush) {
-      dataLayerPush({'event': "facebook_share"});
+      dataLayerPush({ 'event': "facebook_share" });
     }
   }
 
   const openTwitter = () => {
-    window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(caption)+'&url='+encodeURIComponent(src),'sharer','toolbar=0,status=0,width=626,height=436');
+    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(caption) + '&url=' + encodeURIComponent(src), 'sharer', 'toolbar=0,status=0,width=626,height=436');
     if (dataLayerPush) {
-      dataLayerPush({'event': "twitter_share"});
+      dataLayerPush({ 'event': "twitter_share" });
     }
   }
 
   const openPinterest = () => {
-    window.open('http://www.pinterest.com/pin/create/button/?url='+encodeURIComponent(src)+'&description='+encodeURIComponent(caption),'sharer','toolbar=0,status=0,width=626,height=436');
+    window.open('http://www.pinterest.com/pin/create/button/?url=' + encodeURIComponent(src) + '&description=' + encodeURIComponent(caption), 'sharer', 'toolbar=0,status=0,width=626,height=436');
     if (dataLayerPush) {
-      dataLayerPush({'event': "pinterest_share"});
+      dataLayerPush({ 'event': "pinterest_share" });
     }
   }
 
@@ -83,6 +83,7 @@ function GalleryMedia({
       setShowMedia(true)
     }
   }, [])
+
 
   return (
     <div className={styles.mediaWrapper}>
@@ -132,7 +133,7 @@ function GalleryMedia({
           {
             mediaCount > 1 &&
             <p>{imgCount}</p>
-          }          
+          }
 
           {
             showSocials &&
@@ -142,10 +143,14 @@ function GalleryMedia({
               <button className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`} onClick={openPinterest}></button>
             </div>
           }
-          
-        </div>
 
+
+        </div>
+        {iframeSrc?.includes('insidemaps') && (
+          <span className={styles.vrt_callout}>3D Walkthrough is for representational purposes only. Actual product may differ.</span>
+        )}
       </figure>
+
     </div>
   )
 }

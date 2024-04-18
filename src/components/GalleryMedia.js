@@ -27,6 +27,7 @@ function GalleryMedia({
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   let imgCount = (index + 1).toString() + " / " + mediaCount.toString();
+  let customClass = media.customClass = true ? styles.vrtDisclaimer : '';
 
   if (media?.type?.includes('video')) {
     modelLink = null
@@ -125,7 +126,7 @@ function GalleryMedia({
         )}
 
         {caption && showCaption && (
-          <figcaption className={styles.mediaCapInline}>{caption}</figcaption>
+          <figcaption className={`${styles.mediaCapInline} ${media.customClass}`}>{caption}</figcaption>
         )}
 
         <div className={styles.bottomRightNav}>

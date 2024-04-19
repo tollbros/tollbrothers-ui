@@ -112,6 +112,21 @@
     font-size: 14px;
     line-height: 16px;
     margin: 2px 4px;
+
+    &.figCaptionStyles {
+      width: 100%;
+      font-size: 10px;
+      line-height: 10px;
+      left: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 3px 10px;
+
+      @include breakpoint(sm) {
+        font-size: 14px;
+        white-space: nowrap;
+      }
+    }
   }
 
   .modelLink {

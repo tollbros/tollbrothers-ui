@@ -13,10 +13,10 @@ export const FullScreenGallery = ({
   onClose = () => {},
   onNext = () => {},
   onPrevious = () => {},
-  initialSlide = 1
+  initialSlide = 1,
+  backgroundColor
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
-
   return (
     show && (
       <PopupModal show>
@@ -27,7 +27,7 @@ export const FullScreenGallery = ({
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>
-                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showSocials={showSocials} dataLayerPush={dataLayerPush} showCaption />
+                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showSocials={showSocials} dataLayerPush={dataLayerPush} showCaption backgroundColor={backgroundColor} />
                   </div>
                 )
               })}

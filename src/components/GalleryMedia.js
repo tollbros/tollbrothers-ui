@@ -14,7 +14,8 @@ function GalleryMedia({
   clickAction,
   index,
   mediaCount,
-  onLoad
+  onLoad,
+  backgroundColor
 }) {
   let isSvg = false
   const src = getImage(media, 'url')
@@ -27,7 +28,7 @@ function GalleryMedia({
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   let imgCount = (index + 1).toString() + " / " + mediaCount.toString();
-  let customClass = media.customClass = true ? styles.vrtDisclaimer : '';
+  let customClass = media.customClass = true ? styles.figCaptionStyles : '';
 
   if (media?.type?.includes('video')) {
     modelLink = null
@@ -126,7 +127,7 @@ function GalleryMedia({
         )}
 
         {caption && showCaption && (
-          <figcaption className={`${styles.mediaCapInline} ${media.customClass}`}>{caption}</figcaption>
+          <figcaption className={`${styles.mediaCapInline} ${media.customClass}`} style={{backgroundColor: backgroundColor}}>{caption}</figcaption>
         )}
 
         <div className={styles.bottomRightNav}>

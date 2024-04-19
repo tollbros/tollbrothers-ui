@@ -28,8 +28,6 @@ function GalleryMedia({
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   let imgCount = (index + 1).toString() + " / " + mediaCount.toString();
-  let customClass = media.customClass = true ? styles.figCaptionStyles : '';
-
   if (media?.type?.includes('video')) {
     modelLink = null
     type = 'video'
@@ -39,6 +37,8 @@ function GalleryMedia({
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
   }
+
+  let customFigStyles = media?.link?.includes('insidemaps') ? styles.figCaptionStyles : null;
 
   if (!showCaption) {
     caption = media.description || media.title
@@ -127,7 +127,8 @@ function GalleryMedia({
         )}
 
         {caption && showCaption && (
-          <figcaption className={`${styles.mediaCapInline} ${media.customClass}`} style={{backgroundColor: backgroundColor}}>{caption}</figcaption>
+          
+          <figcaption className={`${styles.mediaCapInline} ${customFigStyles}`} style={{backgroundColor: backgroundColor}}>{caption}</figcaption>
         )}
 
         <div className={styles.bottomRightNav}>

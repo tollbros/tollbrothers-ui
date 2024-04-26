@@ -14,20 +14,34 @@ export const FullScreenGallery = ({
   onNext = () => {},
   onPrevious = () => {},
   initialSlide = 1,
-  backgroundColor
+  backgroundColor,
+  portalId
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
   return (
     show && (
-      <PopupModal show>
+      <PopupModal show portalId={portalId}>
         <div className={`${styles.fullScreen} full`}>
           <button className={styles.close} onClick={onClose} />
           <div className={styles.container}>
-            <Slider mediaList={newMediaList} disablePagination onNext={onNext} onPrevious={onPrevious}>
+            <Slider
+              mediaList={newMediaList}
+              disablePagination
+              onNext={onNext}
+              onPrevious={onPrevious}
+            >
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>
-                    <GalleryMedia media={media} index={idx} mediaCount={newMediaList.length} showSocials={showSocials} dataLayerPush={dataLayerPush} showCaption backgroundColor={backgroundColor} />
+                    <GalleryMedia
+                      media={media}
+                      index={idx}
+                      mediaCount={newMediaList.length}
+                      showSocials={showSocials}
+                      dataLayerPush={dataLayerPush}
+                      showCaption
+                      backgroundColor={backgroundColor}
+                    />
                   </div>
                 )
               })}

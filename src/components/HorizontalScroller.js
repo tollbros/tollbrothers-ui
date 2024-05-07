@@ -8,7 +8,7 @@ export const HorizontalScroller = ({ children, showArrows }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const galleryRef = useRef(null);
   const slideRef = useRef(null);
-  
+
   const handleScroll = () => {
     const gallery = galleryRef.current;
     const newPosition = gallery.scrollLeft;
@@ -28,7 +28,7 @@ export const HorizontalScroller = ({ children, showArrows }) => {
     const slide = slideRef.current;
     gallery.scrollBy({ left: (slide.offsetWidth + 20) }); // move gallery width of slide plus the margin for safari
   };
-
+  
 
   return (
     <div className={styles.horizontalScrollWrap}>
@@ -42,12 +42,10 @@ export const HorizontalScroller = ({ children, showArrows }) => {
 
       <div className={`${styles.viewPort} viewPort`}>
 
-        <div className={`${styles.scrollWrap} scrollWrap`} ref={galleryRef} onScroll={handleScroll}>
+        <div className={`${styles.scrollWrap} ${(children.length === 1 ? styles.noMargin : null)} scrollWrap`} ref={galleryRef} onScroll={handleScroll}>
 
           {Object.keys(children).map(key => (
-
-            <div className={styles.scrollItem} ref={slideRef} key={[key]}>{children[key]}</div>
-
+              <div className={`${styles.scrollItem} `} ref={slideRef} key={[key]}>{children[key]}</div>
           ))}
 
         </div>

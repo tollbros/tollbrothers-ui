@@ -58,7 +58,7 @@
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
-            padding-left: 3vw;
+            padding-left: 5%;
 
             .scrollItem {
                 max-width: 90%;
@@ -99,7 +99,7 @@
     }
 
     ::-webkit-scrollbar-track {
-         margin-left: 3vw;
+         margin-left: 5vw;
     }
 
     ::-webkit-scrollbar-thumb {

@@ -15,7 +15,9 @@ function GalleryMedia({
   index,
   mediaCount,
   onLoad,
-  backgroundColor
+  backgroundColor,
+  isDesignerAppointed
+
 }) {
   let isSvg = false
   const src = getImage(media, 'url')
@@ -25,17 +27,21 @@ function GalleryMedia({
   const altName = media.title || media.description || ''
   let caption = media.description || media.title || ''
   let type = 'image'
+  let customClass = null;
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   let imgCount = (index + 1).toString() + " / " + mediaCount.toString();
   if (media?.type?.includes('video')) {
+    
     modelLink = null
     type = 'video'
+    customClass = styles.mediaVideo
     iframeSrc = getVideoURL(media)
   } else if (media?.type?.includes('walkthrough')) {
     modelLink = null
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
+    customClass = styles.mediaVideo
   }
 
   let customFigStyles = media?.link?.includes('insidemaps') ? styles.figCaptionStyles : null;
@@ -85,11 +91,11 @@ function GalleryMedia({
       setShowMedia(true)
     }
   }, [])
-
+  console.log('designerAppointed ', isDesignerAppointed);
   return (
     <div className={styles.mediaWrapper}>
       {!showMedia && <span className='spinner' />}
-      <figure className={`${styles.media} ${showMedia ? styles.show : ''}`}>
+      <figure className={`${styles.media} ${showMedia ? styles.show : ''} ${customClass}`}>
         {type === 'image' && (
           <img
             className={`${isSvg ? 'mediaSVG__adjust' : ''}`}
@@ -104,6 +110,7 @@ function GalleryMedia({
 
         {(type === 'video' || type === 'walkthrough') && (
           <>
+
             <iframe
               src={iframeSrc}
               onLoad={onImageLoad}
@@ -127,7 +134,6 @@ function GalleryMedia({
         )}
 
         {caption && showCaption && (
-          
           <figcaption className={`${styles.mediaCapInline} ${customFigStyles}`} style={{backgroundColor: backgroundColor}}>{caption}</figcaption>
         )}
 

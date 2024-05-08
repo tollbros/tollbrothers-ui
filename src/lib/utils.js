@@ -289,7 +289,7 @@ const getVideoURL = (video) => {
   if (video.link.indexOf('?') > -1) paramOption = '&'
 
   if (video.type === 'video::vimeo') {
-    src = `https://player.vimeo.com/video/${video.link}${paramOption}portrait=0&title=0&byline=0&badge=0`
+    src = `https://player.vimeo.com/video/${video.link}${paramOption}portrait=0&title=0&byline=0&badge=0&autoplay=1`
   } else {
     src = ``
   }

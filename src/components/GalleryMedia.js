@@ -42,7 +42,7 @@ function GalleryMedia({
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
     customClass = styles.mediaVideo
-  }
+  } 
 
   let customFigStyles = media?.link?.includes('insidemaps') ? styles.figCaptionStyles : null;
 
@@ -91,7 +91,6 @@ function GalleryMedia({
       setShowMedia(true)
     }
   }, [])
-  console.log('designerAppointed ', isDesignerAppointed);
   return (
     <div className={styles.mediaWrapper}>
       {!showMedia && <span className='spinner' />}

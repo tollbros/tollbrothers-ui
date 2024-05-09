@@ -46,8 +46,8 @@
         width: 100%;
         height: 100%;
         margin: auto;
-        //object-fit: contain;
         object-fit: cover;
+        padding-bottom: 50px;
       }
 
       figcaption {
@@ -58,6 +58,7 @@
         width: calc(100% - 180px);
         font-size: 0.8em;
         pointer-events: none;
+        text-shadow: 0 0 3px #000;
 
         @include breakpoint(sm) {
           width: calc(100% - 320px);
@@ -105,4 +106,11 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.isDesignerAppointed {
+  figure {
+    img {
+      object-fit: contain !important;
+    }
+  }
 }

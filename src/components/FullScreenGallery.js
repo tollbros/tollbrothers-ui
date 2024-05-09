@@ -30,10 +30,9 @@ export const FullScreenGallery = ({
   initialSlide = 1,
   backgroundColor,
   portalId,
-  designerAppointed
+  isDesignerAppointed
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
-  let isDesignerAppointed = designerAppointed ? true : false;
   return (
     show && (
       <PopupModal show portalId={portalId}>
@@ -48,7 +47,7 @@ export const FullScreenGallery = ({
             >
               {newMediaList.map(function (media, idx) {
                 return (
-                  <div className={`${styles.fullscreenMedia} `} key={idx}>
+                  <div className={`${styles.fullscreenMedia} ${isDesignerAppointed ? styles.isDesignerAppointed : null}`} key={idx}>
                     <GalleryMedia
                       media={media}
                       index={idx}

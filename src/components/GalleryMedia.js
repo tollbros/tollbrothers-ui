@@ -75,7 +75,7 @@ function GalleryMedia({
     if (dataLayerPush) {
       dataLayerPush({'event': "pinterest_share"});
     }
-  }
+  } 
 
   useEffect(() => {
     // image could already be loaded by the time this fires because it was rendered on the server

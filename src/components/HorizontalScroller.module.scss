@@ -10,13 +10,13 @@
         transform: translateY(-50%);
         z-index: 1;
         width: calc(100% - 40px);
-        display: flex;
         justify-content: space-between;
         pointer-events: none;
-        z-index: 6;
+        z-index: 101;
+        display: none;
 
-        @media (max-width: 760px) {
-            display: none;
+        @include breakpoint(sm) {
+            display: flex;
         }
 
         button {
@@ -68,26 +68,26 @@
                 display: inline-flex;
                 flex-direction: column;
                 scroll-snap-align: center;
-                margin: 0 0px 0 0;
-                padding: 0 5px;
+                margin: 0 20px 0 0;
                 transition: all .3s;
                 transition-timing-function: ease-in-out;
                 white-space: normal;
-
-                @media (min-width: 450px) {
-                    margin: 0 20px 0 0;
-                    scroll-snap-align: none center;
-                }
             }
         }
 
         .noMargin {
-            padding: 0 5%;
-            overflow-x: hidden;
+            .controls {
+                display: none;
+            }
+            .scrollWrap {
+                padding: 0 5%;
+                overflow-x: hidden;
+            }
 
             ::-webkit-scrollbar {
                 display: none !important;
             }
+            
         }
     }
 
@@ -106,4 +106,8 @@
          -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
         background: #393737;
     }
+   
+}
+.customClass {
+    position: relative;
 }

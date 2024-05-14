@@ -2,12 +2,13 @@ import React from 'react'
 import { useState, useRef } from 'react';
 import styles from './HorizontalScroller.module.scss'
 
-export const HorizontalScroller = ({ children, showArrows }) => {
+export const HorizontalScroller = ({ children, showArrows, className }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [isPrevDisabled, setIsPrevDisabled] = useState(true);
   const [scrollPosition, setScrollPosition] = useState(0);
   const galleryRef = useRef(null);
   const slideRef = useRef(null);
+  let showSlideNaviation = showArrows && children.length > 1;
 
   const handleScroll = () => {
     const gallery = galleryRef.current;
@@ -31,22 +32,20 @@ export const HorizontalScroller = ({ children, showArrows }) => {
   
 
   return (
-    <div className={styles.horizontalScrollWrap}>
+    <div className={`${styles.horizontalScrollWrap} ${styles[className]}`}>
 
-      {showArrows && (
+      {showSlideNaviation && (
         <div className={styles.controls}>
-          <button onClick={handlePrev} disabled={isPrevDisabled}><img src="https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg" alt="Arrow icon" /></button>
-          <button onClick={handleNext} disabled={isNextDisabled}><img src="https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg" alt="Arrow icon" /></button>
+          <button onClick={handlePrev} disabled={isPrevDisabled}><img src="https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg" alt="Previous Slide" /></button>
+          <button onClick={handleNext} disabled={isNextDisabled}><img src="https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg" alt="Next Slide" /></button>
         </div>
       )}
 
-      <div className={`${styles.viewPort} viewPort`}>
+      <div className={`${styles.viewPort}`}>
 
-        <div className={`${styles.scrollWrap} ${(children.length === 1 ? styles.noMargin : null)} scrollWrap`} ref={galleryRef} onScroll={handleScroll}>
-
-          {Object.keys(children).map(key => (
-              <div className={`${styles.scrollItem} `} ref={slideRef} key={[key]}>{children[key]}</div>
-          ))}
+        <div className={`${styles.scrollWrap} ${(children.length === 1 ? styles.noMargin : null)}`} ref={galleryRef} onScroll={handleScroll}>
+        
+          {Object.values(children).map((child) => { return ( child && ( <div className={`${styles.scrollItem}` } ref={slideRef} key={child.key} > {child} </div> ) ) })}
 
         </div>
       </div>

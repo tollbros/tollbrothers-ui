@@ -1,9 +1,9 @@
-import React from 'react'
-import Slider from './Slider'
-import GalleryMedia from './GalleryMedia'
-import PopupModal from './PopupModal'
-import styles from './FullScreenGallery.module.scss'
-import rotate from '../lib/rotate'
+import React from 'react';
+import Slider from './Slider';
+import GalleryMedia from './GalleryMedia';
+import PopupModal from './PopupModal';
+import styles from './FullScreenGallery.module.scss';
+import rotate from '../lib/rotate';
 
 /**
  * @component
@@ -31,19 +31,14 @@ export const FullScreenGallery = ({
   backgroundColor,
   portalId
 }) => {
-  const newMediaList = rotate([...mediaList], initialSlide - 1)
+  const newMediaList = rotate([...mediaList], initialSlide - 1);
   return (
     show && (
       <PopupModal show portalId={portalId}>
         <div className={`${styles.fullScreen} full`}>
           <button className={styles.close} onClick={onClose} />
           <div className={styles.container}>
-            <Slider
-              mediaList={newMediaList}
-              disablePagination
-              onNext={onNext}
-              onPrevious={onPrevious}
-            >
+            <Slider mediaList={newMediaList} disablePagination onNext={onNext} onPrevious={onPrevious}>
               {newMediaList.map(function (media, idx) {
                 return (
                   <div className={`${styles.fullscreenMedia}`} key={idx}>
@@ -57,12 +52,12 @@ export const FullScreenGallery = ({
                       backgroundColor={backgroundColor}
                     />
                   </div>
-                )
+                );
               })}
             </Slider>
           </div>
         </div>
       </PopupModal>
     )
-  )
-}
+  );
+};

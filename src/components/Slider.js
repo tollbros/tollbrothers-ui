@@ -1,8 +1,8 @@
-import React, { useEffect, Children } from 'react'
-import BlazeSlider from 'blaze-slider'
-import ArrowLeft from '../icons/ArrowLeft'
-import ArrowRight from '../icons/ArrowRight'
-import styles from './Slider.module.scss'
+import React, { useEffect, Children } from 'react';
+import BlazeSlider from 'blaze-slider';
+import ArrowLeft from '../icons/ArrowLeft';
+import ArrowRight from '../icons/ArrowRight';
+import styles from './Slider.module.scss';
 
 /**
  * Slider component
@@ -14,15 +14,8 @@ import styles from './Slider.module.scss'
  * @returns {JSX.Element}
  * @constructor
  */
-const Slider = ({
-  children,
-  mediaList = [],
-  disablePagination = false,
-  cascadingConfig = {},
-  onNext = () => {},
-  onPrevious = () => {}
-}) => {
-  const enableControls = Children.count(children) > 1
+const Slider = ({ children, mediaList = [], disablePagination = false, cascadingConfig = {}, onNext = () => {}, onPrevious = () => {} }) => {
+  const enableControls = Children.count(children) > 1;
   const defaultConfig = {
     all: {
       slidesToShow: 1,
@@ -37,19 +30,19 @@ const Slider = ({
       transitionDuration: 500,
       transitionTimingFunction: 'ease'
     }
-  }
-  const refTracker = React.useRef()
-  const sliderRef = React.useRef()
+  };
+  const refTracker = React.useRef();
+  const sliderRef = React.useRef();
   useEffect(() => {
     // if not already initialized
     if (!refTracker.current) {
       const config = {
         ...defaultConfig,
         ...cascadingConfig
-      }
-      refTracker.current = new BlazeSlider(sliderRef.current, config)
+      };
+      refTracker.current = new BlazeSlider(sliderRef.current, config);
     }
-  }, [])
+  }, []);
   return (
     <div className={`blaze-slider ${styles.fullscreen}`} ref={sliderRef}>
       <div className={`blaze-container ${styles.fullscreen}`}>
@@ -64,7 +57,7 @@ const Slider = ({
               onPrevious({
                 mediaList,
                 slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
-              })
+              });
             }}
             className={`blaze-prev ${styles.button}`}
           >
@@ -85,7 +78,7 @@ const Slider = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Slider
+export default Slider;

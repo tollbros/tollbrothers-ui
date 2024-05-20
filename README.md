@@ -15,6 +15,8 @@ npm i next react react-dom sass blaze-slider
 ```bash
 npx create-next-app@latest && npm i sass blaze-slider
 npm install <path to tollbrothers-ui>
+npm run dev
+// Go to tollbrothers-ui-library and follow the README.md
 ```
 
 ## Required CSS

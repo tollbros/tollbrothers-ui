@@ -16,7 +16,7 @@ export const MortgageCalculator = ({
   showAdvancedToggle,
   setShowAdvancedToggle,
   targetClass,
-  resetDownMax,
+  resetDownMax = () => {},
   downMax
 }) => {
   const [taxNumber, setTaxNumber] = useState(0);

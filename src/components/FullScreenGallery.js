@@ -30,7 +30,7 @@ export const FullScreenGallery = ({
   initialSlide = 1,
   backgroundColor,
   portalId,
-  isDesignerAppointed
+  classes
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
   return (
@@ -47,7 +47,7 @@ export const FullScreenGallery = ({
             >
               {newMediaList.map(function (media, idx) {
                 return (
-                  <div className={`${styles.fullscreenMedia} ${isDesignerAppointed ? styles.isDesignerAppointed : null}`} key={idx}>
+                  <div className={styles.fullscreenMedia} key={idx}>
                     <GalleryMedia
                       media={media}
                       index={idx}
@@ -56,7 +56,7 @@ export const FullScreenGallery = ({
                       dataLayerPush={dataLayerPush}
                       showCaption
                       backgroundColor={backgroundColor}
-                      isDesignerAppointed={isDesignerAppointed}
+                      classes={classes}
                     />
                   </div>
                 )

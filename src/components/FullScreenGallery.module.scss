@@ -46,8 +46,14 @@
         width: 100%;
         height: 100%;
         margin: auto;
-        object-fit: cover;
-        padding-bottom: 50px;
+        object-fit: contain;
+        //padding-bottom: 50px;
+      }
+
+      iframe {
+        @include breakpoint(sm) {
+          object-fit: cover;
+        }
       }
 
       figcaption {
@@ -106,11 +112,4 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.isDesignerAppointed {
-  figure {
-    img {
-      object-fit: contain !important;
-    }
-  }
 }

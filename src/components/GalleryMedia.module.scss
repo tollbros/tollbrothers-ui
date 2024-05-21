@@ -105,14 +105,14 @@
       }
     }
 
-    
+
   }
 
   .mediaCapInline {
     font-size: 14px;
     line-height: 16px;
     margin: 2px 4px;
-    
+
     &.figCaptionStyles {
       width: 100%;
       font-size: 10px;
@@ -156,8 +156,11 @@
     cursor: pointer;
   }
 }
+
 .mediaVideo {
   iframe {
-   padding-bottom: 50px;
+    @include breakpoint(sm) {
+      padding-bottom: 50px;
+    }
   }
 }

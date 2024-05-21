@@ -8,10 +8,12 @@ export const DragSlider = ({
   step,
   minValue,
   maxValue,
-  className
+  className,
+  onChange
 }) => {
   const sliderChange = (e) => {
     setNumber(e.target.value)
+    if (onChange) onChange(e.target.value)
   }
 
   return (

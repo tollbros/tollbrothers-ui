@@ -270,22 +270,36 @@
 .callOutWrapper {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     position: relative;
     z-index: 1;
     position: sticky;
     top: 10px;
-    align-items: center;
 
-    p {
+    label {
+        flex-shrink: 0;
+        margin: 1em 0;
+        color: $medium_blue;
+        font-family: $alt_font_family;
+        font-weight: $font_weight_bold;
+
+        // span {
+        //     display: block;
+        //     font-size: 13px;
+        //     font-weight: 200;
+        //}
+
+        // &:nth-child(2) {
+        //     padding: 1px;
+        //     cursor: pointer;
+        // }
+    }
+
+    .inputWrap {
         span {
-            display: block;
-            font-size: 13px;
-            font-weight: 200;
-        }
-
-        &:nth-child(2) {
-            padding: 1px;
-            cursor: pointer;
+            //margin-right: -2px;
+            font-family: $alt_font_family;
+            font-weight: $font_weight_light;
         }
     }
 
@@ -300,14 +314,13 @@
     span.dropDownArrow {
         display: block;
         position: absolute;
-        width: 5px;
-        height: 5px;
+        width: 8px;
+        height: 8px;
         border-bottom: 1px solid #222;
         border-right: 1px solid #222;
         transform: rotate(45deg);
-        right: 0;
-        top: 21px;
-
+        right: 4px;
+        top: 22px;
     }
 
     select {
@@ -316,23 +329,21 @@
         background-color: transparent;
         -webkit-appearance: none;
         position: relative;
-        right: 10px;
-
+        right: 2px;
+        padding-right: 18px;
+        text-align: right;
     }
 }
 
 .inputAdjust {
+    padding: 6px 0 6px 0;
+    margin: 0;
+    color: $medium_blue;
     font-family: $alt_font_family;
-    font-size: .875em;
+    font-weight: $font_weight_bold;
+    font-size: 1.125em;
     text-align: right;
-    padding: 6px 0 2px 0;
-    margin-bottom: 4px;
-    color: #000;
     background: transparent;
-    border-bottom: 1px solid $dark_gray;
-    //width: fit-content;
-    //height: auto;
-    max-width: 90px;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -408,15 +419,15 @@ input[type=range]::-webkit-slider-runnable-track {
 
 // tollbrothers.com-specific styles
 .tbdotcom, .tbmortgage {
-    .sliderWrapper {
-        .callOutWrapper {
+    // .sliderWrapper {
+    //     .callOutWrapper {
             
-            p {
-                margin: 1em 0;
-                font-size: 14px;
-            }
-        }
-    }
+    //         p {
+    //             margin: 1em 0;
+    //             font-size: 14px;
+    //         }
+    //     }
+    // }
 
     .right {
         .estimatedPayment {
@@ -503,9 +514,9 @@ input[type=range]::-webkit-slider-runnable-track {
 // tollbrothersmortgage.com-specific styles
 .tbmortgage {
     margin-bottom: 50px;
-    .callOutWrapper {
-        p {
-            margin: 15px 0;
-        }
-    }
+    // .callOutWrapper {
+    //     p {
+    //         margin: 15px 0;
+    //     }
+    // }
 }

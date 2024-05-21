@@ -1,3 +1,5 @@
+@import "styles/modules/all";
+
 // default styles are for storybooknewhomes.com. Modifications for other sites are below
 .calculatorWrapper {
     width: 100%;
@@ -272,6 +274,7 @@
     z-index: 1;
     position: sticky;
     top: 10px;
+    align-items: center;
 
     p {
         span {
@@ -319,13 +322,17 @@
 }
 
 .inputAdjust {
-    width: 100px;
-    position: absolute;
-    bottom: -36px;
-    right: 0;
+    font-family: $alt_font_family;
+    font-size: .875em;
     text-align: right;
-    padding: 7px 5px;
+    padding: 6px 0 2px 0;
+    margin-bottom: 4px;
     color: #000;
+    background: transparent;
+    border-bottom: 1px solid $dark_gray;
+    //width: fit-content;
+    //height: auto;
+    max-width: 90px;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {

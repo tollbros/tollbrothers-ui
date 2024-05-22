@@ -23,7 +23,7 @@ export const MortgageCalculator = ({
   downPaymentStep = 500
 }) => {
   const [taxNumber, setTaxNumber] = useState(0)
-  const [taxPercentage, setTaxPercentage] = useState(null)
+
   const [insuranceNumber, setInsuranceNumber] = useState(0)
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
@@ -56,6 +56,10 @@ export const MortgageCalculator = ({
   const [insuranceMax, setInsuranceMax] = useState(1000)
   const [hoaMax, setHoaMax] = useState(1000)
 
+  const [taxPercentageMin, setTaxPercentageMin] = useState(0)
+  const [taxPercentageMax, setTaxPercentageMax] = useState(100)
+  const [taxPercentage, setTaxPercentage] = useState(1)
+
   const insuranceMin = 0
   const hoaMin = 0
   const taxesMin = 0
@@ -73,7 +77,7 @@ export const MortgageCalculator = ({
 
   const getPercentage = (down, price) => {
     const percentage = (parseInt(down) / parseInt(price)) * 100
-    return percentage.toFixed(0)
+    return percentage.toFixed(2)
   }
 
   const toggleAdvanced = (e) => {
@@ -223,9 +227,7 @@ export const MortgageCalculator = ({
     if (Number(cleanValue) > 0) {
       setTaxError('')
       setTaxPercentage(cleanValue)
-
-      setTaxNumber((Number(cleanValue) / 100) * Number(salesNumber))
-
+      // setTaxNumber((Number(cleanValue) / 100) * Number(salesNumber))
       return
     }
     // if (parseInt(value) > 10000) {
@@ -245,32 +247,54 @@ export const MortgageCalculator = ({
   }
 
   const handleInsuranceDirectInput = (value) => {
-    if (parseInt(value) > 10000) {
-      return false
-    } else {
-      const valueType =
-        value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
-      valueType === 'string'
-        ? setInsuranceError('Please enter a number')
-        : value.startsWith('0')
-        ? setInsuranceError('number cannot start with 0')
-        : (setInsuranceError(''), setInsuranceNumber(value))
-      setInsuranceMax(value * 2)
+    const cleanValue = Number(value?.replace(/\D/g, ''))
+
+    if (Number(cleanValue) > 0) {
+      setInsuranceError('')
+      setInsuranceNumber(cleanValue)
+      setInsuranceMax(cleanValue * 2)
+      return
     }
+    // if (parseInt(value) > 10000) {
+    //   return false
+    // } else {
+    //   const valueType =
+    //     value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
+    //   valueType === 'string'
+    //     ? setInsuranceError('Please enter a number')
+    //     : value.startsWith('0')
+    //     ? setInsuranceError('number cannot start with 0')
+    //     : (setInsuranceError(''), setInsuranceNumber(value))
+    //   setInsuranceMax(value * 2)
+    // }
+    setInsuranceError('Please enter a number')
+    setInsuranceNumber(cleanValue)
   }
   const handleHoaDirectInput = (value) => {
-    if (parseInt(value) > 10000) {
-      return false
-    } else {
-      const valueType =
-        value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
-      valueType === 'string'
-        ? setHoaError('Please enter a number')
-        : value.startsWith('0')
-        ? setHoaError('number cannot start with 0')
-        : (setHoaError(''), setHoaNumber(value))
-      setHoaMax(value * 2)
+    const cleanValue = Number(value?.replace(/\D/g, ''))
+
+    if (Number(cleanValue) > 0) {
+      setHoaError('')
+      setHoaNumber(cleanValue)
+      setHoaMax(cleanValue * 2)
+      return
     }
+
+    // if (parseInt(value) > 10000) {
+    //   return false
+    // } else {
+    //   const valueType =
+    //     value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
+    //   valueType === 'string'
+    //     ? setHoaError('Please enter a number')
+    //     : value.startsWith('0')
+    //     ? setHoaError('number cannot start with 0')
+    //     : (setHoaError(''), setHoaNumber(value))
+    //   setHoaMax(value * 2)
+    // }
+
+    setHoaError('Please enter a number')
+    setHoaNumber(cleanValue)
   }
 
   const hideSaleInput = (e) => {
@@ -368,22 +392,20 @@ export const MortgageCalculator = ({
   }
 
   // TODO: Try to find a better way to handle this
-  const downPaymentInputSize = useMemo(() => {
+  const calculateInputSize = (value) => {
     let cushion = 2
-    const downPayment = Number(downPaymentNumber)
+    const valueNumber = Number(value)
 
-    if (downPayment === 0) {
+    if (valueNumber === 0) {
       cushion = 1
-    } else if (downPayment >= 1000000) {
+    } else if (valueNumber >= 1000000) {
       cushion = 3
-    } else if (downPayment > 10000000) {
+    } else if (valueNumber > 10000000) {
       cushion = 4
     }
 
-    return downPaymentNumber.toString().length + cushion
-  }, [downPaymentNumber])
-
-  console.log(taxPercentage)
+    return value.toString().length + cushion
+  }
 
   return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
@@ -450,7 +472,7 @@ export const MortgageCalculator = ({
                 onChange={(e) => handleDownDirectInput(e.target.value)}
                 className={styles.inputAdjust}
                 value={`$${convertToMoney(downPaymentNumber)}`}
-                size={downPaymentInputSize}
+                size={calculateInputSize(downPaymentNumber)}
               />
             </div>
             <span className={styles.error}>{downError}</span>
@@ -461,7 +483,8 @@ export const MortgageCalculator = ({
               maxValue={downMax}
               number={downPaymentNumber}
               setNumber={setDownPaymentNumber}
-              step={downPaymentStep}
+              // step={downPaymentStep}
+              step={salesNumber * 0.005}
             />
           </div>
         </div>
@@ -497,46 +520,53 @@ export const MortgageCalculator = ({
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-taxes'>Taxes</label>
-                {/* <p onClick={showTaxInput}>${convertToMoney(taxNumber)}</p> */}
-                <input
-                  id='mort-taxes-by-percentage'
-                  type='text'
-                  onChange={(e) =>
-                    handleTaxPercentageDirectInput(e.target.value)
-                  }
-                  className={styles.inputAdjust}
-                  value={`${
-                    taxPercentage ??
-                    (parseInt(taxNumber) / parseInt(salesNumber)) * 100
-                  }%`}
-                  size={5}
-                />
-                <input
-                  id='mort-taxes'
-                  type='text'
-                  onChange={(e) => handleTaxDirectInput(e.target.value)}
-                  className={styles.inputAdjust}
-                  value={`$${convertToMoney(taxNumber)}`}
-                />
+                <div className={styles.inputWrap}>
+                  <span>{`$${convertToMoney(
+                    Math.ceil((taxPercentage / 100) * salesNumber)
+                  )}`}</span>
+                  <input
+                    id='mort-taxes-by-percentage'
+                    type='text'
+                    onChange={(e) =>
+                      handleTaxPercentageDirectInput(e.target.value)
+                    }
+                    className={styles.inputAdjust}
+                    value={`${taxPercentage}%`}
+                    size={taxPercentage.toString().length + 2}
+                  />
+                  {/* <input
+                    id='mort-taxes'
+                    type='text'
+                    onChange={(e) => handleTaxDirectInput(e.target.value)}
+                    className={styles.inputAdjust}
+                    value={`$${convertToMoney(taxNumber)}`}
+                    size={calculateInputSize(taxNumber)}
+                  /> */}
+                </div>
                 <span className={styles.error}>{taxError}</span>
               </div>
               <div className={styles.dragWrapper}>
                 <DragSlider
-                  minValue={taxesMin}
-                  maxValue={taxesMax}
-                  number={taxNumber}
-                  setNumber={setTaxNumber}
-                  onChange={() => setTaxPercentage(null)}
+                  minValue={taxPercentageMin}
+                  maxValue={taxPercentageMax}
+                  number={taxPercentage}
+                  setNumber={setTaxPercentage}
+                  // onChange={() => setTaxPercentage(null)}
+                  step={0.05}
                 />
               </div>
             </div>
 
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
-                <p>Insurance</p>
-                <p onClick={showInsuranceInput}>
-                  ${convertToMoney(insuranceNumber)}
-                </p>
+                <label htmlFor='mort-insurance'>Insurance</label>
+                <input
+                  id='mort-insurance'
+                  type='text'
+                  onChange={(e) => handleInsuranceDirectInput(e.target.value)}
+                  className={styles.inputAdjust}
+                  value={`$${convertToMoney(insuranceNumber)}`}
+                />
                 <span className={styles.error}>{insuranceError}</span>
               </div>
               <div className={styles.dragWrapper}>
@@ -547,21 +577,18 @@ export const MortgageCalculator = ({
                   setNumber={setInsuranceNumber}
                 />
               </div>
-              {insuranceInputShow && (
-                <input
-                  type='text'
-                  onChange={(e) => handleInsuranceDirectInput(e.target.value)}
-                  className={styles.inputAdjust}
-                  value={insuranceNumber}
-                  onMouseOut={hideInsuranceInput}
-                />
-              )}
             </div>
 
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
-                <p>HOA</p>
-                <p onClick={showHoaInput}>${convertToMoney(hoaNumber)}</p>
+                <label htmlFor='mort-hoa'>HOA</label>
+                <input
+                  id='mort-hoa'
+                  type='text'
+                  onChange={(e) => handleHoaDirectInput(e.target.value)}
+                  className={styles.inputAdjust}
+                  value={`$${convertToMoney(hoaNumber)}`}
+                />
                 <span className={styles.error}>{hoaError}</span>
               </div>
               <div className={styles.dragWrapper}>
@@ -572,15 +599,6 @@ export const MortgageCalculator = ({
                   setNumber={setHoaNumber}
                 />
               </div>
-              {hoaInputShow && (
-                <input
-                  type='text'
-                  onChange={(e) => handleHoaDirectInput(e.target.value)}
-                  className={styles.inputAdjust}
-                  value={hoaNumber}
-                  onMouseOut={hideHoaInput}
-                />
-              )}
             </div>
           </>
         )}

@@ -1,21 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HorizontalScroller.module.scss'
 
-export const HorizontalScroller = ({
-  children,
-  showArrows,
-  className,
-  classes
-}) => {
+export const HorizontalScroller = ({ children, showArrows, classes }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const galleryRef = useRef(null)
   const slideRef = useRef(null)
-
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== 'undefined' ? window.innerWidth : 0
-  )
 
   const handleScroll = () => {
     const gallery = galleryRef.current
@@ -27,22 +18,28 @@ export const HorizontalScroller = ({
 
   const handlePrev = () => {
     const gallery = galleryRef.current
-    const slide = slideRef.current
-    gallery.scrollBy({ left: -(slide.offsetWidth + 20) }) // move gallery width of slide plus the margin for safari
+    const computedStyle = window.getComputedStyle(slideRef.current)
+    const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
+    const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
+    gallery.scrollBy({
+      left: -(slideRef.current?.offsetWidth + (marginLeft + marginRight)) // move gallery width of slide plus the margin for safari
+    }) // move gallery width of slide plus the margin for safari
   }
 
   const handleNext = () => {
     const gallery = galleryRef.current
-    const slide = slideRef.current
-    gallery.scrollBy({ left: slide.offsetWidth + 20 }) // move gallery width of slide plus the margin for safari
+    const computedStyle = window.getComputedStyle(slideRef.current)
+    const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
+    const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
+    gallery.scrollBy({
+      left: slideRef.current?.offsetWidth + (marginLeft + marginRight)
+    }) // move gallery width of slide plus the margin for safari
   }
 
   // to detect if window is wider than gallery
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth)
-      windowWidth >
-      slideRef.current.offsetWidth * children.length + children.length * 25
+      window.innerWidth >= galleryRef.current?.scrollWidth
         ? setShowGalleryNav(false)
         : setShowGalleryNav(true)
     }
@@ -55,7 +52,7 @@ export const HorizontalScroller = ({
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  })
+  }, [])
 
   return (
     <div className={`${styles.horizontalScrollWrap} ${classes.root ?? ''}`}>

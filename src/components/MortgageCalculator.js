@@ -3,7 +3,7 @@ import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
 export const MortgageCalculator = ({
-  salesNumber,
+  salesNumber = 100000,
   setSalesNumber,
   loanNumber,
   setLoanNumber,
@@ -53,7 +53,9 @@ export const MortgageCalculator = ({
   const [loanMax, setLoanMax] = useState(30)
   const [interestMax, setInterestMax] = useState(100000)
   const [taxesMax, setTaxesMax] = useState(1000)
-  const [insuranceMax, setInsuranceMax] = useState(1000)
+  const [insuranceMax, setInsuranceMax] = useState(
+    Math.round(0.2 * salesNumber)
+  )
   const [hoaMax, setHoaMax] = useState(1000)
 
   const [taxPercentageMin, setTaxPercentageMin] = useState(0)
@@ -121,7 +123,6 @@ export const MortgageCalculator = ({
     const total = loanAmount * monthlyInterestRate
     const divisor = 1 - Math.pow(1 + monthlyInterestRate, -1 * numberOfPayments)
     let amount = total / divisor < 0 ? 0 : total / divisor
-
     amount === Infinity ? (amount = 0) : (amount = amount)
     return amount
   }
@@ -132,6 +133,7 @@ export const MortgageCalculator = ({
     if (cleanValue > 0) {
       setPriceError('')
       setSalesNumber(cleanValue)
+      setInsuranceMax(Math.round(0.2 * cleanValue))
       return
     }
 
@@ -355,14 +357,14 @@ export const MortgageCalculator = ({
     const calculatedMonthlyPayment = calculateMonthlyPayment()
     let totalPayment =
       calculatedMonthlyPayment +
-      parseFloat(Math.ceil(taxTotal / 12)) +
-      parseFloat(insuranceNumber) +
+      parseFloat(Math.round(taxTotal / 12)) +
+      parseFloat(Math.round(insuranceNumber / 12)) +
       parseFloat(hoaNumber)
     isNaN(totalPayment) ? (totalPayment = 0) : (totalPayment = totalPayment)
     setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)))
     const taxPercent = taxTotal / 12 / totalPayment
 
-    const insurancePercent = insuranceNumber / totalPayment
+    const insurancePercent = insuranceNumber / 12 / totalPayment
     const hoaPercent = hoaNumber / totalPayment
     setTaxDegrees(360 * taxPercent)
     setInsuranceDesgrees(360 * insurancePercent)
@@ -409,6 +411,9 @@ export const MortgageCalculator = ({
     return value.toString().length + cushion
   }
 
+  // console.log(insuranceMax, 'insuranceMax')
+  // console.log(Math.round(0.2 * salesNumber))
+
   return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
       <div className={styles.left}>
@@ -430,7 +435,12 @@ export const MortgageCalculator = ({
               maxValue={salesMax}
               number={salesNumber}
               setNumber={setSalesNumber}
-              onChange={resetDownMax()}
+              onChange={(value) => {
+                // resetDownMax()
+                console.log(Math.round(0.2 * value))
+                // console.log(insuranceMax, 'insuranceMax')
+                setInsuranceMax(Math.round(0.2 * value))
+              }}
               step={salePriceStep}
             />
           </div>
@@ -575,6 +585,7 @@ export const MortgageCalculator = ({
                   maxValue={insuranceMax}
                   number={insuranceNumber}
                   setNumber={setInsuranceNumber}
+                  step={50} // Math.round(salesNumber * 0.0005)
                 />
               </div>
             </div>
@@ -663,7 +674,7 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>Taxes</span>
-                <span>${convertToMoney(Math.ceil(taxTotal / 12))}/mo</span>
+                <span>${convertToMoney(Math.round(taxTotal / 12))}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}
@@ -680,7 +691,9 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>Insurance</span>
-                <span>${convertToMoney(insuranceNumber)}/mo</span>
+                <span>
+                  ${convertToMoney(Math.round(insuranceNumber / 12))}/mo
+                </span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}

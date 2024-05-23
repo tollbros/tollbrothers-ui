@@ -69,6 +69,8 @@ export const MortgageCalculator = ({
   const interestMin = 0
   let rangeInputs
 
+  const taxTotal = Math.round((taxPercentage / 100) * salesNumber)
+
   // console.log(maxSalePrice, 'maxSalePrice')
 
   const convertToMoney = (number) => {
@@ -120,7 +122,7 @@ export const MortgageCalculator = ({
     const divisor = 1 - Math.pow(1 + monthlyInterestRate, -1 * numberOfPayments)
     let amount = total / divisor < 0 ? 0 : total / divisor
 
-    amount === Infinity ? (amount = 0) : (amount = Math.ceil(amount))
+    amount === Infinity ? (amount = 0) : (amount = amount)
     return amount
   }
 
@@ -353,12 +355,12 @@ export const MortgageCalculator = ({
     const calculatedMonthlyPayment = calculateMonthlyPayment()
     let totalPayment =
       calculatedMonthlyPayment +
-      parseFloat(taxNumber) +
+      parseFloat(Math.ceil(taxTotal / 12)) +
       parseFloat(insuranceNumber) +
       parseFloat(hoaNumber)
     isNaN(totalPayment) ? (totalPayment = 0) : (totalPayment = totalPayment)
     setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)))
-    const taxPercent = taxNumber / totalPayment
+    const taxPercent = taxTotal / 12 / totalPayment
 
     const insurancePercent = insuranceNumber / totalPayment
     const hoaPercent = hoaNumber / totalPayment
@@ -371,7 +373,7 @@ export const MortgageCalculator = ({
     loanNumber,
     downPaymentNumber,
     interestNumber,
-    taxNumber,
+    taxTotal,
     insuranceNumber,
     hoaNumber
   ])
@@ -521,9 +523,7 @@ export const MortgageCalculator = ({
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-taxes'>Taxes</label>
                 <div className={styles.inputWrap}>
-                  <span>{`$${convertToMoney(
-                    Math.ceil((taxPercentage / 100) * salesNumber)
-                  )}`}</span>
+                  <span>{`$${convertToMoney(taxTotal)}`}</span>
                   <input
                     id='mort-taxes-by-percentage'
                     type='text'
@@ -646,7 +646,7 @@ export const MortgageCalculator = ({
             <div className={styles.details}>
               <div>
                 <span>Principal and Interest</span>
-                <span>${convertToMoney(piNumber)}</span>
+                <span>${convertToMoney(piNumber)}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}
@@ -663,7 +663,7 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>Taxes</span>
-                <span>${convertToMoney(taxNumber)}</span>
+                <span>${convertToMoney(Math.ceil(taxTotal / 12))}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}
@@ -680,7 +680,7 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>Insurance</span>
-                <span>${convertToMoney(insuranceNumber)}</span>
+                <span>${convertToMoney(insuranceNumber)}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}
@@ -698,7 +698,7 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>HOA</span>
-                <span>${convertToMoney(hoaNumber)}</span>
+                <span>${convertToMoney(hoaNumber)}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}

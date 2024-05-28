@@ -2,13 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
+const DOWN_PAYMENT_PERCENTAGE_MIN = 0
+const DOWN_PAYMENT_PERCENTAGE_MAX = 99
+
 export const MortgageCalculator = ({
   salesNumber = 100000,
   setSalesNumber,
   loanNumber,
   setLoanNumber,
-  downPaymentNumber,
-  setDownPaymentNumber,
+  // downPaymentNumber,
+  // setDownPaymentNumber,
   interestNumber,
   setInterestNumber,
   setMonthlyPayment,
@@ -28,6 +31,9 @@ export const MortgageCalculator = ({
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
   const [showLegendToggle, setShowLegendToggle] = useState(false)
+
+  const [downPayment, setDownPayment] = useState(20000)
+  const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
 
   const [taxDegrees, setTaxDegrees] = useState(0)
   const [insuranceDegrees, setInsuranceDesgrees] = useState(0)
@@ -84,6 +90,19 @@ export const MortgageCalculator = ({
     return percentage.toFixed(2)
   }
 
+  const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
+    const calculation = Math.round(
+      ((percentage / 100) * value).toFixed(toFixed)
+    )
+
+    return calculation
+  }
+
+  const calculateValueByPercent = (percentage, value, toFixed = 2) => {
+    const calculation = (100 * (percentage / value)).toFixed(toFixed)
+    return calculation
+  }
+
   const toggleAdvanced = (e) => {
     setShowAdvancedToggle(!showAdvancedToggle)
   }
@@ -117,7 +136,7 @@ export const MortgageCalculator = ({
   }
 
   const calculateMonthlyPayment = () => {
-    const loanAmount = Number(salesNumber) - Number(downPaymentNumber)
+    const loanAmount = Number(salesNumber) - Number(downPayment)
     const monthlyInterestRate = Number(interestNumber) / 1200 // monthly interest
     const numberOfPayments = loanNumber * 12
     const total = loanAmount * monthlyInterestRate
@@ -153,12 +172,13 @@ export const MortgageCalculator = ({
     setSalesMax(cleanValue * 2)
   }
 
-  const handleDownDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
+  const handleDownPercentageDirectInput = (value) => {
+    const cleanValue = value?.replace(/[^0-9.]/g, '')
 
     if (cleanValue > 0) {
       setDownError('')
-      setDownPaymentNumber(cleanValue)
+      setDownPaymentPercentage(cleanValue)
+      setDownPayment(calculateFixedPercentage(cleanValue, salesNumber))
       return
     }
 
@@ -174,7 +194,32 @@ export const MortgageCalculator = ({
     //       : (setDownError(''), setDownPaymentNumber(value))
     //   }
     setDownError('number cannot start with 0')
-    setDownPaymentNumber(cleanValue)
+    setDownPaymentPercentage(cleanValue)
+  }
+
+  const handleDownDirectInput = (value) => {
+    const cleanValue = Number(value?.replace(/\D/g, ''))
+
+    if (cleanValue > 0) {
+      setDownError('')
+      setDownPayment(cleanValue)
+      setDownPaymentPercentage(calculateValueByPercent(cleanValue, salesNumber))
+      return
+    }
+
+    //   if (parseInt(value) > salesNumber) {
+    //     return false
+    //   } else {
+    //     const valueType =
+    //       value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
+    //     valueType === 'string'
+    //       ? setDownError('Please enter a number')
+    //       : value.startsWith('0')
+    //       ? setDownError('number cannot start with 0')
+    //       : (setDownError(''), setDownPaymentNumber(value))
+    //   }
+    setDownError('number cannot start with 0')
+    setDownPayment(cleanValue)
   }
   const handleInterestDirectInput = (value) => {
     const cleanValue = value?.replace(/[^0-9.]/g, '')
@@ -305,26 +350,6 @@ export const MortgageCalculator = ({
     setSalePriceInputShow(false)
   }
 
-  const hideDownInput = (e) => {
-    setDownInputShow(false)
-  }
-
-  const hideInterestInput = (e) => {
-    setInterestInputShow(false)
-  }
-
-  const hideTaxesInput = (e) => {
-    setTaxInputShow(false)
-  }
-
-  const hideInsuranceInput = (e) => {
-    setInsuranceInputShow(false)
-  }
-
-  const hideHoaInput = (e) => {
-    setHoaInputShow(false)
-  }
-
   const launchToolTip = (e) => {
     e.target.nextElementSibling.classList.add(styles.isActive)
   }
@@ -373,7 +398,7 @@ export const MortgageCalculator = ({
   }, [
     salesNumber,
     loanNumber,
-    downPaymentNumber,
+    downPayment,
     interestNumber,
     taxTotal,
     insuranceNumber,
@@ -414,6 +439,13 @@ export const MortgageCalculator = ({
   // console.log(insuranceMax, 'insuranceMax')
   // console.log(Math.round(0.2 * salesNumber))
 
+  // console.log('sales price step: ', salePriceStep)
+  // console.log('down payment step (salesNumber * 0.005): ', salesNumber * 0.005)
+  // console.log('interest rate step: ', 0.125)
+  // console.log('tax step: ', 0.05)
+  // console.log('insurance step: ', 50)
+  // console.log('hoa step: ', 1)
+
   return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
       <div className={styles.left}>
@@ -437,7 +469,7 @@ export const MortgageCalculator = ({
               setNumber={setSalesNumber}
               onChange={(value) => {
                 // resetDownMax()
-                console.log(Math.round(0.2 * value))
+                // console.log(Math.round(0.2 * value))
                 // console.log(insuranceMax, 'insuranceMax')
                 setInsuranceMax(Math.round(0.2 * value))
               }}
@@ -473,30 +505,42 @@ export const MortgageCalculator = ({
         </div>
         <div className={styles.sliderWrapper}>
           <div className={`${styles.callOutWrapper} ${styles.down}`}>
-            <label htmlFor='mort-down-payment'>Down Payment</label>
+            <label htmlFor='mort-down-payment-percent'>Down Payment</label>
             <div className={styles.inputWrap}>
-              <span className={styles.percent}>
+              {/* <span className={styles.percent}>
                 ({getPercentage(downPaymentNumber, salesNumber)}%)
-              </span>
+              </span> */}
+              <input
+                id='mort-down-payment-percent'
+                type='text'
+                onChange={(e) =>
+                  handleDownPercentageDirectInput(e.target.value)
+                }
+                className={styles.inputAdjust}
+                value={`${downPaymentPercentage}%`}
+                size='6'
+              />
               <input
                 id='mort-down-payment'
                 type='text'
                 onChange={(e) => handleDownDirectInput(e.target.value)}
                 className={styles.inputAdjust}
-                value={`$${convertToMoney(downPaymentNumber)}`}
-                size={calculateInputSize(downPaymentNumber)}
+                value={`$${convertToMoney(downPayment)}`}
+                size={calculateInputSize(downPayment)}
               />
             </div>
             <span className={styles.error}>{downError}</span>
           </div>
           <div className={styles.dragWrapper}>
             <DragSlider
-              minValue={downPaymentMin}
-              maxValue={downMax}
-              number={downPaymentNumber}
-              setNumber={setDownPaymentNumber}
-              // step={downPaymentStep}
-              step={salesNumber * 0.005}
+              minValue={DOWN_PAYMENT_PERCENTAGE_MIN}
+              maxValue={DOWN_PAYMENT_PERCENTAGE_MAX}
+              number={downPaymentPercentage}
+              setNumber={(value) => {
+                setDownPaymentPercentage(value)
+                setDownPayment(Math.round((value / 100) * salesNumber))
+              }}
+              step={0.5}
             />
           </div>
         </div>
@@ -531,7 +575,7 @@ export const MortgageCalculator = ({
           <>
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
-                <label htmlFor='mort-taxes'>Taxes</label>
+                <label htmlFor='mort-taxes'>Taxes (Annual)</label>
                 <div className={styles.inputWrap}>
                   <span>{`$${convertToMoney(taxTotal)}`}</span>
                   <input
@@ -569,7 +613,7 @@ export const MortgageCalculator = ({
 
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
-                <label htmlFor='mort-insurance'>Insurance</label>
+                <label htmlFor='mort-insurance'>Insurance (Annual)</label>
                 <input
                   id='mort-insurance'
                   type='text'

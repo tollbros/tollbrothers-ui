@@ -16,7 +16,7 @@ function GalleryMedia({
   mediaCount,
   onLoad,
   backgroundColor,
-  classes
+  classes = {}
 }) {
   let isSvg = false
   const src = getImage(media, 'url')
@@ -156,7 +156,7 @@ function GalleryMedia({
           </Link>
         )}
 
-        {caption && showCaption && (
+        {caption && showCaption && type !== 'video' && (
           <figcaption
             className={`${styles.mediaCapInline} ${customFigStyles} ${
               classes.figcaption ?? ''
@@ -167,23 +167,25 @@ function GalleryMedia({
           </figcaption>
         )}
 
-        <div className={styles.bottomRightNav}>
-          {mediaCount > 1 && <p>{imgCount}</p>}
+        {type === 'image' && (
+          <div className={styles.bottomRightNav}>
+            {mediaCount > 1 && <p>{imgCount}</p>}
 
-          {showSocials && (
-            <div className={styles.mediaShareNav}>
-              <button
-                className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
-                onClick={openFacebook}
-              />
-              {/* <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton} js-twitter-share-analytics-trig`} onClick={openTwitter}></button> */}
-              <button
-                className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
-                onClick={openPinterest}
-              />
-            </div>
-          )}
-        </div>
+            {showSocials && (
+              <div className={styles.mediaShareNav}>
+                <button
+                  className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
+                  onClick={openFacebook}
+                />
+                {/* <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton} js-twitter-share-analytics-trig`} onClick={openTwitter}></button> */}
+                <button
+                  className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
+                  onClick={openPinterest}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </figure>
     </div>
   )

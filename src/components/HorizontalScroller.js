@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HorizontalScroller.module.scss'
 
-export const HorizontalScroller = ({ children, showArrows, classes }) => {
+export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const galleryRef = useRef(null)
   const slideRef = useRef(null)
-
   const handleScroll = () => {
     const gallery = galleryRef.current
     gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 15
@@ -55,7 +54,7 @@ export const HorizontalScroller = ({ children, showArrows, classes }) => {
   }, [])
 
   return (
-    <div className={`${styles.horizontalScrollWrap} ${classes.root ?? ''}`}>
+    <div className={`${styles.horizontalScrollWrap} ${classes.root ?? ''} `}>
       {showArrows && showGalleryNav && (
         <div className={`${styles.controls} ${classes.controls ?? ''}`}>
           <button onClick={handlePrev} disabled={isPrevDisabled}>

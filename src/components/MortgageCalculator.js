@@ -34,6 +34,7 @@ export const MortgageCalculator = ({
 
   const [downPayment, setDownPayment] = useState(20000)
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
+  const [downPaymentBasedOn, setDownPaymentBasedOn] = useState('percentage')
 
   const [taxDegrees, setTaxDegrees] = useState(0)
   const [insuranceDegrees, setInsuranceDesgrees] = useState(0)
@@ -90,7 +91,7 @@ export const MortgageCalculator = ({
     return percentage.toFixed(2)
   }
 
-  const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
+  const calculateValueByPercent = (percentage, value, toFixed = 2) => {
     const calculation = Math.round(
       ((percentage / 100) * value).toFixed(toFixed)
     )
@@ -98,7 +99,7 @@ export const MortgageCalculator = ({
     return calculation
   }
 
-  const calculateValueByPercent = (percentage, value, toFixed = 2) => {
+  const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
     const calculation = (100 * (percentage / value)).toFixed(toFixed)
     return calculation
   }
@@ -153,6 +154,16 @@ export const MortgageCalculator = ({
       setPriceError('')
       setSalesNumber(cleanValue)
       setInsuranceMax(Math.round(0.2 * cleanValue))
+
+      if (downPaymentBasedOn === 'percentage') {
+        setDownPayment(
+          calculateValueByPercent(downPaymentPercentage, cleanValue)
+        )
+      } else {
+        setDownPaymentPercentage(
+          calculateFixedPercentage(downPayment, cleanValue)
+        )
+      }
       return
     }
 
@@ -178,7 +189,8 @@ export const MortgageCalculator = ({
     if (cleanValue > 0) {
       setDownError('')
       setDownPaymentPercentage(cleanValue)
-      setDownPayment(calculateFixedPercentage(cleanValue, salesNumber))
+      setDownPayment(calculateValueByPercent(cleanValue, salesNumber))
+      setDownPaymentBasedOn('percentage')
       return
     }
 
@@ -203,7 +215,10 @@ export const MortgageCalculator = ({
     if (cleanValue > 0) {
       setDownError('')
       setDownPayment(cleanValue)
-      setDownPaymentPercentage(calculateValueByPercent(cleanValue, salesNumber))
+      setDownPaymentPercentage(
+        calculateFixedPercentage(cleanValue, salesNumber)
+      )
+      setDownPaymentBasedOn('amount')
       return
     }
 
@@ -471,6 +486,16 @@ export const MortgageCalculator = ({
                 // resetDownMax()
                 // console.log(Math.round(0.2 * value))
                 // console.log(insuranceMax, 'insuranceMax')
+                if (downPaymentBasedOn === 'percentage') {
+                  setDownPayment(
+                    calculateValueByPercent(downPaymentPercentage, value)
+                  )
+                } else {
+                  setDownPaymentPercentage(
+                    calculateFixedPercentage(downPayment, value)
+                  )
+                }
+
                 setInsuranceMax(Math.round(0.2 * value))
               }}
               step={salePriceStep}

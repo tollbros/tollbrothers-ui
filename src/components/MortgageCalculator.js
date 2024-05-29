@@ -435,7 +435,7 @@ export const MortgageCalculator = ({
   ])
 
   useEffect(() => {
-    targetClass == 'tbdotcom'
+    targetClass === 'tbdotcom' || targetClass === 'tbmortgage'
       ? setShowDefalutGraphic(false)
       : setShowDefalutGraphic(true)
   })

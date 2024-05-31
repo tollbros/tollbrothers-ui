@@ -51,7 +51,6 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
 
     handleResize()
 
-    // remove after unmount
     return () => {
       window.removeEventListener('resize', handleResize)
     }

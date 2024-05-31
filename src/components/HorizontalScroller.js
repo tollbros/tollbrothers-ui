@@ -10,7 +10,7 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
 
   const handleScroll = () => {
     const gallery = galleryRef.current
-    gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 1
+    gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 10
       ? setIsNextDisabled(true)
       : setIsNextDisabled(false)
 
@@ -25,7 +25,7 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
     const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
     gallery.scrollBy({
-      left: -(slideRef.current?.offsetWidth + (marginLeft + marginRight))
+      left: -(slideRef.current?.offsetWidth + (marginLeft + marginRight + 2))
     })
   }
 
@@ -35,7 +35,7 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
     const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
     gallery.scrollBy({
-      left: slideRef.current?.offsetWidth + (marginLeft + marginRight)
+      left: slideRef.current?.offsetWidth + (marginLeft + marginRight + 2)
     })
   }
 

@@ -7,12 +7,16 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const galleryRef = useRef(null)
   const slideRef = useRef(null)
+
   const handleScroll = () => {
     const gallery = galleryRef.current
-    gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 15
+    gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 1
       ? setIsNextDisabled(true)
       : setIsNextDisabled(false)
-    gallery.scrollLeft < 20 ? setIsPrevDisabled(true) : setIsPrevDisabled(false)
+
+    gallery.scrollLeft === 0
+      ? setIsPrevDisabled(true)
+      : setIsPrevDisabled(false)
   }
 
   const handlePrev = () => {
@@ -21,8 +25,8 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
     const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
     gallery.scrollBy({
-      left: -(slideRef.current?.offsetWidth + (marginLeft + marginRight)) // move gallery width of slide plus the margin for safari
-    }) // move gallery width of slide plus the margin for safari
+      left: -(slideRef.current?.offsetWidth + (marginLeft + marginRight))
+    })
   }
 
   const handleNext = () => {
@@ -32,7 +36,7 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
     gallery.scrollBy({
       left: slideRef.current?.offsetWidth + (marginLeft + marginRight)
-    }) // move gallery width of slide plus the margin for safari
+    })
   }
 
   // to detect if window is wider than gallery

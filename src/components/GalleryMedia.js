@@ -33,13 +33,14 @@ function GalleryMedia({
   if (media?.type?.includes('video')) {
     modelLink = null
     type = 'video'
-    customClass = styles.mediaVideo
     iframeSrc = getVideoURL(media)
   } else if (media?.type?.includes('walkthrough')) {
     modelLink = null
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
-    customClass = styles.mediaVideo
+    if (caption && showCaption) {
+      customClass = styles.mediaVideo
+    }
   }
 
   const customFigStyles = media?.link?.includes('insidemaps')
@@ -166,7 +167,6 @@ function GalleryMedia({
             {caption}
           </figcaption>
         )}
-
         {type === 'image' && (
           <div className={styles.bottomRightNav}>
             {mediaCount > 1 && <p>{imgCount}</p>}

@@ -50,12 +50,6 @@
         //padding-bottom: 50px;
       }
 
-      iframe {
-        @include breakpoint(sm) {
-          object-fit: cover;
-        }
-      }
-
       figcaption {
         position: absolute;
         bottom: 22px;

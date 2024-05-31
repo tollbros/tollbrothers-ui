@@ -2,17 +2,29 @@ import React, { useState, useEffect } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
+const SALES_MIN = 100000
+const SALES_MAX = 12000000
+const SALES_STEP = 1000
+
 const DOWN_PAYMENT_PERCENTAGE_MIN = 0
 const DOWN_PAYMENT_PERCENTAGE_MAX = 99
 const DOWN_PAYMENT_PERCENTAGE_STEP = 0.5
+
+const INTEREST_RATE_MIN = 0
+const INTEREST_RATE_MAX = 12
+const INTEREST_RATE_STEP = 0.125
 
 const TAX_PERCENTAGE_MIN = 0
 const TAX_PERCENTAGE_MAX = 12
 const TAX_PERCENTAGE_STEP = 0.01
 
-const INTEREST_PERCENTAGE_STEP = 0.125
-
+const INSURANCE_MIN = 0
+const INSURANCE_MAX_BASIS = 0.12
 const INSURANCE_STEP = 50
+
+const HOA_MIN = 0
+const HOA_MAX = 5000
+const HOA_STEP = 1
 
 export const MortgageCalculator = ({
   salesNumber = 100000,
@@ -34,8 +46,6 @@ export const MortgageCalculator = ({
   maxSalePrice = 1000000,
   downPaymentStep = 500
 }) => {
-  const [taxNumber, setTaxNumber] = useState(0)
-
   const [insuranceNumber, setInsuranceNumber] = useState(0)
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
@@ -43,57 +53,20 @@ export const MortgageCalculator = ({
 
   const [downPayment, setDownPayment] = useState(20000)
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
-  const [downPaymentBasedOn, setDownPaymentBasedOn] = useState('percentage')
 
   const [tax, setTax] = useState(0)
   const [taxPercentage, setTaxPercentage] = useState(0)
-  const [taxBasedOn, setTaxBasedOn] = useState('percentage')
 
   const [taxDegrees, setTaxDegrees] = useState(0)
   const [insuranceDegrees, setInsuranceDesgrees] = useState(0)
   const [hoaDegrees, setHoaDegrees] = useState(0)
 
-  const [loanError, setLoanError] = useState('')
-  const [downError, setDownError] = useState('')
-  const [priceError, setPriceError] = useState('')
-  const [interestError, setInterestError] = useState('')
-  const [taxError, setTaxError] = useState('')
-  const [insuranceError, setInsuranceError] = useState('')
-  const [hoaError, setHoaError] = useState('')
-
-  const [salePriceInputShow, setSalePriceInputShow] = useState(false)
-  const [downInputShow, setDownInputShow] = useState(false)
-  const [interestInputShow, setInterestInputShow] = useState(false)
-  const [taxInputShow, setTaxInputShow] = useState(false)
-  const [insuranceInputShow, setInsuranceInputShow] = useState(false)
-  const [hoaInputShow, setHoaInputShow] = useState(false)
   const [showDefalutGraphic, setShowDefalutGraphic] = useState(true)
 
-  const [salesMax, setSalesMax] = useState(maxSalePrice)
-  const [loanMax, setLoanMax] = useState(30)
-  const [interestMax, setInterestMax] = useState(100000)
-  const [taxesMax, setTaxesMax] = useState(1000)
-  const [insuranceMax, setInsuranceMax] = useState(
-    Math.round(0.2 * salesNumber)
-  )
-  const [hoaMax, setHoaMax] = useState(1000)
-
-  const insuranceMin = 0
-  const hoaMin = 0
-  const taxesMin = 0
-  const salesMin = 10000
-  const downPaymentMin = 0
-  const loanMin = 1
-  const interestMin = 0
   let rangeInputs
 
   const convertToMoney = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  }
-
-  const getPercentage = (down, price) => {
-    const percentage = (parseInt(down) / parseInt(price)) * 100
-    return percentage.toFixed(2)
   }
 
   const calculateValueByPercent = (percentage, value, toFixed = 2) => {
@@ -117,30 +90,6 @@ export const MortgageCalculator = ({
     setShowLegendToggle(!showLegendToggle)
   }
 
-  const showSalesInput = (e) => {
-    setSalePriceInputShow(!salePriceInputShow)
-  }
-
-  const showDownInput = (e) => {
-    setDownInputShow(!downInputShow)
-  }
-
-  const showInterestInput = (e) => {
-    setInterestInputShow(!interestInputShow)
-  }
-
-  const showTaxInput = (e) => {
-    setTaxInputShow(!taxInputShow)
-  }
-
-  const showInsuranceInput = (e) => {
-    setInsuranceInputShow(!insuranceInputShow)
-  }
-
-  const showHoaInput = (e) => {
-    setHoaInputShow(!hoaInputShow)
-  }
-
   const calculateMonthlyPayment = () => {
     const loanAmount = Number(salesNumber) - Number(downPayment)
     const monthlyInterestRate = Number(interestNumber) / 1200 // monthly interest
@@ -156,25 +105,9 @@ export const MortgageCalculator = ({
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (cleanValue >= 0) {
-      setPriceError('')
       setSalesNumber(cleanValue)
-      setInsuranceMax(Math.round(0.2 * cleanValue))
-
-      if (downPaymentBasedOn === 'percentage') {
-        setDownPayment(
-          calculateValueByPercent(downPaymentPercentage, cleanValue)
-        )
-      } else {
-        setDownPaymentPercentage(
-          calculateFixedPercentage(downPayment, cleanValue)
-        )
-      }
-
-      if (taxBasedOn === 'percentage') {
-        setTax(calculateValueByPercent(taxPercentage, cleanValue))
-      } else {
-        setTaxPercentage(calculateFixedPercentage(tax, cleanValue))
-      }
+      setDownPayment(calculateValueByPercent(downPaymentPercentage, cleanValue))
+      setTax(calculateValueByPercent(taxPercentage, cleanValue))
     }
 
     // if (parseInt(value) > 10000000) {
@@ -197,10 +130,8 @@ export const MortgageCalculator = ({
     const cleanValue = Number(value?.replace(/[^0-9.]/g, ''))
 
     if (cleanValue >= 0) {
-      setDownError('')
       setDownPaymentPercentage(cleanValue)
       setDownPayment(calculateValueByPercent(cleanValue, salesNumber))
-      setDownPaymentBasedOn('percentage')
       return
     }
 
@@ -215,7 +146,7 @@ export const MortgageCalculator = ({
     //       ? setDownError('number cannot start with 0')
     //       : (setDownError(''), setDownPaymentNumber(value))
     //   }
-    setDownError('number cannot start with 0')
+    // setDownError('number cannot start with 0')
     setDownPaymentPercentage(cleanValue)
   }
 
@@ -223,12 +154,11 @@ export const MortgageCalculator = ({
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (cleanValue >= 0) {
-      setDownError('')
       setDownPayment(cleanValue)
       setDownPaymentPercentage(
         calculateFixedPercentage(cleanValue, salesNumber)
       )
-      setDownPaymentBasedOn('amount')
+
       return
     }
 
@@ -243,7 +173,7 @@ export const MortgageCalculator = ({
     //       ? setDownError('number cannot start with 0')
     //       : (setDownError(''), setDownPaymentNumber(value))
     //   }
-    setDownError('number cannot start with 0')
+
     setDownPayment(cleanValue)
   }
 
@@ -251,7 +181,6 @@ export const MortgageCalculator = ({
     const cleanValue = value?.replace(/[^0-9.]/g, '')
 
     if (Number(cleanValue) > 0) {
-      setInterestError('')
       setInterestNumber(cleanValue)
       return
     }
@@ -267,72 +196,41 @@ export const MortgageCalculator = ({
     //     : (setInterestError(''), setInterestNumber(value))
     //   setHoaMax(value * 2)
     // }
-    setInterestError('number cannot start with 0')
+
     setInterestNumber(cleanValue)
   }
 
   const handleTaxPercentageDirectInput = (value) => {
     const cleanValue = value?.replace(/[^0-9.]/g, '')
 
-    if (Number(cleanValue) > 0) {
-      setTaxError('')
+    if (Number(cleanValue) >= 0) {
       setTaxPercentage(cleanValue)
       setTax(calculateValueByPercent(cleanValue, salesNumber))
-      setDownPaymentBasedOn('percentage')
-      return
+      // setDownPaymentBasedOn('percentage')
+    } else {
+      setTaxPercentage('')
     }
-
-    // if (parseInt(value) > 10000) {
-    //   return false
-    // } else {
-    //   const valueType =
-    //     value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
-    //   valueType === 'string'
-    //     ? setTaxError('Please enter a number')
-    //     : value.startsWith('0')
-    //     ? setTaxError('number cannot start with 0')
-    //     : (setTaxError(''), setTaxNumber(value))
-    //   setTaxesMax(value * 2)
-    // }
-    setTaxError('number cannot start with 0')
-    setTaxPercentage(cleanValue)
   }
 
   const handleTaxDirectInput = (value) => {
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (Number(cleanValue) > 0) {
-      setTaxError('')
       setTax(cleanValue)
       setTaxPercentage(calculateFixedPercentage(cleanValue, salesNumber))
-      setTaxBasedOn('amount')
-      return
+      // setTaxBasedOn('amount')
+    } else {
+      setTax('')
     }
-
-    // if (parseInt(value) > 10000) {
-    //   return false
-    // } else {
-    //   const valueType =
-    //     value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
-    //   valueType === 'string'
-    //     ? setTaxError('Please enter a number')
-    //     : value.startsWith('0')
-    //     ? setTaxError('number cannot start with 0')
-    //     : (setTaxError(''), setTaxNumber(value))
-    //   setTaxesMax(value * 2)
-    // }
-    setTaxError('number cannot start with 0')
-    // setTaxNumber(cleanValue)
   }
 
   const handleInsuranceDirectInput = (value) => {
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (Number(cleanValue) > 0) {
-      setInsuranceError('')
       setInsuranceNumber(cleanValue)
-      setInsuranceMax(cleanValue * 2)
-      return
+    } else {
+      setInsuranceNumber('')
     }
     // if (parseInt(value) > 10000) {
     //   return false
@@ -346,38 +244,17 @@ export const MortgageCalculator = ({
     //     : (setInsuranceError(''), setInsuranceNumber(value))
     //   setInsuranceMax(value * 2)
     // }
-    setInsuranceError('Please enter a number')
-    setInsuranceNumber(cleanValue)
+    // setInsuranceError('Please enter a number')
+    // setInsuranceNumber(cleanValue)
   }
   const handleHoaDirectInput = (value) => {
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (Number(cleanValue) > 0) {
-      setHoaError('')
       setHoaNumber(cleanValue)
-      setHoaMax(cleanValue * 2)
-      return
+    } else {
+      setHoaNumber('')
     }
-
-    // if (parseInt(value) > 10000) {
-    //   return false
-    // } else {
-    //   const valueType =
-    //     value.length > 0 && value.match(/[a-z]/i) ? 'string' : 'number'
-    //   valueType === 'string'
-    //     ? setHoaError('Please enter a number')
-    //     : value.startsWith('0')
-    //     ? setHoaError('number cannot start with 0')
-    //     : (setHoaError(''), setHoaNumber(value))
-    //   setHoaMax(value * 2)
-    // }
-
-    setHoaError('Please enter a number')
-    setHoaNumber(cleanValue)
-  }
-
-  const hideSaleInput = (e) => {
-    setSalePriceInputShow(false)
   }
 
   const launchToolTip = (e) => {
@@ -478,34 +355,20 @@ export const MortgageCalculator = ({
               className={`${styles.input} ${styles.inputFont}`}
               value={`$${convertToMoney(salesNumber)}`}
             />
-            <span className={styles.error}>{priceError}</span>
           </div>
-          <div className={styles.dragWrapper} onClick={hideSaleInput}>
+          <div className={styles.dragWrapper}>
             <DragSlider
-              minValue={salesMin}
-              maxValue={salesMax}
+              minValue={SALES_MIN}
+              maxValue={SALES_MAX}
               number={salesNumber}
               setNumber={setSalesNumber}
               onChange={(value) => {
-                if (downPaymentBasedOn === 'percentage') {
-                  setDownPayment(
-                    calculateValueByPercent(downPaymentPercentage, value)
-                  )
-                } else {
-                  setDownPaymentPercentage(
-                    calculateFixedPercentage(downPayment, value)
-                  )
-                }
-
-                if (taxBasedOn === 'percentage') {
-                  setTax(calculateValueByPercent(taxPercentage, value))
-                } else {
-                  setTaxPercentage(calculateFixedPercentage(tax, value))
-                }
-
-                setInsuranceMax(Math.round(0.2 * value))
+                setDownPayment(
+                  calculateValueByPercent(downPaymentPercentage, value)
+                )
+                setTax(calculateValueByPercent(taxPercentage, value))
               }}
-              step={salePriceStep}
+              step={SALES_STEP}
             />
           </div>
         </div>
@@ -559,7 +422,6 @@ export const MortgageCalculator = ({
                 size={calculateInputSize(downPayment)}
               />
             </div>
-            <span className={styles.error}>{downError}</span>
           </div>
           <div className={styles.dragWrapper}>
             <DragSlider
@@ -569,7 +431,6 @@ export const MortgageCalculator = ({
               setNumber={(value) => {
                 setDownPaymentPercentage(value)
                 setDownPayment(calculateValueByPercent(value, salesNumber))
-                setDownPaymentBasedOn('percentage')
               }}
               step={DOWN_PAYMENT_PERCENTAGE_STEP}
             />
@@ -589,15 +450,14 @@ export const MortgageCalculator = ({
               />
               <span className={styles.inputFont}>%</span>
             </div>
-            <span className={styles.error}>{interestError}</span>
           </div>
           <div className={styles.dragWrapper}>
             <DragSlider
-              minValue={interestMin}
-              maxValue={interestMax > 100 ? 100 : interestMax.toFixed(3)}
+              minValue={INTEREST_RATE_MIN}
+              maxValue={INTEREST_RATE_MAX}
               number={interestNumber}
               setNumber={setInterestNumber}
-              step={INTEREST_PERCENTAGE_STEP}
+              step={INTEREST_RATE_STEP}
             />
           </div>
         </div>
@@ -617,6 +477,11 @@ export const MortgageCalculator = ({
                     onChange={(e) =>
                       handleTaxPercentageDirectInput(e.target.value)
                     }
+                    onBlur={() =>
+                      setTaxPercentage(
+                        Number(taxPercentage) ? taxPercentage : 0
+                      )
+                    }
                     className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                     value={taxPercentage}
                     size='6'
@@ -628,22 +493,21 @@ export const MortgageCalculator = ({
                     onChange={(e) => {
                       handleTaxDirectInput(e.target.value)
                     }}
+                    onBlur={() => setTax(Number(tax) ? tax : 0)}
                     className={`${styles.input} ${styles.inputFont}`}
                     value={`$${convertToMoney(tax)}`}
                     size={calculateInputSize(tax)}
                   />
                 </div>
-                <span className={styles.error}>{taxError}</span>
               </div>
               <div className={styles.dragWrapper}>
                 <DragSlider
                   minValue={TAX_PERCENTAGE_MIN}
                   maxValue={TAX_PERCENTAGE_MAX}
-                  number={taxPercentage}
+                  number={Number(taxPercentage) ? taxPercentage : 0}
                   setNumber={(value) => {
                     setTaxPercentage(value)
                     setTax(calculateValueByPercent(value, salesNumber))
-                    setTaxBasedOn('percentage')
                   }}
                   step={TAX_PERCENTAGE_STEP}
                 />
@@ -657,16 +521,24 @@ export const MortgageCalculator = ({
                   id='mort-insurance'
                   type='text'
                   onChange={(e) => handleInsuranceDirectInput(e.target.value)}
+                  onBlur={() =>
+                    setInsuranceNumber(
+                      Number(insuranceNumber) ? insuranceNumber : 0
+                    )
+                  }
                   className={`${styles.input} ${styles.inputFont}`}
                   value={`$${convertToMoney(insuranceNumber)}`}
                 />
-                <span className={styles.error}>{insuranceError}</span>
               </div>
               <div className={styles.dragWrapper}>
                 <DragSlider
-                  minValue={insuranceMin}
-                  maxValue={insuranceMax}
-                  number={insuranceNumber}
+                  minValue={INSURANCE_MIN}
+                  maxValue={
+                    Math.ceil(
+                      (INSURANCE_MAX_BASIS * salesNumber) / INSURANCE_STEP
+                    ) * INSURANCE_STEP
+                  }
+                  number={Number(insuranceNumber) ? insuranceNumber : 0}
                   setNumber={setInsuranceNumber}
                   step={INSURANCE_STEP}
                 />
@@ -680,17 +552,18 @@ export const MortgageCalculator = ({
                   id='mort-hoa'
                   type='text'
                   onChange={(e) => handleHoaDirectInput(e.target.value)}
+                  onBlur={() => setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)}
                   className={`${styles.input} ${styles.inputFont}`}
                   value={`$${convertToMoney(hoaNumber)}`}
                 />
-                <span className={styles.error}>{hoaError}</span>
               </div>
               <div className={styles.dragWrapper}>
                 <DragSlider
-                  minValue={hoaMin}
-                  maxValue={hoaMax}
-                  number={hoaNumber}
+                  minValue={HOA_MIN}
+                  maxValue={HOA_MAX}
+                  number={Number(hoaNumber) ? hoaNumber : 0}
                   setNumber={setHoaNumber}
+                  step={HOA_STEP}
                 />
               </div>
             </div>

@@ -159,7 +159,7 @@
 
 .mediaVideo {
   iframe {
-    @include breakpoint(sm) {
+    @include breakpoint(md) {
       padding-bottom: 50px;
     }
   }

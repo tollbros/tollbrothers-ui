@@ -29,7 +29,8 @@ export const FullScreenGallery = ({
   onPrevious = () => {},
   initialSlide = 1,
   backgroundColor,
-  portalId
+  portalId,
+  classes
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
   return (
@@ -46,7 +47,7 @@ export const FullScreenGallery = ({
             >
               {newMediaList.map(function (media, idx) {
                 return (
-                  <div className={`${styles.fullscreenMedia}`} key={idx}>
+                  <div className={styles.fullscreenMedia} key={idx}>
                     <GalleryMedia
                       media={media}
                       index={idx}
@@ -55,6 +56,7 @@ export const FullScreenGallery = ({
                       dataLayerPush={dataLayerPush}
                       showCaption
                       backgroundColor={backgroundColor}
+                      classes={classes}
                     />
                   </div>
                 )

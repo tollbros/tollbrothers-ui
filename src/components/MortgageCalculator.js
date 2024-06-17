@@ -21,8 +21,8 @@ const TAX_PERCENTAGE_MAX = 12
 const TAX_PERCENTAGE_STEP = 0.01
 
 const INSURANCE_MIN = 0
-const INSURANCE_MAX_BASIS = 0.12
-const INSURANCE_STEP = 50
+const INSURANCE_MAX = 12
+const INSURANCE_STEP = 0.05
 
 const HOA_MIN = 0
 const HOA_MAX = 5000
@@ -37,7 +37,7 @@ export const MortgageCalculator = ({
   const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
   const [loanTerm, setLoanTerm] = useState(30)
   const [interestNumber, setInterestNumber] = useState(initialInterestRate)
-  const [insuranceNumber, setInsuranceNumber] = useState(0)
+
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
   const [showLegendToggle, setShowLegendToggle] = useState(false)
@@ -46,6 +46,8 @@ export const MortgageCalculator = ({
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
   const [tax, setTax] = useState(0)
   const [taxPercentage, setTaxPercentage] = useState(0)
+  const [insurance, setInsurance] = useState(0)
+  const [insurancePercentage, setInsurancePercentage] = useState(0)
   const [taxDegrees, setTaxDegrees] = useState(0)
   const [insuranceDegrees, setInsuranceDesgrees] = useState(0)
   const [hoaDegrees, setHoaDegrees] = useState(0)
@@ -164,15 +166,30 @@ export const MortgageCalculator = ({
     }
   }
 
+  const handleInsurancePercentageDirectInput = (value) => {
+    const cleanValue = value?.replace(/[^0-9.]/g, '')
+
+    if (Number(cleanValue) >= 0) {
+      setInsurancePercentage(cleanValue)
+      setInsurance(calculateValueByPercent(cleanValue, salesNumber))
+    } else {
+      setInsurancePercentage('')
+      setInsurance(0)
+    }
+  }
+
   const handleInsuranceDirectInput = (value) => {
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
     if (Number(cleanValue) > 0) {
-      setInsuranceNumber(cleanValue)
+      setInsurance(cleanValue)
+      setInsurancePercentage(calculateFixedPercentage(cleanValue, salesNumber))
     } else {
-      setInsuranceNumber('')
+      setInsurance('')
+      setInsurancePercentage(0)
     }
   }
+
   const handleHoaDirectInput = (value) => {
     const cleanValue = Number(value?.replace(/\D/g, ''))
 
@@ -215,13 +232,13 @@ export const MortgageCalculator = ({
     let totalPayment =
       calculatedMonthlyPayment +
       parseFloat(Math.round(tax / 12)) +
-      parseFloat(Math.round(insuranceNumber / 12)) +
+      parseFloat(Math.round(insurance / 12)) +
       parseFloat(hoaNumber)
     isNaN(totalPayment) ? (totalPayment = 0) : (totalPayment = totalPayment)
     setMonthlyPayment(convertToMoney(totalPayment.toFixed(0)))
     const taxPercent = tax / 12 / totalPayment
 
-    const insurancePercent = insuranceNumber / 12 / totalPayment
+    const insurancePercent = insurance / 12 / totalPayment
     const hoaPercent = hoaNumber / totalPayment
     setTaxDegrees(360 * taxPercent)
     setInsuranceDesgrees(360 * insurancePercent)
@@ -233,7 +250,7 @@ export const MortgageCalculator = ({
     downPayment,
     interestNumber,
     tax,
-    insuranceNumber,
+    insurance,
     hoaNumber
   ])
 
@@ -306,7 +323,7 @@ export const MortgageCalculator = ({
             <label htmlFor='mort-loan-select'>Loan Term</label>
             <span className={styles.dropDownArrow} />
             <select
-              className={styles.select}
+              className={`${styles.select} ${styles.inputFont}`}
               name='loanSelect'
               id='mort-loan-select'
               onChange={loadDropDown}
@@ -412,7 +429,12 @@ export const MortgageCalculator = ({
         </div>
 
         <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
-          <button onClick={showLegend}>Advanced Options</button>
+          <button
+            className={`${showAdvancedToggle ? styles.open : ''}`}
+            onClick={showLegend}
+          >
+            Advanced Options
+          </button>
         </div>
         {showAdvancedToggle && (
           <>
@@ -466,29 +488,46 @@ export const MortgageCalculator = ({
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-insurance'>Insurance (Annual)</label>
-                <input
-                  id='mort-insurance'
-                  type='text'
-                  onChange={(e) => handleInsuranceDirectInput(e.target.value)}
-                  onBlur={() =>
-                    setInsuranceNumber(
-                      Number(insuranceNumber) ? insuranceNumber : 0
-                    )
-                  }
-                  className={`${styles.input} ${styles.inputFont}`}
-                  value={`$${convertToMoney(insuranceNumber)}`}
-                />
+                <div className={styles.inputWrapper}>
+                  <input
+                    id='mort-insurance-by-amount'
+                    type='text'
+                    onChange={(e) => handleInsuranceDirectInput(e.target.value)}
+                    onBlur={() =>
+                      setInsurance(Number(insurance) ? insurance : 0)
+                    }
+                    className={`${styles.input} ${styles.inputFont}`}
+                    value={`$${convertToMoney(insurance)}`}
+                  />
+                  <input
+                    id='mort-insurance-by-percentage'
+                    type='text'
+                    onChange={(e) =>
+                      handleInsurancePercentageDirectInput(e.target.value)
+                    }
+                    onBlur={() =>
+                      setInsurancePercentage(
+                        Number(insurancePercentage)
+                          ? Number(insurancePercentage)
+                          : 0
+                      )
+                    }
+                    className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
+                    value={insurancePercentage}
+                    // size='6'
+                  />
+                  <span className={styles.inputFont}>%</span>
+                </div>
               </div>
               <div className={styles.dragWrapper}>
                 <DragSlider
                   minValue={INSURANCE_MIN}
-                  maxValue={
-                    Math.ceil(
-                      (INSURANCE_MAX_BASIS * salesNumber) / INSURANCE_STEP
-                    ) * INSURANCE_STEP
-                  }
-                  number={Number(insuranceNumber) ? insuranceNumber : 0}
-                  setNumber={setInsuranceNumber}
+                  maxValue={INSURANCE_MAX}
+                  number={Number(insurancePercentage) ? insurancePercentage : 0}
+                  setNumber={(value) => {
+                    setInsurancePercentage(value)
+                    setInsurance(calculateValueByPercent(value, salesNumber))
+                  }}
                   step={INSURANCE_STEP}
                 />
               </div>
@@ -596,9 +635,7 @@ export const MortgageCalculator = ({
               </div>
               <div>
                 <span>Insurance</span>
-                <span>
-                  ${convertToMoney(Math.round(insuranceNumber / 12))}/mo
-                </span>
+                <span>${convertToMoney(Math.round(insurance / 12))}/mo</span>
                 <span
                   className={styles.toolTipLaunch}
                   onMouseOver={launchToolTip}

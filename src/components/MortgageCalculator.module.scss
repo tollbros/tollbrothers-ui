@@ -23,6 +23,10 @@
 .right {
     position: relative;
 
+    @media screen and (max-width: 850px) {
+        margin-top: 20px;
+    }
+
     &::before {
         content: '';
         display: block;
@@ -32,6 +36,10 @@
         left: -18px;
         top: 10px;
         background-color: #aaa;
+
+        @media screen and (max-width: 850px) {
+            display: none;
+        }
     }
 
     .estimatedPayment {
@@ -248,8 +256,13 @@
     position: relative;
     height: 60px;
     border: 1px solid #aaa;
-    padding: 0 26px 0 18px;
+    padding: 0 14px 0 10px;
     margin: 10px 0 40px;
+
+    @include breakpoint(xs) {
+        padding: 0 26px 0 18px;
+    }
+
 }
 
 .dragWrapper {
@@ -276,11 +289,16 @@
     height: 100%;
     z-index: 1;
 
+    &.estimatedPayment {
+        height: auto;
+    }
+
     label {
         flex-shrink: 0;
         color: $medium_blue;
         font-family: $alt_font_family;
-        font-weight: $font_weight_bold;
+        font-weight: $font_weight_medium;
+        font-size: .9em;
     }
 
     &.down {
@@ -315,8 +333,6 @@
     }
 }
 
-
-
 .input {
     height: 100%;
     width: 100px;
@@ -340,11 +356,16 @@
 }
 
 .inputPercentage {
-    width: 70px;
+    width: 60px;
     padding-right: 12px;
     //width: auto;
     //padding: 0 12px 0 6px;
-    margin-left: 26px;
+    margin-left: 14px;
+
+    @include breakpoint(xs) {
+        width: 70px;
+        margin-left: 24px;
+    }
 
 
     & + span {

@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react'
 import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
+const DEFAULT_SALES = 100000
 const SALES_MIN = 100000
-const SALES_MAX = 12000000
+const SALES_MAX = 1000000
 const SALES_STEP = 1000
 
 const DOWN_PAYMENT_PERCENTAGE_MIN = 0
 const DOWN_PAYMENT_PERCENTAGE_MAX = 99
 const DOWN_PAYMENT_PERCENTAGE_STEP = 0.5
 
+const DEFAULT_INTEREST_RATE = 3.5
 const INTEREST_RATE_MIN = 0
 const INTEREST_RATE_MAX = 12
 const INTEREST_RATE_STEP = 0.125
@@ -27,41 +29,28 @@ const HOA_MAX = 5000
 const HOA_STEP = 1
 
 export const MortgageCalculator = ({
-  salesNumber = 100000,
-  setSalesNumber,
-  loanNumber,
-  setLoanNumber,
-  // downPaymentNumber,
-  // setDownPaymentNumber,
-  interestNumber,
-  setInterestNumber,
-  setMonthlyPayment,
-  monthlyPayment,
-  showAdvancedToggle,
-  setShowAdvancedToggle,
+  initialSalesNumber = DEFAULT_SALES,
+  initialInterestRate = DEFAULT_INTEREST_RATE,
   targetClass,
-  resetDownMax,
-  downMax,
-  salePriceStep = 1000,
-  maxSalePrice = 1000000,
-  downPaymentStep = 500
+  maxSalePrice = SALES_MAX
 }) => {
+  const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
+  const [loanTerm, setLoanTerm] = useState(30)
+  const [interestNumber, setInterestNumber] = useState(initialInterestRate)
   const [insuranceNumber, setInsuranceNumber] = useState(0)
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
   const [showLegendToggle, setShowLegendToggle] = useState(false)
-
-  const [downPayment, setDownPayment] = useState(20000)
+  const [monthlyPayment, setMonthlyPayment] = useState(0)
+  const [downPayment, setDownPayment] = useState(0.2 * initialSalesNumber)
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
-
   const [tax, setTax] = useState(0)
   const [taxPercentage, setTaxPercentage] = useState(0)
-
   const [taxDegrees, setTaxDegrees] = useState(0)
   const [insuranceDegrees, setInsuranceDesgrees] = useState(0)
   const [hoaDegrees, setHoaDegrees] = useState(0)
-
   const [showDefalutGraphic, setShowDefalutGraphic] = useState(true)
+  const [showAdvancedToggle, setShowAdvancedToggle] = useState(false)
 
   let rangeInputs
 
@@ -93,7 +82,7 @@ export const MortgageCalculator = ({
   const calculateMonthlyPayment = () => {
     const loanAmount = Number(salesNumber) - Number(downPayment)
     const monthlyInterestRate = Number(interestNumber) / 1200 // monthly interest
-    const numberOfPayments = loanNumber * 12
+    const numberOfPayments = loanTerm * 12
     const total = loanAmount * monthlyInterestRate
     const divisor = 1 - Math.pow(1 + monthlyInterestRate, -1 * numberOfPayments)
     let amount = total / divisor < 0 ? 0 : total / divisor
@@ -214,7 +203,7 @@ export const MortgageCalculator = ({
     setLoanTermIndex(arrayIndex)
   }
   useEffect(() => {
-    setLoanNumber(loanTermArray[loanTermIndex])
+    setLoanTerm(loanTermArray[loanTermIndex])
   }, [loanTermIndex])
 
   useEffect(() => {
@@ -240,7 +229,7 @@ export const MortgageCalculator = ({
     setPiNumber(calculatedMonthlyPayment.toFixed(0))
   }, [
     salesNumber,
-    loanNumber,
+    loanTerm,
     downPayment,
     interestNumber,
     tax,
@@ -299,7 +288,7 @@ export const MortgageCalculator = ({
           <div className={styles.dragWrapper}>
             <DragSlider
               minValue={SALES_MIN}
-              maxValue={SALES_MAX}
+              maxValue={maxSalePrice}
               number={Number(salesNumber) ? salesNumber : 0}
               setNumber={setSalesNumber}
               onChange={(value) => {
@@ -321,7 +310,7 @@ export const MortgageCalculator = ({
               name='loanSelect'
               id='mort-loan-select'
               onChange={loadDropDown}
-              value={loanNumber}
+              value={loanTerm}
             >
               <option value='10'>10 Years</option>
               <option value='15'>15 Years</option>

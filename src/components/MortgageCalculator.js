@@ -341,7 +341,18 @@ export const MortgageCalculator = ({
         <div className={styles.sliderWrapper}>
           <div className={`${styles.callOutWrapper} ${styles.down}`}>
             <label htmlFor='mort-down-payment-percent'>Down Payment</label>
-            <div>
+            <div className={styles.inputWrapper}>
+              <input
+                id='mort-down-payment'
+                type='text'
+                onChange={(e) => handleDownDirectInput(e.target.value)}
+                onBlur={() =>
+                  setDownPayment(Number(downPayment) ? downPayment : 0)
+                }
+                className={`${styles.input} ${styles.inputFont}`}
+                value={`$${convertToMoney(downPayment)}`}
+                // size={calculateInputSize(downPayment)}
+              />
               <input
                 id='mort-down-payment-percent'
                 type='text'
@@ -357,20 +368,10 @@ export const MortgageCalculator = ({
                 }}
                 className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                 value={downPaymentPercentage}
-                size='6'
+                // size='6'
+                size={downPaymentPercentage.toString().length + 1}
               />
               <span className={styles.inputFont}>%</span>
-              <input
-                id='mort-down-payment'
-                type='text'
-                onChange={(e) => handleDownDirectInput(e.target.value)}
-                onBlur={() =>
-                  setDownPayment(Number(downPayment) ? downPayment : 0)
-                }
-                className={`${styles.input} ${styles.inputFont}`}
-                value={`$${convertToMoney(downPayment)}`}
-                size={calculateInputSize(downPayment)}
-              />
             </div>
           </div>
           <div className={styles.dragWrapper}>
@@ -429,7 +430,18 @@ export const MortgageCalculator = ({
             <div className={styles.sliderWrapper}>
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-taxes'>Taxes (Annual)</label>
-                <div>
+                <div className={styles.inputWrapper}>
+                  <input
+                    id='mort-taxes-by-amount'
+                    type='text'
+                    onChange={(e) => {
+                      handleTaxDirectInput(e.target.value)
+                    }}
+                    onBlur={() => setTax(Number(tax) ? tax : 0)}
+                    className={`${styles.input} ${styles.inputFont}`}
+                    value={`$${convertToMoney(tax)}`}
+                    // size={calculateInputSize(tax)}
+                  />
                   <input
                     id='mort-taxes-by-percentage'
                     type='text'
@@ -443,20 +455,9 @@ export const MortgageCalculator = ({
                     }
                     className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                     value={taxPercentage}
-                    size='6'
+                    // size='6'
                   />
                   <span className={styles.inputFont}>%</span>
-                  <input
-                    id='mort-taxes-by-amount'
-                    type='text'
-                    onChange={(e) => {
-                      handleTaxDirectInput(e.target.value)
-                    }}
-                    onBlur={() => setTax(Number(tax) ? tax : 0)}
-                    className={`${styles.input} ${styles.inputFont}`}
-                    value={`$${convertToMoney(tax)}`}
-                    size={calculateInputSize(tax)}
-                  />
                 </div>
               </div>
               <div className={styles.dragWrapper}>

@@ -55,9 +55,9 @@ export const MortgageCalculator = ({
   const [piNumber, setPiNumber] = useState(0) // principal and interest
   const [showLegendToggle, setShowLegendToggle] = useState(false)
   const [monthlyPayment, setMonthlyPayment] = useState(0)
-  const [downPayment, setDownPayment] = useState(
-    calculateValueByPercent(20, initialSalesNumber)
-  )
+  const [downPayment, setDownPayment] = useState(() => {
+    return calculateValueByPercent(20, initialSalesNumber)
+  })
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
   const [tax, setTax] = useState(0)
   const [taxPercentage, setTaxPercentage] = useState(0)

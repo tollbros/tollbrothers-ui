@@ -33,11 +33,19 @@ const HOA_MIN = 0
 const HOA_MAX = 5000
 const HOA_STEP = 1
 
+/**
+ * @component
+ * @param {object} props
+ * @param {number} [props.initialSalesNumber] - optional starting sales price
+ * @param {number} [props.initialInterestRate] - optional starting interest rate
+ * @param {number} [props.maxSalePrice] - optional max sales price for sales price slider
+ * @param {string} [props.targetClass] - optional string to determine which theme to apply
+ */
 export const MortgageCalculator = ({
   initialSalesNumber = DEFAULT_SALES,
   initialInterestRate = DEFAULT_INTEREST_RATE,
-  targetClass,
-  maxSalePrice = SALES_MAX
+  maxSalePrice = SALES_MAX,
+  targetClass
 }) => {
   const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
   const [loanTerm, setLoanTerm] = useState(30)

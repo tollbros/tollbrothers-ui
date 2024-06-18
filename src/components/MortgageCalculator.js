@@ -3,7 +3,7 @@ import styles from './MortgageCalculator.module.scss'
 import { DragSlider } from './DragSlider'
 
 const DEFAULT_SALES = 100000
-const SALES_MIN = 100000
+const SALES_MIN = 0
 const SALES_MAX = 1000000
 const SALES_STEP = 1000
 
@@ -28,6 +28,35 @@ const HOA_MIN = 0
 const HOA_MAX = 5000
 const HOA_STEP = 1
 
+const convertToMoney = (number) => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+const calculateValueByPercent = (percentage, value, toFixed = 2) => {
+  const calculation = Math.round(((percentage / 100) * value).toFixed(toFixed))
+
+  return calculation
+}
+
+const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
+  const calculation = (100 * (percentage / value)).toFixed(toFixed)
+  return calculation
+}
+
+const getCleanValue = (value, removeStartingZero) => {
+  let cleanValue = value?.replace(/[^0-9.]/g, '')
+
+  if (
+    removeStartingZero &&
+    cleanValue?.length > 1 &&
+    cleanValue.startsWith('0')
+  ) {
+    cleanValue = cleanValue.slice(1)
+  }
+
+  return cleanValue
+}
+
 export const MortgageCalculator = ({
   initialSalesNumber = DEFAULT_SALES,
   initialInterestRate = DEFAULT_INTEREST_RATE,
@@ -42,7 +71,9 @@ export const MortgageCalculator = ({
   const [piNumber, setPiNumber] = useState(0) // principal and interest
   const [showLegendToggle, setShowLegendToggle] = useState(false)
   const [monthlyPayment, setMonthlyPayment] = useState(0)
-  const [downPayment, setDownPayment] = useState(0.2 * initialSalesNumber)
+  const [downPayment, setDownPayment] = useState(
+    calculateValueByPercent(20, initialSalesNumber)
+  )
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(20)
   const [tax, setTax] = useState(0)
   const [taxPercentage, setTaxPercentage] = useState(0)
@@ -55,23 +86,6 @@ export const MortgageCalculator = ({
   const [showAdvancedToggle, setShowAdvancedToggle] = useState(false)
 
   let rangeInputs
-
-  const convertToMoney = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  }
-
-  const calculateValueByPercent = (percentage, value, toFixed = 2) => {
-    const calculation = Math.round(
-      ((percentage / 100) * value).toFixed(toFixed)
-    )
-
-    return calculation
-  }
-
-  const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
-    const calculation = (100 * (percentage / value)).toFixed(toFixed)
-    return calculation
-  }
 
   const toggleAdvanced = (e) => {
     setShowAdvancedToggle(!showAdvancedToggle)
@@ -92,111 +106,55 @@ export const MortgageCalculator = ({
     return amount
   }
 
-  const handleSalePriceDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
+  const handleAmountDirectInput = (
+    value,
+    setAmount,
+    setPercentage = () => null
+  ) => {
+    const cleanValue = getCleanValue(value, true)
 
-    if (cleanValue > 0) {
+    if (cleanValue >= 0) {
+      setAmount(cleanValue)
+      setPercentage(
+        Number(cleanValue)
+          ? calculateFixedPercentage(cleanValue, salesNumber)
+          : 0
+      )
+    } else {
+      setAmount('')
+      setPercentage(0)
+    }
+  }
+
+  const handlePercentageDirectInput = (
+    value,
+    setPercentage,
+    setAmount = () => null
+  ) => {
+    const cleanValue = getCleanValue(value)
+
+    if (cleanValue >= 0) {
+      setPercentage(cleanValue)
+      setAmount(calculateValueByPercent(cleanValue, salesNumber))
+    } else {
+      setPercentage('')
+      setAmount(0)
+    }
+  }
+
+  const handleSalePriceDirectInput = (value) => {
+    const cleanValue = getCleanValue(value, true)
+
+    if (cleanValue >= 0) {
       setSalesNumber(cleanValue)
       setDownPayment(calculateValueByPercent(downPaymentPercentage, cleanValue))
       setTax(calculateValueByPercent(taxPercentage, cleanValue))
+      setInsurance(calculateValueByPercent(insurancePercentage, cleanValue))
     } else {
       setSalesNumber('')
       setDownPayment(0)
       setTax(0)
-    }
-  }
-
-  const handleDownPercentageDirectInput = (value) => {
-    const cleanValue = value?.replace(/[^0-9.]/g, '')
-
-    if (cleanValue >= 0) {
-      setDownPaymentPercentage(cleanValue)
-      setDownPayment(calculateValueByPercent(cleanValue, salesNumber))
-    } else {
-      setDownPaymentPercentage('')
-      setDownPayment(0)
-    }
-  }
-
-  const handleDownDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
-
-    if (cleanValue > 0) {
-      setDownPayment(cleanValue)
-      setDownPaymentPercentage(
-        calculateFixedPercentage(cleanValue, salesNumber)
-      )
-    } else {
-      setDownPayment('')
-      setDownPaymentPercentage(0)
-    }
-  }
-
-  const handleInterestDirectInput = (value) => {
-    const cleanValue = value?.replace(/[^0-9.]/g, '')
-
-    if (Number(cleanValue) >= 0) {
-      setInterestNumber(cleanValue)
-    } else {
-      setInterestNumber('')
-    }
-  }
-
-  const handleTaxPercentageDirectInput = (value) => {
-    const cleanValue = value?.replace(/[^0-9.]/g, '')
-
-    if (Number(cleanValue) >= 0) {
-      setTaxPercentage(cleanValue)
-      setTax(calculateValueByPercent(cleanValue, salesNumber))
-    } else {
-      setTaxPercentage('')
-      setTax(0)
-    }
-  }
-
-  const handleTaxDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
-
-    if (Number(cleanValue) > 0) {
-      setTax(cleanValue)
-      setTaxPercentage(calculateFixedPercentage(cleanValue, salesNumber))
-    } else {
-      setTax('')
-      setTaxPercentage(0)
-    }
-  }
-
-  const handleInsurancePercentageDirectInput = (value) => {
-    const cleanValue = value?.replace(/[^0-9.]/g, '')
-
-    if (Number(cleanValue) >= 0) {
-      setInsurancePercentage(cleanValue)
-      setInsurance(calculateValueByPercent(cleanValue, salesNumber))
-    } else {
-      setInsurancePercentage('')
       setInsurance(0)
-    }
-  }
-
-  const handleInsuranceDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
-
-    if (Number(cleanValue) > 0) {
-      setInsurance(cleanValue)
-      setInsurancePercentage(calculateFixedPercentage(cleanValue, salesNumber))
-    } else {
-      setInsurance('')
-      setInsurancePercentage(0)
-    }
-  }
-
-  const handleHoaDirectInput = (value) => {
-    const cleanValue = Number(value?.replace(/\D/g, ''))
-
-    if (Number(cleanValue) > 0) {
-      setHoaNumber(cleanValue)
-    } else {
-      setHoaNumber('')
     }
   }
 
@@ -269,22 +227,6 @@ export const MortgageCalculator = ({
     target.style.backgroundSize = percentage + '% 100%'
   }
 
-  // TODO: Try to find a better way to handle this
-  const calculateInputSize = (value) => {
-    let cushion = 2
-    const valueNumber = Number(value)
-
-    if (valueNumber === 0) {
-      cushion = 1
-    } else if (valueNumber >= 1000000) {
-      cushion = 3
-    } else if (valueNumber > 10000000) {
-      cushion = 4
-    }
-
-    return value.toString().length + cushion
-  }
-
   return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
       <div className={styles.left}>
@@ -313,6 +255,9 @@ export const MortgageCalculator = ({
                   calculateValueByPercent(downPaymentPercentage, value)
                 )
                 setTax(calculateValueByPercent(taxPercentage, value))
+                setInsurance(
+                  calculateValueByPercent(insurancePercentage, value)
+                )
               }}
               step={SALES_STEP}
             />
@@ -351,19 +296,28 @@ export const MortgageCalculator = ({
               <input
                 id='mort-down-payment'
                 type='text'
-                onChange={(e) => handleDownDirectInput(e.target.value)}
+                onChange={(e) =>
+                  handleAmountDirectInput(
+                    e.target.value,
+                    setDownPayment,
+                    setDownPaymentPercentage
+                  )
+                }
                 onBlur={() =>
                   setDownPayment(Number(downPayment) ? downPayment : 0)
                 }
                 className={`${styles.input} ${styles.inputFont}`}
                 value={`$${convertToMoney(downPayment)}`}
-                // size={calculateInputSize(downPayment)}
               />
               <input
                 id='mort-down-payment-percent'
                 type='text'
                 onChange={(e) =>
-                  handleDownPercentageDirectInput(e.target.value)
+                  handlePercentageDirectInput(
+                    e.target.value,
+                    setDownPaymentPercentage,
+                    setDownPayment
+                  )
                 }
                 onBlur={() => {
                   setDownPaymentPercentage(
@@ -374,8 +328,6 @@ export const MortgageCalculator = ({
                 }}
                 className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                 value={downPaymentPercentage}
-                // size='6'
-                size={downPaymentPercentage.toString().length + 1}
               />
               <span className={styles.inputFont}>%</span>
             </div>
@@ -405,7 +357,9 @@ export const MortgageCalculator = ({
               <input
                 id='mort-int-rate'
                 type='text'
-                onChange={(e) => handleInterestDirectInput(e.target.value)}
+                onChange={(e) =>
+                  handlePercentageDirectInput(e.target.value, setInterestNumber)
+                }
                 onBlur={() => {
                   setInterestNumber(
                     Number(interestNumber) ? Number(interestNumber) : 0
@@ -446,18 +400,25 @@ export const MortgageCalculator = ({
                     id='mort-taxes-by-amount'
                     type='text'
                     onChange={(e) => {
-                      handleTaxDirectInput(e.target.value)
+                      handleAmountDirectInput(
+                        e.target.value,
+                        setTax,
+                        setTaxPercentage
+                      )
                     }}
                     onBlur={() => setTax(Number(tax) ? tax : 0)}
                     className={`${styles.input} ${styles.inputFont}`}
                     value={`$${convertToMoney(tax)}`}
-                    // size={calculateInputSize(tax)}
                   />
                   <input
                     id='mort-taxes-by-percentage'
                     type='text'
                     onChange={(e) =>
-                      handleTaxPercentageDirectInput(e.target.value)
+                      handlePercentageDirectInput(
+                        e.target.value,
+                        setTaxPercentage,
+                        setTax
+                      )
                     }
                     onBlur={() =>
                       setTaxPercentage(
@@ -466,7 +427,6 @@ export const MortgageCalculator = ({
                     }
                     className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                     value={taxPercentage}
-                    // size='6'
                   />
                   <span className={styles.inputFont}>%</span>
                 </div>
@@ -492,7 +452,13 @@ export const MortgageCalculator = ({
                   <input
                     id='mort-insurance-by-amount'
                     type='text'
-                    onChange={(e) => handleInsuranceDirectInput(e.target.value)}
+                    onChange={(e) =>
+                      handleAmountDirectInput(
+                        e.target.value,
+                        setInsurance,
+                        setInsurancePercentage
+                      )
+                    }
                     onBlur={() =>
                       setInsurance(Number(insurance) ? insurance : 0)
                     }
@@ -503,7 +469,11 @@ export const MortgageCalculator = ({
                     id='mort-insurance-by-percentage'
                     type='text'
                     onChange={(e) =>
-                      handleInsurancePercentageDirectInput(e.target.value)
+                      handlePercentageDirectInput(
+                        e.target.value,
+                        setInsurancePercentage,
+                        setInsurance
+                      )
                     }
                     onBlur={() =>
                       setInsurancePercentage(
@@ -514,7 +484,6 @@ export const MortgageCalculator = ({
                     }
                     className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
                     value={insurancePercentage}
-                    // size='6'
                   />
                   <span className={styles.inputFont}>%</span>
                 </div>
@@ -539,7 +508,9 @@ export const MortgageCalculator = ({
                 <input
                   id='mort-hoa'
                   type='text'
-                  onChange={(e) => handleHoaDirectInput(e.target.value)}
+                  onChange={(e) =>
+                    handleAmountDirectInput(e.target.value, setHoaNumber)
+                  }
                   onBlur={() => setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)}
                   className={`${styles.input} ${styles.inputFont}`}
                   value={`$${convertToMoney(hoaNumber)}`}

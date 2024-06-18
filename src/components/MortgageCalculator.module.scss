@@ -258,6 +258,7 @@
     border: 1px solid #aaa;
     padding: 0 10px;
     margin: 10px 0 40px;
+    background-color: white;
 
     @include breakpoint(xs) {
         padding: 0 18px;
@@ -294,7 +295,7 @@
     }
 
     label {
-        flex-shrink: 0;
+        flex-shrink: 1;
         color: $medium_blue;
         font-family: $alt_font_family;
         font-weight: $font_weight_medium;
@@ -340,6 +341,7 @@
     margin: 0;
     text-align: right;
     background: transparent;
+    border: none;
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -358,8 +360,6 @@
 .inputPercentage {
     width: 64px;
     padding-right: 12px;
-    //width: auto;
-    //padding: 0 12px 0 6px;
     margin-left: 12px;
 
     @include breakpoint(xs) {
@@ -375,6 +375,7 @@
 }
 
 .inputWrapper {
+    flex-shrink: 0;
     height: 100%;
 
     .inputPercentage {

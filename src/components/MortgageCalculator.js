@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import styles from './MortgageCalculator.module.scss'
+
+import { convertToMoney } from '../lib/convertToMoney'
+import { calculateValueByPercent } from '../lib/calculateValueByPercent'
+import { calculateFixedPercentage } from '../lib/calculateFixedPercentage'
+import { getCleanNumbericInputValue } from '../lib/getCleanNumbericInputValue'
 import { DragSlider } from './DragSlider'
+import styles from './MortgageCalculator.module.scss'
 
 const DEFAULT_SALES = 100000
 const SALES_MIN = 0
@@ -27,35 +32,6 @@ const INSURANCE_STEP = 0.05
 const HOA_MIN = 0
 const HOA_MAX = 5000
 const HOA_STEP = 1
-
-const convertToMoney = (number) => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
-const calculateValueByPercent = (percentage, value, toFixed = 2) => {
-  const calculation = Math.round(((percentage / 100) * value).toFixed(toFixed))
-
-  return calculation
-}
-
-const calculateFixedPercentage = (percentage, value, toFixed = 2) => {
-  const calculation = (100 * (percentage / value)).toFixed(toFixed)
-  return calculation
-}
-
-const getCleanValue = (value, removeStartingZero) => {
-  let cleanValue = value?.replace(/[^0-9.]/g, '')
-
-  if (
-    removeStartingZero &&
-    cleanValue?.length > 1 &&
-    cleanValue.startsWith('0')
-  ) {
-    cleanValue = cleanValue.slice(1)
-  }
-
-  return cleanValue
-}
 
 export const MortgageCalculator = ({
   initialSalesNumber = DEFAULT_SALES,
@@ -111,7 +87,7 @@ export const MortgageCalculator = ({
     setAmount,
     setPercentage = () => null
   ) => {
-    const cleanValue = getCleanValue(value, true)
+    const cleanValue = getCleanNumbericInputValue(value, true, false)
 
     if (cleanValue >= 0) {
       setAmount(cleanValue)
@@ -131,7 +107,7 @@ export const MortgageCalculator = ({
     setPercentage,
     setAmount = () => null
   ) => {
-    const cleanValue = getCleanValue(value)
+    const cleanValue = getCleanNumbericInputValue(value, false, true)
 
     if (cleanValue >= 0) {
       setPercentage(cleanValue)
@@ -143,7 +119,7 @@ export const MortgageCalculator = ({
   }
 
   const handleSalePriceDirectInput = (value) => {
-    const cleanValue = getCleanValue(value, true)
+    const cleanValue = getCleanNumbericInputValue(value, true, false)
 
     if (cleanValue >= 0) {
       setSalesNumber(cleanValue)

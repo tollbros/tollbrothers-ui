@@ -1,12 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HorizontalScroller.module.scss'
 
-export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
+export const HorizontalScroller = ({
+  children,
+  showArrows,
+  classes = {},
+  index,
+  onImageClick
+}) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const galleryRef = useRef(null)
-  const slideRef = useRef(null)
+  const slideRef = useRef([])
 
   const handleScroll = () => {
     const gallery = galleryRef.current
@@ -38,6 +44,19 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
       left: slideRef.current?.offsetWidth + (marginLeft + marginRight + 2)
     })
   }
+  const scrollToImage = (index) => {
+    if (galleryRef.current) {
+      const imageWidth = galleryRef.current.firstChild.clientWidth
+      galleryRef.current.scrollTo({
+        left: imageWidth * index,
+        // behavior: 'smooth'
+        behavior: 'instant'
+      })
+    }
+  }
+  useEffect(() => {
+    scrollToImage(index)
+  }, [index])
 
   // to detect if window is wider than gallery
   useEffect(() => {
@@ -79,17 +98,21 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
         <div
           className={`${styles.scrollWrap} ${
             children.length === 1 ? styles.noMargin : ''
-          } ${classes.scrollWrap ?? ''}`}
+          } ${classes.scrollWrap ?? ''} scrollWrap`}
           ref={galleryRef}
           onScroll={handleScroll}
         >
-          {Object.values(children).map((child) => {
+          {Object.values(children).map((child, index) => {
             return (
               child && (
                 <div
-                  className={`${styles.scrollItem} ${classes.scrollItem ?? ''}`}
+                  className={`${styles.scrollItem} ${
+                    classes.scrollItem ?? ''
+                  } scrollItem`}
                   ref={slideRef}
                   key={child.key}
+                  data-index={index}
+                  onClick={() => onImageClick(index)}
                 >
                   {' '}
                   {child}{' '}

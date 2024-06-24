@@ -13,7 +13,7 @@ export const HorizontalScroller = ({
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const galleryRef = useRef(null)
   const slideRef = useRef([])
-
+  // const [imageWidths, setImageWidths] = useState([])
   const handleScroll = () => {
     const gallery = galleryRef.current
     gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 10
@@ -44,13 +44,17 @@ export const HorizontalScroller = ({
       left: slideRef.current?.offsetWidth + (marginLeft + marginRight + 2)
     })
   }
+
   const scrollToImage = (index) => {
     if (galleryRef.current) {
-      const imageWidth = galleryRef.current.firstChild.clientWidth
+      // const imageWidth = galleryRef.current.firstChild.clientWidth
+      let totalWidth = 0
+      for (let i = 0; i < index; i++) {
+        totalWidth += galleryRef.current.children[i].clientWidth
+      }
       galleryRef.current.scrollTo({
-        left: imageWidth * index,
-        // behavior: 'smooth'
-        behavior: 'instant'
+        left: totalWidth,
+        behavior: 'smooth'
       })
     }
   }

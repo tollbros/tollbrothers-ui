@@ -5,12 +5,14 @@ export const HorizontalScroller = ({
   children,
   showArrows,
   classes = {},
-  index,
-  onImageClick
+  onImageClick,
+  newIndex,
+  getCurrentIndex = () => {}
 }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const galleryRef = useRef(null)
   const slideRef = useRef([])
   // const [imageWidths, setImageWidths] = useState([])
@@ -23,7 +25,29 @@ export const HorizontalScroller = ({
     gallery.scrollLeft === 0
       ? setIsPrevDisabled(true)
       : setIsPrevDisabled(false)
+
+    let closestIndex = 0
+    let closestDistance = Number.MAX_VALUE
+    for (let i = 0; i < gallery.children.length; i++) {
+      const distance = Math.abs(
+        gallery.children[i].getBoundingClientRect().left -
+          gallery.getBoundingClientRect().left
+      )
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closestIndex = i
+      }
+    }
+    setCurrentIndex(closestIndex)
   }
+
+  useEffect(() => {
+    getCurrentIndex(currentIndex)
+  }, [currentIndex])
+
+  useEffect(() => {
+    scrollToImage(newIndex)
+  }, [newIndex])
 
   const handlePrev = () => {
     const gallery = galleryRef.current
@@ -58,9 +82,6 @@ export const HorizontalScroller = ({
       })
     }
   }
-  useEffect(() => {
-    scrollToImage(index)
-  }, [index])
 
   // to detect if window is wider than gallery
   useEffect(() => {

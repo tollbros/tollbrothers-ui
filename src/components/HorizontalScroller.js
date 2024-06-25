@@ -1,13 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HorizontalScroller.module.scss'
 
-export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
+export const HorizontalScroller = ({
+  children,
+  showArrows,
+  classes = {},
+  onImageClick,
+  newIndex,
+  getCurrentIndex = () => {}
+}) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const galleryRef = useRef(null)
-  const slideRef = useRef(null)
-
+  const slideRef = useRef([])
+  // const [imageWidths, setImageWidths] = useState([])
   const handleScroll = () => {
     const gallery = galleryRef.current
     gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 10
@@ -17,7 +25,29 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     gallery.scrollLeft === 0
       ? setIsPrevDisabled(true)
       : setIsPrevDisabled(false)
+
+    let closestIndex = 0
+    let closestDistance = Number.MAX_VALUE
+    for (let i = 0; i < gallery.children.length; i++) {
+      const distance = Math.abs(
+        gallery.children[i].getBoundingClientRect().left -
+          gallery.getBoundingClientRect().left
+      )
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closestIndex = i
+      }
+    }
+    setCurrentIndex(closestIndex)
   }
+
+  useEffect(() => {
+    getCurrentIndex(currentIndex)
+  }, [currentIndex])
+
+  useEffect(() => {
+    scrollToImage(newIndex)
+  }, [newIndex])
 
   const handlePrev = () => {
     const gallery = galleryRef.current
@@ -37,6 +67,20 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
     gallery.scrollBy({
       left: slideRef.current?.offsetWidth + (marginLeft + marginRight + 2)
     })
+  }
+
+  const scrollToImage = (index) => {
+    if (galleryRef.current) {
+      // const imageWidth = galleryRef.current.firstChild.clientWidth
+      let totalWidth = 0
+      for (let i = 0; i < index; i++) {
+        totalWidth += galleryRef.current.children[i].clientWidth
+      }
+      galleryRef.current.scrollTo({
+        left: totalWidth,
+        behavior: 'smooth'
+      })
+    }
   }
 
   // to detect if window is wider than gallery
@@ -79,17 +123,21 @@ export const HorizontalScroller = ({ children, showArrows, classes = {} }) => {
         <div
           className={`${styles.scrollWrap} ${
             children.length === 1 ? styles.noMargin : ''
-          } ${classes.scrollWrap ?? ''}`}
+          } ${classes.scrollWrap ?? ''} scrollWrap`}
           ref={galleryRef}
           onScroll={handleScroll}
         >
-          {Object.values(children).map((child) => {
+          {Object.values(children).map((child, index) => {
             return (
               child && (
                 <div
-                  className={`${styles.scrollItem} ${classes.scrollItem ?? ''}`}
+                  className={`${styles.scrollItem} ${
+                    classes.scrollItem ?? ''
+                  } scrollItem`}
                   ref={slideRef}
                   key={child.key}
+                  data-index={index}
+                  onClick={() => onImageClick(index)}
                 >
                   {' '}
                   {child}{' '}

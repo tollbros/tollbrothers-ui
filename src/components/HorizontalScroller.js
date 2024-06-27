@@ -5,7 +5,6 @@ export const HorizontalScroller = ({
   children,
   showArrows,
   classes = {},
-  onImageClick,
   newIndex,
   getCurrentIndex = () => {}
 }) => {
@@ -137,10 +136,8 @@ export const HorizontalScroller = ({
                   ref={slideRef}
                   key={child.key}
                   data-index={index}
-                  onClick={() => onImageClick(index)}
                 >
-                  {' '}
-                  {child}{' '}
+                  {child}
                 </div>
               )
             )

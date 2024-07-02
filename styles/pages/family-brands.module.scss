@@ -1,0 +1,143 @@
+@import "../modules/all";
+
+h1.heading {
+  margin: 40px 0 30px 0;
+  color: $navy_blue;
+  font-size: 30px;
+  font-weight: 200;
+  text-align: center;
+  letter-spacing: 1px;
+
+  @include breakpoint(md) {
+    font-size: 3.2em;
+  }
+}
+
+.familyPage {
+  max-width: 1100px;
+  margin: 0 auto 100px auto;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  @include breakpoint(md) {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+
+  p {
+    margin: 0 0 50px 0;
+    text-align: center;
+  }
+}
+
+.tollBrothers {
+  display: block;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.tollBrothers img {
+  height: 40px;
+  margin: 30px;
+  width: 200px;
+}
+
+.tollBrothersMultiple {
+  grid-template-columns: 1fr;
+  margin: 0 auto 0 auto;
+
+  @include breakpoint(md) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-align: center;
+    margin: 70px auto 0 auto;
+    max-width: 1000px;
+  }
+}
+
+.tollBrothersMultiple img {
+  height: auto;
+  width: 200px;
+  margin: 30px;
+
+  @include breakpoint(md) {
+    height: auto;
+    width: 180px;
+  }
+}
+
+.tollBrothersMultipleLeft {
+  width: 100%;
+  text-align: center;
+
+  @include breakpoint(md) {
+    width: 90%;
+  }
+}
+
+.tollBrothersMultipleRight {
+  width: 100%;
+  text-align: center;
+
+  @include breakpoint(md) {
+    width: 90%;
+  }
+}
+
+.servicesLinks {
+  column-count: 1;
+
+  @include breakpoint(md) {
+    column-count: 3;
+  }
+
+  ul {
+    list-style: none;
+    text-align: center;
+  }
+
+  ul li {
+    margin: 0 0 25px 0;
+  }
+
+  ul li a {
+    color: #2079d2;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+}
+
+.communityLinks {
+  display: grid;
+  grid-template-columns: 1fr;
+  text-align: center;
+
+  @include breakpoint(md) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.communityLinksCol {
+  h2 {
+    font-size: 0.9em;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+  }
+
+  ul {
+    list-style: none;
+    text-align: center;
+    padding: 0;
+    margin: 0 0 60px 0;
+  }
+
+  ul li {
+    margin: 0 0 15px 0;
+  }
+
+  ul li a {
+    color: #2079d2;
+  }
+}

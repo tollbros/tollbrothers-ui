@@ -1,0 +1,528 @@
+@import "../modules/all";
+
+.pageWrapper {
+  max-width: 1100px;
+  margin: 50px auto 10px auto;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    padding-left: 100px;
+    padding-right: 100px;
+    margin: 90px auto 10px auto;
+  }
+
+
+  h1.itsOver {
+    font-size: 2em;
+    text-align: center;
+    color: #0d223f;
+  }
+
+  p.itsOver {
+    text-align: center;
+  }
+}
+
+.nsehero {
+  padding: 0 0 2px 0;
+  background: #0d223f;
+  text-align: center;
+  text-transform: capitalize;
+
+  @include breakpoint(sm) {
+    padding: 30px 0 40px 0;
+    overflow: hidden;
+    background: #0d223f;
+    text-align: center;
+  }
+
+  .nseLogo {
+    width: 75%;
+    margin: 30px auto 0 0;
+    max-width: 800px;
+
+    @include breakpoint(sm) {
+      width: 63%;
+      margin: 30px auto 30px 0;
+    }
+  }
+
+  p {
+    color: #529D4F;
+    font-family: $base_font_family;
+    font-weight: 400;
+    font-size: 1em;
+
+    @include breakpoint(md) {
+      font-size: 1.44em;
+    }
+  }
+}
+
+.pageWrapper p {
+  font-family: $base_font_family;
+  font-size: 18px;
+}
+
+.bullets {
+  margin: 16px 0 50px 50px;
+}
+
+.bullets li {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 500;
+
+  @include breakpoint(sm) {
+    margin: 0 0 10px 0;
+    padding: 0;
+    height: 50px;
+    align-items: center;
+  }
+}
+
+.icon {
+  &:before {
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/check-white.svg");
+    background-size: 13px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #529D4F;
+    content: "";
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    color: white;
+    width: 25px;
+    line-height: 25px;
+    height: 25px;
+    margin-left: -30px;
+    margin-right: 10px;
+    margin-bottom: 0;
+    border-radius: 14px;
+    vertical-align: middle;
+  }
+}
+
+.nsefooter {
+  padding: 50px 20px 50px 20px;
+  background: #dde4e9;
+  height: 200px;
+
+  @include breakpoint(sm) {
+    padding: 50px 50px 50px 50px;
+  }
+
+  svg {
+    width: 80%;
+    margin: 0 auto;
+
+    @include breakpoint(sm) {
+      width: 17%;
+    }
+  }
+
+  .links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: -20px 0 0 0;
+
+    a {
+      color: #0c223f;
+      font-size: 0.84em;
+      text-decoration: underline;
+    }
+
+    .line {
+      margin: 0 5px;
+    }
+
+    svg {
+      width: 15px;
+      margin: 5px 0 0 10px;
+    }
+  }
+}
+
+.disclaimer {
+  margin: 60px 20px 0 20px;
+
+  p {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding-bottom: 40px;
+    color: #1f1f1f;
+    font-size: 0.7em;
+    line-height: 1.5em;
+    background: #fff;
+  }
+
+  .disclaimerImg {
+    width: 20px;
+    vertical-align: top;
+    margin: 0 5px 0 5px;
+  }
+}
+
+.hide {
+  display: block;
+}
+
+@include breakpoint(sm) {
+  .hide {
+    display: none;
+  }
+}
+
+
+.communityWrap {
+  width: calc(100% - 10px);
+  overflow-x: scroll;
+  overflow-y: hidden;
+  padding: 0 0 20px 0; //push scrollbar down
+  margin: 0 0 0 10px;
+  @include breakpoint(md) {
+    width: calc(100% - 20px);
+    margin: 0 0 0 20px;
+  }
+
+  aside.cardHolder {
+    display: flex;
+    //Trying to center when there's only a few (less than 3)
+    //justify-content: space-between;
+
+    /* Insert space before the first item and after the last one */
+
+    /* &::before {
+      content: ''; 
+    } */
+
+    /* &::after {
+      content: ''; 
+    } */
+    gap: 10px;
+    @include breakpoint(sm) {
+      gap: 20px;
+    }
+    
+  }
+
+  .cardOverride {
+    height: 100%;
+
+    ul {
+      li:nth-child(5) {
+        display: none;
+      }
+    }
+    
+  }
+
+  .communityCard {
+    max-width: 400px;
+    width: 90%;
+    flex-shrink: 0;
+    //height: 540px;
+    border: 2px solid rgba(0,0,0,0);
+    position: relative;
+
+
+    .ctas {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      display: flex;
+      //justify-content: flex-start;
+      width: calc(100% - 8px);
+      z-index: 9;
+
+      div {
+        width: 50%;
+      }
+
+      input[type="checkbox"]:checked+label {
+        color: #FFF;
+        background-color:$medium_blue;
+        padding: 10px 0;
+        border: 1px solid $medium_blue; //needs a border so it matches other button in height
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+
+.formWrap {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+
+
+  .metroWrap {
+    position: relative;
+    display: inline-block;
+    height: 60px;
+    max-width: 600px;
+    line-height: 40px;
+    color: #000;
+    vertical-align: top;
+    text-align: left;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -ms-touch-action: none;
+    -moz-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    z-index: 10;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 15px;
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-bottom: 2px solid #000;
+      border-right: 2px solid #000;
+      transform: rotate(45deg);
+      font-style: normal;
+      font-feature-settings: normal;
+      font-variant: normal;
+      font-weight: normal;
+      right: 23px;
+      top: 25px;
+    }
+
+
+    .input_label {
+      margin-top: 5px;
+      font-size: 0.72em;
+      z-index: 4;
+      position: absolute;
+      top: 5px;
+      display: block;
+      padding-left: 10px;
+      line-height: 1;
+      color: #999;
+      pointer-events: none;
+      transition-property: top;
+      transition-duration: 0.1s;
+      transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
+
+    .metroSelect {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      // margin-top: 10px;
+      color: #000;
+      border-radius: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -ms-appearance: none;
+      appearance: none;
+      z-index: 3;
+      cursor: pointer;
+      padding-left: 10px;
+      padding-top: 10px;
+    }
+  }
+}
+
+.contactButton {
+  position: relative;
+  display: block;
+  width: 220px;
+  margin: 0;
+  padding: 17px 0 17px 0;
+  color: #FFF;
+  font-size: .74em;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #529D4F;
+  border: 0 solid #0d223f;
+  text-align: center;
+
+  &:hover {
+    background: $medium_blue;
+    border: 0 solid $accent_blue;
+  }
+
+  &:disabled {
+    background: #CCC;
+  }
+}
+
+.selectButton {
+  position: relative;
+  display: block;
+  width: 220px;
+  margin: 6px auto;
+  padding: 17px 0 17px 0;
+  color: #FFF;
+  font-size: .74em;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #529D4F;
+  border: 0 solid #529D4F;
+  text-align: center;
+
+  &:hover {
+    background: $medium_blue;
+    border: 0 solid $accent_blue;
+  }
+
+  &:disabled {
+    background: #CCC;
+  }
+}
+
+.thanksPage {
+  h5 {
+    color: $dark_blue;
+    font-family: $domaine_font_family;
+  }
+
+  h5.communityNumber {
+    color: $accent_blue;
+    font-family: $domaine_font_family;
+  }
+}
+
+.ctas {
+  display: inline-flex;
+
+  button.viewPhotos {
+    color: $accent_blue;
+    border: 1px solid $accent_blue;
+    background: #fff;
+    text-transform: uppercase;
+    width: 50%;
+    font-size: 0.7em;
+    margin-right: 5px;
+    padding: 10px;
+
+    /* margin-top: 20px; */
+
+    &:hover {
+      background: $accent_blue;
+      color: #FFF;
+      border: 1px solid $accent_blue;
+    }
+  }
+
+
+  .selectCommunity {
+    text-align: center;
+    background: #529D4F;
+    text-transform: uppercase;
+    //width: 50%;
+    font-size: 0.7em;
+    display: block;
+    //margin-left: 5px;
+    padding: 10px;
+    color: #FFF;
+    border: 1px solid #529D4F; //needs a border so it matches other button in height
+    white-space: nowrap;
+
+    &:hover {
+      background: $accent_blue;
+      border: 1px solid $accent_blue; //needs a border so it matches other button in height
+
+    }
+  }
+}
+
+h5.oneStep {
+  color: $accent_blue;
+  font-family: $domaine_font_family;
+  font-size: 1.6em;
+}
+
+.iframeHolder {
+  position: absolute;
+  top: 10px;
+  left: -1000px; 
+  display: none;
+}
+
+.selectedCommunity {
+  border: 2px solid #529D4F!important;
+}
+
+.disabledCommunity {
+  opacity: 0.7;
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+  pointer-events: none;
+}
+
+.btnHolder {
+  width: 100%;
+  text-align: center;
+  margin: 0 20px 0 20px;
+}
+
+.thankyouWrapper {
+  max-width: 1100px;
+  margin: 50px auto 0 auto;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    padding-left: 100px;
+    padding-right: 100px;
+    margin: 0 auto 0 auto;
+  }
+
+  p {
+    font-family: $base_font_family;
+    font-weight: 400;
+    font-size: 18px;
+    
+    @include breakpoint(md) {
+      font-size: 18px;    }
+  }
+}
+
+
+
+.omniSearchSpace {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto 160px auto;
+
+  @include breakpoint(sm) {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .InlineSearchBar {
+    max-width: 800px;
+    position: relative;
+    height: auto;
+    display: block;
+    }
+}
+
+p.privacy {
+  font-size: 12px;
+}

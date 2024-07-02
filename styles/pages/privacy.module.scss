@@ -1,0 +1,45 @@
+@import "../modules/all";
+
+h1.heading {
+  margin: 40px 0 30px 0;
+  color: $medium_blue;
+  font-size: 3.2em;
+  font-weight: 200;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+a.linkColor {
+  color: #2079d2;
+}
+
+.privacyPage {
+  max-width: 1100px;
+  margin: 0 auto 140px auto;
+  padding-left: 70px;
+  padding-right: 70px;
+
+  p {
+    margin: 0 0 50px 0;
+  }
+}
+
+p.lessSpace {
+  margin: 0 0 10px 0;
+}
+
+.ccpaTable {
+  min-width: 960px;
+  font-size: 0.8em;
+  border-spacing: 10px;
+  border-collapse: separate;
+  line-height: 1.3em;
+
+  td {
+    padding: 10px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+}

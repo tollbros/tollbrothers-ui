@@ -1,0 +1,598 @@
+@import "../modules/all";
+
+
+.logoNsearch {
+  position: absolute;
+  margin: 0;
+  padding: 0 17.5px;
+  z-index: 3;
+  width: 100%;
+  text-align: center;
+
+
+  .regencyLogo {
+    display: block;
+    width: 100%;
+    height: 26vh;
+    text-align: center;
+    margin-bottom: 2%;
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/regency/Regency-Toll--Brothers.png?v=6949");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;    
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,.5));
+  }
+
+
+  h1.theheading {
+    font-size: 1.2em;
+    font-family: $base_font_family;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 200;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgb(0 0 0 / 0.31), 0 7px 12px rgba(0, 0, 0, 0.6);
+    margin: auto auto 5vh auto;
+  }
+
+  .selectorArrow {
+    top: 7px;
+    right: 18px;
+
+    &:before {
+      font-size: 10px;
+      color: $black;
+      display: inline-block;
+      -webkit-transform: scale(1, 2);
+
+      /* Safari and Chrome */
+      -moz-transform: scale(1, 2);
+
+      /* Firefox */
+      -ms-transform: scale(1, 2);
+
+      /* IE 9 */
+      -o-transform: scale(1, 2);
+
+      /* Opera */
+      transform: scale(1, 2);
+
+      /* W3C */
+
+
+      position: absolute;
+      content: '>';
+
+      @include selectArrow();
+
+      right: 20px;
+      top: 21px;
+      width: 8px;
+      height: 8px;
+
+
+    }
+  }
+
+  .stateSelector {
+    display: inline-flex;
+
+    .selectorWrap {
+      position: relative;
+      display: inline-block;
+      height: 63px;
+      line-height: 60px;
+      color: #000;
+      vertical-align: top;
+      text-align: left;
+      user-select: none;
+      overflow: hidden;
+      z-index: 10;
+      cursor: pointer;
+      margin-right: 3px;
+      background: white;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+      width: 45vw;
+
+      @include breakpoint(md) {
+        width: 25vw;
+      }
+    }
+
+    .selectorWrap select {
+      position: relative;
+      height: 100%;
+      margin: 0;
+      color: #000;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -ms-appearance: none;
+      appearance: none;
+      z-index: 3;
+      cursor: pointer;
+      width: 100%;
+      padding-left: 15px;
+      font-weight: $font_weight_bold;
+      font-family: $base_font_family;
+    }
+
+    button,
+    .button {
+      content: '';
+      display: block;
+      padding: 14px 15px;
+      color: #fff;
+      font-weight: 500;
+      line-height: initial;
+      text-align: center;
+      background-color:$accent_blue;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      -o-box-shadow: none;
+      -khtml-box-shadow: none;
+      vertical-align: top;
+      overflow: hidden;
+      font-size: 13px;
+      margin: 0 5px;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+
+      @include breakpoint(md) {
+        padding: 14px 30px;
+      }
+
+
+      
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+}
+
+h2.subhead {
+  color: $gold;
+  font-size: 2.3em;
+  text-align: center;
+
+  &:after {
+    content: (ggggggg);
+  }
+}
+
+.pageWrapper {
+  max-width: 1100px;
+  margin: 50px auto 90px auto;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    padding-left: 160px;
+    padding-right: 160px;
+    margin: 90px auto 90px auto;
+  }
+}
+
+.pageWrapperLarge {
+  max-width: 1800px;
+  margin: 50px auto 90px auto;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    padding-left: 160px;
+    padding-right: 160px;
+    margin: 90px auto 90px auto;
+  }
+}
+
+a.underline {
+  text-decoration: underline;
+}
+
+a.underline:hover {
+  text-decoration: none;
+}
+
+.tollLogo {
+  text-align: center;
+
+  img {
+    width: 75%;
+    margin: 30px auto -10px auto;
+
+    @include breakpoint(sm) {
+      width: 40%;
+      margin: 30px auto 20px auto;
+      max-width: 400px;
+    }
+  }
+}
+
+
+p.txtcenter {
+  text-align: center;
+}
+
+.imgSection {
+  width: 100%;
+  display: grid;
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
+  grid-template-columns: 1.38fr 1fr;
+  position: relative;
+
+  @media only screen and (max-width: 425px) {
+    grid-template-columns: 1fr;
+  }
+
+  .caption {
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    z-index: 5;
+    color: #FFF;
+    font-size: 11px;
+    margin: 0 0 5px 0;
+    padding: 5px 5px 10px 5px;
+    text-shadow: -2px 2px 2px rgba(0, 0, 0, 0.6);
+    background: rgb(2,0,36);
+    background: linear-gradient(180deg, rgba(2, 0, 36, 0) 0%, rgba(0, 0, 0, 0.6979) 200%);
+    }
+
+  .largeImg {
+    width: 100%;
+    margin-bottom: 7px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .smallImg {
+    width: 100%;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+.imgSectionTwo {
+  width: 100%;
+  display: grid;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  grid-template-columns: 1fr 1.38fr;
+  position: relative;
+
+  @media only screen and (max-width: 425px) {
+    grid-template-columns: 1fr;
+  }
+
+  .caption {
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    z-index: 5;
+    color: #FFF;
+    font-size: 11px;
+    margin: 0 0 5px 0;
+    padding: 5px 5px 10px 5px;
+    text-shadow: -2px 2px 2px rgba(0, 0, 0, 0.6);
+    background: rgb(2,0,36);
+    background: linear-gradient(180deg, rgba(2, 0, 36, 0) 0%, rgba(0, 0, 0, 0.6979) 200%);
+  }
+
+  .largeImg {
+    width: 100%;
+    margin-bottom: 7px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .smallImg {
+    width: 100%;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+.captionHolder {
+  position: relative;
+}
+
+.theCommunities {
+  width: 100%;
+  padding: 0;
+  display: grid;
+  grid-column-gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  @media only screen and (max-width: 425px) {
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .detailCommunities {
+    border: 1px solid #E9EDF0;
+
+    img {
+      width: 100%;
+    }
+
+    p {
+      padding: 0 5% 5% 5%;
+    }
+
+    h4.community {
+      color: $gold;
+      font-size: 1.3em;
+      text-align: center;
+      font-family: $domaine_font_family;
+      margin: 20px 0 20px 0;
+    }
+  }
+}
+
+.foliage {
+  width: 100%;
+  position: relative;
+
+  .foliageRight {
+    position: absolute;
+    display: block;
+    z-index: 5;
+    right: 0;
+    top: -80px;
+    height: 220px;
+    width: 22%;
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/regency/Foliage_1.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: right center;
+
+    @media only screen and (max-width: 1125px) {
+      top: -120px;
+      height: 300px;
+      width: 15%;
+    }
+
+    @media only screen and (max-width: 975px) {
+      top: -190px;
+      height: 300px;
+      width: 20%;
+    }
+
+
+    @media only screen and (max-width: 425px) {
+      top: -160px;
+      height: 300px;
+      width: 30%;
+    }
+  }
+
+  .foliageLeft {
+    position: absolute;
+    display: block;
+    z-index: 5;
+    left: 0;
+    top: 0;
+    height: 280px;
+    width: 170px;
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/regency/Foliage_2a.png?v=6949");
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    @media only screen and (max-width: 1125px) {
+      top: 60px;
+      height: 280px;
+      width: 170px;
+    }
+
+    @media only screen and (max-width: 975px) {
+      top: -70px;
+      height: 280px;
+      width: 110px;
+    }
+
+
+    @media only screen and (max-width: 425px) {
+      top: -100px;
+      height: 280px;
+      width: 60px;
+    }
+  }
+}
+
+.formHolder {
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/regency/FoliageBG.png?v=6949");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: top center;
+  background-color: #0d223f;
+  padding-top: 50px;
+  padding-bottom: 50px;
+
+
+  h2.formhead {
+    color: $gold;
+    font-size: 2.3em;
+    text-align: center;
+  }
+
+  p {
+    color: #FFF
+  }
+}
+
+.regencyVideo {
+  position: relative;
+  margin: 100px auto 100px auto;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+
+  @media only screen and (max-width: 425px) {
+    width: 100%;
+  }
+
+  &:after {
+    content: url('https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/Youttube.svg');
+    position: absolute;
+    height: auto;
+    width: 80px;
+    left: 0;
+    right: 0;
+    top: 44%;
+    margin: 0 auto;
+    opacity: .8;
+    cursor: pointer;
+    border: 0 solid #000;
+  }
+
+
+  .playVideo {
+    display: block;
+    width: 100%;
+    max-width: 1150px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+
+    .icon {
+      position: relative;
+    }
+
+    img {
+      width: 100%;
+
+      &:after {
+        border: 1px solid #000;
+      }
+    }
+
+    &.iconYouttube {
+      border: 0 solid #000;
+    }
+
+  }
+}
+
+.subpageHero {
+  .theheading {
+    span {
+      display: none;
+    }
+  }
+
+  .no_qmi {
+    display: block;
+  }
+
+  .qmi {
+    display: none;
+  }
+
+  .js_jump_to_regency_search_QMI {
+    display: none !important;
+  }
+
+  &.qmi_only {
+    .theheading {
+      span {
+        display: block;
+        font-size: 0.6em;
+      }
+    }
+
+    .qmi {
+      display: block;
+    }
+
+    .no_qmi {
+      display: none;
+    }
+
+    .js_jump_to_regency_search_QMI {
+      display: block !important;
+    }
+
+    .js_jump_to_regency_search {
+      display: none !important;
+    }
+  }
+}
+
+
+.map {
+  margin-bottom: 0;
+
+
+  .search_by_map_container {
+      position: relative;
+      width: 100%;
+      height: 90vh;
+      overflow: hidden;
+
+      @media only screen and (max-width: 1125px) {
+          margin-bottom: 60px;
+      }
+  }
+
+  .sbm_filters {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      padding: 8px 16px 8px 30px;
+      color: #fff;
+      letter-spacing: normal;
+      background: rgba(0, 112, 205, 0.88);
+      border-color: rgba(0, 112, 205, 0.88);
+      border-radius: 50px;
+      box-shadow: 0 4px 7px rgb(0 0 0 / 0.26);
+      z-index: 2;
+      -webkit-transform: translateX(-50%);
+      -moz-transform: translateX(-50%);
+      -o-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      transform: translateX(-50%);
+      text-transform: uppercase;
+      cursor: pointer;
+  }
+
+  .regency_js_sbm_filters_trig {
+      &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          left: 12px;
+          background-image: url('https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/Filter.svg');
+          background-size: contain;
+      }
+  }
+}

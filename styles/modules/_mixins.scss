@@ -35,7 +35,7 @@
 @mixin customScrollBars() {
   /* width */
   &::-webkit-scrollbar {
-    width: 4px;
+    width: 5px;
   }
 
   /* Track */
@@ -49,10 +49,11 @@
   }
 }
 
-@mixin customScrollBars2() {
+@mixin customScrollBarsLight() {
   /* width */
   &::-webkit-scrollbar {
     width: 3px;
+    height: 3px;
   }
 
   /* Track */
@@ -60,12 +61,170 @@
     background: lightgrey;
   }
 
+  &::-webkit-scrollbar-track-piece {
+    border-radius: 4px;
+    background-color: transparent;
+    border: 1px solid white;
+  }
+
   /* Handle */
   &::-webkit-scrollbar-thumb {
     background: grey;
+    border-radius: 4px;
   }
 
   //kinda for firefox
   scrollbar-width: thin;
   scrollbar-color: lightgrey white;
 }
+
+@mixin customScrollBarsDark() {
+  /* width */
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: $dark_gray; 
+  }
+
+  &::-webkit-scrollbar-track-piece {
+    border-radius: 4px;
+    border: 1px solid $navy_blue;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 4px;
+  }
+
+  //kinda for firefox
+  scrollbar-width: thin;
+  scrollbar-color: $dark_gray white;
+}
+
+
+/* this probably should go somewhere else, but like a base global reference for tertiary pill buttons...err all buttons */
+@mixin pillButton(){
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  border-radius: 50px;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0,0,0,.1);
+  transition: box-shadow .3s;
+
+  &:hover{
+    box-shadow: 0 1px 2px rgba(0,0,0,.5);
+  }
+}
+
+@mixin smallTag(){
+  //Community page small section header
+  font-family: $base_font_family;
+  font-weight: $font_weight_bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 2px;
+  line-height: 15px;
+  position: relative;
+  display: block;;
+  margin-bottom:0;
+
+  @include breakpoint(sm) {
+    margin-bottom: 20px;
+  }
+
+}
+
+@mixin repeatDefaultPattern(){
+  //default comm pattern
+  //background-image: url(https://cdn.tollbrothers.com/sites/comtollbrotherswww/contact_bar/lines-3.gif);
+  //commenting out national default pattern is just navy now
+  background-size: 25px 8px;
+  background-repeat: repeat;
+  background-position: top left;
+  opacity: .45;
+}
+
+//@include secondaryButton(1px solid #004876,#004876,#ffffff);
+@mixin secondaryButton($bordervalues,$colorText,$bgColor){
+  font-family: $base_font_family;
+  font-weight: $font_weight_bold;
+  transition: all ease .3s;
+  border: $bordervalues;
+  color: $colorText;
+  background: $bgColor;
+
+  &:hover{
+    $basePath:47;
+    //background:#{($colorText)}#{$basePath};
+  }
+}
+
+
+@mixin selectArrow(){
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-bottom: 2px solid $black;
+  border-right: 2px solid $black;
+  transform: rotate(45deg);
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  text-decoration: none;
+  text-transform: none;
+  right: 23px;
+}
+
+@mixin selectArrow2(){
+  content: "";
+  z-index: 2;
+  pointer-events: none;
+  background: no-repeat center center/10px url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrow-down.svg");
+}
+
+@mixin appliedTag(){
+  content: '';
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/x.svg");
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50px;
+  margin-right: -6px;
+  margin-left: 6px;
+  color: navy;
+  margin-top: 0;
+  background-size: 6px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: white;
+  vertical-align: middle;
+}
+
+@keyframes drop-in {
+  from {
+   opacity: 0;
+   transform: translateY(-10px);
+  }
+
+  to {
+   opacity: 1;
+   transform: translate(0);
+  }
+ }
+
+
+ @mixin bustOut(){
+  width: calc(100% + $page_margins);
+  margin-right: -$page_margins;
+  padding-right: $page_margins;
+  // margin-left: -$page_margins;
+  //padding-left:$page_margins;
+}
+

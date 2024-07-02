@@ -1,0 +1,428 @@
+@import "../modules/all";
+
+
+
+.pageWrapper {
+  max-width: 1106px;
+  margin: 60px auto 96px auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    margin: 108px auto 96px auto;
+  }
+
+  h1 {
+    font-size: 2em;
+    line-height: 1.4em;
+    font-weight: 400;
+    text-align: left;
+    margin: auto auto 40px auto;
+
+    @include breakpoint(sm) {
+      font-size: 2.3em;
+      line-height: 1.6em;
+      margin: auto 30px 40px auto;
+    }
+
+  }
+}
+
+.homeCategory {
+  display: flex;
+  margin: 0 auto;
+  height: 100%;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-flow: row wrap;
+
+  .copyWrapper {
+    max-width: 800px;
+  }
+}
+
+.cta {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-right: 20px;
+  padding-left: 2px;
+  row-gap: 10px;
+  column-gap: 20px;
+  margin-top: 0;
+  margin-right: auto;
+  margin-bottom: 10px;
+  color: rgb(0, 0, 0);
+  overflow-x: auto;
+  overflow-y: auto;
+  justify-content: flex-start;
+  z-index: 0;
+
+  @include breakpoint(sm) {
+    min-height: 730px;
+    column-gap: 50px;
+  }
+
+  .wrapper {
+    width: 80%;
+    min-width: 380px;
+    margin: 0 auto 30px auto;
+    border-radius: 36px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+
+    @include breakpoint(sm) {
+      width: 47%;
+      min-width: 460px;
+    }
+
+    .advantageWrap {
+      display: block;
+      width: 100%;
+      height: 400px;
+      margin: 0 auto;
+      background-color: $white;
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      z-index: -2;
+
+      @include breakpoint(xs) {
+        height: 574px;
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/cta.jpg") no-repeat;
+        width: 100%;
+        height: 320px;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        z-index: -22;
+
+        @include breakpoint(xs) {
+          height: 502px;
+        }
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #000;
+        opacity: 0.4;
+        width: 100%;
+        height: 320px;
+        z-index: -2;
+        border-radius: 30px;
+
+        @include breakpoint(xs) {
+          height: 502px;
+        }
+      }
+
+      h4 {
+        font-family: $domaine_font_family;
+        font-size: 1.9em;
+        color: $white;
+        padding: 14px 0 0 36px;
+        z-index: 999;
+        margin: 0;
+        line-height: 1.3em;
+
+        @include breakpoint(xs) {
+          font-size: 2.4em;
+          line-height: 1.2em;
+        }
+      }
+
+      p {
+        font-family: $base_font_family;
+        font-size: 12px;
+        color: $white;
+        line-height: 1.4em;
+        padding: 36px 0 0 36px;
+        z-index: 999;
+        margin: 0;
+
+        @include breakpoint(xs) {
+          font-size: 12px;
+          line-height: 1.4em;
+        }
+      }
+
+      .btnWrap {
+        display: block;
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        text-align: center;
+        line-height: 40px;
+        width: 91%;
+        height: 40px;
+        margin: 0 auto;
+        background: #0070CD;
+        border-radius: 20px;
+        color: $white;
+        font-family: $base_font_family;
+        font-weight: 500;
+        font-size: 12px;
+
+        .viewBtn {
+          &:after {
+            content: "";
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            top: 52%;
+            right: 37%;
+            transform: translate(0%, -50%);
+            background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/arrow.svg") no-repeat;
+            background-size: contain;
+            background-position: center;
+            object-fit: contain;
+
+            @include breakpoint(sm) {
+              right: 40%;
+            }
+          }
+        }
+      }
+    }
+
+    .overviewWrap {
+      display: block;
+      width: 100%;
+      height: 400px;
+      margin: 0 auto;
+      background-color: $white;
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      z-index: -2;
+      padding-bottom: 150px;
+
+      @include breakpoint(xs) {
+        height: 574px;
+      }
+
+      .overviewImgHolder {
+        border: 1px solid #D3DBE1;
+        height: 100%;
+        position: relative;
+        background-color: #000;
+
+        .overviewImg {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          overflow: hidden;
+          opacity: 0.6;
+        }
+      }
+
+      .infoWrap {
+        position: absolute;
+        top: 0;
+      }
+
+      .statsWrap {
+        grid-template-columns: 50% 50%;
+        column-gap: 10px;
+        width: auto;
+        display: grid;
+        padding: 0 20% 0 10%;
+        margin-top: 20px;
+
+        @include breakpoint(sm) {
+          padding: 0 20% 0 20%;
+        }
+
+        .statsContent {
+          vertical-align: middle;
+          display: flex;
+
+          .statsNumber {
+            span {
+              color: $gray;
+              font-family: $domaine_font_family;
+              display: inline;
+              font-size: 35px;
+              margin: 0 5px 0 10px;
+            }
+          }
+
+          .statsTxt {
+            line-height: 1em;
+            padding: 9px 0 0 0;
+
+            p {
+              color: $medium_blue2;
+              font-weight: 400;
+              display: inline;
+              margin: -20px 0 0 0;
+              padding: 0;
+              line-height: 1em;
+            }
+          }
+        }
+      }
+
+      h4 {
+        font-family: $domaine_font_family;
+        font-size: 1.9em;
+        color: $white;
+        padding: 14px 0 0 36px;
+        z-index: 999;
+        margin: 0;
+        line-height: 1.3em;
+
+        @include breakpoint(xs) {
+          font-size: 2.4em;
+          line-height: 1.2em;
+        }
+      }
+
+      p {
+        font-family: $base_font_family;
+        font-size: 12px;
+        color: $white;
+        line-height: 1.4em;
+        padding: 36px 0 0 36px;
+        z-index: 999;
+        margin: 0;
+
+        @include breakpoint(xs) {
+          font-size: 12px;
+          line-height: 1.4em;
+        }
+      }
+
+      .btnWrap {
+        display: block;
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        text-align: center;
+        line-height: 40px;
+        width: 91%;
+        height: 40px;
+        margin: 0 auto;
+        background: #0070CD;
+        border-radius: 20px;
+        color: $white;
+        font-family: $base_font_family;
+        font-weight: 500;
+        font-size: 12px;
+
+        .viewBtn {
+          &:after {
+            content: "";
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            top: 52%;
+            right: 37%;
+            transform: translate(0%, -50%);
+            background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/arrow.svg") no-repeat;
+            background-size: contain;
+            background-position: center;
+            object-fit: contain;
+
+            @include breakpoint(sm) {
+              right: 40%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.mainFooter {
+  .footerWrapper {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 62px 15px;
+    line-height: 1.8em;
+    text-align: center;
+    font-size: 12px;
+    color: $black;
+
+    @media (min-width: 1100px) {
+      display: flex;
+    }
+
+    .footerCenter {
+      font-family: $alt_font_family;
+      min-width: 288px;
+      margin: 20px 0;
+
+      a {
+        padding: 0 8px;
+        position: relative;
+
+        &:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 1px;
+          height: 12px;
+          background-color: $black;
+        }
+      }
+
+      a:first-of-type {
+        padding: 0 8px;
+        position: relative;
+
+        &:after {
+          display: none;
+        }
+      }
+
+    }
+
+    .footer_social {
+      margin: 0 auto;
+      padding: 0;
+      width: 300px;
+      order: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      @media (min-width: 1100px) {
+        width: 380px;
+        margin: 0;
+      }
+
+      a {
+        display: block;
+        width: 17px;
+        height: 17px;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}

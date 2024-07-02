@@ -1,0 +1,399 @@
+@import "../../styles/modules/all";
+
+.page_margins {
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+
+  @include breakpoint(md) {
+    padding-left: 35px;
+    padding-right: 35px;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+}
+
+.prideHero {
+  min-height: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: calc(75vh - 120px);
+  color: #fff;
+  background: #fff;
+  overflow: hidden;
+  z-index: 1;
+
+  @include breakpoint(sm) {
+    height: calc(49vh - 50px);
+  }
+
+  @include breakpoint(md) {
+    height: calc(55vh - 100px);
+  }
+
+  @include breakpoint(lg) {
+    height: 666px;
+  }
+
+
+.heroTxt {
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  max-width: 390px;
+  font-size: 1.1rem;
+  position: fixed;
+  left: 5%;
+  right: 5%;
+  top:14%;
+  margin: auto;
+
+  @include breakpoint(sm) {
+    left: 50%;
+    right: 0;
+    top: 13%;
+    max-width: 600px;
+    margin: 20px auto auto -300px;
+  }
+
+  @include breakpoint(md) {
+    top: 13%;
+    margin: 20px auto auto -300px;
+  }
+  
+  @include breakpoint(lg) {
+    top: 18%;
+    max-width: 600px;
+    margin: 20px auto auto -300px;
+  }
+
+  h1 {
+    font-size: 3.1em;
+    margin: 0 0 30px 0;
+    font-weight: 200;
+    text-align: center;
+
+    @media (max-width: 992px) {
+      font-size: 2.1em;
+      margin: 0 0 5px 0;
+    }
+  
+    @media (max-width: 700px) {
+      font-size: 1.5em;
+      margin: 0 0 0 0;
+    }
+  
+    @media (max-width: 389px) {
+      font-size: 1.6em;
+      margin: 30px 0 0 0;
+    }
+  
+  }
+
+  p {
+    font-size: .9em;
+    margin: 10px 30px 10px 10px;
+
+    @include breakpoint(sm) {
+      font-size: .9em;
+      margin: 0 0 10px 0;
+    }
+    @include breakpoint(md) {
+      font-size: .9em;
+      margin: 0 0 10px 0;
+    }
+  }
+
+a.viewVideo {
+  img {
+  margin: 20px auto 0 auto;
+  width: 35px;
+  cursor: pointer;
+  display: block;
+
+  @media (max-width: 900px) {
+    margin: 20px auto 0 auto;
+    width: 30px;
+  }
+
+  @media (max-width: 700px) {
+    margin: 20px auto 0 auto;
+    width: 30px;
+  }
+
+  @media (max-width: 450px) {
+    margin: 30px auto 0 auto;
+    width: 35px;
+  }
+}
+}
+}
+}
+
+.opening {
+  max-width: 800px;
+  margin: 0 auto 0 auto;
+  text-align: left;
+  padding-left: 35px;
+  padding-right: 35px;
+  padding-top: 20px;
+
+  @include breakpoint(sm) {
+    margin: 40px auto 0 auto;
+  }
+
+  @include breakpoint(md) {
+    margin: 45px auto;
+    padding-top: 10px;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 10px;
+    margin: 40px auto;
+  }
+
+}
+
+
+.purpose {
+  margin: 80px auto 60px auto;
+
+  @include breakpoint(sm) {
+    margin: 80px auto 120px auto;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+
+}
+
+h2.subHead {
+  font-size: 1em;
+  margin-bottom: 10px;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+}
+
+  ul.prideBullets {
+    list-style: disc;
+    padding-left: 3%;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    li {
+      margin-bottom: 4px;
+    }
+  }
+
+
+.contentColumns {
+max-width: 1350px;
+display: grid;
+grid-column-gap: 20px;
+grid-row-gap: 5px;
+grid-template-columns: 1fr;
+padding: 0 8%;
+margin: 0 auto;
+
+@include breakpoint(sm) {
+  grid-template-columns: 1fr 1fr;
+}
+
+  .columnLeft {
+    width: 100%;
+    margin-bottom: 7px;  
+  }
+
+  .columnRight{
+    width: 100%;
+    margin-bottom: 7px;  
+  }
+}
+
+.prideImgs {
+  width: 100%;
+  margin-bottom: 10px;
+
+}
+
+.contentEducation {
+  max-width:1200px;
+  margin: 40px auto;
+  text-align: left;
+  padding-left: 8%;
+  padding-right: 8%;
+
+
+  .prideIcons {
+    width: 100%;
+    vertical-align: middle;
+    margin-bottom: 20px;
+    border: 0 solid #000;
+    
+  
+  .prideImgSm {
+    width: 100%;
+    max-width: 85px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    vertical-align: middle;
+
+    @include breakpoint(sm) {
+      max-width: 135px;
+      margin-right: 50px;
+    }
+  }
+
+  .prideImgSmHouse {
+    width: 100%;
+    max-width: 105px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    vertical-align: middle;
+
+    @include breakpoint(sm) {
+      max-width: 155px;
+      margin-right: 50px;
+    }
+  }
+}
+}
+
+
+.esgReport {
+  width: 100%;
+  background: #e9eef0;
+  padding: 10% 8% 15% 8%;
+  margin-bottom: 0;
+  margin-top: 40px;
+
+
+  @include breakpoint(sm) {
+    padding: 6% 8% 8% 8%;
+    margin-top: 80px;
+    margin-bottom: 0;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .esgLink {
+    color: $accent_blue;
+    text-align: center;
+    display: block;
+    font-family: $alt_font_family;
+    font-weight: $font_weight_bold;
+  }
+}
+
+
+.prideBoxes {
+width: 100%;
+display: grid;
+grid-column-gap: 10px;
+grid-row-gap: 10px;
+grid-template-columns: 1fr;
+padding: 0 4%;
+margin-top: 80px;
+
+@include breakpoint(sm) {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+
+.prideBox {
+  width: 100%;
+  margin-bottom: 7px;
+  padding: 18% 0% 15% 0%;
+  color: #FFF;
+  position: relative;
+  height: 400px;
+
+  @media (max-width: 1150px) {
+    height: 450px;
+  }
+
+  @media (max-width: 900px) {
+    height: 475px;
+  }
+
+  @media (max-width: 450px) {
+    height: 405px;
+  }
+
+}
+
+.boxOne {
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/pride/1.jpg");
+  background-size: cover;
+}
+
+.boxTwo {
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/pride/2.jpg");
+  background-size: cover;
+}
+
+
+.boxThree {
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/pride/3.jpg");
+  background-size: cover;
+}
+
+p.prideTxt {
+  font-size: .8rem;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  margin: auto 10%;
+}
+
+.prideNameHolder {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+
+.prideName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; 
+
+  img {
+    width: 75px; 
+    height: 75px;
+  }
+
+p {
+  font-size: .8rem;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  margin-bottom: 0;
+  text-align: center;
+}
+}
+}
+} 
+
+.thePage {
+  background-color: #FFF;
+  width: 100%;
+  padding-top: 30px;
+position: relative;
+z-index: 12;
+
+@media (max-width: 400px) {
+  padding-top: 0;
+}
+}
+

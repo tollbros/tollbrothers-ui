@@ -1,0 +1,79 @@
+.metro-map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mapkitContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.metro-marker,
+.metro-filter {
+  display: inline-block;
+  padding: 6px 6px 5px 6px;
+  color: #0070cd;
+  font-size: 9px;
+  border-radius: 50px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  border: 2px solid #fff;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 7px 10px rgb(0 0 0 / 0.26);
+  cursor: pointer;
+}
+
+.metro-filter {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  color: #fff;
+  letter-spacing: normal;
+  background: rgba(0, 112, 205, 0.84);
+  border-color: rgba(0, 112, 205, 0.84);
+  box-shadow: 0 4px 7px rgba(0, 0, 0, 0.26);
+  z-index: 2;
+  transform: translateX(-50%);
+
+  img {
+    width: 10px;
+    margin-right: 6px;
+    filter: invert(1);
+  }
+
+  &.isActive {
+    img {
+      display: none;
+    }
+
+    &:before {
+      display: inline-block;
+      content: "";
+      width: 7px;
+      height: 7px;
+      margin-right: 6px;
+      border-radius: 100%;
+      background: white;
+    }
+
+    &:after {
+      content: "ON";
+      margin: 0 0 0 3px;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    background: rgba(0, 112, 205, 1);
+  }
+}

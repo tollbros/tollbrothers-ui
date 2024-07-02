@@ -1,0 +1,526 @@
+@import "../modules/all";
+
+.filterbar {
+  position: sticky;
+  top: -1px;
+  background-color: white;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0 3px 4px rgba(50, 50, 50, 0.12);
+  z-index: 40;
+
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 78%;
+    height: 100%;
+    border: 1px solid red;
+
+    @include breakpoint(sm) {
+      width: 100%;
+    }
+
+    .left {
+      position: relative;
+      display: flex;
+      align-content: center;
+      flex-grow: 1;
+      height: 40px;
+      width: auto;
+      margin-right: 14px;
+      border: 1px solid #d6d6d6;
+
+      @include breakpoint(sm) {
+        margin-right: 0;
+      }
+
+      @include breakpoint(md) {
+        margin-right: 14px;
+      }
+
+      button {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        height: 28px;
+        width: 28px;
+        line-height: 28px;
+        margin-top: -14px;
+        padding: 0;
+        z-index: 12;
+        background-image: url("/img/icons/search-white.svg");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 13px auto;
+        text-indent: -5000px;
+        overflow: hidden;
+      }
+    }
+
+    .right {
+      display: flex;
+      justify-content: space-between;
+      flex-grow: 0;
+      height: 38px;
+      margin-left: 10px;
+
+      @include breakpoint(sm) {
+        margin-left: auto;
+      }
+    }
+  }
+
+  :global {
+    .omniSearchBar__adjust {
+      max-width: none;
+      height: 100%;
+
+      .omniSearchResultHolder__adjust {
+        width: 100%;
+        margin: 0;
+        border-top: 1px solid lighten(black, 92);
+      }
+
+      .searchBarInputContain__adjust {
+        height: 40px;
+
+        svg {
+          display: none;
+        }
+      }
+    }
+
+    .omniSearch__adjust {
+      height: 100%;
+      border: none;
+
+      svg {
+        display: none;
+      }
+
+      .omniSearchInput__adjust {
+        padding: 14px 50px 14px 14px !important;
+        background: transparent;
+      }
+    }
+  }
+}
+
+.content_header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-left: $page_margins/4;
+  margin: 30px 0 20px 0;
+
+  @include breakpoint(md) {
+    margin: 34px 0 20px 0;
+    padding-right: $page_margins/2;
+    padding-left: $page_margins/2;
+  }
+
+  @include breakpoint(lg) {
+    padding-right: $page_margins;
+    padding-left: $page_margins;
+  }
+
+  h1 {
+    font-size: 1.2em;
+    padding-right: 30px;
+    margin-bottom: 16px;
+
+    @include breakpoint(md) {
+      font-size: 1.4em;
+    }
+  }
+
+  button {
+    margin-right: 10px;
+  }
+
+  .metroFilters {
+    display: flex;
+    overflow: visible;
+    overflow-x: auto;
+    white-space: normal;
+
+    @include breakpoint(md) {
+      display: contents;
+    }
+
+    button {
+      @include breakpoint(md) {
+        margin: -7px 10px 16px 0;
+      }
+    }
+  }
+}
+
+.contentControls {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 30px;
+  font-size: 1.2em;
+  color: $medium_blue;
+  z-index: 2;
+
+  .sortContain {
+    margin: 0;
+    padding-right: 20px;
+    font-size: 0.9em;
+    line-height: 1.8em;
+
+    @include breakpoint(sm) {
+      font-size: 1em;
+    }
+
+    &.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  .sortControl {
+    position: relative;
+    display: inline-block;
+    width: 78px;
+    vertical-align: top;
+
+    > div {
+      position: absolute;
+      width: 100%;
+      margin-top: -4px;
+
+      button {
+        align-items: center;
+        color: $medium_blue;
+        padding: 0 30px 0 12px;
+        height: 40px;
+
+        span {
+          color: $medium_blue !important;
+        }
+      }
+
+      label {
+        color: $medium_blue !important;
+      }
+    }
+  }
+
+  .viewControls {
+    display: inline-flex;
+    flex-shrink: 0;
+
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 56px;
+      height: 52px;
+      font-size: 0.64em;
+      border: 1px solid $medium_gray;
+
+      &.grid,
+      &.map {
+        border-left-width: 0;
+      }
+
+      &.grid {
+        display: none;
+
+        @include breakpoint(lg) {
+          display: flex;
+        }
+      }
+
+      &.isActive {
+        background: lighten(black, 96);
+      }
+
+      img {
+        width: 13px;
+        height: auto;
+        margin-right: 4px;
+      }
+
+      &.map {
+        img {
+          width: 11px;
+        }
+      }
+    }
+
+    &.modelSearch {
+      display: none;
+
+      @include breakpoint(lg) {
+        display: inline-flex;
+      }
+    }
+  }
+}
+
+.distanceOption {
+  display: inline-block;
+  width: 16px;
+  height: 20px;
+  background: center / contain no-repeat url("/img/icons/distance-blue.svg");
+}
+
+label {
+  .distanceOption {
+    margin-top: 10px;
+  }
+}
+
+.priceOption {
+  .small {
+    font-size: 0.7em;
+  }
+
+  .mid {
+    font-size: 0.84em;
+  }
+}
+
+.resultArea {
+  width: 100%;
+  padding-bottom: 60px;
+  background-color: white;
+
+  @include breakpoint(md) {
+    display: flex;
+  }
+
+  &.mapView {
+    .results {
+      @include breakpoint(md) {
+        padding-right: 20px;
+      }
+
+      .contentControls {
+        margin-bottom: 10px;
+
+        @include breakpoint(md) {
+          margin-bottom: 30px;
+        }
+      }
+
+      .sortControl {
+        display: none;
+
+        @include breakpoint(md) {
+          display: inline-block;
+        }
+      }
+
+      .sortCopy {
+        span {
+          display: none;
+
+          @include breakpoint(md) {
+            display: inline;
+          }
+        }
+      }
+    }
+
+    :global {
+      .metroBlock__adjust {
+        display: none;
+
+        @include breakpoint(md) {
+          display: block;
+        }
+      }
+
+      .searchCardWrap__adjust {
+        display: none;
+        margin: 0;
+
+        @include breakpoint(md) {
+          display: block;
+          width: 100%;
+          margin-bottom: 20px;
+        }
+
+        @include breakpoint(lg) {
+          margin: 0;
+        }
+      }
+
+      .searchCard__adjust {
+        display: none;
+
+        @include breakpoint(md) {
+          display: flex;
+        }
+      }
+
+      .searchCardBody__adjust {
+        @include breakpoint(lg) {
+          padding-bottom: 50px;
+        }
+      }
+
+      .searchCardCtaButtons__adjust {
+        right: 10px;
+
+        @include breakpoint(lg) {
+          min-width: 300px;
+        }
+
+        @include breakpoint(xlg) {
+          min-width: 320px;
+        }
+      }
+    }
+  }
+
+  &.listView,
+  &.gridView {
+    .results {
+      width: 100%;
+      max-width: none;
+      border: none;
+
+      @include breakpoint(lg) {
+        padding-right: $page_margins;
+      }
+    }
+
+    .mapspace {
+      display: none;
+    }
+
+    :global {
+      .searchCardWrap__adjust {
+        .searchCardLocation__adjust {
+          img {
+            @include breakpoint(lg) {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.listView {
+    :global {
+      .searchCardWrap__adjust {
+        @include breakpoint(lg) {
+          width: 100%;
+        }
+
+        .searchCardBody__adjust {
+          @include breakpoint(lg) {
+            flex-direction: row;
+          }
+        }
+
+        .searchProductDetail__adjust {
+          @include breakpoint(lg) {
+            &:nth-child(n + 4) {
+              display: block;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.gridView {
+    .results {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    :global {
+      .metroBlock__adjust {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .searchCardWrap__adjust {
+        margin-bottom: 20px;
+
+        @include breakpoint(sm) {
+          width: 49%;
+        }
+      }
+    }
+  }
+
+  .results {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1040px;
+    padding: 10px $page_margins/4 0 $page_margins/4;
+    justify-content: space-between;
+    align-content: baseline;
+    overflow: hidden;
+
+    @include breakpoint(md) {
+      width: 55%;
+      padding: 30px $page_margins/2 0 $page_margins/2;
+      border-right: 6px solid lighten($black, 80);
+    }
+
+    @include breakpoint(lg) {
+      width: 65%;
+      padding: 30px 20px 0 70px;
+    }
+  }
+
+  .mapspace {
+    flex-grow: 1;
+    position: sticky;
+    top: 60px;
+    display: block;
+    height: calc(100vh - 138px);
+    width: 100%;
+    z-index: 20;
+    overflow: hidden;
+
+    @include breakpoint(md) {
+      width: 45%;
+      height: calc(100vh - 60px);
+    }
+
+    @include breakpoint(lg) {
+      width: 35%;
+    }
+
+    > div {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  :global {
+    .searchCardWrap__adjust {
+      width: 100%;
+      margin-bottom: 20px;
+
+      @include breakpoint(sm) {
+        width: 49%;
+      }
+
+      @include breakpoint(lg) {
+        margin: 0;
+      }
+    }
+  }
+}

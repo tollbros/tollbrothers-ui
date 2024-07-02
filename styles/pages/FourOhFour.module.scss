@@ -1,0 +1,43 @@
+@import "../modules/all";
+
+.pageWrapper {
+  margin: 50px auto 90px auto;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @include breakpoint(md) {
+    padding-left: 160px;
+    padding-right: 160px;
+    margin: 90px auto 90px auto;
+  }
+}
+
+a.underline {
+  text-decoration: underline;
+  color: $accent_blue;
+}
+
+a.underline:hover {
+  text-decoration: none;
+}
+
+h1.heading {
+  color: $medium_blue;
+  position: relative;
+  margin: 0 0 40px 0;
+  padding: 0 17.5px;
+  font-size: 2.2em;
+  font-weight: 200;
+  text-align: center;
+  z-index: 0;
+}
+
+h2.subhead {
+  color: #000;
+  font-size: 1.8em;
+  margin-top: 90px;
+  margin-bottom: 20px;
+}

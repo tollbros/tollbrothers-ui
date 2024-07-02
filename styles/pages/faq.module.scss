@@ -1,0 +1,323 @@
+@import "../modules/all";
+
+
+.page-margins {
+  margin: 50px 130px;
+
+  p {
+    line-height: auto;
+  }
+}
+
+
+h2.theHeader {
+  font-size: 2em;
+  line-height: 1.3em;
+}
+
+
+.openClose {
+  position: absolute;
+  margin-top: -60px;
+}
+
+.GeneralFAQ {
+  margin: auto;
+}
+
+.theAnchor {
+  height: 100px;
+  margin-top: -100px;
+  position: absolute;
+}
+
+.miscPageContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 100px;
+}
+
+.questionAnswer {
+  margin-top: 100px;
+}
+
+@media screen and (max-width: 875px) {
+  .page-margins {
+    margin: 50px 30px;
+  }
+
+  .questionAnswer {
+    margin-top: 30px;
+  }
+}
+
+.marginTop {
+  margin-top: 50px;
+}
+
+h1.heading {
+  color: #000;
+}
+
+h3.subhead {
+  margin: 0 0 10px 0;
+  font-size: 1.1em;
+  letter-spacing: 1px;
+  color: $medium_blue;
+  font-family: sans-serif;
+}
+
+.TOC {
+  display: inline-block;
+  width: 100%;
+}
+
+.itemsTOC li {
+  line-height: 1.9;
+}
+
+a.faqLink {
+  color: $medium_blue;
+  text-decoration: none;
+}
+
+.leftColumn {
+  display: table-cell;
+  float: left;
+  width: 30%;
+  height: 100%;
+  text-align: left;
+  margin: 0 0 0 0;
+  padding: 0 50px 0 0;
+}
+
+@media screen and (max-width: 1200px) {
+  .leftColumn {
+    padding: 70px 10px 0 0;
+  }
+}
+
+@media screen and (max-width: 875px) {
+  .leftColumn {
+    width: 100%;
+    padding: 0 10px 0 0;
+  }
+}
+
+.rightColumn {
+  width: auto;
+  height: 100%;
+  text-align: left;
+  display: table-cell;
+  padding: 0 0 30px 0;
+  vertical-align: top;
+  margin: 0 0 40px 0;
+}
+
+@media screen and (max-width: 875px) {
+  .rightColumn {
+    width: 100%;
+    display: block;
+  }
+}
+
+.leftBorder {
+  border-left: 1px solid #ccc;
+  padding: 0 0 0 60px;
+}
+
+@media screen and (max-width: 875px) {
+  .leftBorder {
+    border-left: 0 solid #ccc;
+    padding: 0 0 0 0;
+  }
+}
+
+li.hdrFAQ {
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.itemsTOC {
+  margin-bottom: 30px;
+}
+
+.itemsProcess {
+  list-style-type: disc;
+  margin-bottom: 40px;
+}
+
+.itemsProcess li {
+  list-style-type: disc;
+  margin-left: 30px;
+}
+
+.itemsProcess li.hdrFAQ {
+  list-style-type: none;
+  margin-left: 0;
+}
+
+p.question {
+  font-weight: 500;
+  margin: 30px 0 0 0;
+}
+
+.imageFAQ {
+  max-width: 100%;
+}
+
+.photoCaption {
+  position: absolute;
+  color: $white;
+  margin-top: -30px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.collapse {
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.generalQuestions {
+  border: 0 solid #000;
+}
+
+.buyingQuestions {
+  border: 0 solid #000;
+}
+
+.financingQuestions {
+  border: 0 solid #000;
+}
+
+.agentQuestions {
+  border: 0 solid #000;
+}
+
+.hidden {
+  display: none;
+}
+
+.accordion {
+  margin: 0 0 20px 0;
+  max-height: 20px;
+  transition: max-height 0.34s ease-out;
+  overflow: hidden;
+  padding: 0 0 0 0;
+
+  @include breakpoint(md) {
+    max-height: 20px;
+    margin-top: -50px;
+  }
+
+  h2 {
+    font-family: $base_font_family;
+    color: $medium_blue;
+    font-size: 15px;
+    font-weight: 200;
+    margin: 0 0 10px 0;
+    width: 100%;
+    cursor: pointer;
+
+    &.aboutHeader {
+      font-family: $base_font_family;
+
+      @include breakpoint(md) {
+        font-size: 15px;
+      }
+
+      &:before {
+        content: "";
+      }
+    }
+
+    @include breakpoint(md) {
+      font-size: 15px;
+    }
+
+    &:before {
+      content: "+";
+      color: $medium_blue;
+      font-size: 15px;
+      font-weight: 200;
+      padding-right: 10px;
+      padding-top: 20px;
+    }
+  }
+
+  &.open {
+    max-height: 5000px;
+    transition: max-height 1.25s ease-in;
+
+    h2 {
+      &:before {
+        content: "—";
+        font-size: 15px;
+        transform: scaleX(1.4);
+        transform-origin: 0 0;
+        font-weight: 200;
+        padding-right: 10px;
+        padding-top: 20px;
+      }
+    }
+  }
+
+  p {
+    font-family: $alt_font_family;
+    font-size: 0.9em;
+    margin: 0;
+  }
+ 
+  ul.accordionList {
+    list-style: none;
+    margin: 30px 0 20px 0;
+    padding: 0 0 0 0;
+  }
+
+  ul.accordionList li {
+    line-height: 2.8;
+  }
+
+  ul.accordionList li a {
+    line-height: 2.8;
+    color: $accent_blue;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  ul.accordionListLessSpace {
+    list-style: none;
+    margin: 13px 0 20px 0;
+    padding: 0 0 0 0;
+  }
+
+  ul.accordionListLessSpace li {
+    line-height: 2.8;
+  }
+
+  p.boldSubhead {
+    font-weight: bold;
+    margin: 30px 0 0 0;
+  }
+
+  p.boldSubheadNoSpace {
+    font-weight: bold;
+    margin: 30px 0 -20px 0;
+  }
+}
+
+p.answer {
+  font-weight: normal;
+  margin: 10px 0 30px 0;
+}
+
+a.linkout {
+  color: $accent_blue;
+  text-decoration: underline;
+}

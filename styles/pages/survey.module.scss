@@ -1,0 +1,290 @@
+@import "../modules/all";
+
+.surveyPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 140px;
+    margin-bottom: 2vh;
+    position: relative;
+
+    @include breakpoint(xs) {
+        padding-bottom: 100px;
+        margin-bottom: 35px;
+    }
+
+    &.intro {
+        top: 5vh;
+    }
+
+    &.center {
+        display: flex !important;
+
+        .dsLogo {
+            margin: 40px auto;
+        }
+    }
+
+    @include breakpoint(md) {
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .dsLogo {
+        margin: 30px 0 36px 0;
+
+        @include breakpoint(md) {
+            margin: 30px 0 72px 60px;
+        }
+    }
+
+    .logout {
+        background-color: $white;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        padding: 2px 8px;
+        border-radius: 24px;
+        margin: 8px 20px 0 0;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .justLoggedOut {
+        margin: 30px auto -10px auto;
+        text-align: center;
+
+        @include breakpoint(md) {
+            margin: 0 0 0 60px;
+            text-align: left;
+        }
+
+        h2 {
+            font-family: Domaine, Gotham, sans-serif;
+            font-size: 30px;
+            line-height: 1.2em;
+            padding: 0 15px;
+            margin: 0 auto 18px auto !important;
+
+            @include breakpoint(md) {
+                font-size: 34px;
+                padding: 0;
+            }
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.75em;
+            margin-bottom: 30px;
+
+            a {
+                color: $accent_blue;
+                text-decoration: underline;
+                cursor: pointer;
+
+                &:hover {
+                    color: $medium_blue;
+                }
+            }
+        }
+    }
+}
+
+.surveyFooter {
+    width: 100%;
+    color: #000; 
+    padding: 25px 30px;
+    background-color: #fff;
+    position: fixed;
+    bottom: 0;
+
+    @include breakpoint(md) {
+        padding: 25px 50px;
+    }
+
+    .wrapper {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        gap: 0;
+        grid-template-columns: 1fr;
+        grid-template-rows: 54px 21px;
+        grid-template-areas:
+            "one"
+            "two";
+
+        @include breakpoint(md) {
+            width: 100%;
+            gap: 12px;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+            grid-template-areas:
+                "one two three"
+        }
+
+        .tbLogo {
+            width: 210px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            grid-area: one;
+            grid-column-start: 1;
+            grid-column-end: 2;
+    
+            @include breakpoint(md) {
+                width: 200px;
+                margin-bottom: 0;
+                grid-column-end: 1;
+            }
+    
+            &:after {
+                content: "";
+                width: 200px;
+                height: 40px;
+                border: none !important;
+                background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/design-studio/toll-logo.png") no-repeat;
+                background-size: 200px 37px;
+            }
+        }
+
+        .surveyNav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            grid-area: two;
+            font-size: 12px;
+            font-weight: 200;
+            font-style: normal;
+            line-height: 21px;
+
+            a {
+                color: #000;
+                text-decoration: underline;
+                text-transform: uppercase;
+                padding: 0 2px;
+            }
+        }
+    }
+}
+
+.panoHolder {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    transform: translateX(4000px);
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    &.active {
+        transform: translateX(0);
+    }
+
+    .alert {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: calc(100vw - 100px);
+        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+
+        &.active {
+            opacity: 1;
+        }
+
+        span {
+            padding: 30px 80px;
+            color: black;
+            background-color: white;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+    }
+}
+
+.error {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px 26px;
+    background-color: $accent_blue;
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 1;
+    transition: opacity .6s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+    cursor: pointer;
+    
+    &.closed {
+        opacity: 0;
+    }
+
+    h5 {
+        color: white;
+        margin: 0;
+        font-size: 14px;
+        font-family: $alt_font_family;
+        font-weight: 300;
+    }
+
+    // button {
+    //     width: 10px;
+    //     height: 10px;
+    //     padding: 0;
+    //     border: none;
+    //     color: white;
+    //     font-size: 20px;
+    //     cursor: pointer;
+    //     background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg");
+    //     background-size: 100%;
+    //     background-repeat: no-repeat;
+    //     background-color: transparent;
+    //     filter: invert(1);
+    // }
+}
+
+.login {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px 26px;
+    background-color: rgb(255, 206, 45);
+    z-index: 102;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 1;
+    transition: opacity .6s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+    cursor: pointer;
+    
+    &.closed {
+        opacity: 0;
+    }
+
+    &.hide {
+        display: none;
+    }
+
+    h5 {
+        color: rgb(0, 0, 0);
+        margin: 0;
+        font-size: 14px;
+        font-family: $alt_font_family;
+        font-weight: 300;
+    }
+}

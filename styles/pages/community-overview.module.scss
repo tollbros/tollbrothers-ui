@@ -1,0 +1,1014 @@
+@import "../modules/all";
+
+.logoNsearch {
+  position: absolute;
+  top: 25%;
+  margin: 0;
+  padding: 0 15px;
+  z-index: 3;
+  width: 100%;
+  text-align: center;
+
+  .brochureLogo {
+    display: block;
+    max-width: 440px;
+    height: 164px;
+    margin: 0 auto;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;    
+    filter: grayscale(100%) invert(100%) drop-shadow(0 10px 11px rgba(0,0,0,.6));
+    object-fit: contain;
+    margin-bottom: 30px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-height: 30vh;
+      position: relative;
+    }
+  }
+
+  p.collection {
+    color: rgba(255,255,255,1);
+    font-family: $base_font_family;
+    font-size: 15px;
+    font-weight: 700;
+    font-style: normal;
+    letter-spacing: 2.73px;
+    text-align: center;
+    line-height: 28px;
+    text-transform: uppercase;
+    margin-bottom: 53px;
+  }
+
+  .playBtnWrap {
+    display: block;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 40px;
+    position: relative;
+
+    @include breakpoint(md) {
+      margin-bottom: 120px;
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      top: 0;
+      left: 0;
+      background: url('https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/play-icon.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;    
+      object-fit: contain;
+    }
+  }
+
+
+  h1.theheading {
+    font-size: 2.45em;
+    font-weight: 200;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgb(0 0 0 / 0.31), 0 7px 12px rgba(0, 0, 0, 0.6);
+    margin: auto auto 43px auto;
+
+    @media only screen and (max-width: 425px) {
+      font-size: 2.1em;
+    }
+
+  }
+
+  .selectorArrow {
+    top: 7px;
+    right: 18px;
+
+    &:before {
+      font-size: 10px;
+      color: $black;
+      display: inline-block;
+      -webkit-transform: scale(1, 2);
+
+      /* Safari and Chrome */
+      -moz-transform: scale(1, 2);
+
+      /* Firefox */
+      -ms-transform: scale(1, 2);
+
+      /* IE 9 */
+      -o-transform: scale(1, 2);
+
+      /* Opera */
+      transform: scale(1, 2);
+
+      /* W3C */
+
+
+      position: absolute;
+      content: '>';
+
+      @include selectArrow();
+
+      right: 20px;
+      top: 21px;
+      width: 8px;
+      height: 8px;
+
+
+    }
+  }
+
+  .stateSelector {
+    display: inline-flex;
+
+    .selectorWrap {
+      position: relative;
+      display: inline-block;
+      height: 63px;
+      line-height: 60px;
+      color: #000;
+      vertical-align: top;
+      text-align: left;
+      user-select: none;
+      overflow: hidden;
+      z-index: 10;
+      cursor: pointer;
+      margin-right: 3px;
+      background: white;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+      width: 45vw;
+
+      @include breakpoint(md) {
+        width: 25vw;
+      }
+    }
+
+    .selectorWrap select {
+      position: relative;
+      height: 100%;
+      margin: 0;
+      color: #000;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -ms-appearance: none;
+      appearance: none;
+      z-index: 3;
+      cursor: pointer;
+      width: 100%;
+      padding-left: 15px;
+      font-weight: $font_weight_bold;
+      font-family: $base_font_family;
+    }
+
+    button,
+    .button {
+      content: '';
+      display: block;
+      padding: 14px 15px;
+      color: #fff;
+      font-weight: 500;
+      line-height: initial;
+      text-align: center;
+      background-color:$accent_blue;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      -o-box-shadow: none;
+      -khtml-box-shadow: none;
+      vertical-align: top;
+      overflow: hidden;
+      font-size: 13px;
+      margin: 0 5px;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+
+      @include breakpoint(md) {
+        padding: 14px 30px;
+      }
+
+
+      
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+}
+
+.pageWrapper {
+  max-width: 1106px;
+  margin: 60px auto 96px auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  color: #0f0f0f;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+    @include breakpoint(md) {
+      margin: 108px auto 96px auto;
+    }
+}
+
+.tollLogo {
+  text-align: center;
+
+  img {
+    width: 75%;
+    margin: 30px auto -10px auto;
+
+    @include breakpoint(sm) {
+      width: 40%;
+      margin: 30px auto 20px auto;
+      max-width: 400px;
+    }
+  }
+}
+
+.subpageHero {
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #061932;
+    z-index: 2;
+    opacity: 0.7;
+  }
+
+  .theheading {
+    span {
+      display: none;
+    }
+  }
+
+  .textWrap {
+    max-width: 600px;
+    margin: 0 auto;
+
+    p.heroDetails {
+      font-family: $alt_font_family;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.6em;
+    }
+  }
+
+  .no_qmi {
+    display: block;
+  }
+
+  .qmi {
+    display: none;
+  }
+
+  .js_jump_to_regency_search_QMI {
+    display: none !important;
+  }
+
+  &.qmi_only {
+    .theheading {
+      span {
+        display: block;
+        font-size: 0.6em;
+      }
+    }
+
+    .qmi {
+      display: block;
+    }
+
+    .no_qmi {
+      display: none;
+    }
+
+    .js_jump_to_regency_search_QMI {
+      display: block !important;
+    }
+
+    .js_jump_to_regency_search {
+      display: none !important;
+    }
+  }
+}
+
+.heroBar {
+  width: 100%;
+  padding: 42px 15px;
+  z-index: 22;
+  background-color: $navy_blue;
+  position: relative;
+  top: -1px;
+
+  .textWrap {
+    margin: 0 auto;
+    max-width: 758px;
+
+    p {
+      font-family: $alt_font_family;
+      font-size: 17px;
+      line-height: 2em;
+      text-align: center;
+      color: $white;
+    }
+  }
+
+  p {
+    text-align: center;
+  }
+}
+
+
+
+
+
+
+
+.homeCategory {
+    display: flex;
+    margin: 0 auto;
+    height: 100%;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-flow: row wrap;
+    padding-bottom: 101px;
+    
+    .copyWrapper {
+      max-width: 800px;
+
+      .title {
+        font-family: $base_font_family;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 2px;
+        line-height: 15px;
+        position: relative;
+        display: block;
+        margin-top: 50px;
+        margin-bottom: 12px;
+        color: $gray;
+      }
+
+      h3 {
+        font-size: 1.9em;
+
+        @include breakpoint(xs) {
+          font-size: 2.3em;
+        }
+
+      }
+
+      ul {
+        li {
+          margin: 0 0 30px 0;
+          line-height: 1.8em;
+          font-family: $alt_font_family;
+          font-size: 1em;
+        }
+      }
+
+      a.commLink {
+        font-family: $alt_font_family;
+        font-size: 16px;
+        line-height: 28px;
+        color: #0070CD;
+        text-decoration: underline;
+        font-weight: 500;
+      }
+
+      .homeColumns {
+        font-size: 0;
+        width: 100%;
+        max-width: 100%;
+        min-width: 800px;
+        overflow-x: auto;
+
+        button.type {
+          color: #8195A2;
+          height: 32px;
+          line-height: 32px;
+          padding-bottom: 40px;
+          background-color: transparent;
+          text-align: left;
+          font-weight: bold;
+          font-size: 10px;
+          text-transform: capitalize;
+          display: none;
+
+          @include breakpoint(xs) {
+            display: inline-block;
+          }
+  
+          &.homeDesign {
+            width: 22%;
+          }
+
+          &.price {
+            width: 8%;
+
+            @include breakpoint(md) {
+              width: 10%;
+             }
+          }
+
+          &.bed {
+            width: 8%;
+            text-align: center;
+          }
+
+          &.bath {
+            width: 7%;
+            text-align: center;
+          }
+
+          &.sqft {
+            width: 7%;
+            text-align: center;
+          }
+
+          &.halfBath {
+            width: 10%;
+            text-align: center;
+          }
+
+          &.garage {
+            width: 8%;
+            text-align: center;
+          }
+
+          &.moveIn {
+            width: 8%;
+            text-align: center;
+          }
+
+          &.floorPlan {
+            width: 9%;
+            text-align: center;
+          }
+
+          &.designer {
+            width: 11%;
+            text-align: center;
+          }
+
+        }
+
+        button:last-of-type {
+          color: #fff;
+        }
+      }
+
+      .homeRows {
+        width: 100%;
+        max-width: 100%;
+        min-width: 800px;
+        overflow-x: auto;
+        
+
+        .homeRow {
+            display: block;
+            font-size: 0;
+            text-align: left;
+            color: #000;
+            padding: 17px 0 34px 0;
+            white-space: nowrap;
+            border-bottom: 1px solid #D3DBE1;
+            background-color: #fff;
+            position: relative;
+            -webkit-transition-property: background-color;
+            -moz-transition-property: background-color;
+            -o-transition-property: background-color;
+            -ms-transition-property: background-color;
+            transition-property: background-color;
+            -webkit-transition-duration: 0.15s;
+            -moz-transition-duration: 0.15s;
+            -o-transition-duration: 0.15s;
+            -ms-transition-duration: 0.15s;
+            transition-duration: 0.15s;
+            -webkit-transition-timing-function: ease;
+            -moz-transition-timing-function: ease;
+            -o-transition-timing-function: ease;
+            -ms-transition-timing-function: ease;
+            transition-timing-function: ease;
+
+
+            span {
+              display: inline-block;
+              font-family: $alt_font_family;
+              font-size: 12px;
+              font-weight: 300;
+              height: 18px;
+              line-height: 18px;
+              color: #000;
+              white-space: nowrap;
+              vertical-align: middle;
+
+              @include breakpoint(md) {
+                font-size: 14px;
+              }
+
+              .text {
+                font-size: 10px;
+              }
+
+              &.name {
+                width: 22%;
+                font-weight: bold;
+                color: $accent_blue;
+
+                a {
+                  font-size: 12px;
+
+                  @include breakpoint(md) {
+                    font-size: 16px;
+                  }
+                }
+                
+              }
+
+              &.price {
+                width: 8%;
+
+                @include breakpoint(md) {
+                  width: 10%;
+                }
+
+              }
+
+              &.bed {
+                width: 8%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+    
+              &.bath {
+                width: 7%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+    
+              &.sqft {
+                width: 7%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+
+              &.halfBath {
+                width: 10%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+
+              &.garage {
+                width: 8%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+
+              &.moveIn {
+                width: 8%;
+                text-align: center;
+                vertical-align: text-top;
+              }
+
+              &.floorPlan {
+                width: 9%;
+                vertical-align: text-top;
+              }
+
+              &.dafLink {
+                padding: 19px 0 0 0;
+                height: 56px;
+                width: 11%;
+                vertical-align: middle;
+
+                a {
+                  color: #0C223F;
+                  font-weight: bold;
+                  font-family: $alt_font_family;
+                  text-decoration: none;
+                  font-size: 10px;
+                  line-height: 12px;
+                  display: block;
+                  padding: 0 0 0 30px;
+                  position: relative;
+
+                  &:after {
+                    content: "";
+                    position: absolute;
+                    width: 21px;
+                    height: 21px;
+                    top: 50%;
+                    left: 0;
+                    transform: translate(0%, -50%);
+                    background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/Download.svg") no-repeat;
+                    background-size: contain;
+                    background-position: center;    
+                    object-fit: contain;
+                  }
+                }
+              }
+
+            }
+        }
+
+        .homeRow:last-of-type {
+          border-bottom: 0;
+        }
+
+      }
+
+    }
+
+    .stats {
+      width: 200px;
+      margin: 60px 0 0 0;
+
+      .qmi,
+      .homeSites {
+        padding: 20px 0 0 0;  
+      }
+
+      .qmi {
+        border-bottom: 1px solid #ccc;
+
+      }
+
+      span {
+        font-family: $domaine_font_family;
+        color: rgba(129,149,162,1);
+        font-size: 60px;
+        font-weight: 700;
+        font-style: normal;
+        letter-spacing: 0;
+        text-align: left;
+        line-height: 49px;
+        margin: 0 16px 0 0;
+        display: inline-block;
+        width: 75px;
+      }
+
+      p {
+        color: $navy_blue;
+        font-family: $base_font_family;
+        font-size: 12px;
+        font-weight: 700;
+        font-style: normal;
+        letter-spacing: 0;
+        text-align: left;
+        line-height: 15px;
+        display: inline-block;
+        width: 100px;
+        vertical-align: middle;
+      }
+    }
+}
+
+.homeCategory.qmiHomes {
+  .copyWrapper {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    h3 {
+      margin: 0 0 1.0em 0;
+    }
+    
+  }
+}
+
+.homeCategory.homeDesigns {
+  padding-bottom: 67px;
+
+  .copyWrapper {
+    max-width: 948px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    h3 {
+      margin: 0 0 1.0em 0;
+    }
+
+    .homeColumns {
+        button.type {
+          &.homeDesign {
+            width: 26%;
+          }
+
+          &.price {
+
+            @include breakpoint(md) {
+              width: 12%;
+             }
+          }
+
+          &.bed {
+            width: 10%;
+          }
+
+          &.bath {
+            width: 10%;
+          }
+
+          &.sqft {
+            width: 8%;
+          }
+
+          &.halfBath {
+            width: 13%;
+          }
+
+          &.garage {
+            width: 10%;
+          }
+
+          &.floorPlan {
+            width: 10%;
+          }
+
+        }
+      }
+
+      .homeRows {
+        .homeRow {
+            span {
+              &.name {
+                width: 26%;
+              }
+
+              &.price {
+                width: 8%;
+
+                @include breakpoint(md) {
+                  width: 12%;
+                }
+
+              }
+
+              &.bed {
+                width: 10%;
+              }
+    
+              &.bath {
+                width: 10%;
+              }
+    
+              &.sqft {
+                width: 8%;
+              }
+
+              &.halfBath {
+                width: 13%;
+              }
+
+              &.garage {
+                width: 10%;
+              }
+
+              &.floorPlan {
+                width: 10%;
+              }
+
+            }
+        }
+
+        .homeRow:last-of-type {
+          border-bottom: 0;
+        }
+
+      }
+    
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+.cta {
+  background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/cta-bkgd.jpg") no-repeat;
+  background-size: cover;
+  width: 100%;
+  position: relative;
+  height: 52vh;
+  min-height: 560px;
+  border: 1px solid $white;
+  z-index: -2;
+  padding: 87px 30px 0 30px;
+
+  @include breakpoint(xs) {
+    min-height: 730px;
+  }
+
+  .wrapper {
+    max-width: 532px;
+    height: 100%;
+    margin: 0 auto;
+
+    .advantageWrap {
+      display: block;
+      width: 100%;
+      height: 400px;
+      margin: 0 auto;
+      background-color: $white;
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      z-index: -2;
+
+      @include breakpoint(xs) {
+        height: 574px;
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/cta.jpg") no-repeat;
+        width: 100%;
+        height: 320px;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        z-index: -22;
+
+        @include breakpoint(xs) {
+          height: 502px;
+        }
+      }
+  
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #000;
+        opacity: 0.4;
+        width: 100%;
+        height: 320px;
+        z-index: -2;
+        border-radius: 30px;
+
+        @include breakpoint(xs) {
+          height: 502px;
+        }
+
+      }
+  
+      p {
+        font-family: $domaine_font_family;
+        font-size: 32px;
+        color: $white;
+        line-height: 12px; 
+        padding: 36px 0 0 36px;
+        z-index: 999;
+        margin: 0;
+
+        @include breakpoint(xs) {
+          font-size: 40px;
+          line-height: 12px; 
+        }
+      }
+  
+      .btnWrap {
+        display: block;
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        text-align: center;
+        line-height: 40px;
+        width: 91%;
+        height: 40px;
+        margin: 0 auto;
+        background: #0070CD;
+        border-radius: 20px;
+        color: $white;
+        font-family: $base_font_family;
+        font-weight: 500;
+        font-size: 12px;
+
+        a {
+          display: inline-block;
+          width: 92px;
+          margin: 0 auto;
+          position: relative;
+
+          &:after {
+            content: "";
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            top: 50%;
+            right: 0;
+            transform: translate(0%, -50%);
+            background: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/communityBrochure/arrow.svg") no-repeat;
+            background-size: contain;
+            background-position: center;    
+            object-fit: contain;
+          }
+        }
+  
+      }
+  
+    }
+
+  }
+  
+}
+
+.mainFooter {
+  .footerWrapper {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 62px 15px;
+    line-height: 1.8em;
+    text-align: center;
+    font-size: 12px;
+    color: $black;
+
+    @media (min-width: 1100px) {
+      display: flex;
+    }
+
+    .footerCenter {
+      font-family: $alt_font_family;
+      min-width: 288px;
+      margin: 20px 0;
+
+      a {
+        padding: 0 8px;
+        position: relative;
+
+        &:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translate(0, -50%);
+          width: 1px;
+          height: 12px;
+          background-color: $black;
+        }
+      }
+
+      a:first-of-type {
+        padding: 0 8px;
+        position: relative;
+
+        &:after {
+          display: none;
+        }
+      }
+
+    } 
+
+    .footer_social {
+      margin: 0 auto;
+      padding: 0;
+      width: 300px;
+      order: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      @media (min-width: 1100px) {
+        width: 380px;
+        margin: 0;
+      }
+
+      a {
+        display: block;
+        width: 17px;
+        height: 17px;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+
+  }
+
+}

@@ -1,0 +1,171 @@
+button.tollButton,
+.tollButton {
+  /* .tollButton can be used to transform a or span tags to look like buttons */
+  content: "";
+  display: block;
+  padding: 14px 12px;
+  color: white;
+  font-weight: $font_weight_book;
+  line-height: initial;
+  //text-transform: uppercase;
+  text-align: center;
+  background-color: $accent_blue;
+  box-shadow: none;
+  overflow: hidden;
+
+  &:hover:enabled,
+  &:focus {
+    background-color: lighten($accent_blue, 10);
+  }
+
+  &:active {
+    background-color: lighten($accent_blue, 10);
+  }
+
+  &:disabled,
+  &.is-disabled {
+    opacity: 0.5;
+  }
+
+  &.with-arrow {
+    position: relative;
+
+    &:after {
+      position: absolute;
+      content: "";
+      top: 50%;
+      right: 10px;
+      width: 10px;
+      height: 15px;
+      margin-top: -7px;
+    }
+  }
+
+  &.is-sending,
+  &.is-loading {
+    white-space: nowrap;
+  }
+
+  &.is-sending:after,
+  &.is-loading:after {
+    right: 14px;
+    background: none;
+  }
+
+  &.is-sending:before,
+  &.is-loading:before {
+    content: "loading...";
+    display: inline-block;
+    width: 150%;
+    height: 100%;
+  }
+
+  &.is-sending:before {
+    content: "sending...";
+  }
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none !important;
+}
+
+button,
+.button,
+.tollButton {
+  &.white {
+    color: $medium_blue2;
+    border: 1px solid $accent_blue;
+    background: $white;
+
+    &:hover,
+    &:focus {
+      background: #f2f2f2;
+    }
+  }
+}
+
+.clear-styles {
+  padding: 0;
+  text-transform: none;
+  text-align: left;
+  letter-spacing: normal;
+  color: $black;
+  font-size: $base_font_size;
+  line-height: $base_line_height;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  vertical-align: baseline;
+  overflow: visible;
+
+  &:active,
+  &:hover,
+  &:focus {
+    background-color: transparent;
+  }
+}
+
+.closeButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background: white;
+  box-shadow: 0 0 6px rgb(50 50 50 / 0.45);
+  z-index: 1;
+
+  &:active,
+  &:hover,
+  &:focus {
+    background-color: white;
+  }
+}
+
+.chatHeaderBranding .sidebarHeader {
+  .closeButton {
+    &:active,
+    &:hover,
+    &:focus {
+      background-color: transparent;
+    }
+
+    .slds-icon_container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        margin: auto;
+        width: 16px;
+        position: relative;
+        z-index: 200;
+        fill: white;
+      }
+    }
+  }
+
+  .minimizeButton {
+    .slds-icon_container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        margin: auto;
+        width: 16px;
+        position: relative;
+        z-index: 200;
+        fill: white;
+      }
+    }
+  }
+}
+
+.secondaryButton {
+  color: $medium_blue;
+  padding: 10px;
+  font-size: 0.8em;
+  text-align: center;
+  border: 1px solid $dark_gray;
+  background: white;
+}

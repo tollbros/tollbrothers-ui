@@ -1,0 +1,280 @@
+@import "../modules/all";
+
+h1.heading {
+  margin: 40px 0 30px 0;
+  color: $navy_blue;
+  font-size: 30px;
+  font-weight: 200;
+  text-align: center;
+  letter-spacing: 1px;
+
+  @include breakpoint(md) {
+    font-size: 3.2em;
+  }
+}
+
+h2.subHeading {
+  margin: 0 0 30px 0;
+  color: $navy_blue;
+  font-size: 1.4em;
+  font-weight: 200;
+  text-align: left;
+  letter-spacing: 1px;
+
+  @include breakpoint(md) {
+    font-size: 1.4em;
+  }
+}
+
+h3.sectionHeading {
+  margin: 40px 0 30px 0;
+  color: $navy_blue;
+  font-size: 1.4em;
+  font-weight: 200;
+  text-align: center;
+  letter-spacing: 1px;
+
+  @include breakpoint(md) {
+    font-size: 1.4em;
+  }
+}
+
+.agentPageLG {
+  max-width: 100%;
+  margin: 0 auto 100px auto;
+  padding-left: 5%;
+  padding-right:  5%;
+
+  @include breakpoint(md) {
+    padding-left: 10%;
+    padding-right: 0;
+  }
+
+  .agentPageContentLG {
+    display: grid;
+    grid-template-columns: 100%;
+
+    @include breakpoint(md) {
+      display: grid;
+      grid-template-columns: 45% 55%;
+    }
+
+  .agentPageText {
+    padding-right: 0;
+
+    @include breakpoint(md) {
+      padding-right: 20px;
+    }
+  }
+
+  .agentPageImg {
+    margin-top: 20px;
+  }
+
+    img.agentImage {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  }
+
+.agentPage {
+  max-width: 1200px;
+  margin: 0 auto 100px auto;
+  padding-left: 20px;
+  padding-right: 20px;
+
+
+  @include breakpoint(md) {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+
+  p {
+    margin: 0 0 30px 0;
+    text-align: left;
+  }
+
+  .faqs {
+    margin: 50px 0% 50px 0%;
+    text-align: left;
+
+    @include breakpoint(md) {
+      margin: 100px 10% 100px 10%;
+      position: relative;
+    }
+  }
+
+  .testimonials {
+    margin: 0 0 50px 0;
+    text-align: left;
+    column-count: 1;
+    column-gap: 0;
+    column-rule: 0 solid #ebebeb;
+
+    @include breakpoint(md) {
+      column-count: 3;
+      column-gap: 40px;
+      column-rule: 2px solid #ebebeb;
+    }
+
+    .testimonialItem {
+      padding: 10px 0 30px 0;
+      margin: 0 0 60px 0;
+      text-align: left;
+      letter-spacing: 1px;
+      line-height: 1.5em;
+      position: relative;
+      border-bottom: 0 solid #e0e0e0;
+      -webkit-column-break-inside: avoid;
+      page-break-inside: avoid;
+      break-inside: avoid;
+
+      @include breakpoint(md) {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      p {
+        margin-bottom: 10px;
+      }
+
+      p.testimonialPerson {
+        font-weight: 500;
+        font-style: italic;
+      }
+
+      .testimonialQuoteTop {
+        position: absolute;
+        color: #e0e0e0;
+        font-size: 160px;
+        z-index: -1;
+        left: -20px;
+        top: 38px;
+      }
+
+      .testimonialQuoteBottom {
+        position: absolute;
+        color: #e0e0e0;
+        font-size: 160px;
+        z-index: -1;
+        right: -20px;
+        bottom: 135px;
+        rotate: 180deg;
+      }
+    }
+  }
+}
+
+
+ul.faqColumn {
+  height: 53px;
+  overflow: hidden;
+  list-style: none;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  position: relative;
+
+  &.open {
+    height: auto;
+  }
+
+  @include breakpoint(md) {
+    list-style: none;
+    border-bottom: 0 solid $black;
+  }
+
+  &.open > li.faqColumnHeader:after {
+    content: "-";
+  }
+}
+
+// ul.faqColumn:first-of-type {
+//   height: 60px;
+// }
+
+// ul.faqColumn:nth-of-type(2) {
+//   height: 60px;
+// }
+
+ul.faqColumn:nth-of-type(3) {
+  margin-top: auto;
+}
+
+ul.faqColumn:nth-of-type(4) {
+  margin-top: 5px;
+}
+
+ul.faqColumn:nth-of-type(5) {
+  margin-top: -17px;
+}
+
+@include breakpoint(md) {
+  ul.faqColumn:nth-of-type(3) {
+    margin-top: -18px;
+  }
+
+  ul.faqColumn:nth-of-type(4) {
+    margin-top: -15px;
+  }
+  
+  ul.faqColumn:nth-of-type(5) {
+    margin-top: -15px;
+  }
+
+}
+
+li.faqColumnHeader {
+  font-family: $base_font_family;
+  font-size: 14px;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  width: 100%;
+  cursor: pointer;
+
+  // @include breakpoint(md) {
+  //   cursor: auto;
+  // }
+
+  &:after {
+    content: "+";
+    position: absolute;
+    top: 15px;
+    right: 0;
+    color: #000;
+    font-size: 16px;
+    margin-right: 20px;
+
+    // @include breakpoint(md) {
+    //   display: none;
+    // }
+  }
+}
+
+li.FAQLinkColumn a {
+  font-family: $base_font_family;
+  font-size: 13px;
+  color: #000;
+  line-height: 3;
+  letter-spacing: 0;
+  font-weight: 300;
+}
+
+a li.faqColumnHeader {
+  cursor: pointer;
+
+  // @include breakpoint(md) {
+  //   cursor: default;
+  // }
+}
+
+li.faqColumnLink a:hover {
+  text-decoration: underline;
+}
+
+#closed {
+  height: 0;
+}

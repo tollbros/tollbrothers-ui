@@ -1,279 +1,39 @@
 /* ===========================================================
-	GENERAL
-============================================================*/
-
-.page_margins {
-  padding-left: 17.5px;
-  padding-right: 17.5px;
-
-  @include breakpoint(md) {
-    padding-left: 35px;
-    padding-right: 35px;
-  }
-
-  @include breakpoint(lg) {
-    padding-left: 0px;
-    padding-right: 70px;
-  }
-}
-
-.js_thanks_container, .js_oops_container, .hide { display: none; }
-.show { display: block; }
-
-/* ===========================================================
 	HERO
-============================================================*/
+============================================================ */
 
-.heroImage {
-  width: 100vw;
-  height: 95vh;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: calc(61vh - 20px);
-  color: #fff;
-  background: #fff;
-  z-index: 2;
-
-  img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .heading {
-    position: absolute;
-    margin: 0;
-    padding: 0 17.5px;
-    font-size: 3.1em;
-    font-weight: 200;
-    text-align: center;
-    text-shadow: 1px 1px 2px rgb(0 0 0 / 60%);
-    z-index: 1;
-
-    @include breakpoint(md) {
-      padding: 0 35px;
-    }
-  }
-}
-
-/* ===========================================================
-	PAGE COPY
-============================================================*/
-
-.pageWrapper {
-    max-width: 1100px;
-    margin: 50px auto 90px auto;
-    padding-left: 17.5px;
-    padding-right: 17.5px;
-    color: #0f0f0f;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: subpixel-antialiased;
+.subpageHero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: relative;
-
-    @include breakpoint(md) {
-      padding-left: 232px;
-      padding-right: 232px;
-      margin: 126px auto 116px auto;
-    }
-
-    .ribbon {
-      background: url(https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/svg/ribbon.svg) no-repeat;
-      width: 34px;
-      height: 36px;
-      transform: translate(-50%, 0);
-      left: 50%;
-      top: -63px;
+    height: calc(90vh - 20px);
+    color: #fff;
+    background: #fff;
+    overflow: hidden;
+    z-index: 2;
+    
+    img {
       position: absolute;
-      z-index: 24;
-
-      @include breakpoint(md) {
-        top: -139px;
-      }
-    }
-
-    .centered {
-      text-align: center;
-    }
-
-    p {
-      a {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  /* ===========================================================
-      BEIGE WRAPPER
-  ============================================================*/
-
-  .beige {
-    background: 100%;
-    background-color: $beige;
-  }
-
-  .beigeWrapper {
-    margin: 0 auto;
-    margin-bottom: 33px;
-    padding-top: 75px;
-    padding-bottom: 75px;
-
-    @include breakpoint(lg) {
-      padding-left: 200px;
-      padding-right: 200px;
-      padding-bottom: 109px;
-    }
-
-    h3 {
-      text-align: center;
-      font-size: 18px;
-      line-height: 26px;
-
-      @include breakpoint(sm) {
-        font-size: 21px;
-        line-height: 30px;
-      }
-
-    }
-
-    .wrapper {
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: -moz-flex;
-      display: -ms-flexbox;
-      display: flex;
-      height: 100%;
       width: 100%;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-flow: row wrap;
-      -webkit-flex-flow: row wrap;
-
-      img {
-        width: 171px;
-        margin: 23px 46px 0 0;
-      }
-
-      p {
-        width: calc(100% - 217px);
-      }
-
+      height: 100%;
+      object-fit: cover;
     }
-
-
-    //This was targeting too many things.
-    /* span {
-      display: block;
-      font-size: 0.94em;
-      line-height: 22px;
-      font-weight: 400;
-    } */
-
-    /* span.bold {
-      font-weight: bold;
-      display: block;
-    } */
-
-    ul {
-      font-family: $base_font_family;
-      font-size: 0.94em;
-      line-height: 22px;
-      font-weight: 400;
-    }
-  }
-
-/* ===========================================================
-    FORM
-============================================================*/
-
-
-  fieldset.dropdown {
-    position: relative;
-
-    &:after {
-      content: "";
+  
+    .heading {
       position: absolute;
-      top: 47%;
-      right: 20px;
-      transform: translate(0, -50%);
-      width: 12px;
-      height: 12px;
-      background: url(https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/svg/arrow-down.svg) no-repeat;
+      margin: 0;
+      padding: 0 17.5px;
+      font-size: 3.1em;
+      font-weight: 200;
+      text-align: center;
+      text-shadow: rgb(0 0 0 / 0.12) 0 3px 10px;      
+      z-index: 2;
+  
+      @include breakpoint(md) {
+        padding: 0 35px;
+      }
     }
   }
 
-  .submitBtn {
-    width: 100%;
-    height: 59px;
-    background-color: $button;
-    color: $white;
-    border: none;
-    font-family: $alt_font_family;
-    font-size: 0.9em;
-    font-weight: bold;
-    margin-bottom: 0px;
-  }
-
-  a.downloadBtn {
-    display: block;
-    border: 1px solid $teal;
-    font-family: $alt_font_family;
-    font-size: 14px;
-    font-weight: bold;
-    color: $teal;
-    padding: 13px 0;
-    text-align: center;
-    line-height: 22px;
-   // margin: 0 15px;
-    width: 100%;
-
-    @media only screen and (min-width: 620px) {
-      margin: 0 auto;
-      max-width: 614px;
-    }
-
-    &:hover {
-      cursor: pointer;
-      background-color: $teal;
-      color: $white;
-    }
-
-  }
-
-.fancyInput {
-  position: relative;
-
-  label {
-    font-size: 14px;
-    line-height: 64px;
-    position: absolute;
-    left: 20px;
-    top: 40%;
-    transform: translate(0, -50%);
-    -webkit-transition-property: all;
-    -moz-transition-property: all;
-    -o-transition-property: all;
-    -ms-transition-property: all;
-    transition-property: all;
-    -webkit-transition-duration: .25s;
-    -moz-transition-duration: .25s;
-    -o-transition-duration: .25s;
-    -ms-transition-duration: .25s;
-    transition-duration: .25s;
-    -webkit-transition-timing-function: ease;
-    -moz-transition-timing-function: ease;
-    -o-transition-timing-function: ease;
-    -ms-transition-timing-function: ease;
-    transition-timing-function: ease;
-  }
-
-  &.is_focused label {
-    left: 14px;
-    top: 12px;
-    font-size: 10px;
-  }
-}

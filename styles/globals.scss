@@ -1,0 +1,375 @@
+@import "modules/all";
+@import "base/typeography";
+@import "base/reset";
+@import "base/input_text";
+@import "base/buttons";
+@import "base/default-checkbox";
+@import "base/default-radio";
+@import "base/selector";
+
+@import "partials/disclaimer";
+
+
+
+body {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-size: 1em;
+  font-family: $base_font_family;
+  font-weight: $font_weight_book;
+  font-style: normal;
+  color: lighten($black, 3);
+  line-height: $base_line_height;
+  overflow-x:hidden;
+  overflow-y: auto;
+
+  &.preventScroll {
+    overflow: hidden !important;
+    height: 100% !important;
+  }
+
+  .omniSearchMobileHeader {
+    display: none
+  }
+
+  &.searchFocused {
+    @media only screen and (max-width: 768px) {
+      header {
+        display: none;
+      }
+
+      .homePageHero {
+        &>div {
+          display: none;
+        }
+      }
+
+      .searchByMapButton {
+        display: none;
+      }
+    }
+  }
+}
+
+h1,
+h2,
+h3 {
+  font-family: $domaine_font_family;
+  letter-spacing: .3px;
+}
+
+.bold {
+  font-weight: $font_weight_bold;
+}
+
+.medium {
+  font-weight: $font_weight_medium;
+}
+
+.italic {
+  font-style: italic;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover,
+  &:visited:hover {
+    text-decoration: none;
+  }
+}
+
+i,
+em {
+  @extend .italic; /* stylelint-disable-line */
+}
+
+b,
+strong {
+  @extend .bold; /* stylelint-disable-line */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 1.5em 0;
+  font-weight: 400;
+
+  &.light {
+    font-weight: $font_weight_light;
+  }
+}
+
+h1 {
+  font-size: 1.8em;
+}
+
+h2 {
+  font-size: 2.9em;
+}
+
+h3 {
+  font-size: 2.3em;
+}
+
+h4 {
+  font-size: 1.5em;
+}
+
+h5 {
+  font-size: 1.4em;
+}
+
+h6 {
+  font-size: 1.2em;
+}
+
+p,
+ul,
+ol,
+pre,
+label,
+table {
+  font-family: $alt_font_family;
+  font-size: $base_font_size;
+}
+
+th {
+  font-weight: 500;
+}
+
+label {
+  font-family: $base_font_family;
+}
+
+q,
+blockquote {
+  font-family: $alt_font_family;
+  font-size: $base_font_size;
+}
+
+p,
+q {
+  margin: 0 0 30px 0;
+  line-height: 1.8em;
+}
+
+li {
+  line-height: 1.6em;
+}
+
+input,
+select,
+textarea,
+.multi-select-label {
+  font-family: $alt_font_family;
+  font-size: $base_font_size;
+}
+
+button.tollButton,
+.tollButton {
+  font-family: $base_font_family;
+  font-size: 0.6875em;
+}
+
+.base-font {
+  font-family: $base_font_family;
+}
+
+.alt-font {
+  font-family: $alt_font_family;
+}
+
+.domaine-font {
+  font-family: $domaine_font_family;
+  letter-spacing: 1px;
+
+  &.heading {
+    letter-spacing: 2px;
+  }
+}
+
+.hide-button-label {
+  position: absolute;
+  right: -5000px;
+}
+
+.page-margins {
+  padding-left: $page_margins/4;
+  padding-right: $page_margins/4;
+
+  @include breakpoint(md) {
+    padding-left: $page_margins/2;
+    padding-right: $page_margins/2;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: $page_margins;
+    padding-right: $page_margins;
+  }
+}
+
+.page-margins__left {
+  padding-left: $page_margins/4;
+  padding-right: 0;
+
+  @include breakpoint(md) {
+    padding-left: $page_margins/2;
+    padding-right: 0;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: $page_margins;
+    padding-right: 0;
+  }
+}
+
+.isHidden {
+  display: none !important;
+}
+
+.inlineScroller-controls__adjust {
+  top: 200px;
+  transform: none;
+  @include bustOut();
+}
+
+
+
+.hiddenAnchor {
+  position: absolute;
+  width: 100%;
+  height: 80px;
+  transform: translateY(-80px);
+  //scroll-margin: -100px; //this should be a thing
+  // display: none;
+  pointer-events: none;
+  max-width: 100%;
+  left: 0;
+
+
+
+  @include breakpoint(xs) {
+    display: block;
+  }
+
+  &.noHeight {
+    height: 0;
+  }
+
+  &.siteplananchor {
+    height: 70px;
+    transform: translateY(-70px);
+  }
+}
+
+//fix for Safari Mobile zoom issue... (NJP-636)
+input, button, textarea, select {
+ //font: inherit;
+ font-size: 1rem;
+}
+
+/* Cookie/Privacy Banner Stuff */
+// Some styles ganked from https://cdn-prod.securiti.ai/consent/cookie-consent.css
+.cc-window,
+.cc-floating {
+  position: fixed;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: Helvetica, Calibri, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5em;
+  display: flex;
+  z-index: 9999;
+  opacity: 1;
+  -webkit-transition: opacity 0s ease; //turn off animation for google page speed
+  transition: opacity 0s ease;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  flex-flow: column nowrap !important;
+  padding: 30px 20px !important;
+  height: 170px;
+  width: 320px !important;
+  max-width: none !important;
+  margin: 26px auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+  @include breakpoint(sm) {
+    margin: 26px;
+  }
+
+  .cc-message-container {
+    flex-grow: 1;
+    flex-direction: column;
+    overflow-y: visible;
+  }
+
+  &.cc-invisible {
+    opacity: 0;
+    pointer-events: none
+  }
+
+  .cc-message {
+    margin: 0 !important;
+    text-align: center;
+  }
+
+  .cc-compliance {
+    display: block;
+    margin: 0 auto;
+    flex: none !important;
+    padding: 0 !important;
+  }
+
+  .cc-link {
+    display: inline;
+  }
+
+  .cc-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    line-height: 12px;
+    color: white;
+    border: none !important;
+    background-color: #0070cd !important;
+    cursor: pointer;
+  }
+
+  span.cc-message,
+  .cc-compliance {
+    font-size: 1em;
+    font-family: $base_font_family !important;
+    font-weight: $font_weight_book;
+    font-style: normal;
+  }
+}
+
+
+.fadeAllPins {
+  .pin {
+      opacity: 0.4;
+  }
+
+  .selectedPin {
+    opacity: 1;
+  }
+}
+
+//Swell 3d Siteplan for The Station / hide the side panel
+._bottom-modal_1qsbz_22._open_1qsbz_27 {
+  display: none;
+}
+
+.css-1hxbdjc, .css-d6o6vq { //Hide Filter and Help Buttons
+  display: none !important;
+}

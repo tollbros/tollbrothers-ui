@@ -1,0 +1,1434 @@
+@import "../../styles/modules/all";
+
+.page_margins {
+  width: calc(100% - 20px);
+  margin: 0;
+  padding-left: 20px;
+
+  @include breakpoint(sm) {
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.subpageHero {
+  min-height: 700px;
+
+  .heading {
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    line-height: 1.35em;
+    font-weight: 400;
+    z-index: 3;
+
+    @include breakpoint(sm) {
+      font-size: 4.25em;
+    }
+  }
+
+  .linkSection {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 2% 0 3%;
+    z-index: 100;
+    text-align: center;
+
+    h5 {
+      font-family: $alt_font_family;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 0 20px;
+      margin-bottom: 2%;
+
+      @include breakpoint(sm) {
+        padding: 0;
+      }
+
+      @include breakpoint($screen-xlg) {
+        margin-bottom: 20px; 
+      }
+    }
+
+    .navAnchor {
+      width: 100%;
+      height: 2px;
+    }
+  }
+
+  .heroImgOverlay {
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    position: absolute;
+    background-color: rgba(28, 28, 28, 0.7);
+  }
+}
+
+.description {
+  background-color: white;
+  width: max-content;
+  height: 35px;
+  padding: 6px 10px 0 0;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 300;
+
+  p {
+    font-family: $base_font_family;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    font-weight: 300 !important;
+    margin: 0;
+  }
+}
+
+.articleHero {
+  width: 100%;
+  height: 480px;
+  margin-top: 35px;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .description {
+    padding-left: 10px;
+    margin-left: 0;
+
+    @include breakpoint(sm) {
+      margin-left: 60px;
+    }
+  }
+
+  @include breakpoint(sm) {
+    height: 600px;
+  }
+}
+
+.articleGallery {
+  width: calc(100% - 40px);
+  padding: 0;
+  margin: 0 20px 20px 20px; 
+  display: grid;
+  gap: 12px;
+  height: 320px;
+
+  @include customScrollBarsLight ();
+
+  &::-webkit-scrollbar-thumb {
+    background: $accent_blue;
+  }
+
+  @include breakpoint(sm) {
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 0;
+    margin: 0 20px 20px 0;
+    height: auto;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  div {
+    width: 100%;
+    height: 300px;
+    position: relative;
+    z-index: 1;
+
+    @include breakpoint(sm) {
+      height: 100%;
+    }
+  }
+
+  .description {
+    width: max-content;
+    height: 35px;
+    position: absolute;
+  }
+}
+
+.pageContent {
+  article {
+    h3 {
+      color: #0C223F;
+      font-size: 54px;
+      text-transform: capitalize;
+      letter-spacing: 0.12px;
+      line-height: 42px;
+
+      @include breakpoint(sm) {
+        line-height: 52px;
+      } 
+
+      span {
+        color: #8B94A3;
+        font-family: $base_font_family;
+        font-weight: 500;
+        font-size: 17px;
+        line-height: 40px;
+        text-transform: uppercase;
+      }
+    }
+
+    h4 {
+      color: #8B94A3;
+      text-transform: uppercase;
+      font-family: $base_font_family;
+      font-size: 24px;
+      font-weight: 200;
+      line-height: 30px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+
+    a {
+      color: $accent_blue;
+      font-family: $base_font_family;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: underline;
+      text-transform: uppercase; 
+    }
+
+    &.gray {
+      background-color: $light_gray;
+
+      .articleText {
+        padding-bottom: 85px;
+        margin-bottom: 0;
+      }
+
+      .articleHero {
+        margin-top: 0;
+
+        .description {
+          background-color: white;
+
+          @include breakpoint(sm) {
+            background-color: $light_gray;
+          }
+        }
+      }
+    }
+
+    &.subHead {
+      width: 100%;
+      padding: 10% 0 28%;
+      color: #0C223F;
+
+      @include breakpoint($screen-xs) {
+        padding: 10% 0 20%;
+      }
+
+      @include breakpoint(sm) {
+        padding: 10% 0 14%;
+      }
+
+      h2 {
+        margin: 15px auto;
+        font-size: 30px;
+        text-align: center;
+        text-transform: uppercase;
+        line-height: 1.1em;
+        letter-spacing: 2.69px;
+
+        @include breakpoint(sm) {
+          font-size: 46px;
+        }
+      }
+
+      h5 {
+        color: #8B94A3;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.13px;
+        text-align: center;
+        text-transform: uppercase;
+      }
+    }
+
+    &.advantage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-100px);
+
+      @include breakpoint(md) {
+        flex-direction: row;
+      }
+
+      .advantageImg {
+        width: 100%;
+        max-width: 648px;
+        height: 110vw;
+        max-height: 785px;
+        padding: 0;
+        position: relative;
+
+        .description {
+          max-width: 190px;
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        @include breakpoint(md) {
+          width: 50%;
+          height: 55vw;
+        }
+      }
+
+      .advantageText {
+        width: 100%;
+        padding: 70px 0 0 0;
+
+        @include breakpoint(md) {
+          width: 50%;
+          padding: 100px 0 0 90px;
+        }
+
+        @include breakpoint(lg) {
+          padding: 100px 0 0 100px;
+        }
+
+        h3 {
+          height: 80px;
+
+          @include breakpoint(lg) {
+            height: 110px;
+          }
+        }
+
+        h4 {
+          letter-spacing: 1px;
+          font-size: 17px;
+          font-weight: 500;
+          margin-bottom: 6px;
+        }
+
+        p {
+          font-size: 16px;
+
+          @include breakpoint(md) {
+            font-size: 15px;
+          }
+
+          @include breakpoint(lg) {
+            font-size: 16px;
+          }
+        }
+
+        * {
+          margin: 0;
+        }
+
+        .advantageList {
+          font-size: .92em;
+          margin-top: 20px;
+
+          @include breakpoint(md) {
+            font-size: .85em;
+          }
+
+          @include breakpoint(lg) {
+            font-size: .92em;
+            margin-top: 30px;
+          }
+
+          li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+
+            @include breakpoint(md) {
+              margin-bottom: 6px;
+            }
+
+            @include breakpoint(lg) {
+              margin-bottom: 8px;
+            }
+
+            &:before {
+              display: block;
+              width: 40px;
+              height: 40px;
+              margin-right: 16px;
+              content: "";
+              background-size: cover;
+
+              @include breakpoint(md) {
+                width: 34px;
+                height: 34px;
+                margin-right: 20px;
+              }
+
+              @include breakpoint(lg) {
+                width: 40px;
+                height: 40px;
+                margin-right: 16px;
+              }
+            }
+
+            &.locations {
+              &:before {
+                background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/Prestigious-Locations.svg");
+              }
+            }
+
+            &.architecture {
+              &:before {
+                background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/Distinctive-Architecture.svg");
+              }
+            }
+
+            &.choice {
+              &:before {
+                background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/Unrivaled-Choice.svg");
+              }
+            }
+
+            &.experience {
+              &:before {
+                background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/Extraordinary-Customer-Service.svg");
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .articleHero {
+      width: 100%;
+      height: 480px;
+      margin-top: 35px;
+      object-fit: cover;
+
+      @include breakpoint(sm) {
+        height: 600px;
+      }
+    }
+
+    .articleText {
+      display: flex;
+      flex-direction: column;
+      padding: auto;
+      margin: 8% 0 8% 0;
+      
+      @include breakpoint(sm) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+      }
+
+      @include breakpoint(md) {
+        padding: 0 12% 0 0;
+      }
+
+      * {
+        height: max-content;
+        padding-bottom: 40px;
+        margin: 0;
+
+        @include breakpoint(sm) {
+          padding-bottom: 0;
+          margin: 0 auto;
+        }
+      }
+
+      h3 {
+        font-size: 40px;
+
+        @include breakpoint(sm) {
+          font-size: 54px;
+        }
+      }
+
+      p {
+        padding: 0;
+
+        @include breakpoint(md) {
+          padding: 0 12% 0 20%;
+        }
+
+        @include breakpoint(sm) {
+          padding: 0 2% 0 12%;
+        }
+      }
+    }
+
+    &.locations {
+      margin-top: 0;
+      margin-bottom: 8%;
+
+      &.moveDown {
+        margin-top: 9%;
+      }
+
+      .articleHero {
+        margin-top: 15px;
+      }
+
+      .articleText {
+        h3 {
+          line-height: 46px;
+
+          @include breakpoint(sm) {
+            line-height: 62px;
+          }
+        }
+      }
+      
+      .articleGallery {
+        grid-template-columns: 95% 95% 95% 95%;
+        grid-template-rows: auto;
+        grid-template-areas: 
+          "one two three four";
+        overflow-x: scroll;
+        overflow-y: hidden;
+        margin-bottom: 90px;
+
+        @include breakpoint(sm) {
+          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+          grid-template-areas: 
+            "one one two"
+            "three four four";
+          overflow-x: auto;
+        }
+
+        .media1 {
+          grid-area: one;
+        }
+
+        .media2 {
+          grid-area: two;
+        }
+        
+        .media3 {
+          grid-area: three;
+        }
+        
+        .media4 {
+          grid-area: four;
+        }
+      }
+
+      .search {
+        margin-bottom: 8%;
+        
+        .searchContent {
+          width: 100%;
+          margin: 8% auto 0 auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          gap: 50px;
+
+          @include breakpoint(md) {
+            flex-direction: row;
+          }
+
+          h4 {
+            margin: 0 18px 0 0;
+            font-family: $domaine_font_family;
+            font-weight: 500;
+            font-size: 35px;
+            letter-spacing: 0.07px;
+            color: #0C223F;
+            text-transform: uppercase;
+            text-align: center;
+            white-space: wrap;
+
+            @include breakpoint(md) {
+              text-align: left;
+              white-space: nowrap;
+            }
+          }
+
+          .searchHolder {
+            min-width: 96%;
+            width: max-content;
+            height: 76px;
+            z-index: 1;
+
+            @include breakpoint($screen-xs) {
+              min-width: 80%;
+            }
+
+            @include breakpoint(md) {
+              min-width: 46%;
+            }
+          }
+        }
+      }
+    }
+
+    &.architecture {
+      position: relative;
+
+      &.gray {
+        background-color: white;
+
+        @include breakpoint(sm) {
+          background-color: $light_gray;
+        }
+      }
+
+      .articleText {
+        padding-bottom: 360px;
+
+        @include breakpoint(sm) {
+          padding-bottom: 400px;
+        }
+
+        h3 {
+          line-height: 46px;
+
+          @include breakpoint(sm) {
+            line-height: 62px;
+          }
+        }
+      }
+
+      .articleGallery {
+        grid-template-columns: 95% 95% 95% 95%;
+        grid-template-rows: auto;
+        grid-template-areas: 
+          "one two three four";
+        transform: translateY(-310px);
+        position: absolute;
+        overflow-x: scroll;
+        overflow-y: hidden;
+
+        @include breakpoint(sm) {
+          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+          grid-template-areas: 
+            "one two two"
+            "three three four";
+          overflow-x: auto;
+        }
+
+
+        .media1 {
+          grid-area: one;
+        }
+
+        .media2 {
+          grid-area: two;
+        }
+        
+        .media3 {
+          grid-area: three;
+        }
+        
+        .media4 {
+          grid-area: four;
+        }
+      }
+    }
+
+    &.choice {
+      margin-top: 60px;
+      margin-bottom: 100px;
+
+      @include breakpoint(sm) {
+        margin-top: 400px;
+      }
+
+      @include breakpoint(850px) {
+        margin-top: 480px;
+      }
+
+      @include breakpoint(920px) {
+        margin-top: 540px;
+      }
+
+      @include breakpoint(md) {
+        margin-top: 70%;
+      }
+
+      h3 {
+        line-height: 46px;
+
+        @include breakpoint(sm) {
+          line-height: 60px;
+        }
+      }
+
+      .articleGallery {
+        grid-template-columns: 95% 95% 95% 95% 95% 95%;
+        grid-template-rows: 1fr;
+        grid-template-areas: 
+          "one two three four five six";
+        position: relative;
+        overflow-x: scroll;
+        overflow-y: hidden;
+
+        @include breakpoint(sm) {
+          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-rows: auto;
+          grid-template-areas: 
+          "one one one"
+          "two two three"
+          "four five six";
+          overflow-x: auto;
+        }
+
+        .video {
+          width: 100%;
+          height: 300px;
+
+          @include breakpoint(sm) {
+            height: 693px;
+          }
+
+          img {
+            min-width: 300px;
+            position: absolute;
+            top: 0;
+            height: 300px;
+
+            @include breakpoint(sm) {
+              height: 100%;
+            }
+          }
+
+          .description {
+            display: none;
+            height: auto;
+            padding: 8px 14px;
+  
+            @include breakpoint(sm) {
+              display: block;
+            }
+
+            p {
+              color: $accent_blue;
+              display: flex;
+              align-items: center;
+              text-transform: uppercase;
+              font-size: 12px !important;
+  
+              &:before {
+                display: inline-block;
+                content: "";
+                background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/play-icon-blue.png");
+                background-size: contain;
+                width: 24px;
+                height: 24px;
+                margin-right: 10px;
+              }
+            }
+          }
+        }
+
+        .media1 {
+          grid-area: one;
+        }
+
+        .media2 {
+          grid-area: two;
+        }
+        
+        .media3 {
+          grid-area: three;
+        }
+        
+        .media4 {
+          grid-area: four;
+        }
+
+        .media5 {
+          grid-area: five;
+        }
+        
+        .media6 {
+          grid-area: six;
+        }
+      }
+    }
+
+    &.service {
+      .articleHero {
+        margin-top: 0;
+
+        .description {
+          background-color: $light_gray;
+        }
+      }
+
+      .articleText {
+        margin-top: 65px;
+
+        div {
+          padding-bottom: 0;
+        }
+
+        h5 {
+          color: #8B94A3;
+          font-family: $base_font_family;
+          font-weight: 500;
+          font-size: 17px;
+          line-height: 34px;
+          text-transform: uppercase;
+          padding-bottom: 0;
+
+          @include breakpoint(sm) {
+            line-height: 20px;
+          }
+        }
+  
+        h3 {
+          line-height: 44px;
+  
+          @include breakpoint(sm) {
+            line-height: 55px;
+          }
+  
+          span {
+            padding-bottom: 0;
+            transform: translateY(30px);
+          }
+        }
+      }
+
+      
+    }
+
+    &.trusted {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+
+      @include breakpoint(sm) {
+        padding: 0 50px;
+        margin-top: 100px;
+      }
+
+      .trustedDetails {
+        height: max-content;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        @include breakpoint(sm) {
+          margin-top: 80px;
+          flex-direction: row;
+        }
+      }
+
+      .articleText {
+        width: 100%;
+        padding: 0 50px;
+        margin: 20px 0 0 0;
+        display: block;
+        position: relative;
+
+        @include breakpoint(sm) {
+          width: 55%;
+          padding-left: 60px;
+          margin-top: 0;
+          position: sticky;
+          top: 40px;
+          align-self: flex-start;
+        }
+
+        @include breakpoint(md) {
+          width: 55%;
+          padding-left: 130px;
+        }
+
+        h5 {
+          color: #8B94A3;
+          font-family: $base_font_family;
+          font-weight: 500;
+          font-size: 17px;
+          line-height: 34px;
+          text-transform: uppercase;
+          padding-top: 45px;
+          padding-bottom: 0;
+
+          @include breakpoint(sm) {
+            padding-bottom: 4px;
+          }
+        }
+
+        h3 {
+          padding-top: 0;
+          padding-bottom: 10px;
+          margin-bottom: 30px;
+
+          @include breakpoint(sm) {
+            padding-top: 0;
+            padding-bottom: 40px;
+          }
+        }
+
+        p {
+          width: 100%;
+          padding: 0 0 75px 0;
+          margin: 0;
+
+          @include breakpoint(sm) {
+            padding: 0;
+          }
+
+          @include breakpoint(md) {
+            padding: 0;
+            width: 90%;
+          }
+        }
+      }
+
+      .articleGallery {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+
+        @include breakpoint(sm) {
+          width: 55%;
+          height: max-content;
+        }
+
+        @include breakpoint(md) {
+          width: 45%;
+        }
+
+        .media1 {
+          margin-bottom: 12px;
+          display: none;
+
+          @include breakpoint(sm) {
+            display: block;
+          }
+        }
+        
+        img {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          object-fit: cover;
+
+        }
+
+        .description {
+          height: 35px;
+          margin: 0;
+          position: absolute;
+        }
+      }
+
+      h4 {
+        color: #0C223F;
+        font-family: $domaine_font_family;
+        font-size: 54px;
+        font-weight: 500;
+        text-align: center;
+        line-height: 60px;
+        letter-spacing: -0.98px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        text-transform: capitalize;
+        display: none;
+
+        @include breakpoint(sm) {
+          display: block;
+          margin-top: 70px;
+          margin-bottom: 70px;
+        }
+
+        @include breakpoint(md) {
+          margin-top: 80px;
+          margin-bottom: 80px;
+        }
+
+        span {
+          color: #8B94A3;
+          font-family: $base_font_family;
+          font-size: 17px;
+          font-weight: 500;
+          letter-spacing: 0.43px;
+          line-height: normal;
+          display: block;
+          text-transform: uppercase;
+          padding-top: 5px;
+        }
+      }
+    }
+
+    &.expert {
+      width: 100%;
+      padding: 0 30px;
+
+      .articleHero {
+        padding-top: 50px;
+        margin-top: 50px;
+        display: none;
+
+        .description {
+          margin: 0;
+        }
+
+        @include breakpoint(sm) {
+          display: block;
+        }
+      }
+
+      .articleContent {
+        width: 100%;
+        max-width: 1000px;
+        padding: 75px 0 0 0;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        @include breakpoint(sm) {
+          padding: 85px 0 0 0;
+        }
+
+        h3 {
+          width: 300px;
+          margin-bottom: 50px;
+          align-self: flex-start;
+          text-align: left;
+          font-size: 47px;
+          letter-spacing: -0.85px;
+          text-transform: none;
+
+          @include breakpoint($screen-xs) {
+            width: 100%;
+            margin-bottom: 30px;
+            align-self: auto;
+            text-align: center;
+          }
+        }
+
+        a {
+          text-decoration: none;
+        }
+
+        .upArrow {
+            content: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/back-to-top.svg");
+            width: 42px;
+            height: 42px;
+            padding: 12px;
+            margin: 40px 0;
+            background-color: white;
+            border-radius: 20px;
+        }
+
+        .cta {
+          width: 1000px;
+          display: flex;
+          align-items: center;
+          padding-top: 0;
+          padding-right: 0;
+          padding-left: 0;
+          row-gap: 10px;
+          column-gap: 20px;
+          margin-top: 0;
+          color: rgb(0, 0, 0);
+          overflow-x: auto;
+          overflow-y: auto;
+          justify-content: flex-start;
+          z-index: 0;
+        
+          @include breakpoint(sm) {
+            min-height: 730px;
+            column-gap: 50px;
+          }
+
+          a {
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+
+  .brochureNav {
+    position: relative;
+    z-index: inherit;
+    top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 12px 6px;
+
+  
+    @include breakpoint(sm) {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+  
+    @include breakpoint(lg) {
+      padding-left: 60px;
+      padding-right: 60px;
+    }
+
+    &.sticky {
+      background-color: white;
+      position: fixed;
+      top: 0;
+      z-index: 101;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    li {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      line-height: 12px;
+
+      @include breakpoint(sm) {
+        font-size: 15px;
+        line-height: 19px;
+      }
+
+      &:first-of-type {
+        margin: 0;
+      }
+
+      &:before {
+        display: inline-block;
+        margin: 0 auto 10px auto;
+      }
+
+      &.selected {
+        &:after {
+          content: "";
+          width: 60px;
+          height: 3px;
+          margin: 6px auto 0 auto;
+          background-color: $accent_blue;
+
+          @include breakpoint(sm) {
+            width: 80px;
+            margin: 10px auto 0 auto;
+          }
+        }
+      }
+
+      &.locationsIcon {
+        &:before {
+          display: none;
+
+          @include breakpoint(sm) {
+            display: block;
+            content: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/locations.svg");
+            width: 30px;
+            height: 20px;
+          }
+        }
+      }
+
+      &.architectureIcon {
+        &:before {
+          display: none;
+
+          @include breakpoint(sm) {
+            display: block;
+            content: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/dist-arch.svg");
+            width: 28px;
+            height: 20px
+          }
+        }
+      }
+
+      &.choiceIcon {
+        &:before {
+          display: none;
+
+          @include breakpoint(sm) {
+            display: block;
+            content: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/cust-service.svg");
+            width: 23px;
+            height: 20px;
+          }
+        }
+      }
+
+      &.serviceIcon {
+        &:before {
+          display: none;
+
+          @include breakpoint(sm) {
+            display: block;
+            content: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/service.svg");
+            width: 28px;
+            height: 19px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.line {
+  background-color: $light_gray;
+  width: 100%;
+  height: 6px;
+  margin: 6px 0 0 0;
+  
+  &:last-of-type {
+    margin-bottom: 6px;
+
+    @include breakpoint(sm) {
+      margin-bottom: 4px;
+    }
+  }
+
+  @include breakpoint(sm) {
+    height: 4px;
+    margin: 4px 0 0 0;
+  }
+
+  &.hideMobile {
+    display: none;
+
+    @include breakpoint(sm) {
+      display: block;
+    }
+  }
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:before {
+    content: "";
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/play-icon.svg");
+    background-size: contain;
+    width: 26px;
+    height: 26px;
+
+    @include breakpoint(sm) {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
+  &:after {
+    display: block;
+    content: "Watch";
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: $base_font_family;
+    margin-left: 7px;
+
+    @include breakpoint(sm) {
+      display: none;
+    }
+  }
+}
+
+
+.mapSpace {
+  height: 70vh;
+
+  button {
+    z-index: 1;
+  }
+}
+
+.metroWrap {
+  position: relative;
+  display: inline-block;
+  height: 60px;
+  line-height: 40px;
+  color: #000;
+  vertical-align: top;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #8195a2;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -ms-touch-action: none;
+  -moz-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+
+  &:before {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-bottom: 2px solid #000;
+    border-right: 2px solid #000;
+    transform: rotate(45deg);
+    font-style: normal;
+    font-feature-settings: normal;
+    font-variant: normal;
+    font-weight: normal;
+    right: 23px;
+    top: 25px;
+  }
+
+
+  .input_label {
+    // margin-top: 10px;
+    font-size: 0.68em;
+    z-index: 4;
+    position: absolute;
+    top: 9px;
+    display: block;
+    padding-left: 10px;
+    line-height: 1;
+    color: #999;
+    pointer-events: none;
+    transition-property: top;
+    transition-duration: 0.1s;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+
+  .metroSelect {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin-top: 2px;
+    color: #000;
+    border-radius: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    z-index: 3;
+    cursor: pointer;
+    padding-left: 10px;
+    font-size: 13px;
+    font-family: $base_font_family;
+  }
+}
+
+.contactButton {
+  position: relative;
+  display: block;
+  width: 220px;
+  margin-top: 20px;
+  padding: 17px 0 17px 0;
+  color: #FFF;
+  font-size: .74em;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #00a79e;
+  border: 0 solid #00a79e;
+  text-align: center;
+
+  &:hover {
+    background: $medium_blue;
+    border: 0 solid $medium_blue;
+  }
+}
+
+
+.iframeHolder {
+  display: none;
+}
+
+
+.thank_you {
+  h2 {
+    color: $medium_blue;
+    margin-bottom: 10px;
+  }
+}
+
+.mortgage_inquiries {
+  width: 100%;
+
+  .contactForm {
+    fieldset, input, textarea {
+      max-width: none !important;
+      z-index: 1;
+    }
+
+    .paged_form_page {
+      margin-bottom: 40px;
+    }
+
+    .form_privacy {
+      font-size: 12px;
+      margin-top: 15px;
+
+      a {
+        color: #080808 !important;
+        font-size: 12px !important;
+        font-weight: 300 !important;
+        text-transform: none !important;
+      }
+    }
+
+    button {
+      width: 100%;
+      padding: 20px 0;
+      background-color: $accent_blue;
+      font-size: 14px;
+      line-height: 22px;
+      text-transform: none;
+
+      &:hover {
+        background-color: $medium_blue;
+      }
+    }
+  }
+}
+

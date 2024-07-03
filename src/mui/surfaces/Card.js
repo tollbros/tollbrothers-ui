@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Button from '../inputs/Button'
 import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Unstable_Grid2'
 
 export default function Card({
   title = 'Beacon Estrella',
@@ -25,12 +26,21 @@ export default function Card({
     <MuiCard sx={{ maxWidth: 345 }}>
       <CardMedia sx={{ height: 225 }} image={image} title={title} />
       <CardContent>
-        <Typography gutterBottom variant='h3' component='div'>
-          {title}
-        </Typography>
-        <Typography variant='body2' color='text.secondary'>
-          {pricedFrom}
-        </Typography>
+        <Grid container spacing={1}>
+          <Grid xs={9}>
+            <Typography gutterBottom variant='h3' component='div'>
+              {title}
+            </Typography>
+          </Grid>
+          <Grid xs={3}>
+            <Typography variant='body2' color='text.secondary'>
+              Priced at
+            </Typography>
+            <Typography variant='body2' color='text.secondary'>
+              {pricedFrom}
+            </Typography>
+          </Grid>
+        </Grid>
       </CardContent>
       <CardActions>
         <Button variant='outlined' size='small'>

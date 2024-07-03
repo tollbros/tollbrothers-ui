@@ -9,12 +9,9 @@
     "url": "git+https://github.com/tollbros/tollbrothers-ui.git"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/",
   "module": "dist/index.modern.js",
   "source": "src/index.js",
-  "exports": {
-    "./dist/*": "./dist/*.js"
-  },
   "engines": {
     "node": ">=16.19.0"
   },

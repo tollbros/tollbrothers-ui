@@ -5,11 +5,12 @@ const Button = ({
   children,
   color = 'primary',
   variant = 'contained',
+  disableElevation = true,
   onClick = () => {},
   ...rest
 }) => {
   return (
-    <MuiButton onClick={onClick} color={color} variant={variant} {...rest}>
+    <MuiButton onClick={onClick} color={color} variant={variant} disableElevation={disableElevation} {...rest}>
       {children}
     </MuiButton>
   )

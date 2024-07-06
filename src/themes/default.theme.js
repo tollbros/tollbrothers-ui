@@ -95,6 +95,9 @@ export const defaultTheme = createTheme({
     },
     info: {
       main: '#0070CD'
+    },
+    background: {
+      grey: '#f6f6f6'
     }
   },
   shape: {

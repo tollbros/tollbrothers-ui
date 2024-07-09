@@ -11,6 +11,7 @@
   border: none;
   font: inherit;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .controls {
@@ -22,7 +23,8 @@
   right: 10px;
   height: fit-content;
   transform: translateY(-50%);
-  z-index: 1
+  z-index: 1;
+  pointer-events: none;
 }
 
 .fullscreen {

@@ -1,4 +1,5 @@
 import ContactBar from './ContactBar'
+import contactBarMockData from './ContactBar.mockData'
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
@@ -11,18 +12,7 @@ export default {
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-  args: {
-    primaryContactImage:
-      'https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/osc_icon_with_bubble.svg',
-    primaryContactTitle: 'Online Sales Team',
-    primaryContacts: 'Dawn G. & Melissa M.',
-    primaryPhone: '844-836-5263',
-    salesImage:
-      'https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/sales_icon_with_bubble.svg',
-    salesTitle: 'Sales Center',
-    salesStreet: '11612 N Greenwich Blvd',
-    salesLocation: 'Surprise, AZ 85388'
-  },
+  args: contactBarMockData,
   argTypes: {}
 }
 

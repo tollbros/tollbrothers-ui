@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CommunityModels = () => {
+const Models = () => {
   return (
     <section style={{ height: '757px', width: '100%', padding: '5%' }}>
       <h2>TODO: Community Models</h2>
@@ -9,4 +9,4 @@ const CommunityModels = () => {
   )
 }
 
-export default CommunityModels
+export default Models

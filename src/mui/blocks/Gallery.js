@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CommunityGallery = () => {
+const Gallery = () => {
   return (
     <section style={{ height: '757px', width: '100%', padding: '5%' }}>
       <h2>TODO: Community Gallery</h2>
@@ -9,4 +9,4 @@ const CommunityGallery = () => {
   )
 }
 
-export default CommunityGallery
+export default Gallery

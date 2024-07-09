@@ -1,7 +1,7 @@
 import { createTheme } from '@mui/material'
 
-// const base_font_family = 'Gotham, sans-serif'
-// const alt_font_family = 'Gotham Narrow, sans-serif'
+const baseFontFamily = 'Gotham'
+const altFontFamily = 'Gotham Narrow, sans-serif'
 // const alt_light_font_family = 'GothamSSm-ExtraLight, sans-serif'
 const domaineFontFamily = 'Domaine'
 
@@ -70,10 +70,66 @@ export const defaultTheme = createTheme({
       `
   },
   typography: {
+    fontFamily: baseFontFamily,
+    h1: {
+      fontFamily: domaineFontFamily,
+      fontSize: '3rem',
+      fontWeight: 600
+    },
+    h2: {
+      fontFamily: domaineFontFamily,
+      fontSize: '2.6rem',
+      fontWeight: 600
+    },
     h3: {
+      fontFamily: domaineFontFamily,
+      fontSize: '2.2rem',
+      fontWeight: 600
+    },
+    h4: {
       fontFamily: domaineFontFamily,
       fontSize: '1.8rem',
       fontWeight: 600
+    },
+    h5: {
+      fontFamily: domaineFontFamily,
+      fontSize: '1.4rem',
+      fontWeight: 600
+    },
+    h6: {
+      fontFamily: domaineFontFamily,
+      fontSize: '1rem',
+      fontWeight: 600
+    },
+    subtitle1: {
+      fontFamily: altFontFamily
+    },
+    subtitle2: {
+      fontFamily: altFontFamily
+    },
+    caption: {
+      fontFamily: altFontFamily,
+      fontSize: '.85em'
+    },
+    overline: {
+      fontFamily: baseFontFamily,
+      fontSize: '12px',
+      fontWeight: 500,
+      textTransform: 'uppercase',
+      letterSpacing: '2px',
+      lineHeight: '15px',
+      color: '#8195a2'
+    },
+    button: {
+      fontFamily: baseFontFamily,
+      fontWeight: 600,
+      textTransform: 'none'
+    },
+    body1: {
+      fontFamily: baseFontFamily
+    },
+    body2: {
+      fontFamily: baseFontFamily
     }
   },
   palette: {
@@ -108,6 +164,9 @@ export const defaultTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 0
+        },
+        text: {
+          padding: 0
         }
       }
     }

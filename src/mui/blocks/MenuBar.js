@@ -52,7 +52,8 @@ const MenuBar = (props) => {
                     color: (theme) => theme.palette.text.primary,
                     display: 'block',
                     textTransform: 'capitalize',
-                    fontWeight: '600'
+                    fontWeight: '500',
+                    padding: '0 1rem'
                   }}
                   variant='text'
                 >

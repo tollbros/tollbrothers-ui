@@ -1,9 +1,9 @@
-import CommunityAvailability from './CommunityAvailability'
+import Amenities from './Amenities'
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
-  title: 'blocks/CommunityAvailability',
-  component: CommunityAvailability,
+  title: 'blocks/Amenities',
+  component: Amenities,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen'

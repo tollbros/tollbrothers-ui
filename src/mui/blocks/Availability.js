@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CommunityAvailability = () => {
+const Availability = () => {
   return (
     <section style={{ height: '757px', width: '100%', padding: '5%' }}>
       <h2>TODO: Community Availability</h2>
@@ -9,4 +9,4 @@ const CommunityAvailability = () => {
   )
 }
 
-export default CommunityAvailability
+export default Availability

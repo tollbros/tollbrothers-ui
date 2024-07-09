@@ -1,4 +1,7 @@
 import Community from './Community'
+import heroMockData from '../blocks/Hero.mockData'
+import overviewMockData from '../blocks/Overview.mockData'
+import contactBarMockData from '../blocks/ContactBar.mockData'
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
@@ -15,48 +18,30 @@ export default {
     blocks: [
       {
         component: 'Hero',
-        props: {
-          img: 'https://cdn.tollbrothers.com/communities/masters/768/images-resized/Sterling_Grove_Clubhouse_Pool_2352_conversion1_920.jpg',
-          logo: 'https://cdn.tollbrothers.com/communities/masters/768/logos/sterling_grove_mc_logo.svg',
-          title: 'Sterling Grove',
-          location: 'Surprise, AZ',
-          county: 'Maricopa County',
-          startingPrice: '$6,329,995',
-          homeTypes: ['Single Family', 'Condo']
-        }
+        props: heroMockData
       },
       {
         component: 'ContactBar',
-        props: {
-          primaryContactImage:
-            'https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/osc_icon_with_bubble.svg',
-          primaryContactTitle: 'Online Sales Team',
-          primaryContacts: 'Dawn G. & Melissa M.',
-          primaryPhone: '844-836-5263',
-          salesImage:
-            'https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/sales_icon_with_bubble.svg',
-          salesTitle: 'Sales Center',
-          salesStreet: '11612 N Greenwich Blvd',
-          salesLocation: 'Surprise, AZ 85388'
-        }
+        props: contactBarMockData
       },
       {
         component: 'MenuBar'
       },
       {
-        component: 'CommunityOverview'
+        component: 'Overview',
+        props: overviewMockData
       },
       {
-        component: 'CommunityAmenities'
+        component: 'Amenities'
       },
       {
-        component: 'CommunityModels'
+        component: 'Models'
       },
       {
-        component: 'CommunityGallery'
+        component: 'Gallery'
       },
       {
-        component: 'CommunityAvailability'
+        component: 'Availability'
       },
       {
         component: 'NeighborhoodMap'

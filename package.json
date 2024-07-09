@@ -15,16 +15,16 @@
     "node": ">=16.19.0"
   },
   "scripts": {
-    "build": "microbundle-crl --tsconfig tsconfig.json --compress --format modern --jsxFragment React.Fragment",
-    "start": "microbundle-crl --tsconfig tsconfig.json watch --compress --format modern --jsxFragment React.Fragment",
+    "build": "microbundle --tsconfig tsconfig.json --compress --format modern --jsxFragment React.Fragment",
+    "start": "microbundle --tsconfig tsconfig.json watch --compress --format modern --jsxFragment React.Fragment",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",
     "test:lint": "eslint .",
-    "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
     "predeploy": "cd example && npm install && npm run build",
-    "deploy": "gh-pages -d example/build"
+    "deploy": "gh-pages -d example/build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "bugs": {
     "url": "https://github.com/tollbros/tollbrothers-ui/issues"
@@ -38,6 +38,16 @@
     "sass": "^1.56.2"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^1.6.0",
+    "@storybook/addon-essentials": "^8.1.11",
+    "@storybook/addon-interactions": "^8.1.11",
+    "@storybook/addon-links": "^8.1.11",
+    "@storybook/addon-onboarding": "^8.1.11",
+    "@storybook/addon-styling-webpack": "^1.0.0",
+    "@storybook/blocks": "^8.1.11",
+    "@storybook/nextjs": "^8.1.11",
+    "@storybook/react": "^8.1.11",
+    "@storybook/test": "^8.1.11",
     "babel-eslint": "^10.0.3",
     "blaze-slider": "^1.9.0",
     "cross-env": "^7.0.2",
@@ -51,17 +61,30 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
-    "microbundle-crl": "^0.13.10",
+    "eslint-plugin-storybook": "^0.8.0",
+    "microbundle": "^0.15.1",
     "next": "^13.0.7",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.1",
     "sass": "^1.56.2",
-    "semantic-release": "^19.0.5"
+    "semantic-release": "^19.0.5",
+    "storybook": "^8.1.11"
   },
   "files": [
     "dist"
-  ]
+  ],
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended",
+      "plugin:storybook/recommended",
+      "plugin:storybook/recommended"
+    ]
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.21"
+  }
 }

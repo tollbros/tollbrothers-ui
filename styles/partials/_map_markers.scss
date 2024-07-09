@@ -1,0 +1,26 @@
+.marker-annotation {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/map/single-marker.png");
+  background-size: 100% 100%;
+  image-rendering: -webkit-optimize-contrast;
+
+  &.marker-master {
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/map/master-marker.png");
+  }
+
+  &.marker-plans {
+    background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/map/multiple-qdhs.png");
+  }
+
+  &.fade {
+    opacity: 0.3;
+  }
+}
+
+.marker-label {
+  font-size: 0.84em;
+  font-weight: 500;
+  white-space: nowrap;
+  color: black !important;
+}

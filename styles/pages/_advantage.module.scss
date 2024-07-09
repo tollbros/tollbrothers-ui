@@ -1,0 +1,874 @@
+@import "../../styles/modules/all";
+
+.page_margins {
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+
+  @include breakpoint(md) {
+    padding-left: 35px;
+    padding-right: 35px;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+}
+
+.callouts {
+  max-width: 1240px;
+  margin: 40px auto;
+  text-align: center;
+  padding-left: 35px;
+  padding-right: 35px;
+
+  @include breakpoint(md) {
+    margin-top: 80px;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .callouts_container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 0 40px 0;
+
+    @include breakpoint(sm) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    @include breakpoint(lg) {
+      flex-wrap: nowrap;
+      padding-left: 70px;
+      padding-right: 70px;
+    }
+
+    .callout_item {
+      position: relative;
+      color: $accent_blue;
+      padding: 40px 0;
+      font-size: 1.4em;
+      font-weight: 500;
+      letter-spacing: 2px;
+      line-height: 1.3em;
+
+      @include breakpoint(sm) {
+        width: 50%;
+        font-size: 0.94em;
+      }
+
+      @include breakpoint(md) {
+        width: auto;
+        padding: 20px 40px;
+      }
+
+      @include breakpoint(lg) {
+        padding: 20px 50px;
+      }
+
+      @include breakpoint(xlg) {
+        padding: 20px 60px;
+      }
+
+      &:after {
+        content: "";
+        display: none;
+        position: absolute;
+        width: 1px;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: #e0e0e0;
+
+        @include breakpoint(md) {
+          display: block;
+        }
+      }
+
+      h3 {
+        text-transform: uppercase;
+        font-size: 0.9em;
+        font-family: $base_font_family;
+        font-weight: $font_weight_bold;
+        letter-spacing: 2px;
+        line-height: 1.3em;
+        margin: 0;
+      }
+
+      .icon {
+        display: block;
+        margin: 0 auto 20px auto;
+        width: 27px;
+        height: 20px;
+
+        svg {
+          fill: #AAA5A0;
+        }
+      }
+
+      .mapIcon {
+        display: block;
+        margin: 0 auto 13px auto;
+        width: 100%;
+        height: 27px;
+      }
+
+      &:nth-child(1) {
+        .icon {
+          margin: 0 0 20px 0;
+          width: 30px;
+          height: 21px;
+
+          svg {
+            margin-top: -15px;
+          }
+        }
+
+        &:after {
+          display: none;
+        }
+      }
+
+      &:nth-child(2) {
+        .icon {
+          svg {
+            margin-top: -10px;
+          }
+        }
+      }
+    }
+  }
+
+  p {
+    font-size: 1em;
+    text-align: left;
+  }
+}
+
+.search {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 75vh;
+  padding-top: 40px;
+  padding-bottom: 50px;
+  background-image: url("https://cdn.tollbrothers.com/sites/comtollbrotherswww/advantage/search2.jpg");
+  background-size: cover;
+  background-position: 48% 0;
+  background-repeat: no-repeat;
+  padding-left: 17.5px;
+  padding-right: 17.5px;
+
+  @include breakpoint(sm) {
+    background-size: cover;
+    min-height: 86vh;
+  }
+
+  @include breakpoint(md) {
+    background-position: center;
+  }
+
+  @include breakpoint(lg) {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+
+  .omniBarContainer {
+    // display: flex;
+    // flex-direction: column;
+    // width: 100%;
+    // max-width: 800px;
+    grid-column-gap: 20px;
+    display: grid;
+    grid-template-columns: 100%;
+
+    @include breakpoint(lg) {
+      // flex-direction: row;
+      // // align-items: flex-end;
+      // width: auto;
+      // max-width: none;
+      // margin: auto;
+      grid-column-gap: 20px;
+      grid-template-columns: 55% 45%;
+    }
+
+    @include breakpoint(xlg) {
+      width: 90%;
+    }
+
+    .omniBar {
+      position: relative;
+      z-index: 2;
+      padding: 0 5% 0 0;
+      background: transparent;
+
+      @include breakpoint(sm) {
+        padding: 0 8% 0 0;
+      }
+
+      // @include breakpoint(lg) {
+      //   // min-width: 710px;
+      //   padding: 0 40px 0 0;
+      //   margin-top: 14px;
+      // }
+
+      // @media only screen and (min-width: 1246px) {
+      //   // min-width: 735px;
+      //   padding: 0 80px 0 0;
+      //   margin-top: 17px;
+      // }
+
+      // @media only screen and (min-width: 1290px) {
+      //   // min-width: 735px;
+      //   padding: 0 80px 0 0;
+      //   margin-top: -10px;
+      // }
+
+      // @media only screen and (min-width: 1400px) {
+      //   // min-width: 735px;
+      //   padding: 0 80px 0 0;
+      //   margin-top: 14px;
+      // }
+
+      // @media only screen and (min-width: 1460px) {
+      //   // min-width: 835px;
+      //   margin-top: -16px;
+      // }
+
+      // @media only screen and (min-width: 1660px) {
+      //   // min-width: 835px;
+      //   margin-top: 20px;
+      // }
+
+      &:after {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        display: block;
+        content: "";
+        width: 100%;
+        height: 1px;
+        opacity: 0.5;
+        background: transparent;
+
+        @include breakpoint(lg) {
+          left: auto;
+          bottom: auto;
+          top: -50%;
+          right: 0;
+          margin-top: 60px;
+          width: 1px;
+          height: calc(200% - 100px);
+          opacity: 1;
+          background: #fff;
+
+        }
+      }
+
+      .omniHeader {
+        text-align: center;
+        color: $white;
+
+        @include breakpoint(lg) {
+          text-align: left;
+        }
+
+        h2 {
+          display: inline-block;
+          margin: 0;
+          color: #fff;
+          font-size: 1.7em;
+          font-weight: 300;
+          text-shadow: 2px 0 4px rgb(0, 0, 0, 0.69);
+          white-space: normal;
+          line-height: 1.3;
+
+          @include breakpoint(sm) {
+            font-size: 2.2em;
+          }
+
+          @include breakpoint(lg) {
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 300;
+            text-shadow: 0 1px 2px rgb(0, 0, 0, 0.69), 0 8px 20px #797979;
+          }
+        }
+
+        p {
+          color: #fff;
+          font-size: 0.94em;
+          margin: 30px auto 40px auto;
+          text-shadow: 2px 0 4px rgb(0 0 0 / 0.69);
+
+          @include breakpoint(sm) {
+            max-width: 640px;
+          }
+
+          @media only screen and (min-width: 1200px) {
+            margin: 30px 0 55px 0;
+          }
+
+          @media only screen and (min-width: 1300px) {
+            margin: 30px 0 30px 0;
+          }
+
+          @media only screen and (min-width: 1325px) {
+            margin: 30px 0 55px 0;
+          }
+
+          @media only screen and (min-width: 1420px) {
+            margin: 30px 0 35px 0;
+          }
+
+          @media only screen and (min-width: 1460px) {
+            margin: 30px 0 55px 0;
+          }
+
+          @media only screen and (min-width: 1515px) {
+            margin: 30px 0 55px 0;
+          }
+
+          @media only screen and (min-width: 1875px) {
+            margin: 30px 0 65px 0;
+          }
+        }
+      }
+
+      .omniSearchSpace {
+        width: 100%;
+      }
+
+      button.mobileSearch {
+        width: 100%;
+        max-width: 400px;
+        margin: auto;
+        content: '';
+        display: block;
+        padding: 20px;
+        color: #fff;
+        font-weight: 300;
+        letter-spacing: 1px;
+        line-height: initial;
+        text-transform: uppercase;
+        text-align: center;
+        border: thin solid #0050c5;
+        background-color: #0070cd;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        -o-box-shadow: none;
+        -khtml-box-shadow: none;
+        box-shadow: none;
+        vertical-align: top;
+        overflow: hidden;
+
+        @include breakpoint(sm) {
+          display: none;
+        }
+      }
+
+      form.omniSearch {
+        position: relative;
+        width: 100%;
+        height: 86px;
+        display: none;
+        flex-wrap: wrap;
+        margin: 0;
+
+        @include breakpoint(sm) {
+          display: flex;
+          margin: 0;
+        }
+
+        @include breakpoint(md) {
+          flex-wrap: nowrap;
+          align-items: stretch;
+          justify-content: flex-start;
+        }
+
+        .searchByMap {
+          display: inline-flex;
+          align-items: center;
+          white-space: nowrap;
+          padding: 0 40px 0 36px;
+          background: $white;
+          font-weight: 200;
+          color: $accent_blue;
+          height: 100%;
+          border: none;
+          position: relative;
+          font-size: 1em;
+          z-index: 3;
+          cursor: pointer;
+
+          .short {
+            display: block;
+
+            @include breakpoint(md) {
+              display: none;
+            }
+          }
+
+          .long {
+            display: none;
+
+            @include breakpoint(md) {
+              display: block;
+            }
+
+          }
+
+          .mapIconHover {
+            display: none;
+            width: 23px;
+            margin-right: 10px;
+            vertical-align: middle;
+          }
+
+          .mapIcon {
+            width: 23px;
+            fill: $accent_blue;
+            margin-right: 10px;
+            vertical-align: middle;
+          }
+
+          .divider {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            right: -8px;
+            height: 100%;
+            color: #5c5c5c;
+            font-size: 10px;
+            font-weight: 200;
+            line-height: 18px;
+
+            span {
+              height: 50%;
+              width: 1px;
+              background: #dbdbdb;
+            }
+          }
+
+          &:hover {
+            color: $black;
+
+            .mapIcon {
+              display: none;
+            }
+
+            .mapIconHover {
+              display: inline;
+            }
+          }
+        }
+
+        .input_contain {
+          flex-grow: 1;
+          flex-shrink: 1;
+          position: relative;
+
+          input {
+            padding: 20px 30px 20px 62px;
+            width: 100%;
+            font-weight: 200;
+            color: #000;
+            background-color: $white;
+            height: 100%;
+            border: 0;
+          }
+
+          svg {
+            width: 14px;
+            position: absolute;
+            left: 30px;
+            top: calc(50% - 7px);
+          }
+        }
+
+        .searchButton {
+          width: 132px;
+          border: none;
+          padding: 0 30px;
+          background-color: $accent_blue;
+          text-transform: uppercase;
+          font-weight: 300;
+          letter-spacing: 1px;
+          text-align: center;
+          color: $white;
+
+          &:hover {
+            background-color: #338dd7;
+          }
+        }
+      }
+    }
+
+    aside.contactContainer {
+      display: block;
+      margin: 50px auto 0 auto;
+      text-align: center;
+      color: #fff;
+
+      @include breakpoint(lg) {
+        margin: 0;
+        text-align: left;
+        padding-left: 10px;
+      }
+
+      @include breakpoint(xlg) {
+        padding-left: 10px;
+      }
+
+      @media only screen and (min-width: 1580px) {
+        padding-left: 60px;
+      }
+
+
+      .oscHeadShot {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 70px auto 16px auto;
+        border-radius: 100%;
+
+        @include breakpoint(lg) {
+          margin: 0 0 16px 0;
+        }
+
+        img {
+          position: static;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      h4 {
+        margin: 0;
+        margin: 0 0 30px 0;
+        font-size: 1.4em;
+        text-shadow: 2px 0 4px rgb(0, 0, 0, 0.69);
+        font-family: $base_font_family;
+
+        @include breakpoint(lg) {
+          font-size: 1.9em;
+          white-space: nowrap;
+        }
+      }
+
+      p {
+        max-width: 380px;
+        margin: 30px auto 40px auto;
+        color: #fff;
+        font-size: 0.94em;
+        text-shadow: 2px 0 4px rgb(0, 0, 0, 0.69);
+
+        @include breakpoint(lg) {
+          max-width: 640px;
+          margin: 30px 0 40px 0;
+        }
+      }
+
+      button.contact {
+        display: inline-block;
+        width: 100%;
+        padding: 20px;
+        color: #fff;
+        font-size: 0.7em;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        letter-spacing: 1px;
+        border: 1px solid #fff;
+        text-shadow: 2px 0 4px rgb(0, 0, 0, 0.69);
+        text-transform: uppercase;
+        background-color: transparent;
+        box-shadow: none;
+        vertical-align: baseline;
+        overflow: visible;
+        cursor: pointer;
+
+        @include breakpoint(sm) {
+          max-width: 300px;
+        }
+
+        @include breakpoint(lg) {
+          padding: 34px 30px;
+        }
+      }
+    }
+  }
+}
+
+.locations {
+  padding-top: 50px;
+  padding-bottom: 50px;
+
+  h2.title {
+    margin-bottom: 30px;
+    color: $accent_blue;
+    font-size: 1.4em;
+    font-weight: 200;
+  }
+
+  .locations_wrapper {
+    display: block;
+
+    @include breakpoint(sm) {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .left {
+      width: 100%;
+      min-width: 355px;
+
+      @include breakpoint(sm) {
+        width: 25%;
+        min-width: 400px;
+      }
+    }
+
+    .right {
+      width: 100%;
+      margin-top: -20px;
+
+      @include breakpoint(md) {
+        width: 100%;
+        padding-left: 60px;
+        margin-top: -45px;
+      }
+
+
+    }
+  }
+}
+
+.advantages {
+  padding-bottom: 40px;
+
+  .advantage {
+    margin: 0 auto 80px auto;
+    width: 100%;
+
+    .advantage_wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      @include breakpoint(md) {
+        flex-direction: row;
+      }
+
+      .clickable {
+        cursor: pointer;
+      }
+
+      .learn_more {
+        position: relative;
+        display: inline-block;
+        text-transform: uppercase;
+        margin-top: 20px;
+        font-size: 0.7em;
+        color: #2079d2;
+        z-index: 1;
+        cursor: pointer;
+
+        &:after {
+          content: "";
+          display: block;
+          width: 0;
+          height: 1px;
+          margin: 20px auto 0 auto;
+          background: #2079d2;
+          transition-property: width;
+          transition-duration: 0.4s;
+          transition-timing-function: ease;
+        }
+
+        &:hover {
+          &:after {
+            width: 100%;
+          }
+        }
+
+        &.play_icon {
+          padding-left: 30px; 
+          cursor: pointer;
+
+          &:before {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            //background-image: url("../../public/img/icons/play.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin-right: 10px;
+            left: 0;
+            top: -1px;
+          }
+
+          &:after {
+            position: absolute;
+            left: 0;
+            right: 0;
+          }
+        }
+      }
+
+      .image_wrapper {
+        position: relative;
+        display: none;
+        width: 100%;
+        overflow: hidden;
+
+        @include breakpoint(md) {
+          display: block;
+          height: 600px;
+        }
+
+        @include breakpoint(lg) {
+          min-width: 600px;
+          max-width: 1100px;
+        }
+
+        @include breakpoint(xlg) {
+          width: 60%;
+          max-width: none;
+          min-width: 0;
+        }
+
+        img {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .styled_link {
+          display: flex;
+          align-items: center;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          padding: 10px 14px 10px 30px;
+          font-size: 0.7em;
+          background: white;
+          z-index: 2;
+
+          &:after {
+            display: none;
+          }
+
+          &.play_icon {
+            &:before {
+              top: 8px;
+            }
+          }
+        }
+
+        .play_video {
+          width: 90px;
+          height: 67px;
+          display: block;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          //background-image: url("../../public/img/icons/play2.png");
+          background-repeat: no-repeat;
+          background-size: cover;
+          transform: translate(-50%, -50%);
+          z-index: 1;
+        }
+      }
+
+      .content_wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0;
+
+        @include breakpoint(md) {
+          padding-left: 40px;
+          width: 50%;
+          max-width: 600px;
+          min-width: 360px;
+        }
+
+        @include breakpoint(lg) {
+          padding: 0 0 0 60px;
+          width: 100%;
+        }
+
+        @include breakpoint(xlg) {
+          width: 40%;
+          max-width: none;
+          min-width: 0;
+          padding: 0 40px 0 80px;
+        }
+
+        .title {
+          margin: 0 0 20px 0;
+          color: #004876;
+          font-size: 1.5em;
+        }
+      }
+    }
+
+    &:nth-child(2) {
+      .advantage_wrapper {
+        flex-direction: column-reverse;
+
+        @include breakpoint(md) {
+          flex-direction: row-reverse;
+        }
+
+        .content_wrapper {
+          @include breakpoint(md) {
+            padding-left: 0;
+            padding-right: 40px;
+          }
+
+          @include breakpoint(lg) {
+            padding: 0 80px 0 0;
+          }
+        }
+      }
+    }
+  }
+
+  .disclaimer {
+    p {
+      font-size: 0.7em;
+    }
+  }
+}
+
+
+.omniSearchSpace {
+  background-color: #FFF;
+  width: 100%;
+
+  .searchgrid {
+    border: 1px solid red;  
+  }
+}
+
+
+img.headshotExpert {
+      width: 100%;
+    max-width: 100px;
+  }
+
+

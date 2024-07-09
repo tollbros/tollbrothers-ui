@@ -1,34 +1,29 @@
-$base_font_family: "proxima-nova", sans-serif;
+$base_font_family: "Gotham", sans-serif;
 $alt_font_family: "Gotham Narrow", sans-serif;
-$special_font_family: "Gotham", sans-serif;
-$nimbus_font_family: "nimbus-sans-extended",sans-serif;
+$alt_light_font_family: "GothamSSm-ExtraLight", sans-serif;
+$domaine_font_family: "Domaine", "Gotham", sans-serif;
+$icons_font_family: "icons";
+$monospace_font_family: monospace, monospace;
 $font_weight_light: 200;
 $font_weight_book: 300;
 $font_weight_medium: 400;
 $font_weight_bold: 500;
-
-$base_font_size: 0.9em;
+$base_font_size: 1em;
 $base_line_height: 1.5;
-
 $cubic-bezier: cubic-bezier(0.075, 0.82, 0.165, 1);
-$page_margins: 60px;
+$page_margins: 5%;
 
-// ---- Official B&C Colors----
-
-//STORYBOOK:
-$storybook_green: #00828A;
-$storybook_light_green: #7CBF92;
-$teal: #00828A;
-$button: #7EC093;
-$focus: #7EC093;
-$gray: #8195a2;
-$beige: #FDF6EE;
-$medium_blue: #39474F;
-
+//---- Official B&C Colors----
 //PRIMARY:
 $navy_blue: #0c223f;
 $dark_blue: #041327;
+$medium_blue: #004876;
 $medium_blue2: #0050c5;
+$accent_blue: #0070cd;
+$gray: #8195a2;
+$focus: $accent_blue; //#a31f34;
+$button: white;
+$special_font_family: $base_font_family;
 
 //Nuetral:
 $dark_gray: #858585;
@@ -42,14 +37,17 @@ $restaurants: #bb3446;
 $health: #e3854a;
 $entertainment: #e2ad50;
 $transit: #4e8a89;
+$buisness: #0070cd;
+
+//Regency Colorss
+$gold: #A08E60;
 
 //Alerts:
 $error: #a31f34;
 $success: #009d47;
-
-$black: #000000; 
-$white: #ffffff;
-
+$black: #000;
+$blackText: #212427;
+$white: #fff;
 $cat1: #583a71;
 $cat2: #323f75;
 $cat3: #bb3446;
@@ -57,25 +55,89 @@ $cat4: #e3854a;
 $cat5: #e2ad50;
 $cat6: #4e8a89;
 $cat7: #51893f;
+$cat8: #0070cd;
 $cat99: #25678e;
-
 $available_marker: #00a651;
 $qmi_marker: #83399a;
-$model_marker: #00828A;
+$model_marker: #0070cd;
 $depost_marker: #ffd200;
 $sold_marker: #d3212a;
 $poi_marker_fill: rgba(228, 220, 50, 0.4);
 $poi_marker_border: #e0e068;
 $star_marker: #f9ca0c;
 
+/* 
+$toll_gold: #BA7B41; 
+$navy_blue: #0C223F;
+$toll_gray: #8195A2;
+$accent_blue: #1a7dc9;
+$navy_blue:#0d223f;
+
+$accent_blue: #086bcc;
+$primary_blue: #2079d2;
+
+$accent_blue: #0070cd;
+$medium_blue: #004876;
+$medium_blue: #0050c5;
+$medium_blue: #024776;
+$blue_5: #024777;
+$blue_6: #4f81a1;
+$blue_7: #0d203f;
+//$accent_blue: $blue_7;
+
+$blue_7ir: #0d274a; //Investor Relations Dark Blue  //0d274a  //This is what I had 071f58
+$blue_8: #1a7dc9; //Investor Realations Mid Blue;
+$blue_9: #002458; //invesror Relations Menu Blue
+$blue_9t: #00295b; //ir - top 
+
+$light_gray: #e5f0fa;
+$accent_blue1: #16243c;
+$accent_blue: #004778;
+$accent_blue3: #72b5e7;
+
+$accent_blue4: #0a2340; //nse landing, dark
+$accent_blue5: #004976; //nse landing, medium
+$accent_blue6: #2b668e; //nse landing, medium blue for font
+$accent_blue7: #0075d2;
+$accent_blue8: #013059;
+$accent_blue9: #278abf;
+$medium_blue0: #12547f;
+
+$medium_blue1: #b0c2ce; //home campaign
+$medium_blue2: #034676; //home campaign
+$medium_blue3: #004677; //home campaign
+
+$accent_blue: #004876;
+
+
+$red: #a21d32; 
+
+
+white: #ffffff;
+*/
+
 //== Media queries breakpoints
-//
+
 //## Define the breakpoints at which your layout will change, adapting to different screen sizes.
 
-// Extra small screen / phone
+//Extra small screen / phone
 //** Deprecated `$screen-xs` as of v3.0.1
 $screen-xs: 480px !default;
 $screen-sm: 768px !default;
 $screen-md: 992px !default;
 $screen-lg: 1200px !default;
 $screen-xlg: 1400px !default;
+$pageGutter:5%;
+$fse_orange: #a5580a;
+$nynh_gold: #998465;
+$nymh_cream: #FDF4ED;
+$list-sticky-col-width-xs: 220px;
+$list-sticky-col-width-sm: 270px;
+$list-sticky-col-width: 356px;
+$list-stat-width-sm: 70px;
+$list-stat-width-lg: 85px;
+$list-stat-width: 80px;
+$list-button-width: 130px;
+$remainder-xs: calc(($list-sticky-col-width-xs + $list-button-width));
+$remainder-sm: calc(($list-sticky-col-width-sm + $list-button-width));
+$remainder: calc(($list-sticky-col-width + $list-button-width));

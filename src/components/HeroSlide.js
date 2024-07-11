@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styles from './HeroSlide.module.scss'
 import Link from 'next/dist/client/link'
 
@@ -15,19 +15,21 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
     zIndex: '0'
   }
 
-  const imageLoaded = (e) => {
+  const onImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target
+    setIsVertical(naturalWidth < naturalHeight)
+
     if (callBack) {
       callBack()
     }
   }
 
-  const image300 = imgSrc.replace('_1920.', '_300.')
-  const image450 = imgSrc.replace('_1920.', '_450.')
-  const image600 = imgSrc.replace('_1920.', '_600.')
   const image920 = imgSrc.replace('_1920.', '_920.')
 
   return (
-    <div className={styles.imageHolder}>
+    <div
+      className={`${styles.imageHolder} ${isVertical ? styles.vertical : null}`}
+    >
       {url && (
         <Link href={url} className={styles.caption}>
           {title}
@@ -36,13 +38,28 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
       <div style={overlayOpacityStyle} />
 
       <picture>
-        {/* <source media="(max-width: 300px)" srcSet={image_300} />
-                <source media="(max-width: 450px)" srcSet={image_450} />
-                <source media="(max-width: 600px)" srcset={image_600} /> */}
         <source media='(max-width: 920px)' srcSet={image920} />
         <source media='(min-width: 921px)' srcSet={imgSrc} />
-        <img src={image920} alt={alt || ''} onLoad={imageLoaded} />
+        <img
+          className={styles.modelCardImg}
+          src={image920}
+          alt={alt || ''}
+          onLoad={onImageLoad}
+        />
       </picture>
+
+      {isVertical && (
+        <picture>
+          <source media='(max-width: 920px)' srcSet={image920} />
+          <source media='(min-width: 921px)' srcSet={imgSrc} />
+          <img
+            className={styles.modelCardImgBG}
+            src={image920}
+            alt={alt || ''}
+            onLoad={onImageLoad}
+          />
+        </picture>
+      )}
     </div>
   )
 }

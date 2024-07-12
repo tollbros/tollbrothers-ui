@@ -1,51 +1,66 @@
-import React, { useState, useEffect } from "react";
-import styles from './HeroSlide.module.scss';
-import Link from "next/dist/client/link";
+import React, { useState } from 'react'
+import styles from './HeroSlide.module.scss'
+import Link from 'next/dist/client/link'
 
 const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
+  const [isVertical, setIsVertical] = useState(false)
 
-    const imgSrc = src;
-    const overlayOpacityStyle = {
-        width: "100%",
-        height: "100%",
-        display: "block",
-        backgroundColor: "rgba(0,0,0," + opacity + ")",
-        position: "absolute",
-        zIndex: "0"
-      };
+  const imgSrc = src
+  const overlayOpacityStyle = {
+    width: '100%',
+    height: '100%',
+    display: 'block',
+    backgroundColor: 'rgba(0,0,0,' + opacity + ')',
+    position: 'absolute',
+    zIndex: '0'
+  }
 
-    const imageLoaded = (e) => {
-        if (callBack) {
-            callBack();
-        }
-    };
+  const onImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target
+    setIsVertical(naturalWidth < naturalHeight)
 
-    const image_300 = imgSrc.replace("_1920.", "_300.");
-    const image_450 = imgSrc.replace("_1920.", "_450.");
-    const image_600 = imgSrc.replace("_1920.", "_600.");
-    const image_920 = imgSrc.replace("_1920.", "_920.");
+    if (callBack) {
+      callBack()
+    }
+  }
 
-    return (
+  const image920 = imgSrc.replace('_1920.', '_920.')
 
-        <div className={styles.imageHolder}>
-            {url &&
-            <Link href={url} className={styles.caption}>
-                {title}
-            </Link>
-            }
-            <div style={overlayOpacityStyle}></div>
+  return (
+    <div
+      className={`${styles.imageHolder} ${isVertical ? styles.vertical : null}`}
+    >
+      {url && (
+        <Link href={url} className={styles.caption}>
+          {title}
+        </Link>
+      )}
+      <div style={overlayOpacityStyle} />
 
-            <picture>
-                {/* <source media="(max-width: 300px)" srcSet={image_300} />
-                <source media="(max-width: 450px)" srcSet={image_450} />
-                <source media="(max-width: 600px)" srcset={image_600} /> */}
-                <source media="(max-width: 920px)" srcSet={image_920} />
-                <source media="(min-width: 921px)" srcSet={imgSrc} />
-                <img src={image_920} alt={alt || ""} onLoad={imageLoaded}/>
-            </picture>
+      <picture>
+        <source media='(max-width: 920px)' srcSet={image920} />
+        <source media='(min-width: 921px)' srcSet={imgSrc} />
+        <img
+          className={styles.modelCardImg}
+          src={image920}
+          alt={alt || ''}
+          onLoad={onImageLoad}
+        />
+      </picture>
 
-        </div>
-
-    );
-  };
-export default HeroSlide;
+      {isVertical && (
+        <picture>
+          <source media='(max-width: 920px)' srcSet={image920} />
+          <source media='(min-width: 921px)' srcSet={imgSrc} />
+          <img
+            className={styles.modelCardImgBG}
+            src={image920}
+            alt={alt || ''}
+            onLoad={onImageLoad}
+          />
+        </picture>
+      )}
+    </div>
+  )
+}
+export default HeroSlide

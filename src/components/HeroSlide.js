@@ -12,7 +12,7 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
     display: 'block',
     backgroundColor: 'rgba(0,0,0,' + opacity + ')',
     position: 'absolute',
-    zIndex: '0'
+    zIndex: '2'
   }
 
   const onImageLoad = (e) => {

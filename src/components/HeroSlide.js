@@ -21,9 +21,6 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
   }
 
   const onImageLoad = (e) => {
-    const { naturalWidth, naturalHeight } = e.target
-    setIsVertical(naturalWidth < naturalHeight)
-
     if (callBack) {
       callBack()
     }
@@ -32,9 +29,8 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
   useEffect(() => {
     ;[mainImgRef, bkgdImgRef].forEach((imgRef) => {
       if (imgRef.current && imgRef.current.complete) {
-        const originalSrc = imgRef.current.src
-        imgRef.current.src = ''
-        imgRef.current.src = originalSrc
+        const { naturalWidth, naturalHeight } = imgRef.current
+        setIsVertical(naturalWidth < naturalHeight)
       }
     })
   }, [onImageLoad])

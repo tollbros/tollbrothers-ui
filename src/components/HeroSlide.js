@@ -21,6 +21,9 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
   }
 
   const onImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target
+    setIsVertical(naturalWidth < naturalHeight)
+
     if (callBack) {
       callBack()
     }

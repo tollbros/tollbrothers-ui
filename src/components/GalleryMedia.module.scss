@@ -18,32 +18,24 @@
 
   .bottomRightNav {
     position: absolute;
-    bottom: 14px;
-    right: 22px;
+    bottom: 16px;
+    right: 16px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    margin: 4px;
     font-size: 0.9em;
 
     @include breakpoint(sm) {
+      right: 20px;
       flex-direction: row;
       align-items: center;
     }
 
-    p {
-      margin: 0 4px 4px 0;
-
-      @include breakpoint(sm) {
-        margin: 0 !important;
-      }
-    }
-
     .mediaShareNav {
-      margin-left: 0px;
+      margin: -4px -6px 0 0;
 
       @include breakpoint(sm) {
-        margin-left: 30px;
+        margin-left: 16px;
       }
 
       button {
@@ -51,22 +43,13 @@
         width: 30px;
         height: 30px;
         border: none;
-        margin: 0 2px;
+        margin-left: 6px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
 
-        @include breakpoint(sm) {
-          margin: 0 8px;
-        }
-
         &.mediaFacebookShare {
-          margin-left: 0px;
-
-          @include breakpoint(sm) {
-            margin-left: 8px;
-          }
 
           &::before {
             content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg");
@@ -77,23 +60,7 @@
           }
         }
 
-        &.mediaTwitterShare {
-          &::before {
-            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Twitter.svg");
-            width: 16px;
-            height: 15px;
-            filter: invert(1);
-            display: inline-block;
-          }
-        }
-
         &.mediaPinterestShare {
-          margin-right: 0px;
-
-          @include breakpoint(sm) {
-            margin-right: 8px;
-          }
-
           &::before {
             content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg");
             width: 16px;
@@ -106,27 +73,6 @@
     }
 
 
-  }
-
-  .mediaCapInline {
-    font-size: 14px;
-    line-height: 16px;
-    margin: 2px 4px;
-
-    &.figCaptionStyles {
-      width: 100%;
-      font-size: 10px;
-      line-height: 10px;
-      left: 0;
-      bottom: 0;
-      margin: 0;
-      padding: 3px 10px;
-
-      @include breakpoint(sm) {
-        font-size: 14px;
-        white-space: nowrap;
-      }
-    }
   }
 
   .modelLink {
@@ -157,10 +103,26 @@
   }
 }
 
-.mediaVideo {
+.iframeWithCaption {
+  flex-direction: column;
+  min-height: 1px;
+
   iframe {
-    @include breakpoint(md) {
-      padding-bottom: 50px;
-    }
+    flex-shrink: 1;
   }
+
+  figcaption {
+    position: static !important;
+    width: 100% !important;
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 10px 80px 10px 16px!important;
+    font-size: .8em !important;
+
+    @include breakpoint(sm) {
+      padding: 20px 80px 20px 20px!important;
+    }
+
+  }
+
 }

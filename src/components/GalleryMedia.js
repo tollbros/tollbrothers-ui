@@ -26,7 +26,7 @@ function GalleryMedia({
   const altName = media.title || media.description || ''
   let caption = media.description || media.title || ''
   let type = 'image'
-  let customClass = null
+  let iframeWithCaption = ''
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   const imgCount = (index + 1).toString() + ' / ' + mediaCount.toString()
@@ -39,13 +39,9 @@ function GalleryMedia({
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
     if (caption && showCaption) {
-      customClass = styles.mediaVideo
+      iframeWithCaption = styles.iframeWithCaption
     }
   }
-
-  const customFigStyles = media?.link?.includes('insidemaps')
-    ? styles.figCaptionStyles
-    : null
 
   if (!showCaption) {
     caption = media.description || media.title
@@ -79,20 +75,6 @@ function GalleryMedia({
     }
   }
 
-  const openTwitter = () => {
-    window.open(
-      'https://twitter.com/intent/tweet?text=' +
-        encodeURIComponent(caption) +
-        '&url=' +
-        encodeURIComponent(src),
-      'sharer',
-      'toolbar=0,status=0,width=626,height=436'
-    )
-    if (dataLayerPush) {
-      dataLayerPush({ event: 'twitter_share' })
-    }
-  }
-
   const openPinterest = () => {
     window.open(
       'http://www.pinterest.com/pin/create/button/?url=' +
@@ -105,7 +87,7 @@ function GalleryMedia({
     if (dataLayerPush) {
       dataLayerPush({ event: 'pinterest_share' })
     }
-  } 
+  }
 
   useEffect(() => {
     // image could already be loaded by the time this fires because it was rendered on the server
@@ -119,7 +101,7 @@ function GalleryMedia({
       <figure
         className={`${styles.media} ${
           showMedia ? styles.show : ''
-        } ${customClass}`}
+        } ${iframeWithCaption}`}
       >
         {type === 'image' && (
           <img
@@ -159,33 +141,28 @@ function GalleryMedia({
 
         {caption && showCaption && type !== 'video' && (
           <figcaption
-            className={`${styles.mediaCapInline} ${customFigStyles} ${
-              classes.figcaption ?? ''
-            }`}
+            className={`${classes.figcaption ?? ''}`}
             style={{ backgroundColor: backgroundColor }}
           >
             {caption}
           </figcaption>
         )}
-        {type === 'image' && (
-          <div className={styles.bottomRightNav}>
-            {mediaCount > 1 && <p>{imgCount}</p>}
 
-            {showSocials && (
-              <div className={styles.mediaShareNav}>
-                <button
-                  className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
-                  onClick={openFacebook}
-                />
-                {/* <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton} js-twitter-share-analytics-trig`} onClick={openTwitter}></button> */}
-                <button
-                  className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
-                  onClick={openPinterest}
-                />
-              </div>
-            )}
-          </div>
-        )}
+        <div className={styles.bottomRightNav}>
+          {mediaCount > 1 && <span>{imgCount}</span>}
+          {type === 'image' && showSocials && (
+            <div className={styles.mediaShareNav}>
+              <button
+                className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
+                onClick={openFacebook}
+              />
+              <button
+                className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
+                onClick={openPinterest}
+              />
+            </div>
+          )}
+        </div>
       </figure>
     </div>
   )

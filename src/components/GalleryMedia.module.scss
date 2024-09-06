@@ -17,22 +17,23 @@
   }
 
   .bottomRightNav {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    font-size: 0.9em;
+    flex-shrink: 0;
+    font-size: 1.1em;
 
     @include breakpoint(sm) {
-      right: 20px;
       flex-direction: row;
       align-items: center;
     }
 
+    span {
+      font-family: $alt_font_family;
+    }
+
     .mediaShareNav {
-      margin: -4px -6px 0 0;
+      margin: 0 -6px 0 0;
 
       @include breakpoint(sm) {
         margin-left: 16px;
@@ -41,33 +42,24 @@
       button {
         background: none;
         width: 30px;
-        height: 30px;
+        height: 24px;
         border: none;
-        margin-left: 6px;
+        margin-left: 8px;
+        margin-top: 4px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        filter: invert(1);
 
         &.mediaFacebookShare {
-
-          &::before {
-            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg");
-            width: 8px;
-            height: 16px;
-            filter: invert(1);
-            display: inline-block;
-          }
+            background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg") no-repeat center;
+            background-size: 8px 16px;
         }
 
         &.mediaPinterestShare {
-          &::before {
-            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg");
-            width: 16px;
-            height: 16px;
-            filter: invert(1);
-            display: inline-block;
-          }
+            background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg") no-repeat center;
+            background-size: 16px 16px;
         }
       }
     }
@@ -113,16 +105,8 @@
 
   figcaption {
     position: static !important;
-    width: 100% !important;
     flex-grow: 1;
     flex-shrink: 0;
-    padding: 10px 80px 10px 16px!important;
-    font-size: .8em !important;
-
-    @include breakpoint(sm) {
-      padding: 20px 80px 20px 20px!important;
-    }
-
   }
 
 }

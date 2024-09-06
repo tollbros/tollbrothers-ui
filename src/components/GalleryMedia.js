@@ -30,15 +30,19 @@ function GalleryMedia({
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   const imgCount = (index + 1).toString() + ' / ' + mediaCount.toString()
+
   if (media?.type?.includes('video')) {
     modelLink = null
     type = 'video'
     iframeSrc = getVideoURL(media)
+    if ((caption && showCaption) || mediaCount > 1) {
+      iframeWithCaption = styles.iframeWithCaption
+    }
   } else if (media?.type?.includes('walkthrough')) {
     modelLink = null
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
-    if (caption && showCaption) {
+    if ((caption && showCaption) || mediaCount > 1) {
       iframeWithCaption = styles.iframeWithCaption
     }
   }
@@ -139,30 +143,29 @@ function GalleryMedia({
           </Link>
         )}
 
-        {caption && showCaption && type !== 'video' && (
+        {((caption && showCaption) || mediaCount > 1) && (
           <figcaption
             className={`${classes.figcaption ?? ''}`}
             style={{ backgroundColor: backgroundColor }}
           >
-            {caption}
+            {showCaption && <span>{caption}</span>}
+            <div className={styles.bottomRightNav}>
+              {mediaCount > 1 && <span>{imgCount}</span>}
+              {type === 'image' && showSocials && (
+                <div className={styles.mediaShareNav}>
+                  <button
+                    className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
+                    onClick={openFacebook}
+                  />
+                  <button
+                    className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
+                    onClick={openPinterest}
+                  />
+                </div>
+              )}
+            </div>
           </figcaption>
         )}
-
-        <div className={styles.bottomRightNav}>
-          {mediaCount > 1 && <span>{imgCount}</span>}
-          {type === 'image' && showSocials && (
-            <div className={styles.mediaShareNav}>
-              <button
-                className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
-                onClick={openFacebook}
-              />
-              <button
-                className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
-                onClick={openPinterest}
-              />
-            </div>
-          )}
-        </div>
       </figure>
     </div>
   )

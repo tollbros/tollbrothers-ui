@@ -143,7 +143,7 @@ function GalleryMedia({
           </Link>
         )}
 
-        {((caption && showCaption) || mediaCount > 1) && (
+        {((caption && showCaption) || mediaCount > 1) && ( // need to add the figcaption for the media count (ie 1/3) to show even if there is no caption
           <figcaption
             className={`${classes.figcaption ?? ''}`}
             style={{ backgroundColor: backgroundColor }}

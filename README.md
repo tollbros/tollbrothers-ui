@@ -21,6 +21,7 @@ npm install <path to tollbrothers-ui>
 
 ```javascript
 // ./pages/_app.js
+
 import '@tollbrothers/tollbrothers-ui/dist/index.modern.css'
 import 'blaze-slider/dist/blaze.css'
 ```

@@ -54,7 +54,7 @@ In while in the root level of `tollbrothers-ui` do the following:
 
 
 
-Keep in mind we use the semantic release package
+Keep in mind we use the Semantic Release package
 ---------
 
 so if you want to bump it a specific way you need to prefix your commit

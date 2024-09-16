@@ -12,7 +12,7 @@
   "module": "dist/index.modern.js",
   "source": "src/index.js",
   "engines": {
-    "node": ">=16.19.0"
+    "node": ">=20.17.0"
   },
   "scripts": {
     "build": "microbundle-crl --tsconfig tsconfig.json --compress --format modern --jsxFragment React.Fragment",
@@ -59,7 +59,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "sass": "^1.56.2",
-    "semantic-release": "^19.0.5"
+    "semantic-release": "24.1.1"
   },
   "files": [
     "dist"

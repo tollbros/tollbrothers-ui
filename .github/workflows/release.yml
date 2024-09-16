@@ -11,6 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          persist-credentials: false
           fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -23,5 +24,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
-      - name: Update TollBrothers UI Library
-        run: curl -X POST ${{secrets.VERCEL_DEPLOY_URL}}

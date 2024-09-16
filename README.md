@@ -1,5 +1,5 @@
 ## Tollbrothers UI 
-React library for Tollbrothers.
+React library for Tollbrothers
 
 ## Workflow
 1. From `tollbrothers-ui-library` point package.json to local e.g. `npm i ../tollbrothers-ui`

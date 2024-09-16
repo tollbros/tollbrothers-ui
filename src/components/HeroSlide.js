@@ -1,51 +1,80 @@
-import React, { useState, useEffect } from "react";
-import styles from './HeroSlide.module.scss';
-import Link from "next/dist/client/link";
+import React, { useState, useRef, useEffect } from 'react'
+import styles from './HeroSlide.module.scss'
+import Link from 'next/dist/client/link'
 
 const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
+  const [isVertical, setIsVertical] = useState(false)
 
-    const imgSrc = src;
-    const overlayOpacityStyle = {
-        width: "100%",
-        height: "100%",
-        display: "block",
-        backgroundColor: "rgba(0,0,0," + opacity + ")",
-        position: "absolute",
-        zIndex: "0"
-      };
+  const mainImgRef = useRef(null)
+  const bkgdImgRef = useRef(null)
 
-    const imageLoaded = (e) => {
-        if (callBack) {
-            callBack();
-        }
-    };
+  const imgSrc = src
+  const image920 = imgSrc.replace('_1920.', '_920.')
 
-    const image_300 = imgSrc.replace("_1920.", "_300.");
-    const image_450 = imgSrc.replace("_1920.", "_450.");
-    const image_600 = imgSrc.replace("_1920.", "_600.");
-    const image_920 = imgSrc.replace("_1920.", "_920.");
+  const overlayOpacityStyle = {
+    width: '100%',
+    height: '100%',
+    display: 'block',
+    backgroundColor: 'rgba(0,0,0,' + opacity + ')',
+    position: 'absolute',
+    zIndex: '2'
+  }
 
-    return (
+  const onImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target
+    setIsVertical(naturalWidth < naturalHeight)
 
-        <div className={styles.imageHolder}>
-            {url &&
-            <Link href={url} className={styles.caption}>
-                {title}
-            </Link>
-            }
-            <div style={overlayOpacityStyle}></div>
+    if (callBack) {
+      callBack()
+    }
+  }
 
-            <picture>
-                {/* <source media="(max-width: 300px)" srcSet={image_300} />
-                <source media="(max-width: 450px)" srcSet={image_450} />
-                <source media="(max-width: 600px)" srcset={image_600} /> */}
-                <source media="(max-width: 920px)" srcSet={image_920} />
-                <source media="(min-width: 921px)" srcSet={imgSrc} />
-                <img src={image_920} alt={alt || ""} onLoad={imageLoaded}/>
-            </picture>
+  useEffect(() => {
+    ;[mainImgRef, bkgdImgRef].forEach((imgRef) => {
+      if (imgRef.current && imgRef.current.complete) {
+        const { naturalWidth, naturalHeight } = imgRef.current
+        setIsVertical(naturalWidth < naturalHeight)
+      }
+    })
+  }, [onImageLoad])
 
-        </div>
+  return (
+    <div
+      className={`${styles.imageHolder} ${isVertical ? styles.vertical : null}`}
+    >
+      {url && (
+        <Link href={url} className={styles.caption}>
+          {title}
+        </Link>
+      )}
+      <div style={overlayOpacityStyle} />
 
-    );
-  };
-export default HeroSlide;
+      <picture>
+        <source media='(max-width: 920px)' srcSet={image920} />
+        <source media='(min-width: 921px)' srcSet={imgSrc} />
+        <img
+          className={styles.modelCardImg}
+          src={image920}
+          alt={alt || ''}
+          onLoad={onImageLoad}
+          ref={mainImgRef}
+        />
+      </picture>
+
+      {isVertical && (
+        <picture>
+          <source media='(max-width: 920px)' srcSet={image920} />
+          <source media='(min-width: 921px)' srcSet={imgSrc} />
+          <img
+            className={styles.modelCardImgBG}
+            src={image920}
+            alt={alt || ''}
+            onLoad={onImageLoad}
+            ref={bkgdImgRef}
+          />
+        </picture>
+      )}
+    </div>
+  )
+}
+export default HeroSlide

@@ -1,5 +1,5 @@
 ## Tollbrothers UI 
-React library for Tollbrothers.
+React library for Tollbrothers
 
 ## Workflow
 1. From `tollbrothers-ui-library` point package.json to local e.g. `npm i ../tollbrothers-ui`
@@ -54,7 +54,7 @@ In while in the root level of `tollbrothers-ui` do the following:
 
 
 
-keep in mind we use the semantic release package
+Keep in mind we use the Semantic Release package
 ---------
 
 so if you want to bump it a specific way you need to prefix your commit

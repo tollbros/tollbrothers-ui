@@ -1,16 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import styles from './HeroSlide.module.scss'
 import Link from 'next/dist/client/link'
 
 const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
   const [isVertical, setIsVertical] = useState(false)
 
-  const mainImgRef = useRef(null)
-  const bkgdImgRef = useRef(null)
-
   const imgSrc = src
-  const image920 = imgSrc.replace('_1920.', '_920.')
-
   const overlayOpacityStyle = {
     width: '100%',
     height: '100%',
@@ -29,14 +24,7 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
     }
   }
 
-  useEffect(() => {
-    ;[mainImgRef, bkgdImgRef].forEach((imgRef) => {
-      if (imgRef.current && imgRef.current.complete) {
-        const { naturalWidth, naturalHeight } = imgRef.current
-        setIsVertical(naturalWidth < naturalHeight)
-      }
-    })
-  }, [onImageLoad])
+  const image920 = imgSrc.replace('_1920.', '_920.')
 
   return (
     <div
@@ -57,7 +45,6 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
           src={image920}
           alt={alt || ''}
           onLoad={onImageLoad}
-          ref={mainImgRef}
         />
       </picture>
 
@@ -70,7 +57,6 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
             src={image920}
             alt={alt || ''}
             onLoad={onImageLoad}
-            ref={bkgdImgRef}
           />
         </picture>
       )}

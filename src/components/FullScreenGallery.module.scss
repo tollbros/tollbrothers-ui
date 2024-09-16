@@ -29,11 +29,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100%;
+    min-width: 100vw;
     height: 100%;
 
     figure {
       display: flex;
+      align-items: center;
       position: relative;
       height: 100%;
       width: auto;
@@ -46,23 +47,22 @@
         height: 100%;
         margin: auto;
         object-fit: contain;
+        //padding-bottom: 50px;
       }
 
       figcaption {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 30px;
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        min-height: 58px;
-        padding: 16px 20px;
+        bottom: 22px;
+        left: 20px;
+        right: 20px;
+        width: calc(100% - 180px);
         font-size: 0.8em;
-        line-height: 1.4;
         pointer-events: none;
         text-shadow: 0 0 3px #000;
+
+        @include breakpoint(sm) {
+          width: calc(100% - 320px);
+        }
       }
     }
 
@@ -72,7 +72,7 @@
       }
 
       .mediaSVG__adjust {
-        padding: 20px;
+        width: auto;
         background: white;
       }
     }

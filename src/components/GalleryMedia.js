@@ -26,26 +26,26 @@ function GalleryMedia({
   const altName = media.title || media.description || ''
   let caption = media.description || media.title || ''
   let type = 'image'
-  let iframeWithCaption = ''
+  let customClass = null
   const [showMedia, setShowMedia] = useState(false)
   const imgRef = useRef()
   const imgCount = (index + 1).toString() + ' / ' + mediaCount.toString()
-
   if (media?.type?.includes('video')) {
     modelLink = null
     type = 'video'
     iframeSrc = getVideoURL(media)
-    if ((caption && showCaption) || mediaCount > 1) {
-      iframeWithCaption = styles.iframeWithCaption
-    }
   } else if (media?.type?.includes('walkthrough')) {
     modelLink = null
     type = 'walkthrough'
     iframeSrc = getWalkthroughURL(media)
-    if ((caption && showCaption) || mediaCount > 1) {
-      iframeWithCaption = styles.iframeWithCaption
+    if (caption && showCaption) {
+      customClass = styles.mediaVideo
     }
   }
+
+  const customFigStyles = media?.link?.includes('insidemaps')
+    ? styles.figCaptionStyles
+    : null
 
   if (!showCaption) {
     caption = media.description || media.title
@@ -79,6 +79,20 @@ function GalleryMedia({
     }
   }
 
+  const openTwitter = () => {
+    window.open(
+      'https://twitter.com/intent/tweet?text=' +
+        encodeURIComponent(caption) +
+        '&url=' +
+        encodeURIComponent(src),
+      'sharer',
+      'toolbar=0,status=0,width=626,height=436'
+    )
+    if (dataLayerPush) {
+      dataLayerPush({ event: 'twitter_share' })
+    }
+  }
+
   const openPinterest = () => {
     window.open(
       'http://www.pinterest.com/pin/create/button/?url=' +
@@ -91,7 +105,7 @@ function GalleryMedia({
     if (dataLayerPush) {
       dataLayerPush({ event: 'pinterest_share' })
     }
-  }
+  } 
 
   useEffect(() => {
     // image could already be loaded by the time this fires because it was rendered on the server
@@ -105,7 +119,7 @@ function GalleryMedia({
       <figure
         className={`${styles.media} ${
           showMedia ? styles.show : ''
-        } ${iframeWithCaption}`}
+        } ${customClass}`}
       >
         {type === 'image' && (
           <img
@@ -143,28 +157,34 @@ function GalleryMedia({
           </Link>
         )}
 
-        {((caption && showCaption) || mediaCount > 1) && ( // need to add the figcaption for the media count (ie 1/3) to show even if there is no caption
+        {caption && showCaption && type !== 'video' && (
           <figcaption
-            className={`${classes.figcaption ?? ''}`}
+            className={`${styles.mediaCapInline} ${customFigStyles} ${
+              classes.figcaption ?? ''
+            }`}
             style={{ backgroundColor: backgroundColor }}
           >
-            {showCaption && <span>{caption}</span>}
-            <div className={styles.bottomRightNav}>
-              {mediaCount > 1 && <span>{imgCount}</span>}
-              {type === 'image' && showSocials && (
-                <div className={styles.mediaShareNav}>
-                  <button
-                    className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
-                    onClick={openFacebook}
-                  />
-                  <button
-                    className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
-                    onClick={openPinterest}
-                  />
-                </div>
-              )}
-            </div>
+            {caption}
           </figcaption>
+        )}
+        {type === 'image' && (
+          <div className={styles.bottomRightNav}>
+            {mediaCount > 1 && <p>{imgCount}</p>}
+
+            {showSocials && (
+              <div className={styles.mediaShareNav}>
+                <button
+                  className={`${styles.mediaFacebookShare} ${styles.mediaShareButton} js-facebook-share-analytics-trig`}
+                  onClick={openFacebook}
+                />
+                {/* <button className={`${styles.mediaTwitterShare} ${styles.mediaShareButton} js-twitter-share-analytics-trig`} onClick={openTwitter}></button> */}
+                <button
+                  className={`${styles.mediaPinterestShare} ${styles.mediaShareButton} js-pinterest-share-analytics-trig`}
+                  onClick={openPinterest}
+                />
+              </div>
+            )}
+          </div>
         )}
       </figure>
     </div>

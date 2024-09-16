@@ -1,4 +1,4 @@
-## Tollbrothers UI 
+## Tollbrothers UI
 React library for Tollbrothers.
 
 ## Workflow
@@ -21,7 +21,6 @@ npm install <path to tollbrothers-ui>
 
 ```javascript
 // ./pages/_app.js
-
 import '@tollbrothers/tollbrothers-ui/dist/index.modern.css'
 import 'blaze-slider/dist/blaze.css'
 ```
@@ -54,7 +53,7 @@ In while in the root level of `tollbrothers-ui` do the following:
 
 
 
-Keep in mind we use the semantic release package
+keep in mind we use the semantic release package
 ---------
 
 so if you want to bump it a specific way you need to prefix your commit

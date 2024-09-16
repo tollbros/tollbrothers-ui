@@ -17,54 +17,116 @@
   }
 
   .bottomRightNav {
+    position: absolute;
+    bottom: 14px;
+    right: 22px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    flex-shrink: 0;
-    font-size: 1.1em;
+    margin: 4px;
+    font-size: 0.9em;
 
     @include breakpoint(sm) {
       flex-direction: row;
       align-items: center;
     }
 
-    span {
-      font-family: $alt_font_family;
+    p {
+      margin: 0 4px 4px 0;
+
+      @include breakpoint(sm) {
+        margin: 0 !important;
+      }
     }
 
     .mediaShareNav {
-      margin: 0 -6px 0 0;
+      margin-left: 0px;
 
       @include breakpoint(sm) {
-        margin-left: 16px;
+        margin-left: 30px;
       }
 
       button {
         background: none;
         width: 30px;
-        height: 24px;
+        height: 30px;
         border: none;
-        margin-left: 8px;
-        margin-top: 4px;
+        margin: 0 2px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        filter: invert(1);
+
+        @include breakpoint(sm) {
+          margin: 0 8px;
+        }
 
         &.mediaFacebookShare {
-            background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg") no-repeat center;
-            background-size: 8px 16px;
+          margin-left: 0px;
+
+          @include breakpoint(sm) {
+            margin-left: 8px;
+          }
+
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg");
+            width: 8px;
+            height: 16px;
+            filter: invert(1);
+            display: inline-block;
+          }
+        }
+
+        &.mediaTwitterShare {
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Twitter.svg");
+            width: 16px;
+            height: 15px;
+            filter: invert(1);
+            display: inline-block;
+          }
         }
 
         &.mediaPinterestShare {
-            background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg") no-repeat center;
-            background-size: 16px 16px;
+          margin-right: 0px;
+
+          @include breakpoint(sm) {
+            margin-right: 8px;
+          }
+
+          &::before {
+            content: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Pinterest.svg");
+            width: 16px;
+            height: 16px;
+            filter: invert(1);
+            display: inline-block;
+          }
         }
       }
     }
 
 
+  }
+
+  .mediaCapInline {
+    font-size: 14px;
+    line-height: 16px;
+    margin: 2px 4px;
+
+    &.figCaptionStyles {
+      width: 100%;
+      font-size: 10px;
+      line-height: 10px;
+      left: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 3px 10px;
+
+      @include breakpoint(sm) {
+        font-size: 14px;
+        white-space: nowrap;
+      }
+    }
   }
 
   .modelLink {
@@ -95,18 +157,10 @@
   }
 }
 
-.iframeWithCaption {
-  flex-direction: column;
-  min-height: 1px;
-
+.mediaVideo {
   iframe {
-    flex-shrink: 1;
+    @include breakpoint(md) {
+      padding-bottom: 50px;
+    }
   }
-
-  figcaption {
-    position: static !important;
-    flex-grow: 1;
-    flex-shrink: 0;
-  }
-
 }

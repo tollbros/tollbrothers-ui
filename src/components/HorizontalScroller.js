@@ -73,7 +73,13 @@ export const HorizontalScroller = ({
       // const imageWidth = galleryRef.current.firstChild.clientWidth
       let totalWidth = 0
       for (let i = 0; i < index; i++) {
-        totalWidth += galleryRef.current.children[i].clientWidth
+        const computedStyle = window.getComputedStyle(
+          galleryRef.current.children[i]
+        )
+        const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
+        const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
+        totalWidth +=
+          galleryRef.current.children[i].clientWidth + marginLeft + marginRight
       }
       galleryRef.current.scrollTo({
         left: totalWidth,

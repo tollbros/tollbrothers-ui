@@ -45,7 +45,8 @@ export const MortgageCalculator = ({
   initialSalesNumber = DEFAULT_SALES,
   initialInterestRate = DEFAULT_INTEREST_RATE,
   maxSalePrice = SALES_MAX,
-  targetClass
+  targetClass,
+  classes = {}
 }) => {
   const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
   const [loanTerm, setLoanTerm] = useState(30)
@@ -214,7 +215,9 @@ export const MortgageCalculator = ({
   return (
     <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
       <div className={styles.left}>
-        <div className={styles.sliderWrapper}>
+        <div
+          className={`${styles.sliderWrapper} ${classes.sliderWrapper ?? ''}`}
+        >
           <div className={styles.callOutWrapper}>
             <label htmlFor='mort-sale-price'>Sales Price</label>
             <input
@@ -247,7 +250,11 @@ export const MortgageCalculator = ({
             />
           </div>
         </div>
-        <div className={`${styles.sliderWrapper} ${styles.loanTerm}`}>
+        <div
+          className={`${styles.sliderWrapper} ${styles.loanTerm} ${
+            classes.sliderWrapper ?? ''
+          }`}
+        >
           <div className={styles.callOutWrapper}>
             <label htmlFor='mort-loan-select'>Loan Term</label>
             <span className={styles.dropDownArrow} />
@@ -273,7 +280,9 @@ export const MortgageCalculator = ({
             />
           </div>
         </div>
-        <div className={styles.sliderWrapper}>
+        <div
+          className={`${styles.sliderWrapper} ${classes.sliderWrapper ?? ''}`}
+        >
           <div className={`${styles.callOutWrapper} ${styles.down}`}>
             <label htmlFor='mort-down-payment-percent'>Down Payment</label>
             <div className={styles.inputWrapper}>
@@ -334,7 +343,9 @@ export const MortgageCalculator = ({
           </div>
         </div>
 
-        <div className={styles.sliderWrapper}>
+        <div
+          className={`${styles.sliderWrapper} ${classes.sliderWrapper ?? ''}`}
+        >
           <div className={styles.callOutWrapper}>
             <label htmlFor='mort-int-rate'>Interest Rate</label>
             <div>
@@ -376,7 +387,11 @@ export const MortgageCalculator = ({
         </div>
         {showAdvancedToggle && (
           <>
-            <div className={styles.sliderWrapper}>
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-taxes'>Taxes (Annual)</label>
                 <div className={styles.inputWrapper}>
@@ -429,7 +444,11 @@ export const MortgageCalculator = ({
               </div>
             </div>
 
-            <div className={styles.sliderWrapper}>
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-insurance'>Insurance (Annual)</label>
                 <div className={styles.inputWrapper}>
@@ -486,7 +505,11 @@ export const MortgageCalculator = ({
               </div>
             </div>
 
-            <div className={styles.sliderWrapper}>
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
               <div className={styles.callOutWrapper}>
                 <label htmlFor='mort-hoa'>HOA (Monthly)</label>
                 <input

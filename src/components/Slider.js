@@ -20,7 +20,8 @@ const Slider = ({
   disablePagination = false,
   cascadingConfig = {},
   onNext = () => {},
-  onPrevious = () => {}
+  onPrevious = () => {},
+  disableSlider = false
 }) => {
   const enableControls = Children.count(children) > 1
   const defaultConfig = {
@@ -42,7 +43,7 @@ const Slider = ({
   const sliderRef = React.useRef()
   useEffect(() => {
     // if not already initialized
-    if (!refTracker.current) {
+    if (!refTracker.current && !disableSlider) {
       const config = {
         ...defaultConfig,
         ...cascadingConfig
@@ -54,7 +55,13 @@ const Slider = ({
     <div className={`blaze-slider ${styles.fullscreen}`} ref={sliderRef}>
       <div className={`blaze-container ${styles.fullscreen}`}>
         <div className={`blaze-track-container ${styles.fullscreen}`}>
-          <div className={`blaze-track ${styles.fullscreen}`}>{children}</div>
+          <div
+            className={`${!disableSlider ? 'blaze-track' : ''} ${
+              styles.fullscreen
+            }`}
+          >
+            {children}
+          </div>
         </div>
       </div>
       {enableControls && (

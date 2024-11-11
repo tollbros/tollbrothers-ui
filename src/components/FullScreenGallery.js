@@ -31,13 +31,22 @@ export const FullScreenGallery = ({
   backgroundColor,
   portalId,
   classes = {},
-  disableSlider = false
+  disableSlider = false,
+  showLeftCloseButton = false
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
   return (
     show && (
       <PopupModal show portalId={portalId}>
         <div className={`${styles.fullScreen} full`}>
+          {showLeftCloseButton && (
+            <button
+              className={`${styles.close} ${styles.closeLeft} ${
+                classes.closeButton ?? ''
+              }`}
+              onClick={onClose}
+            />
+          )}
           <button
             className={`${styles.close} ${classes.closeButton ?? ''}`}
             onClick={onClose}

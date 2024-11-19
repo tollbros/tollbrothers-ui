@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HeroSlide.module.scss'
-import Link from 'next/dist/client/link'
 
-const HeroSlide = ({ src, alt, title, url, opacity, callBack }) => {
+const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
   const [isVertical, setIsVertical] = useState(false)
 
   const mainImgRef = useRef(null)

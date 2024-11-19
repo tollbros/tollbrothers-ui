@@ -8,7 +8,7 @@ export function HeroComponent({
   overlayOpacity,
   placeholderSrc,
   mainSrc,
-  Link = () => <div />,
+  Link,
   ...props
 }) {
   const [currentSlide, setCurrentSlide] = useState(

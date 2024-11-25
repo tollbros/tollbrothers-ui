@@ -3,13 +3,11 @@ import React, { useState, useCallback } from 'react'
 export default function ChatInput({
   accessToken,
   conversationId,
-  popNextUUID,
-  customerFirstName
+  popNextUUID
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  console.log('customerFirstName ', customerFirstName)
   const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
   const API_SF_ENDPOINT =
     'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'

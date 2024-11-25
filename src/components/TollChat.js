@@ -1,4 +1,8 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 import styles from './TollChat.module.scss'
 import {
@@ -8,8 +12,6 @@ import {
   listenToConversation
 } from '../../utils/chat'
 import ChatInput from './ChatInput'
-
-import Link from 'next/link'
 
 export const TollChat = ({ classes = {} }) => {
   const region = 'FLW'
@@ -41,6 +43,7 @@ export const TollChat = ({ classes = {} }) => {
 
       const token = await handleChatInit()
       setAccessToken(token.accessToken)
+      token ? setChatStartReady(true) : setChatStartReady(false)
 
       const newUuid = conversationId || crypto.randomUUID()
       if (!conversationId || conversationId === null) {
@@ -101,8 +104,6 @@ export const TollChat = ({ classes = {} }) => {
   }
 
   const handleChatMessage = async (event) => {
-    console.log('chat message success:', event)
-
     const typingMessages = []
     const messages = []
     let message = {}
@@ -110,12 +111,10 @@ export const TollChat = ({ classes = {} }) => {
 
     switch (event.event) {
       case 'ping':
-        console.log('just pinged')
         break
       case 'CONVERSATION_ROUTING_RESULT':
         // seems to fire once when the the start conversation is called but agent has not
         // accepted and no messages yet sent/delivered
-        console.log('conversation routed something...')
         setIsCurrentlyChatting(true)
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
@@ -277,6 +276,7 @@ export const TollChat = ({ classes = {} }) => {
   const showFormHandler = () => {
     setShowForm(true)
     setShowOsc(false)
+    setShowChatButton(false)
   }
 
   useEffect(() => {
@@ -302,12 +302,12 @@ export const TollChat = ({ classes = {} }) => {
 
   const popNextUUID = () => crypto.randomUUID()
 
-  useEffect(() => {
-    if (chatStartReady) {
-      // setup SSE
-      handleChatListener()
-    }
-  }, [chatStartReady])
+  //   useEffect(() => {
+  //     if (chatStartReady) {
+  //       // setup SSE
+  //       handleChatListener()
+  //     }
+  //   }, [chatStartReady])
 
   useEffect(() => {
     if (restablishChat) {
@@ -317,19 +317,18 @@ export const TollChat = ({ classes = {} }) => {
   }, [restablishChat])
 
   useEffect(() => {
-    // while (true) {
-    if (window) {
-      const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
-      // console.log(sessionStorage, 'sessionStorage');
+    while (true) {
+      if (window) {
+        const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
 
-      if (tbChat?.conversationId && tbChat?.accessToken) {
-        setAccessToken(tbChat.accessToken)
-        setConversationId(tbChat.conversationId)
-        setRestablishChat(true)
+        if (tbChat?.conversationId && tbChat?.accessToken) {
+          setAccessToken(tbChat.accessToken)
+          setConversationId(tbChat.conversationId)
+          setRestablishChat(true)
+        }
+        break
       }
-      // break;
     }
-    // }
   }, [])
 
   const convertTimeStamp = (timestamp) => {
@@ -348,7 +347,7 @@ export const TollChat = ({ classes = {} }) => {
       {' '}
       <div
         className={`${styles.chatWrapper} ${
-          !chatStartReady ? styles.chatPanelOpen : ''
+          chatStartReady ? styles.chatPanelOpen : ''
         } js_chatWrapper`}
         key='wrapper'
       >
@@ -367,7 +366,6 @@ export const TollChat = ({ classes = {} }) => {
               </div>
             </div>
           )}
-          {/* {console.log(showChatButton)} */}
           {showChatButton && (
             <button className={styles.chatLaunch} onClick={showFormHandler}>
               <img
@@ -380,94 +378,85 @@ export const TollChat = ({ classes = {} }) => {
               />
             </button>
           )}
-          {messages.map(
-            (message, index) => (
-              console.log(JSON.stringify(message, null, 1)),
-              (
+          {messages.map((message, index) => (
+            <>
+              {message.payload?.formatType === 'RichLink' && (
+                <Link
+                  href={message.payload?.linkItem?.url}
+                  key={`link${index}`}
+                  className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                >
+                  <img
+                    src={message?.payload?.image?.assetUrl}
+                    width={150}
+                    height={84}
+                    alt='Url'
+                  />
+                  <div className={styles.copyWrapper}>
+                    <p>{message.payload?.linkItem?.titleItem?.title}</p>
+                    <p>{message.payload?.linkItem?.url}</p>
+                  </div>
+                </Link>
+              )}
+              {message.payload?.formatType === 'Attachments' && (
                 <>
-                  {message.payload?.formatType === 'RichLink' && (
-                    <Link
-                      href={message.payload?.linkItem?.url}
-                      key={`link${index}`}
-                      className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                    >
-                      <img
-                        src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                        width={150}
-                        height={84}
-                        alt='Url'
-                      />
-                      <div className={styles.copyWrapper}>
-                        <p>{message.payload?.linkItem?.titleItem?.title}</p>
-                        <p>{message.payload?.linkItem?.url}</p>
-                      </div>
-                    </Link>
-                  )}
-                  {message.payload?.formatType === 'Attachments' && (
-                    <>
-                      <a
-                        href={message?.payload?.attachments[0]?.url}
-                        download
-                        key={`attachment${index}`}
-                        className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                      >
-                        {message?.payload?.attachments[0]?.name.endsWith(
-                          '.pdf'
-                        ) ? (
-                          <div className={styles.copyWrapper}>
-                            <p>Download PDF</p>
-                          </div>
-                        ) : (
-                          <>
-                            <img
-                              src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                              width={150}
-                              height={84}
-                              alt='Agent Thumbnail'
-                            />
-                            <div className={styles.copyWrapper}>
-                              <p>Click to download</p>
-                            </div>
-                          </>
-                        )}
-                      </a>
-                    </>
-                  )}
-                  <div
-                    key={`index${index}`}
-                    className={`${styles.messageWrapper}  ${
-                      message?.role === 'Agent' || message?.role === 'System'
-                        ? styles.agent
-                        : styles.guest
-                    }  js_messageWrapper`}
+                  <a
+                    href={message?.payload?.attachments[0]?.url}
+                    download
+                    key={`attachment${index}`}
+                    className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
                   >
-                    <>
-                      <div
-                        className={`${styles.message} ${
-                          showActiveTyping
-                            ? styles.activeTyping
-                            : styles.notActive
-                        }`}
-                      >
-                        {message.sender}: {message.text}
-                        <div className={styles.timestamp}>
-                          {convertTimeStamp(message.timestamp)}
-                        </div>
+                    {message?.payload?.attachments[0]?.name.endsWith('.pdf') ? (
+                      <div className={styles.copyWrapper}>
+                        <p>Download PDF</p>
                       </div>
-                      {message.image && (
+                    ) : (
+                      <>
                         <img
-                          src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                          width={50}
-                          height={50}
+                          src={message?.payload?.attachments[0]?.url}
+                          width={150}
+                          height={84}
                           alt='Agent Thumbnail'
                         />
-                      )}
-                    </>
-                  </div>
+                        <div className={styles.copyWrapper}>
+                          <p>Click to download</p>
+                        </div>
+                      </>
+                    )}
+                  </a>
                 </>
-              )
-            )
-          )}
+              )}
+              <div
+                key={`index${index}`}
+                className={`${styles.messageWrapper}  ${
+                  message?.role === 'Agent' || message?.role === 'System'
+                    ? styles.agent
+                    : styles.guest
+                }  js_messageWrapper`}
+              >
+                <>
+                  <div
+                    className={`${styles.message} ${
+                      showActiveTyping ? styles.activeTyping : styles.notActive
+                    }`}
+                  >
+                    {message.sender}: {message.text}
+                    <div className={styles.timestamp}>
+                      {convertTimeStamp(message.timestamp)}
+                    </div>
+                  </div>
+                  {message.image && (
+                    <img
+                      src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                      width={50}
+                      height={50}
+                      alt='Agent Thumbnail'
+                    />
+                  )}
+                </>
+              </div>
+            </>
+          ))}
         </div>
         {showForm && (
           <form onSubmit={handleSubmit} className={styles.form}>
@@ -516,8 +505,7 @@ export const TollChat = ({ classes = {} }) => {
         </button>
       )} */}
 
-        {/* {conversationId && accessToken && ( */}
-        {accessToken && (
+        {conversationId && accessToken && (
           <ChatInput
             accessToken={accessToken}
             conversationId={conversationId}

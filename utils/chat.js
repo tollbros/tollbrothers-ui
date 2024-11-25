@@ -130,15 +130,11 @@ export const startConversation = async (
 }
 
 export function listenToConversation(retryFunction, retryDelay = 1000) {
-  console.log('listenToConversation initialized')
-
   const request = async (payload) => {
     let attempts = 0
 
     const executeRequest = async () => {
       try {
-        console.log('Listening to convo with payload:', payload)
-
         await fetchEventSource(`${API_SF_ENDPOINT}/eventrouter/v1/sse`, {
           method: 'GET',
           headers: {
@@ -146,8 +142,7 @@ export function listenToConversation(retryFunction, retryDelay = 1000) {
             'X-Org-Id': API_SF_ORG
           },
           onmessage: (event) => {
-            console.log('Received event:', event)
-            payload.handleChatMessage(event)
+            // payload.handleChatMessage(event)
             if (typeof payload.handleChatMessage === 'function') {
               payload.handleChatMessage(event)
             } else {

@@ -8,6 +8,7 @@ const API_OSC_AVAILABILITY =
 const API_SF_ORG = '00D17000000ednF'
 const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
 
+// gets osc availability
 export const fetchAvailability = async (region) => {
   if (!region) {
     console.error('Region is required to fetch availability.')
@@ -37,11 +38,8 @@ export const fetchAvailability = async (region) => {
     return { data: null, error: error.message } // Return error details
   }
 }
+
 export async function handleChatInit() {
-  // console.log(
-  //   `${API_SF_ENDPOINT}/iamessage/api/v2/authorization/unauthenticated/access-token`,
-  //   'Fetching access token...'
-  // )
   try {
     const response = await fetch(
       `${API_SF_ENDPOINT}/iamessage/api/v2/authorization/unauthenticated/access-token`,
@@ -131,36 +129,50 @@ export const startConversation = async (
   return performRequest(retries)
 }
 
-export async function listenToConversation(payload, accessToken, onMessage) {
-  console.log(`Listening to conversation: ${payload}`)
-  try {
-    await fetchEventSource(
-      `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${payload}/events`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          message: {
-            id: payload.nextUuid,
-            messageType: 'StaticContentMessage',
-            staticContent: {
-              formatType: 'Text',
-              text: payload.msg
-            }
+export function listenToConversation(retryFunction, retryDelay = 1000) {
+  console.log('listenToConversation initialized')
+
+  const request = async (payload) => {
+    let attempts = 0
+
+    const executeRequest = async () => {
+      try {
+        console.log('Listening to convo with payload:', payload)
+
+        await fetchEventSource(`${API_SF_ENDPOINT}/eventrouter/v1/sse`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${payload.accessToken}`,
+            'X-Org-Id': API_SF_ORG
           },
-          esDeveloperName: API_SF_NAME,
-          isNewMessagingSession: false
+          onmessage: (event) => {
+            console.log('Received event:', event)
+            payload.handleChatMessage(event)
+            if (typeof payload.handleChatMessage === 'function') {
+              payload.handleChatMessage(event)
+            } else {
+              console.error('handleChatMessage is not a function!')
+            }
+          }
         })
+      } catch (error) {
+        console.error('Error in fetchEventSource:', error)
+        if (retryFunction && retryFunction(attempts)) {
+          attempts += 1
+          await new Promise((resolve) => setTimeout(resolve, retryDelay))
+          return executeRequest()
+        } else {
+          throw error
+        }
       }
-    )
-  } catch (error) {
-    console.error('Error in SSE connection:', error)
-    throw error
+    }
+
+    return executeRequest()
   }
+
+  return { request }
 }
+
 export const fetchUuid = async () => {
   let data = null
   let error = null

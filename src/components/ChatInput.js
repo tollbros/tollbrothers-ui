@@ -1,95 +1,96 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 export default function ChatInput({
   accessToken,
   conversationId,
   popNextUUID,
-  apiSfName
+  customerFirstName
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  console.log('customerFirstName ', customerFirstName)
   const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
-
   const API_SF_ENDPOINT =
     'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'
 
-  const sendMessage = async () => {
-    if (message.trim() === '') return // Don't send empty messages
+  // const popNextUUID = () => crypto.randomUUID();
+
+  const sendMessage = useCallback(async () => {
+    if (!message.trim()) {
+      setError('Message cannot be empty')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    const payload = {
+      accessToken,
+      conversationId,
+      nextUuid: popNextUUID(),
+      msg: message,
+      customerFirstName: 'John'
+    }
 
     try {
-      const nextUuid = popNextUUID() // Get the next UUID for the message
-
-      const payload = {
-        accessToken,
-        conversationId,
-        msg: message,
-        nextUuid
-      }
-
-      console.log('Sending message with payload:', payload)
-
-      // Update this URL to call the Salesforce API endpoint for sending messages
       const response = await fetch(
-        `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${conversationId}/message`,
+        `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}` // Authorization header if needed
+            Authorization: `Bearer ${payload.accessToken}`
           },
           body: JSON.stringify({
-            conversationId: conversationId,
-            esDeveloperName: API_SF_NAME, // Your Salesforce endpoint name
             message: {
-              id: nextUuid, // Unique message ID
+              id: payload.nextUuid,
               messageType: 'StaticContentMessage',
               staticContent: {
                 formatType: 'Text',
-                text: message
+                text: payload.msg
               }
-            }
+            },
+            esDeveloperName: API_SF_NAME,
+            isNewMessagingSession: false
           })
         }
       )
 
-      // Check if the request is successful
-      if (!response.ok) {
-        const errorText = await response.text() // Get detailed error message
-        throw new Error(`Failed to send message: ${errorText}`)
+      if (response.status === 202) {
+        setMessage('') // Clear the message input on success
+      } else {
+        throw new Error(`API error: ${response.statusText}`)
       }
-
-      const data = await response.json()
-      console.log('Message sent successfully:', data)
-
-      // Clear message input on success
-      setMessage('')
-    } catch (error) {
-      console.error('Error sending message:', error)
-      setError(`Error sending message: ${error.message}`) // Display error
+    } catch (err) {
+      setError(err.message || 'Failed to send message')
+    } finally {
+      setLoading(false)
     }
-  }
+  }, [accessToken, conversationId, message, popNextUUID])
+
   const onKeyUp = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      sendMessage() // Send message when user presses enter
+      sendMessage()
     } else {
       setMessage(e.target.value)
     }
   }
 
   return (
-    <div key='input'>
+    <div>
       <legend>Chat here</legend>
       <textarea
         rows={4}
         cols={50}
-        onChange={(e) => setMessage(e.target.value)} // Update message on input change
-        onKeyDown={onKeyUp} // Trigger onKeyUp event when user presses a key
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={onKeyUp}
         value={message}
         style={{ color: 'white', backgroundColor: 'black' }}
       />
       <p>Press enter to send</p>
-      {error && <div style={{ color: 'red' }}>{error}</div>}{' '}
+      {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>
   )
 }

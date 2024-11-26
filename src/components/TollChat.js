@@ -25,7 +25,7 @@ export const TollChat = ({ classes = {} }) => {
   const [showForm, setShowForm] = useState(false)
   const [showOsc, setShowOsc] = useState(true)
   const [customerFirstName, setCustomerFirstName] = useState('John')
-  const [customerLastName, setCustomerLastName] = useState('Smith')
+  const [customerLastName, setCustomerLastName] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
@@ -52,10 +52,10 @@ export const TollChat = ({ classes = {} }) => {
         accessToken: token.accessToken,
         customerEmail: formData.email,
         customerFirstName: firstName || 'John',
-        customerLastName: lastName || 'Smith',
+        customerLastName: lastName || '',
         conversationId: newUuid,
         firstName: 'john',
-        lastName: 'smith',
+        lastName: '',
         region
       }
 
@@ -272,7 +272,7 @@ export const TollChat = ({ classes = {} }) => {
     e.preventDefault()
 
     const [firstName, ...lastNameParts] = formData.name.trim().split(' ')
-    const lastName = lastNameParts.join(' ') || 'Smith'
+    const lastName = lastNameParts.join(' ') || '(none)'
 
     setCustomerFirstName(firstName)
     setCustomerLastName(lastName)

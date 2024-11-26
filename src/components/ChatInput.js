@@ -93,7 +93,7 @@ export default function ChatInput({
     <div>
       <legend>Chat here</legend>
       <textarea
-        rows={4}
+        rows={2}
         cols={50}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={onKeyUp}

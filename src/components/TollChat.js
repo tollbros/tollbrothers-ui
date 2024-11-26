@@ -15,8 +15,6 @@ import ChatInput from './ChatInput'
 
 export const TollChat = ({ classes = {} }) => {
   const region = 'FLW'
-  //   const customerFirstName = 'John'
-  //   const customerLastName = 'Doe'
 
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -39,10 +37,8 @@ export const TollChat = ({ classes = {} }) => {
     setFormData({ ...formData, [name]: value })
   }
 
-  const initializeChat = async () => {
+  const initializeChat = async (firstName, lastName) => {
     try {
-      // console.log('Initializing chat...', conversationId)
-
       const token = await handleChatInit()
       setAccessToken(token.accessToken)
       token ? setChatStartReady(true) : setChatStartReady(false)
@@ -55,11 +51,11 @@ export const TollChat = ({ classes = {} }) => {
       const payload = {
         accessToken: token.accessToken,
         customerEmail: formData.email,
-        // customerFirstName: formData.name || 'Jane',
-        // customerLastName: 'Doe',
-        customerFirstName: customerFirstName,
-        customerLastName: customerLastName,
+        customerFirstName: firstName || 'John',
+        customerLastName: lastName || 'Smith',
         conversationId: newUuid,
+        firstName: 'john',
+        lastName: 'smith',
         region
       }
 
@@ -67,7 +63,12 @@ export const TollChat = ({ classes = {} }) => {
       setConversationId(payload.conversationId)
 
       const retryFunction = (attempts) => attempts < 3
-      const { request } = listenToConversation(retryFunction, 2000)
+      const { request } = listenToConversation(
+        retryFunction,
+        2000,
+        firstName,
+        lastName
+      )
 
       if (typeof request !== 'function') {
         throw new Error(
@@ -77,6 +78,7 @@ export const TollChat = ({ classes = {} }) => {
 
       await request({
         accessToken: token.accessToken,
+        // chatMessage: chatMessage
         handleChatMessage
       })
     } catch (error) {
@@ -106,7 +108,7 @@ export const TollChat = ({ classes = {} }) => {
     return id15 + suffix
   }
 
-  const handleChatMessage = async (event) => {
+  const handleChatMessage = async (event, firstName, lastName, payload) => {
     const typingMessages = []
     const messages = []
     let message = {}
@@ -145,7 +147,7 @@ export const TollChat = ({ classes = {} }) => {
             sender:
               data.conversationEntry.sender.role === 'EndUser' &&
               data.conversationEntry.senderDisplayName === 'Guest'
-                ? `${customerFirstName} ${customerLastName}`
+                ? `${firstName} ${lastName}`
                 : data.conversationEntry.senderDisplayName,
             image: `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
               entry.participant.subject
@@ -158,8 +160,6 @@ export const TollChat = ({ classes = {} }) => {
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
-        // console.log('CONVERSATION_MESSAGE1', messagePayload);
-        // console.log('CONVERSATION_MESSAGE2', messagePayload.abstractMessage.staticContent);
 
         message = {
           id: data.conversationEntry.identifier,
@@ -171,7 +171,7 @@ export const TollChat = ({ classes = {} }) => {
           sender:
             data.conversationEntry.sender.role === 'EndUser' &&
             data.conversationEntry.senderDisplayName === 'Guest'
-              ? `${customerFirstName} ${customerLastName}`
+              ? `${firstName} ${lastName}`
               : data.conversationEntry.senderDisplayName
         }
 
@@ -257,7 +257,6 @@ export const TollChat = ({ classes = {} }) => {
         break
     }
     if (messages.length > 0) {
-      // console.log('messages:', messages)
       setMessages((prevMessages) => [...prevMessages, ...messages])
     }
 
@@ -274,12 +273,12 @@ export const TollChat = ({ classes = {} }) => {
 
     const [firstName, ...lastNameParts] = formData.name.trim().split(' ')
     const lastName = lastNameParts.join(' ') || 'Smith'
-    console.log('First name:', firstName)
 
-    setCustomerFirstName(firstName || 'Jane')
+    setCustomerFirstName(firstName)
     setCustomerLastName(lastName)
+
     setShowForm(false)
-    await initializeChat()
+    await initializeChat(firstName, lastName)
   }
 
   const showFormHandler = () => {
@@ -310,13 +309,6 @@ export const TollChat = ({ classes = {} }) => {
   }, [availableOscs, isCurrentlyChatting])
 
   const popNextUUID = () => crypto.randomUUID()
-
-  //   useEffect(() => {
-  //     if (chatStartReady) {
-  //       // setup SSE
-  //       handleChatListener()
-  //     }
-  //   }, [chatStartReady])
 
   useEffect(() => {
     if (restablishChat) {
@@ -449,7 +441,9 @@ export const TollChat = ({ classes = {} }) => {
                       showActiveTyping ? styles.activeTyping : styles.notActive
                     }`}
                   >
-                    {message.sender}: {message.text}
+                    {message.sender.charAt(0).toUpperCase() +
+                      message.sender.slice(1).toLowerCase()}
+                    : {message.text}
                     <div className={styles.timestamp}>
                       {convertTimeStamp(message.timestamp)}
                     </div>
@@ -524,8 +518,8 @@ export const TollChat = ({ classes = {} }) => {
             setCustomerFirstName={setCustomerFirstName}
             setCustomerLastName={setCustomerLastName}
             // customerFirstName='John'
-            customerFirstName
-            customerLastName
+            // customerFirstName
+            // customerLastName
             // popNextUUID={() => crypto.randomUUID()}
           />
         )}

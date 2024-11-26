@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 
 export default function ChatInput({
   accessToken,
@@ -15,8 +15,6 @@ export default function ChatInput({
   const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
   const API_SF_ENDPOINT =
     'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'
-
-  // const popNextUUID = () => crypto.randomUUID();
 
   const sendMessage = useCallback(async () => {
     if (!message.trim()) {
@@ -63,8 +61,8 @@ export default function ChatInput({
 
       if (response.status === 202) {
         setMessage('') // Clear the message input on success
-        setCustomerFirstName('UpdatedFirstName')
-        setCustomerLastName('UpdatedLastName')
+        setCustomerFirstName(customerFirstName)
+        setCustomerLastName(customerLastName)
       } else {
         throw new Error(`API error: ${response.statusText}`)
       }

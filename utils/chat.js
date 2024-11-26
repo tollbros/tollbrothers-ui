@@ -108,7 +108,7 @@ export const startConversation = async (
           })
         }
       )
-      console.log('Conversation started successfully:', response)
+      // console.log('Conversation started successfully:', response)
 
       if (response.status === 201) {
         return {} // Success, return empty object or appropriate data
@@ -129,10 +129,16 @@ export const startConversation = async (
   return performRequest(retries)
 }
 
-export function listenToConversation(retryFunction, retryDelay = 1000) {
+export function listenToConversation(
+  retryFunction,
+  retryDelay = 1000,
+  firstName,
+  lastName
+) {
   const request = async (payload) => {
     let attempts = 0
-
+    const customerFirstName = firstName
+    const customerLastName = lastName
     const executeRequest = async () => {
       try {
         await fetchEventSource(`${API_SF_ENDPOINT}/eventrouter/v1/sse`, {
@@ -144,7 +150,11 @@ export function listenToConversation(retryFunction, retryDelay = 1000) {
           onmessage: (event) => {
             // payload.handleChatMessage(event)
             if (typeof payload.handleChatMessage === 'function') {
-              payload.handleChatMessage(event)
+              payload.handleChatMessage(
+                event,
+                customerFirstName,
+                customerLastName
+              )
             } else {
               console.error('handleChatMessage is not a function!')
             }
@@ -164,7 +174,7 @@ export function listenToConversation(retryFunction, retryDelay = 1000) {
 
     return executeRequest()
   }
-
+  console.log('request', request)
   return { request }
 }
 

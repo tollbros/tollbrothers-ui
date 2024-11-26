@@ -3,7 +3,11 @@ import React, { useState, useCallback } from 'react'
 export default function ChatInput({
   accessToken,
   conversationId,
-  popNextUUID
+  popNextUUID,
+  customerFirstName,
+  customerLastName,
+  setCustomerFirstName,
+  setCustomerLastName
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
@@ -28,7 +32,9 @@ export default function ChatInput({
       conversationId,
       nextUuid: popNextUUID(),
       msg: message,
-      customerFirstName: 'John'
+      customerFirstName: customerFirstName,
+      customerLastName: customerLastName
+      // customerFirstName: 'John'
     }
 
     try {
@@ -57,6 +63,8 @@ export default function ChatInput({
 
       if (response.status === 202) {
         setMessage('') // Clear the message input on success
+        setCustomerFirstName('UpdatedFirstName')
+        setCustomerLastName('UpdatedLastName')
       } else {
         throw new Error(`API error: ${response.statusText}`)
       }
@@ -65,7 +73,14 @@ export default function ChatInput({
     } finally {
       setLoading(false)
     }
-  }, [accessToken, conversationId, message, popNextUUID])
+  }, [
+    accessToken,
+    conversationId,
+    message,
+    popNextUUID,
+    setCustomerFirstName,
+    setCustomerLastName
+  ])
 
   const onKeyUp = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

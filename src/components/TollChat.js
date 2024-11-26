@@ -15,8 +15,8 @@ import ChatInput from './ChatInput'
 
 export const TollChat = ({ classes = {} }) => {
   const region = 'FLW'
-  const customerFirstName = 'John'
-  const customerLastName = 'Doe'
+  //   const customerFirstName = 'John'
+  //   const customerLastName = 'Doe'
 
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -26,6 +26,8 @@ export const TollChat = ({ classes = {} }) => {
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [showOsc, setShowOsc] = useState(true)
+  const [customerFirstName, setCustomerFirstName] = useState('John')
+  const [customerLastName, setCustomerLastName] = useState('Smith')
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
@@ -39,7 +41,7 @@ export const TollChat = ({ classes = {} }) => {
 
   const initializeChat = async () => {
     try {
-      console.log('Initializing chat...', conversationId)
+      // console.log('Initializing chat...', conversationId)
 
       const token = await handleChatInit()
       setAccessToken(token.accessToken)
@@ -53,13 +55,14 @@ export const TollChat = ({ classes = {} }) => {
       const payload = {
         accessToken: token.accessToken,
         customerEmail: formData.email,
-        customerFirstName: formData.name || 'Jane',
-        customerLastName: 'Doe',
+        // customerFirstName: formData.name || 'Jane',
+        // customerLastName: 'Doe',
+        customerFirstName: customerFirstName,
+        customerLastName: customerLastName,
         conversationId: newUuid,
         region
       }
 
-      console.log('Payload:', payload.conversationId)
       await startConversation(payload)
       setConversationId(payload.conversationId)
 
@@ -119,7 +122,7 @@ export const TollChat = ({ classes = {} }) => {
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
         // fires when an agent accepts
-        console.log('conversation participant changed...')
+        // console.log('conversation participant changed...')
         sessionStorage.setItem(
           'tbChat',
           JSON.stringify({ accessToken, conversationId })
@@ -254,7 +257,7 @@ export const TollChat = ({ classes = {} }) => {
         break
     }
     if (messages.length > 0) {
-      console.log('messages:', messages)
+      // console.log('messages:', messages)
       setMessages((prevMessages) => [...prevMessages, ...messages])
     }
 
@@ -268,7 +271,13 @@ export const TollChat = ({ classes = {} }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form submitted')
+
+    const [firstName, ...lastNameParts] = formData.name.trim().split(' ')
+    const lastName = lastNameParts.join(' ') || 'Smith'
+    console.log('First name:', firstName)
+
+    setCustomerFirstName(firstName || 'Jane')
+    setCustomerLastName(lastName)
     setShowForm(false)
     await initializeChat()
   }
@@ -510,7 +519,13 @@ export const TollChat = ({ classes = {} }) => {
             accessToken={accessToken}
             conversationId={conversationId}
             popNextUUID={popNextUUID}
-            customerFirstName='John'
+            customerFirstName={customerFirstName}
+            customerLastName={customerLastName}
+            setCustomerFirstName={setCustomerFirstName}
+            setCustomerLastName={setCustomerLastName}
+            // customerFirstName='John'
+            customerFirstName
+            customerLastName
             // popNextUUID={() => crypto.randomUUID()}
           />
         )}

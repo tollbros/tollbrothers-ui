@@ -1,9 +1,9 @@
 
 .chatWrapper {
     position: fixed;
-    bottom: 20%;
-    z-index: 99;
-    right: 5vw;
+    bottom: 35px;
+    z-index: 999;
+    right: 1vw;
     color: #fff;
     
 
@@ -134,7 +134,7 @@
             border-radius: 0 0 0 5px;
 
             p {
-                white-space: wrap; 
+                word-wrap: break-word;
                 
 
                 &:nth-child(1) {
@@ -153,8 +153,8 @@
     background-color: #fff;
     cursor: pointer;
     position: absolute;
-    bottom: 50px;
-    right: 70px;
+    bottom: 65px;
+    right: 7vw;
 
     img {
         &:nth-child(1) {
@@ -189,6 +189,7 @@
     bottom: 0;
     padding: 10px;
     border-radius: 4px;
+    color: #fff;
     
     input {
         border: none;
@@ -196,6 +197,10 @@
         padding: 10px;
         width: 200px;
         margin-right: 10px;
+    }
+
+    button {
+        color: #000;
     }
 }
 

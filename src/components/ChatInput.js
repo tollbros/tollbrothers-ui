@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 export default function ChatInput({
   accessToken,
   conversationId,
@@ -7,14 +7,12 @@ export default function ChatInput({
   customerLastName,
   setCustomerFirstName,
   setCustomerLastName,
+  apiSfName,
   endPoint
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
-  const API_SF_ENDPOINT =
-    'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'
 
   const sendMessage = useCallback(async () => {
     if (!message.trim()) {
@@ -32,12 +30,10 @@ export default function ChatInput({
       msg: message,
       customerFirstName: customerFirstName,
       customerLastName: customerLastName
-      // customerFirstName: 'John'
     }
 
     try {
       const response = await fetch(
-        // `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
         `${endPoint}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
         {
           method: 'POST',
@@ -54,18 +50,18 @@ export default function ChatInput({
                 text: payload.msg
               }
             },
-            esDeveloperName: API_SF_NAME,
+            esDeveloperName: apiSfName,
             isNewMessagingSession: false
           })
         }
       )
 
       if (response.status === 202) {
-        setMessage('') // Clear the message input on success
+        setMessage('')
         setCustomerFirstName(customerFirstName)
         setCustomerLastName(customerLastName)
       } else {
-        throw new Error(`API error: ${response.statusText}`)
+        throw new Error(`API error chatinput.js 68: ${response.statusText}`)
       }
     } catch (err) {
       setError(err.message || 'Failed to send message')

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-// import Image from 'next/image'
 import Link from 'next/link'
 
 import styles from './TollChat.module.scss'
@@ -21,20 +20,7 @@ export const TollChat = ({
   communityRegion,
   classes = {}
 }) => {
-  //   console.log(
-  //     'communityRegion',
-  //     communityRegion,
-  //     'ApiSfOrgId',
-  //     apiSfOrgId,
-  //     'ApiSfName',
-  //     apiSfName,
-  //     'oscAvailable',
-  //     oscAvailable,
-  //     'endPoint',
-  //     endPoint
-  //   )
   const region = 'FLW'
-  // console.log('endPoint', endPoint)
 
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -57,7 +43,6 @@ export const TollChat = ({
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
-  // console.log(apiSfOrgId, apiSfName, ' 60TC')
   const initializeChat = async (
     firstName,
     lastName,
@@ -65,7 +50,6 @@ export const TollChat = ({
     apiSfOrgId,
     apiSfName
   ) => {
-    // console.log(apiSfOrgId, apiSfName, 'initializeChat 68')
     try {
       const token = await handleChatInit(endPoint, apiSfOrgId, apiSfName)
 
@@ -93,26 +77,8 @@ export const TollChat = ({
         apiSfName
       }
 
-      //   console.log(
-      //     ' above Payload for startConversation:',
-      //     payload,
-      //     apiSfOrgId,
-      //     apiSfName
-      //   )
-      await startConversation(
-        console.log(payload, 'dead 103'),
-        payload,
-        endPoint,
-        apiSfOrgId,
-        apiSfName,
-        console.log('request 107', endPoint, apiSfOrgId, apiSfName)
-      )
-      console.log(
-        'Payload for startConversation:',
-        payload,
-        apiSfOrgId,
-        apiSfName
-      )
+      await startConversation(payload, payload.apiSfName)
+
       setConversationId(payload.conversationId)
 
       const retryFunction = (attempts) => attempts < 3
@@ -121,18 +87,16 @@ export const TollChat = ({
         2000,
         firstName,
         lastName,
-        payload.endPoint
+        payload.endPoint,
+        apiSfOrgId
       )
-      console.log('request 125', request)
       if (typeof request !== 'function') {
         throw new Error(
           'Invalid request function returned from listenToConversation'
         )
       }
-      // handleChatMessage()
       await request({
         accessToken: token.accessToken,
-        // chatMessage: chatMessage,
         handleChatMessage
       })
     } catch (error) {
@@ -163,7 +127,6 @@ export const TollChat = ({
   }
 
   const handleChatMessage = async (event, firstName, lastName, payload) => {
-    console.log('handleChatMessage:', event)
     const typingMessages = []
     const messages = []
     let message = {}
@@ -179,7 +142,6 @@ export const TollChat = ({
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
         // fires when an agent accepts
-        // console.log('conversation participant changed...')
         sessionStorage.setItem(
           'tbChat',
           JSON.stringify({ accessToken, conversationId })
@@ -414,7 +376,6 @@ export const TollChat = ({
         <div className={styles.messagesWrapper}>
           {showActiveTyping && (
             <div className={`${styles.agent} ${styles.typingWrapper}`}>
-              {/* <div className={`${styles.message} ${styles.activeTyping}`}> */}
               <div className={`${styles.message} `}>
                 <p className={styles.typingIndictor}>
                   <span className={styles.activeTypingWrapper}>
@@ -563,6 +524,8 @@ export const TollChat = ({
             customerLastName={customerLastName}
             setCustomerFirstName={setCustomerFirstName}
             setCustomerLastName={setCustomerLastName}
+            apiSfName={apiSfName}
+            endPoint={endPoint}
           />
         )}
       </div>

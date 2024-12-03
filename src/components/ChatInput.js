@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react'
-
 export default function ChatInput({
   accessToken,
   conversationId,
@@ -7,7 +6,8 @@ export default function ChatInput({
   customerFirstName,
   customerLastName,
   setCustomerFirstName,
-  setCustomerLastName
+  setCustomerLastName,
+  endPoint
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
@@ -37,7 +37,8 @@ export default function ChatInput({
 
     try {
       const response = await fetch(
-        `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
+        // `${API_SF_ENDPOINT}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
+        `${endPoint}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
         {
           method: 'POST',
           headers: {

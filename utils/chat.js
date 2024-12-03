@@ -1,4 +1,5 @@
 import { fetchEventSource } from '@microsoft/fetch-event-source'
+// oscAvailable, apiSfOrgId,  apiSfName,
 
 const API_SF_ENDPOINT =
   'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'
@@ -8,8 +9,8 @@ const API_SF_ORG = '00D17000000ednF'
 const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
 
 // gets osc availability
-export const fetchAvailability = async (region, endPoint) => {
-  // console.log(endPoint, 'endPoint 12', API_SF_ENDPOINT)
+export const fetchAvailability = async (region, endPoint, oscAvailable) => {
+  // console.log(oscAvailable, 'oscAvailable 12', API_SF_ENDPOINT)
 
   if (!region) {
     console.error('Region is required to fetch availability.')
@@ -17,7 +18,8 @@ export const fetchAvailability = async (region, endPoint) => {
   }
 
   try {
-    const response = await fetch(`${API_OSC_AVAILABILITY}/${region}`, {
+    // const response = await fetch(`${API_OSC_AVAILABILITY}/${region}`, {
+    const response = await fetch(`${oscAvailable}/${region}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json'
@@ -39,8 +41,8 @@ export const fetchAvailability = async (region, endPoint) => {
   }
 }
 
-export async function handleChatInit(endPoint) {
-  // console.log(endPoint, 'endPoint 43', API_SF_ENDPOINT)
+export async function handleChatInit(endPoint, apiSfOrgId, apiSfName) {
+  // console.log('endPoint 43', endPoint, apiSfOrgId, apiSfName)
   try {
     const response = await fetch(
       // `${API_SF_ENDPOINT}/iamessage/api/v2/authorization/unauthenticated/access-token`,
@@ -51,8 +53,10 @@ export async function handleChatInit(endPoint) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          orgId: API_SF_ORG,
-          esDeveloperName: API_SF_NAME,
+          // orgId: API_SF_ORG,
+          orgId: apiSfOrgId,
+          // esDeveloperName: API_SF_NAME,
+          esDeveloperName: apiSfName,
           capabilitiesVersion: '1',
           platform: 'Web'
         })
@@ -73,76 +77,22 @@ export async function handleChatInit(endPoint) {
   }
 }
 
-// export const startConversation = async (
-//   payload,
-//   retries = 1,
-//   retryDelay = 1000,
-//   endPoint
-// ) => {
-//   console.log(endPoint, 'endPoint 82')
-
-//   if (!payload || !payload.accessToken || !payload.customerEmail) {
-//     throw new Error('Invalid payload provided')
-//   }
-
-//   const performRequest = async (remainingRetries) => {
-//     try {
-//       const response = await fetch(
-//         // `${API_SF_ENDPOINT}/iamessage/api/v2/conversation`,
-//         `${endPoint}/iamessage/api/v2/conversation`,
-//         {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             Authorization: `Bearer ${payload.accessToken}`
-//           },
-//           body: JSON.stringify({
-//             conversationId: payload.conversationId,
-//             esDeveloperName: API_SF_NAME,
-//             routingAttributes: {
-//               _email: payload.customerEmail,
-//               _firstName: payload.customerFirstName,
-//               _lastName: payload.customerLastName,
-//               region: payload.region
-//             }
-//           })
-//         }
-//       )
-
-//       if (response.status === 201) {
-//         return {} // Success, return empty object or appropriate data
-//       } else {
-//         throw new Error(`API error: ${response.status} ${response.statusText}`)
-//       }
-//     } catch (error) {
-//       if (remainingRetries > 0) {
-//         console.warn(`Retrying... Attempts left: ${remainingRetries}`)
-//         await new Promise((resolve) => setTimeout(resolve, retryDelay)) // Wait before retry
-//         return performRequest(remainingRetries - 1)
-//       } else {
-//         throw error // Exhausted retries, propagate the error
-//       }
-//     }
-//   }
-
-//   return performRequest(retries)
-// }
-
 export const startConversation = async (
   payload,
   retries = 2,
   retryDelay = 1000,
-  endPoint
+  endPoint,
+  apiSfName
 ) => {
-  console.log('Endpoint:137', payload.endPoint)
-
+  console.log(payload, 'endPoint 148')
   if (!payload || !payload.accessToken || !payload.customerEmail) {
-    throw new Error('Invalid payload provided')
+    throw new Error('Invalid payload provided chat.js 143')
   }
 
   const performRequest = async (remainingRetries) => {
-    console.log(payload.endPoint, 'endPoint 144')
     try {
+      console.log(payload.endPoint, 'endPoint 148')
+
       const response = await fetch(
         `${payload.endPoint}/iamessage/api/v2/conversation`,
         // `${API_SF_ENDPOINT}/iamessage/api/v2/conversation`,
@@ -154,7 +104,8 @@ export const startConversation = async (
           },
           body: JSON.stringify({
             conversationId: payload.conversationId,
-            esDeveloperName: process.env.API_SF_NAME || 'defaultDeveloperName',
+            // esDeveloperName: process.env.API_SF_NAME || 'defaultDeveloperName',
+            esDeveloperName: apiSfName || 'defaultDeveloperName',
             routingAttributes: {
               _email: payload.customerEmail,
               _firstName: payload.customerFirstName || 'Unknown',
@@ -191,11 +142,13 @@ export function listenToConversation(
   retryDelay = 1000,
   firstName,
   lastName,
-  endPoint
+  endPoint,
+  apiSfOrgId
 ) {
   // console.log(endPoint, 'endPoint 138')
 
   const request = async (payload) => {
+    console.log(payload, 'endPoint 151')
     let attempts = 0
     const customerFirstName = firstName
     const customerLastName = lastName
@@ -206,7 +159,8 @@ export function listenToConversation(
           method: 'GET',
           headers: {
             Authorization: `Bearer ${payload.accessToken}`,
-            'X-Org-Id': API_SF_ORG
+            // 'X-Org-Id': API_SF_ORG
+            'X-Org-Id': apiSfOrgId
           },
           onmessage: (event) => {
             if (typeof payload.handleChatMessage === 'function') {

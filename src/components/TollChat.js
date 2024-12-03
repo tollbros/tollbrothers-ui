@@ -13,8 +13,26 @@ import {
 } from '../../utils/chat'
 import ChatInput from './ChatInput'
 
-export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
-  // console.log('communityRegion', communityRegion)
+export const TollChat = ({
+  endPoint,
+  oscAvailable,
+  apiSfOrgId,
+  apiSfName,
+  communityRegion,
+  classes = {}
+}) => {
+  //   console.log(
+  //     'communityRegion',
+  //     communityRegion,
+  //     'ApiSfOrgId',
+  //     apiSfOrgId,
+  //     'ApiSfName',
+  //     apiSfName,
+  //     'oscAvailable',
+  //     oscAvailable,
+  //     'endPoint',
+  //     endPoint
+  //   )
   const region = 'FLW'
   // console.log('endPoint', endPoint)
 
@@ -39,10 +57,17 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
-
-  const initializeChat = async (firstName, lastName, endPoint) => {
+  // console.log(apiSfOrgId, apiSfName, ' 60TC')
+  const initializeChat = async (
+    firstName,
+    lastName,
+    endPoint,
+    apiSfOrgId,
+    apiSfName
+  ) => {
+    // console.log(apiSfOrgId, apiSfName, 'initializeChat 68')
     try {
-      const token = await handleChatInit(endPoint)
+      const token = await handleChatInit(endPoint, apiSfOrgId, apiSfName)
 
       if (!token) throw new Error('No token received.')
 
@@ -54,8 +79,6 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
         setConversationId(newUuid)
       }
 
-      console.log('59')
-
       const payload = {
         accessToken: token.accessToken,
         customerEmail: formData.email,
@@ -65,13 +88,31 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
         firstName: 'john',
         lastName: '',
         region,
-        endPoint
+        endPoint,
+        apiSfOrgId,
+        apiSfName
       }
 
-      // console.log(payload, '73')
-
-      await startConversation(payload, payload.endPoint)
-      console.log('Payload for startConversation:', payload)
+      //   console.log(
+      //     ' above Payload for startConversation:',
+      //     payload,
+      //     apiSfOrgId,
+      //     apiSfName
+      //   )
+      await startConversation(
+        console.log(payload, 'dead 103'),
+        payload,
+        endPoint,
+        apiSfOrgId,
+        apiSfName,
+        console.log('request 107', endPoint, apiSfOrgId, apiSfName)
+      )
+      console.log(
+        'Payload for startConversation:',
+        payload,
+        apiSfOrgId,
+        apiSfName
+      )
       setConversationId(payload.conversationId)
 
       const retryFunction = (attempts) => attempts < 3
@@ -80,18 +121,18 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
         2000,
         firstName,
         lastName,
-        endPoint
+        payload.endPoint
       )
-
+      console.log('request 125', request)
       if (typeof request !== 'function') {
         throw new Error(
           'Invalid request function returned from listenToConversation'
         )
       }
-
+      // handleChatMessage()
       await request({
         accessToken: token.accessToken,
-        // chatMessage: chatMessage
+        // chatMessage: chatMessage,
         handleChatMessage
       })
     } catch (error) {
@@ -122,6 +163,7 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
   }
 
   const handleChatMessage = async (event, firstName, lastName, payload) => {
+    console.log('handleChatMessage:', event)
     const typingMessages = []
     const messages = []
     let message = {}
@@ -291,7 +333,7 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
     setCustomerLastName(lastName)
 
     setShowForm(false)
-    await initializeChat(firstName, lastName, endPoint)
+    await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
 
   const showFormHandler = () => {
@@ -303,7 +345,11 @@ export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
   useEffect(() => {
     async function getOscInfo() {
       try {
-        const availability = await fetchAvailability(region, endPoint)
+        const availability = await fetchAvailability(
+          region,
+          endPoint,
+          oscAvailable
+        )
         setAvailableOscs(availability.data.payload)
       } catch (error) {
         console.error('Error fetching osc data:', error)

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+// import Image from 'next/image'
 import Link from 'next/link'
 
 import styles from './TollChat.module.scss'
@@ -13,8 +13,10 @@ import {
 } from '../../utils/chat'
 import ChatInput from './ChatInput'
 
-export const TollChat = ({ classes = {} }) => {
+export const TollChat = ({ endPoint, communityRegion, classes = {} }) => {
+  // console.log('communityRegion', communityRegion)
   const region = 'FLW'
+  // console.log('endPoint', endPoint)
 
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -32,14 +34,18 @@ export const TollChat = ({ classes = {} }) => {
   const [typingMessages, setTypingMessages] = useState([]) // this is the active/stopped typing messages
   const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
   const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
-  const initializeChat = async (firstName, lastName) => {
+  const initializeChat = async (firstName, lastName, endPoint) => {
     try {
-      const token = await handleChatInit()
+      const token = await handleChatInit(endPoint)
+
+      if (!token) throw new Error('No token received.')
+
       setAccessToken(token.accessToken)
       token ? setChatStartReady(true) : setChatStartReady(false)
 
@@ -47,6 +53,8 @@ export const TollChat = ({ classes = {} }) => {
       if (!conversationId || conversationId === null) {
         setConversationId(newUuid)
       }
+
+      console.log('59')
 
       const payload = {
         accessToken: token.accessToken,
@@ -56,10 +64,14 @@ export const TollChat = ({ classes = {} }) => {
         conversationId: newUuid,
         firstName: 'john',
         lastName: '',
-        region
+        region,
+        endPoint
       }
 
-      await startConversation(payload)
+      // console.log(payload, '73')
+
+      await startConversation(payload, payload.endPoint)
+      console.log('Payload for startConversation:', payload)
       setConversationId(payload.conversationId)
 
       const retryFunction = (attempts) => attempts < 3
@@ -67,7 +79,8 @@ export const TollChat = ({ classes = {} }) => {
         retryFunction,
         2000,
         firstName,
-        lastName
+        lastName,
+        endPoint
       )
 
       if (typeof request !== 'function') {
@@ -278,7 +291,7 @@ export const TollChat = ({ classes = {} }) => {
     setCustomerLastName(lastName)
 
     setShowForm(false)
-    await initializeChat(firstName, lastName)
+    await initializeChat(firstName, lastName, endPoint)
   }
 
   const showFormHandler = () => {
@@ -290,7 +303,7 @@ export const TollChat = ({ classes = {} }) => {
   useEffect(() => {
     async function getOscInfo() {
       try {
-        const availability = await fetchAvailability(region)
+        const availability = await fetchAvailability(region, endPoint)
         setAvailableOscs(availability.data.payload)
       } catch (error) {
         console.error('Error fetching osc data:', error)
@@ -298,7 +311,7 @@ export const TollChat = ({ classes = {} }) => {
     }
 
     getOscInfo()
-  }, [])
+  }, [region, endPoint])
 
   useEffect(() => {
     if (availableOscs && availableOscs.length > 0 && !isCurrentlyChatting) {
@@ -495,19 +508,6 @@ export const TollChat = ({ classes = {} }) => {
           </form>
         )}
 
-        {/*  {showChatButton && (
-        <button className={styles.chatLaunch} onClick={showFormHandler}>
-          <img
-            src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
-            alt='osc'
-          />
-          <img
-            src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-            alt='chat'
-          />
-        </button>
-      )} */}
-
         {conversationId && accessToken && (
           <ChatInput
             accessToken={accessToken}
@@ -517,10 +517,6 @@ export const TollChat = ({ classes = {} }) => {
             customerLastName={customerLastName}
             setCustomerFirstName={setCustomerFirstName}
             setCustomerLastName={setCustomerLastName}
-            // customerFirstName='John'
-            // customerFirstName
-            // customerLastName
-            // popNextUUID={() => crypto.randomUUID()}
           />
         )}
       </div>

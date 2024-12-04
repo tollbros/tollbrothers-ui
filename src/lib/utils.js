@@ -245,7 +245,7 @@ const getModelSearchParams = () => {
 
 const getWalkthroughURL = (walkthrough) => {
   let src = ''
-  console.log('wt')
+
   if (walkthrough.type === 'walkthrough::matterport') {
     src =
       'https://my.matterport.com/show/?m=' +

@@ -245,17 +245,12 @@ const getModelSearchParams = () => {
 
 const getWalkthroughURL = (walkthrough) => {
   let src = ''
-  if (walkthrough.type === 'walkthrough::matterport') {
-    let extraParams = '&nt=1'
-    if (getMediaMatch(992)) {
-      extraParams = '&play=1'
-    }
 
+  if (walkthrough.type === 'walkthrough::matterport') {
     src =
       'https://my.matterport.com/show/?m=' +
       walkthrough.link +
-      '&ts=2&lp=1&hl=1&qs=1&search=0' +
-      extraParams
+      '&ts=2&lp=1&hl=1&qs=1&play=1&nt=0&search=0'
   } else {
     src = walkthrough.link
     if (!walkthrough.link.includes('?')) {

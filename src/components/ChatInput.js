@@ -88,16 +88,17 @@ export default function ChatInput({
 
   return (
     <div>
-      <legend>Chat here</legend>
+      {/* <legend>Chat here</legend> */}
       <textarea
         rows={2}
         cols={50}
         onChange={(e) => setMessage(e.target.value)}
+        placeholder='Type Here'
         onKeyDown={onKeyUp}
         value={message}
         style={{ color: 'white', backgroundColor: 'black' }}
       />
-      <p>Press enter to send</p>
+      {/* <p>Press enter to send</p> */}
       {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>
   )

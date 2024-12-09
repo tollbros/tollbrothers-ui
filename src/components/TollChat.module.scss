@@ -1,5 +1,7 @@
 
 .chatWrapper {
+    width: 90%;
+    max-width: 380px;
     position: fixed;
     bottom: 35px;
     z-index: 999;
@@ -8,27 +10,46 @@
     
 
     &.chatPanelOpen {
-        width: auto;
-        height: auto;
-        max-height: 450px;
-        max-width: 400px;
-        overflow: hidden;
-        overflow-y: scroll;
-        padding: 8px;
-        background-color: #000;
-        border-radius: 4px;
+        max-width: 345px;
+        min-height: 500px;
+        max-height: 650px;
+        padding: 0 0 8px;
+        background-color: #fff;
+
+        &.isMinimized {
+            min-height: auto;
+            max-height: auto;
+
+            .header {
+                margin-bottom: 0;
+                border-bottom: none;
+                padding: 0;
+            }
+
+            .messagesWrapper {
+                padding: 0;
+            }
+        }
+
+        .messagesWrapper {
+            overflow: hidden;
+            overflow-y: scroll;
+        }
     }
 
     textarea {
-        width: 98%;
-        border-radius: 4px;
+        width: 100%;
+        background-color: #fff !important;
+        color: #000 !important;
+        padding: 0 15px;
+        resize: none;
     }
 }
 
 .messagesWrapper {
     position: relative;
-    padding: 20px 0 10px;
-    border-radius: 4px;
+    padding: 20px 15px 50px;
+    max-height: 375px;
 }
 
 .typingWrapper {
@@ -36,7 +57,6 @@
     z-index: 2;
     right: 5px;
     bottom: 0;
-    //border-radius: 4px;
     font-size: 12px;
 }
 
@@ -69,15 +89,34 @@
     margin: 15px 0;
     width: fit-content;
     display: flex;
-    border-radius: 4px;
+    margin-left: auto;
+    text-align: left;
+
+    .timestamp {
+        right: 10px;
+    }
+
+    img {
+        border-radius: 100%;
+        margin-right: 5px;
+    }
+
+    .index {
+        position: relative;
+    }
+
+    .message {
+        background-color: #007df9;
+        margin-right: 0px;
+    }
 
     .message {
         padding: 10px;
-        border-radius: 4px;
         position: relative;
         padding-bottom: 15px;
         min-height: 25px;
         font-size: 14px;
+        background-color: #101f36;
     }
 
     .timestamp {
@@ -86,35 +125,15 @@
     }
 
     &.agent {
-        margin-left: auto;
-        text-align: left;
-
-        .timestamp {
-            right: 10px;
-        }
-
-        .index {
-            position: relative;
-        }
-
         .message {
-            background-color: #007df9;
-            margin-right: 0px;
-            border-radius: 10px 0 10px 6px;
+
         }
     }
 
     &.guest {
-        margin-right: auto;
-        text-align: right;
-
-        .timestamp {
-            left: 10px;
-        }
-
         .message {
-            background-color: #404040;
-            border-radius: 0 10px 4px 10px;
+            background-color: #e6eaee;
+            color: #000;
         }
     }
 
@@ -188,27 +207,101 @@
     }
 }
 
-.form {
-    position: absolute;
-    z-index: 3;
-    background: #000;
-    right: 10px;
-    bottom: 0;
-    padding: 10px;
-    border-radius: 4px;
-    color: #fff;
-    
-    input {
-        border: none;
-        border-radius: 4px;
-        padding: 10px;
-        width: 200px;
-        margin-right: 10px;
+.header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #d0d7db;
+    padding: 0 0 15px;
+
+    .location {
+        background-color: #000;
+        color: #6c6c6c;
+        width: 100%;
+        
+        p {
+            margin: 0;
+            text-align: center;
+        }
     }
 
-    button {
+    h2 {
+        position: relative;
+        top: 20px;
+        font-size: 16px;
+        font-family: "Gotham";
+        font-weight: 500;
+        text-align: center;
         color: #000;
     }
+}
+
+.panelControls {
+    display: flex;
+    align-items: end;
+    position: absolute;
+    right: 15px;
+    top: 40px;
+
+   
+
+    button {
+        width: 40px;
+        height: 40px;
+        color: #000;
+        border: 1px solid #d0d7db;
+        border-radius: 100%;
+        cursor: pointer;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            overflow: visible;
+        }
+        
+        &:nth-child(1) {
+            margin-right: 10px;       
+        }
+        &:nth-child(2) {
+       
+        }
+    }
+}
+
+.form {
+    width: 100%;
+    z-index: 3;
+    background: #fff;
+    right: 10px;
+    bottom: 0;
+    padding: 20px 15px;
+    color: #000;
+    font-family: "Gotham", sans-serif;
+    
+    input {
+        border: 2px solid #d0d7db;
+        padding: 25px 20px;
+        width: 100%;
+        color: #000;
+        font-weight: 500;
+        margin-bottom: 15px;
+        margin: 0 0 15px;
+    }
+
+    button[type=submit] {
+        background-color: #1463c2;
+        padding: 20px;
+        color: #fff;
+        width: 100%;
+        margin: 0 0 15px;
+    }
+}
+
+.chatInputWrapper {
+    position: relative;
+    padding: 0 15px;
+    position: absolute;
+    bottom: 0;
 }
 
 @keyframes bounce {

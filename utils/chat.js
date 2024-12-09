@@ -206,3 +206,42 @@ export const fetchUuid = async () => {
 
   return { data, loading, error }
 }
+
+// end chat
+const RETRY_DELAY = 1000 // Adjust retry delay as needed
+
+export const endChat = async (
+  { accessToken, conversationId, endPoint, apiSfName },
+  retries = 3
+) => {
+  const performRequest = async () => {
+    try {
+      const response = await fetch(
+        `${endPoint}/iamessage/api/v2/conversation/${conversationId}?esDeveloperName=${apiSfName}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+
+      if (response.status === 204) {
+        return {} // Empty object indicating success
+      } else {
+        throw new Error('API error')
+      }
+    } catch (err) {
+      if (retries > 0) {
+        console.warn(`Retrying... (${retries} attempts left)`)
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
+        return await performRequest(retries - 1) // Retry
+      } else {
+        throw new Error(err.message || 'Failed to end chat after retries.')
+      }
+    }
+  }
+
+  return await performRequest(retries)
+}

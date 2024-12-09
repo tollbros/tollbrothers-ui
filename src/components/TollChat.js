@@ -8,9 +8,14 @@ import {
   handleChatInit,
   fetchAvailability,
   startConversation,
-  listenToConversation
+  listenToConversation,
+  endChat
 } from '../../utils/chat'
 import ChatInput from './ChatInput'
+
+import Minus from '../icons/Minus'
+import Plus from '../icons/Plus'
+import CloseX from '../icons/CloseX'
 
 export const TollChat = ({
   endPoint,
@@ -30,6 +35,9 @@ export const TollChat = ({
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [showOsc, setShowOsc] = useState(true)
+  const [showChatHeader, setShowChatHeader] = useState(false)
+  const [showChat, setShowChat] = useState(true)
+
   const [customerFirstName, setCustomerFirstName] = useState('John')
   const [customerLastName, setCustomerLastName] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
@@ -38,6 +46,7 @@ export const TollChat = ({
   const [typingMessages, setTypingMessages] = useState([]) // this is the active/stopped typing messages
   const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
   const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
+  const [isMinimized, setIsMinimized] = useState(false) // form panel controls
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -261,13 +270,13 @@ export const TollChat = ({
 
         break
       case 'CONVERSATION_CLOSE_CONVERSATION':
-        console.log('conversation closed...')
         sessionStorage.setItem('tbChat', JSON.stringify({}))
         setShowChatButton(false)
         setIsCurrentlyChatting(false)
         setConversationId(null)
         setChatStartReady(false)
         setAccessToken(null)
+        setShowChat(false)
         break
       default:
         console.log('Unknown event:', event)
@@ -299,6 +308,8 @@ export const TollChat = ({
   }
 
   const showFormHandler = () => {
+    setShowChatHeader(true)
+
     setShowForm(true)
     setShowOsc(false)
     setShowChatButton(false)
@@ -351,6 +362,7 @@ export const TollChat = ({
         break
       }
     }
+    console.log(showChatButton, 'wtf')
   }, [])
 
   const convertTimeStamp = (timestamp) => {
@@ -364,171 +376,221 @@ export const TollChat = ({
     return formattedDate
   }
 
+  const handleMinimize = () => {
+    setIsMinimized(!isMinimized)
+  }
+
+  const handleEndChat = async () => {
+    if (!accessToken || !conversationId) {
+      setShowChat(false)
+      return
+    }
+    try {
+      console.log('Ending chat...')
+      const result = await endChat({
+        accessToken,
+        conversationId,
+        endPoint,
+        apiSfName
+      })
+      console.log('Chat end success:', result)
+      setShowChat(false)
+    } catch (error) {
+      console.error('Chat end error:', error.message)
+    }
+  }
+
   return (
     <>
-      {' '}
-      <div
-        className={`${styles.chatWrapper} ${
-          chatStartReady ? styles.chatPanelOpen : ''
-        } js_chatWrapper`}
-        key='wrapper'
-      >
-        <div className={styles.messagesWrapper}>
-          {showActiveTyping && (
-            <div className={`${styles.agent} ${styles.typingWrapper}`}>
-              <div className={`${styles.message} `}>
-                <p className={styles.typingIndictor}>
-                  <span className={styles.activeTypingWrapper}>
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                </p>
+      {showChat && (
+        <div
+          className={`${styles.chatWrapper} ${
+            showChatHeader ? styles.chatPanelOpen : ''
+          } ${isMinimized ? styles.isMinimized : ''} ${
+            endChat ? styles.endChat : ''
+          } js_chatWrapper`}
+          key='wrapper'
+        >
+          {showChatHeader && (
+            <div className={styles.header}>
+              <div className={styles.location}>
+                <p>Surprise, AZ</p>
+              </div>
+              <h2>Chat</h2>
+              <div className={styles.panelControls}>
+                <button onClick={() => handleMinimize()} type='button'>
+                  {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
+                </button>
+                <button onClick={() => handleEndChat()} type='button'>
+                  <CloseX fill='#000' />
+                </button>
               </div>
             </div>
           )}
-          {showChatButton && (
-            <button className={styles.chatLaunch} onClick={showFormHandler}>
-              <img
-                src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
-                alt='osc'
+          {showForm && !isMinimized && (
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <input
+                type='text'
+                id='name'
+                name='name'
+                value={formData.name}
+                onChange={handleChange}
+                required
+                pattern='[A-Za-z\s]+'
+                title='Name can only contain letters and spaces'
+                placeholder='Full Name'
               />
-              <img
-                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                alt='chat'
+
+              <input
+                type='email'
+                id='email'
+                name='email'
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder='Email*'
               />
-            </button>
+
+              <br />
+
+              <button type='submit'>Start Chatting</button>
+            </form>
           )}
-          {messages.map((message, index) => (
-            <>
-              {message.payload?.formatType === 'RichLink' && (
-                <Link
-                  href={message.payload?.linkItem?.url}
-                  key={`link${index}`}
-                  className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                >
-                  <img
-                    src={message?.payload?.image?.assetUrl}
-                    width={150}
-                    height={84}
-                    alt='Url'
-                  />
-                  <div className={styles.copyWrapper}>
-                    <p>{message.payload?.linkItem?.titleItem?.title}</p>
-                    <p>{message.payload?.linkItem?.url}</p>
-                  </div>
-                </Link>
-              )}
-              {message.payload?.formatType === 'Attachments' && (
-                <>
-                  <a
-                    href={message?.payload?.attachments[0]?.url}
-                    download
-                    key={`attachment${index}`}
-                    className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                  >
-                    {message?.payload?.attachments[0]?.name.endsWith('.pdf') ? (
-                      <div className={styles.copyWrapper}>
-                        <p>Download PDF</p>
-                      </div>
-                    ) : (
-                      <>
+
+          <div className={styles.messagesWrapper}>
+            {showActiveTyping && (
+              <div className={`${styles.agent} ${styles.typingWrapper}`}>
+                <div className={`${styles.message} `}>
+                  <p className={styles.typingIndictor}>
+                    <span className={styles.activeTypingWrapper}>
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+            {showChatButton && (
+              <button className={styles.chatLaunch} onClick={showFormHandler}>
+                <img
+                  src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
+                  alt='osc'
+                />
+                <img
+                  src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                  alt='chat'
+                />
+              </button>
+            )}
+            {!isMinimized && (
+              <>
+                {messages.map((message, index) => (
+                  <>
+                    {message.payload?.formatType === 'RichLink' && (
+                      <Link
+                        href={message.payload?.linkItem?.url}
+                        key={`link${index}`}
+                        className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                      >
                         <img
-                          src={message?.payload?.attachments[0]?.url}
+                          src={message?.payload?.image?.assetUrl}
                           width={150}
                           height={84}
-                          alt='Agent Thumbnail'
+                          alt='Url'
                         />
                         <div className={styles.copyWrapper}>
-                          <p>Click to download</p>
+                          <p>{message.payload?.linkItem?.titleItem?.title}</p>
+                          <p>{message.payload?.linkItem?.url}</p>
                         </div>
+                      </Link>
+                    )}
+                    {message.payload?.formatType === 'Attachments' && (
+                      <>
+                        <a
+                          href={message?.payload?.attachments[0]?.url}
+                          download
+                          key={`attachment${index}`}
+                          className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                        >
+                          {message?.payload?.attachments[0]?.name.endsWith(
+                            '.pdf'
+                          ) ? (
+                            <div className={styles.copyWrapper}>
+                              <p>Download PDF</p>
+                            </div>
+                          ) : (
+                            <>
+                              <img
+                                src={message?.payload?.attachments[0]?.url}
+                                width={150}
+                                height={84}
+                                alt='Agent Thumbnail'
+                              />
+                              <div className={styles.copyWrapper}>
+                                <p>Click to download</p>
+                              </div>
+                            </>
+                          )}
+                        </a>
                       </>
                     )}
-                  </a>
-                </>
-              )}
-              <div
-                key={`index${index}`}
-                className={`${styles.messageWrapper}  ${
-                  message?.role === 'Agent' || message?.role === 'System'
-                    ? styles.agent
-                    : styles.guest
-                }  js_messageWrapper`}
-              >
-                <>
-                  <div
-                    className={`${styles.message} ${
-                      showActiveTyping ? styles.activeTyping : styles.notActive
-                    }`}
-                  >
-                    {message.sender.charAt(0).toUpperCase() +
-                      message.sender.slice(1).toLowerCase()}
-                    : {message.text}
-                    <div className={styles.timestamp}>
-                      {convertTimeStamp(message.timestamp)}
+                    <div
+                      key={`index${index}`}
+                      className={`${styles.messageWrapper}  ${
+                        message?.role === 'Agent' || message?.role === 'System'
+                          ? styles.agent
+                          : styles.guest
+                      }  js_messageWrapper`}
+                    >
+                      <>
+                        {message.image && (
+                          <img
+                            src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                            width={40}
+                            height={40}
+                            alt='Agent Thumbnail'
+                          />
+                        )}
+                        <div
+                          className={`${styles.message} ${
+                            showActiveTyping
+                              ? styles.activeTyping
+                              : styles.notActive
+                          }`}
+                        >
+                          {message.sender.charAt(0).toUpperCase() +
+                            message.sender.slice(1).toLowerCase()}
+                          : {message.text}
+                          <div className={styles.timestamp}>
+                            {convertTimeStamp(message.timestamp)}
+                          </div>
+                        </div>
+                      </>
                     </div>
-                  </div>
-                  {message.image && (
-                    <img
-                      src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                      width={50}
-                      height={50}
-                      alt='Agent Thumbnail'
-                    />
-                  )}
-                </>
-              </div>
-            </>
-          ))}
+                  </>
+                ))}
+              </>
+            )}
+          </div>
+
+          {conversationId && accessToken && !isMinimized && (
+            <div className={styles.chatInputWrapper}>
+              <ChatInput
+                accessToken={accessToken}
+                conversationId={conversationId}
+                popNextUUID={popNextUUID}
+                customerFirstName={customerFirstName}
+                customerLastName={customerLastName}
+                setCustomerFirstName={setCustomerFirstName}
+                setCustomerLastName={setCustomerLastName}
+                apiSfName={apiSfName}
+                endPoint={endPoint}
+              />
+            </div>
+          )}
         </div>
-        {showForm && (
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <label htmlFor='name'>Name:</label>
-            <br />
-            <input
-              type='text'
-              id='name'
-              name='name'
-              value={formData.name}
-              onChange={handleChange}
-              required
-              pattern='[A-Za-z\s]+'
-              title='Name can only contain letters and spaces'
-            />
-            <br />
-            <br />
-
-            <label htmlFor='email'>Email:</label>
-            <br />
-            <input
-              type='email'
-              id='email'
-              name='email'
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-            <br />
-            <br />
-
-            <button type='submit'>Submit</button>
-          </form>
-        )}
-
-        {conversationId && accessToken && (
-          <ChatInput
-            accessToken={accessToken}
-            conversationId={conversationId}
-            popNextUUID={popNextUUID}
-            customerFirstName={customerFirstName}
-            customerLastName={customerLastName}
-            setCustomerFirstName={setCustomerFirstName}
-            setCustomerLastName={setCustomerLastName}
-            apiSfName={apiSfName}
-            endPoint={endPoint}
-          />
-        )}
-      </div>
+      )}
     </>
   )
 }

@@ -23,6 +23,8 @@ export const TollChat = ({
   apiSfOrgId,
   apiSfName,
   communityRegion,
+  city,
+  state,
   classes = {}
 }) => {
   const region = 'FLW'
@@ -432,7 +434,9 @@ export const TollChat = ({
           {showChatHeader && (
             <div className={styles.header}>
               <div className={styles.location}>
-                <p>Surprise, AZ</p>
+                <p>
+                  {city}, {state}
+                </p>
               </div>
               <h2>Chat</h2>
               <div className={styles.panelControls}>
@@ -583,8 +587,8 @@ export const TollChat = ({
                               {message.image && (
                                 <img
                                   src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                                  width={40}
-                                  height={40}
+                                  width={30}
+                                  height={30}
                                   alt='Agent Thumbnail'
                                 />
                               )}

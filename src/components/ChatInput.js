@@ -1,4 +1,8 @@
+'use client'
+
 import React, { useState, useCallback } from 'react'
+import ChevronRight from '../icons/ChevronRight'
+
 export default function ChatInput({
   accessToken,
   conversationId,
@@ -13,13 +17,14 @@ export default function ChatInput({
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showArrow, setShowArrow] = useState(false)
 
   const sendMessage = useCallback(async () => {
     if (!message.trim()) {
       setError('Message cannot be empty')
       return
     }
-
+    setShowArrow(false)
     setLoading(true)
     setError(null)
 
@@ -77,28 +82,61 @@ export default function ChatInput({
     setCustomerLastName
   ])
 
-  const onKeyUp = (e) => {
+  const handleInputChange = (e) => {
+    setMessage(e.target.value)
+
+    // Show the arrow if there's input
+    if (e.target.value.trim() !== '') {
+      setShowArrow(true)
+    } else {
+      setShowArrow(false)
+    }
+  }
+
+  const onKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
-    } else {
-      setMessage(e.target.value)
     }
   }
 
   return (
-    <div>
-      {/* <legend>Chat here</legend> */}
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '60px',
+        padding: '0'
+      }}
+    >
       <textarea
         rows={2}
         cols={50}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={handleInputChange}
         placeholder='Type Here'
-        onKeyDown={onKeyUp}
+        onKeyDown={onKeyDown}
         value={message}
-        style={{ color: 'white', backgroundColor: 'black' }}
       />
-      {/* <p>Press enter to send</p> */}
+      {showArrow && (
+        <span
+          onClick={sendMessage}
+          style={{
+            position: 'absolute',
+            right: '5px',
+            bottom: '5px',
+            top: '5px',
+            width: '52px',
+            height: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#1463c2',
+            cursor: 'pointer'
+          }}
+        >
+          <ChevronRight fill='#fff' />
+        </span>
+      )}
       {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>
   )

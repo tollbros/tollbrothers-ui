@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 
 import styles from './TollChat.module.scss'
@@ -37,6 +37,8 @@ export const TollChat = ({
   const [showOsc, setShowOsc] = useState(true)
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
+  const [showWaitMessage, setShowWaitMessage] = useState(false)
+  const chatContainerRef = useRef(null)
 
   const [customerFirstName, setCustomerFirstName] = useState('John')
   const [customerLastName, setCustomerLastName] = useState('')
@@ -150,6 +152,7 @@ export const TollChat = ({
         setIsCurrentlyChatting(true)
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
+        setShowWaitMessage(false)
         // fires when an agent accepts
         sessionStorage.setItem(
           'tbChat',
@@ -164,10 +167,18 @@ export const TollChat = ({
           message = {
             id: `${data.conversationEntry.identifier}${i}`, // just needs to be unique
             type: data.conversationEntry.entryType,
-            text: `${
-              entry.displayName +
-              (entry.operation === 'add' ? ' joined ' : ' left ')
-            }the conversation.`,
+            initial: entry.displayName.charAt(0),
+            persistentText: `${
+              entry.operation === 'add'
+                ? `You're chatting with ` + entry.displayName
+                : entry.displayName + ' left the conversation.'
+            }`,
+
+            // text: `${
+            //   entry.displayName +
+            //   (entry.operation === 'add' ? ' joined ' : ' left ')
+            // }the conversation.`,
+
             timestamp: data.conversationEntry.clientTimestamp,
             role: data.conversationEntry.sender.role,
             sender:
@@ -179,9 +190,9 @@ export const TollChat = ({
               entry.participant.subject
             )}.jpg`
           }
+
           messages.push(message)
         }
-
         break
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
@@ -284,6 +295,7 @@ export const TollChat = ({
     }
     if (messages.length > 0) {
       setMessages((prevMessages) => [...prevMessages, ...messages])
+      setShowWaitMessage(false)
     }
 
     if (typingMessages.length > 0) {
@@ -302,7 +314,7 @@ export const TollChat = ({
 
     setCustomerFirstName(firstName)
     setCustomerLastName(lastName)
-
+    setShowWaitMessage(true)
     setShowForm(false)
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
@@ -313,6 +325,7 @@ export const TollChat = ({
     setShowForm(true)
     setShowOsc(false)
     setShowChatButton(false)
+    // setShowWaitMessage(true)
   }
 
   useEffect(() => {
@@ -362,18 +375,17 @@ export const TollChat = ({
         break
       }
     }
-    console.log(showChatButton, 'wtf')
   }, [])
 
   const convertTimeStamp = (timestamp) => {
     const date = new Date(timestamp)
     const formattedDate = date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
     })
-    return formattedDate
+    const time = formattedDate.split(', ')[1]
+    return time
   }
 
   const handleMinimize = () => {
@@ -399,6 +411,12 @@ export const TollChat = ({
       console.error('Chat end error:', error.message)
     }
   }
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages])
 
   return (
     <>
@@ -426,6 +444,11 @@ export const TollChat = ({
                 </button>
               </div>
             </div>
+          )}
+          {showWaitMessage && (
+            <p className={styles.waitMessage}>
+              Please wait while we connect you with a representative.
+            </p>
           )}
           {showForm && !isMinimized && (
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -457,7 +480,7 @@ export const TollChat = ({
             </form>
           )}
 
-          <div className={styles.messagesWrapper}>
+          <div className={styles.messagesWrapper} ref={chatContainerRef}>
             {showActiveTyping && (
               <div className={`${styles.agent} ${styles.typingWrapper}`}>
                 <div className={`${styles.message} `}>
@@ -485,91 +508,109 @@ export const TollChat = ({
             )}
             {!isMinimized && (
               <>
-                {messages.map((message, index) => (
-                  <>
-                    {message.payload?.formatType === 'RichLink' && (
-                      <Link
-                        href={message.payload?.linkItem?.url}
-                        key={`link${index}`}
-                        className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                      >
-                        <img
-                          src={message?.payload?.image?.assetUrl}
-                          width={150}
-                          height={84}
-                          alt='Url'
-                        />
-                        <div className={styles.copyWrapper}>
-                          <p>{message.payload?.linkItem?.titleItem?.title}</p>
-                          <p>{message.payload?.linkItem?.url}</p>
-                        </div>
-                      </Link>
-                    )}
-                    {message.payload?.formatType === 'Attachments' && (
+                <p className={styles.persistentText}>
+                  {messages[0]?.persistentText}.
+                </p>
+
+                {messages.map(
+                  (message, index) =>
+                    index > 0 && (
                       <>
-                        <a
-                          href={message?.payload?.attachments[0]?.url}
-                          download
-                          key={`attachment${index}`}
-                          className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                        >
-                          {message?.payload?.attachments[0]?.name.endsWith(
-                            '.pdf'
-                          ) ? (
+                        <div className={styles.timestamp}>
+                          {convertTimeStamp(message.timestamp)}
+                        </div>
+                        {message.payload?.formatType === 'RichLink' && (
+                          <Link
+                            href={message.payload?.linkItem?.url}
+                            key={`link${index}`}
+                            className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                          >
+                            <img
+                              src={message?.payload?.image?.assetUrl}
+                              width={150}
+                              height={84}
+                              alt='Url'
+                            />
                             <div className={styles.copyWrapper}>
-                              <p>Download PDF</p>
+                              <p>
+                                {message.payload?.linkItem?.titleItem?.title}
+                              </p>
+                              <p>{message.payload?.linkItem?.url}</p>
                             </div>
-                          ) : (
+                          </Link>
+                        )}
+                        {message.payload?.formatType === 'Attachments' && (
+                          <>
+                            <a
+                              href={message?.payload?.attachments[0]?.url}
+                              download
+                              key={`attachment${index}`}
+                              className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                            >
+                              {message?.payload?.attachments[0]?.name.endsWith(
+                                '.pdf'
+                              ) ? (
+                                <div className={styles.copyWrapper}>
+                                  <p>Download PDF</p>
+                                </div>
+                              ) : (
+                                <>
+                                  <img
+                                    src={message?.payload?.attachments[0]?.url}
+                                    width={150}
+                                    height={84}
+                                    alt='Agent Thumbnail'
+                                  />
+                                  <div className={styles.copyWrapper}>
+                                    <p>Click to download</p>
+                                  </div>
+                                </>
+                              )}
+                            </a>
+                          </>
+                        )}
+                        {message.payload?.formatType === 'Text' && (
+                          <div
+                            key={`index${index}`}
+                            className={`${styles.messageWrapper}  ${
+                              message?.role === 'Agent' ||
+                              message?.role === 'System'
+                                ? styles.agent
+                                : styles.guest
+                            }  js_messageWrapper`}
+                          >
                             <>
-                              <img
-                                src={message?.payload?.attachments[0]?.url}
-                                width={150}
-                                height={84}
-                                alt='Agent Thumbnail'
-                              />
-                              <div className={styles.copyWrapper}>
-                                <p>Click to download</p>
+                              {message.image && (
+                                <img
+                                  src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                                  width={40}
+                                  height={40}
+                                  alt='Agent Thumbnail'
+                                />
+                              )}
+                              {!message.image && message?.role === 'Agent' && (
+                                <span>{message.initial}</span>
+                              )}
+                              <div
+                                className={`${styles.message} ${
+                                  showActiveTyping
+                                    ? styles.activeTyping
+                                    : styles.notActive
+                                }`}
+                              >
+                                {/* {message.sender.charAt(0).toUpperCase() +
+                            message.sender.slice(1).toLowerCase()}: */}
+                                {message.text}
+                                {/* <div className={styles.timestamp}>
+                            {convertTimeStamp(message.timestamp)}
+                          </div> */}
                               </div>
                             </>
-                          )}
-                        </a>
-                      </>
-                    )}
-                    <div
-                      key={`index${index}`}
-                      className={`${styles.messageWrapper}  ${
-                        message?.role === 'Agent' || message?.role === 'System'
-                          ? styles.agent
-                          : styles.guest
-                      }  js_messageWrapper`}
-                    >
-                      <>
-                        {message.image && (
-                          <img
-                            src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                            width={40}
-                            height={40}
-                            alt='Agent Thumbnail'
-                          />
-                        )}
-                        <div
-                          className={`${styles.message} ${
-                            showActiveTyping
-                              ? styles.activeTyping
-                              : styles.notActive
-                          }`}
-                        >
-                          {message.sender.charAt(0).toUpperCase() +
-                            message.sender.slice(1).toLowerCase()}
-                          : {message.text}
-                          <div className={styles.timestamp}>
-                            {convertTimeStamp(message.timestamp)}
                           </div>
-                        </div>
+                        )}
                       </>
-                    </div>
-                  </>
-                ))}
+                    )
+                )}
               </>
             )}
           </div>

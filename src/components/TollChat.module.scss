@@ -7,6 +7,13 @@
     z-index: 999;
     right: 1vw;
     color: #fff;
+
+    p.waitMessage, p.persistentText {
+        color: #000;
+        text-align: center;
+        padding: 0 15px;
+        margin: 25px 0;
+    }
     
 
     &.chatPanelOpen {
@@ -39,9 +46,12 @@
 
     textarea {
         width: 100%;
-        background-color: #fff !important;
-        color: #000 !important;
-        padding: 0 15px;
+        height: 100%;
+        background-color: #fff;
+        border: 2px solid #d0d7db;
+        color: #000;
+        padding: 20px 30px 0px 15px;
+        line-height: 18px;
         resize: none;
     }
 }
@@ -60,28 +70,11 @@
     font-size: 12px;
 }
 
-.activeTypingWrapper {
-    position: relative;
-    left: 0;
-    top: 25px;
-
-    span {
-        display: inline-block;
-        border-radius: 100%;
-        width: 5px;
-        height: 5px;
-        background-color: #efe9e9;   
-        margin: 0 1px;    
-        animation: bounce 1s infinite ease-in-out;
-
-        &:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        &:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-    }
+.timestamp {
+    font-size: 10px;
+    white-space: nowrap;
+    color: #000;
+    text-align: center;
 }
 
 .messageWrapper {
@@ -92,13 +85,22 @@
     margin-left: auto;
     text-align: left;
 
-    .timestamp {
-        right: 10px;
-    }
-
-    img {
+    img, span {
         border-radius: 100%;
         margin-right: 5px;
+    }
+
+    span {
+        background-color: #101f36;
+        padding: 15px;
+        color: #fff;
+        height: 20px;
+        width: 20px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
     }
 
     .index {
@@ -119,17 +121,6 @@
         background-color: #101f36;
     }
 
-    .timestamp {
-        font-size: 12px;
-        white-space: nowrap;
-    }
-
-    &.agent {
-        .message {
-
-        }
-    }
-
     &.guest {
         .message {
             background-color: #e6eaee;
@@ -139,8 +130,9 @@
 
     &.richFormat {
         flex-direction: column;
-        margin: 15px 0 -10px auto;
+        margin: 15px 0 10px auto;
         text-decoration: none;
+        max-width: 225px;
 
         img {
             width: 100%;
@@ -151,7 +143,7 @@
         }
 
         .copyWrapper {
-            max-width: 225px;
+            
             background-color: #007df9;
             padding: 5px 10px;
             font-size: 14px;
@@ -208,18 +200,18 @@
 }
 
 .header {
-    margin-bottom: 30px;
     border-bottom: 1px solid #d0d7db;
     padding: 0 0 15px;
 
     .location {
         background-color: #000;
-        color: #6c6c6c;
+        
         width: 100%;
         
         p {
             margin: 0;
             text-align: center;
+            color: #6c6c6c;
         }
     }
 
@@ -274,23 +266,25 @@
     background: #fff;
     right: 10px;
     bottom: 0;
-    padding: 20px 15px;
+    padding: 35px 15px;
     color: #000;
     font-family: "Gotham", sans-serif;
     
     input {
         border: 2px solid #d0d7db;
-        padding: 25px 20px;
+        padding: 20px;
         width: 100%;
         color: #000;
+        font-size: 14px;
         font-weight: 500;
+        letter-spacing: .5px;
         margin-bottom: 15px;
         margin: 0 0 15px;
     }
 
     button[type=submit] {
         background-color: #1463c2;
-        padding: 20px;
+        padding: 18px;
         color: #fff;
         width: 100%;
         margin: 0 0 15px;
@@ -301,7 +295,7 @@
     position: relative;
     padding: 0 15px;
     position: absolute;
-    bottom: 0;
+    bottom: 15px;
 }
 
 @keyframes bounce {

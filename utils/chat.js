@@ -76,7 +76,6 @@ export const startConversation = async (
   endPoint,
   apiSfName
 ) => {
-  console.log(payload.apiSfName, 'endPoint 148')
   if (!payload || !payload.accessToken || !payload.customerEmail) {
     throw new Error('Invalid payload provided chat.js 143')
   }
@@ -136,7 +135,6 @@ export function listenToConversation(
   apiSfOrgId
 ) {
   const request = async (payload) => {
-    console.log(apiSfOrgId, ' endPoint 151')
     let attempts = 0
     const customerFirstName = firstName
     const customerLastName = lastName

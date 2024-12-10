@@ -1,12 +1,5 @@
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
-// const API_SF_ENDPOINT =
-//   'https://tollbros--webchat.sandbox.my.salesforce-scrt.com'
-// const API_OSC_AVAILABILITY =
-//   'https://7qlgmork2b.execute-api.us-east-1.amazonaws.com/v1/osc'
-// const API_SF_ORG = '00D17000000ednF'
-// const API_SF_NAME = 'OSC_Web_API' // 'OSC_Web_Chat';
-
 // gets osc availability
 export const fetchAvailability = async (region, endPoint, oscAvailable) => {
   if (!region) {

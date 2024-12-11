@@ -166,7 +166,6 @@ export function listenToConversation(
 
     return executeRequest()
   }
-  console.log('request', request)
   return { request }
 }
 

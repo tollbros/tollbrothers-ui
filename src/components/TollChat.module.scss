@@ -9,10 +9,16 @@
     color: #fff;
 
     p.waitMessage, p.persistentText {
-        color: #000;
+        color: #444242;
         text-align: center;
         padding: 0 15px;
         margin: 25px 0;
+    }
+
+    p.persistentText {
+        margin: 0;
+        color: #5f5e5e;
+        letter-spacing: .5px;
     }
     
 
@@ -108,23 +114,20 @@
     }
 
     .message {
-        background-color: #007df9;
-        margin-right: 0px;
-    }
-
-    .message {
         padding: 10px;
         position: relative;
         padding-bottom: 15px;
+        margin-right: 0px;
         min-height: 25px;
         font-size: 14px;
         background-color: #101f36;
+        color: #e6eaee;
     }
 
     &.guest {
         .message {
             background-color: #e6eaee;
-            color: #000;
+            color: #101f36;
         }
     }
 
@@ -233,8 +236,6 @@
     position: absolute;
     right: 15px;
     top: 40px;
-
-   
 
     button {
         width: 40px;

@@ -1,14 +1,14 @@
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
 // gets osc availability
-export const fetchAvailability = async (region, endPoint, oscAvailable) => {
+export const fetchAvailability = async (region, availabilityAPI) => {
   if (!region) {
     console.error('Region is required to fetch availability.')
     return null
   }
 
   try {
-    const response = await fetch(`${oscAvailable}/${region}`, {
+    const response = await fetch(`${availabilityAPI}/${region}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json'
@@ -125,7 +125,9 @@ export function listenToConversation(
   firstName,
   lastName,
   endPoint,
-  apiSfOrgId
+  apiSfOrgId,
+  accessToken,
+  conversationId
 ) {
   const request = async (payload) => {
     let attempts = 0
@@ -145,7 +147,8 @@ export function listenToConversation(
                 event,
                 customerFirstName,
                 customerLastName,
-                endPoint
+                accessToken,
+                conversationId
               )
             } else {
               console.error('handleChatMessage is not a function!')

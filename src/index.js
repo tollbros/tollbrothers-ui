@@ -9,4 +9,6 @@ export { HorizontalScroller } from './components/HorizontalScroller'
 export { TollChat } from './components/TollChat'
 export { Slider }
 
+export { useChat } from './hooks/useChat.js'
+
 // Change to Trigger Build

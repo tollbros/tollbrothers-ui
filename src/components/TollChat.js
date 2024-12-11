@@ -25,18 +25,22 @@ export const TollChat = ({
   communityRegion,
   city,
   state,
-  classes = {}
+  classes = {},
+  disableFloatingChatButton = false,
+  chatStatus,
+  setIsChatOpen = () => null,
+  isChatOpen // this is to open chat from a button in the parent app instead of a floating head
 }) => {
   const region = 'FLW'
 
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
-  const [availableOscs, setAvailableOscs] = useState([])
+  // const [availableOscs, setAvailableOscs] = useState([])
   const [messages, setMessages] = useState([])
   const [conversationIds, setConversationIds] = useState([]) // a bunch of uuids to choose from
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
-  const [showOsc, setShowOsc] = useState(true)
+  // const [showOsc, setShowOsc] = useState(true)
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
@@ -94,6 +98,8 @@ export const TollChat = ({
 
       setConversationId(payload.conversationId)
 
+      console.log('conversationId:', conversationId)
+
       const retryFunction = (attempts) => attempts < 3
       const { request } = listenToConversation(
         retryFunction,
@@ -101,7 +107,9 @@ export const TollChat = ({
         firstName,
         lastName,
         payload.endPoint,
-        apiSfOrgId
+        apiSfOrgId,
+        token.accessToken,
+        payload.conversationId
       )
       if (typeof request !== 'function') {
         throw new Error(
@@ -139,11 +147,19 @@ export const TollChat = ({
     return id15 + suffix
   }
 
-  const handleChatMessage = async (event, firstName, lastName, payload) => {
+  const handleChatMessage = async (
+    event,
+    firstName,
+    lastName,
+    accessToken,
+    conversationId
+  ) => {
     const typingMessages = []
     const messages = []
     let message = {}
     let data, messagePayload
+
+    // console.log(firstName)
 
     switch (event.event) {
       case 'ping':
@@ -160,6 +176,8 @@ export const TollChat = ({
           'tbChat',
           JSON.stringify({ accessToken, conversationId })
         )
+        console.log(accessToken)
+        console.log(conversationId)
 
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
@@ -199,6 +217,10 @@ export const TollChat = ({
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
+
+        console.log('convo message')
+
+        console.log(event)
 
         message = {
           id: data.conversationEntry.identifier,
@@ -255,6 +277,8 @@ export const TollChat = ({
 
         typingMessages.push(message)
 
+        console.log('typing start:', message)
+
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':
         setShowActiveTyping(false)
@@ -279,6 +303,7 @@ export const TollChat = ({
           )}.jpg`
         }
 
+        console.log('typing stopped:', message)
         typingMessages.push(message)
 
         break
@@ -289,13 +314,15 @@ export const TollChat = ({
         setConversationId(null)
         setChatStartReady(false)
         setAccessToken(null)
-        setShowChat(false)
+        setMessages([])
+        // setShowChat(false)
         break
       default:
         console.log('Unknown event:', event)
         break
     }
     if (messages.length > 0) {
+      console.log('messages:', messages)
       setMessages((prevMessages) => [...prevMessages, ...messages])
       setShowWaitMessage(false)
     }
@@ -325,35 +352,33 @@ export const TollChat = ({
     setShowChatHeader(true)
 
     setShowForm(true)
-    setShowOsc(false)
+    // setShowOsc(false)
     setShowChatButton(false)
     // setShowWaitMessage(true)
   }
 
   useEffect(() => {
-    async function getOscInfo() {
-      try {
-        const availability = await fetchAvailability(
-          region,
-          endPoint,
-          oscAvailable
-        )
-        setAvailableOscs(availability.data.payload)
-      } catch (error) {
-        console.error('Error fetching osc data:', error)
-      }
+    console.log('ishcatopen:', isChatOpen)
+    if (isChatOpen && !isCurrentlyChatting) {
+      // setShowChatButton(false)
+      showFormHandler()
+      setIsMinimized(false)
+      // setShowForm(true)
+      // setShowChat(true)
     }
-
-    getOscInfo()
-  }, [region, endPoint])
+  }, [isChatOpen, isCurrentlyChatting])
 
   useEffect(() => {
-    if (availableOscs && availableOscs.length > 0 && !isCurrentlyChatting) {
+    if (
+      chatStatus === 'online' &&
+      !isCurrentlyChatting &&
+      !disableFloatingChatButton
+    ) {
       setShowChatButton(true)
     } else {
       setShowChatButton(false)
     }
-  }, [availableOscs, isCurrentlyChatting])
+  }, [chatStatus, isCurrentlyChatting])
 
   const popNextUUID = () => crypto.randomUUID()
 
@@ -365,14 +390,53 @@ export const TollChat = ({
   }, [restablishChat])
 
   useEffect(() => {
+    const restart = async (tbChat) => {
+      try {
+        const retryFunction = (attempts) => attempts < 3
+        const { request } = listenToConversation(
+          retryFunction,
+          2000,
+          'Test',
+          'Reestablish',
+          endPoint,
+          apiSfOrgId,
+          tbChat.accessToken,
+          tbChat.conversationId
+        )
+        if (typeof request !== 'function') {
+          throw new Error(
+            'Invalid request function returned from listenToConversation'
+          )
+        }
+        await request({
+          accessToken: tbChat.accessToken,
+          handleChatMessage
+        })
+      } catch (error) {
+        console.error('Error initializing chat:', error)
+      }
+    }
+
     while (true) {
       if (window) {
         const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
 
+        console.log('tbChat:', tbChat)
+
         if (tbChat?.conversationId && tbChat?.accessToken) {
           setAccessToken(tbChat.accessToken)
           setConversationId(tbChat.conversationId)
-          setRestablishChat(true)
+          // setRestablishChat(true)
+
+          setShowChatButton(false)
+          setIsCurrentlyChatting(true)
+          // setConversationId(null)
+          setChatStartReady(true)
+          // setAccessToken(null)
+          setShowChat(true)
+          setShowChatHeader(true)
+
+          restart(tbChat)
         }
         break
       }
@@ -396,7 +460,11 @@ export const TollChat = ({
 
   const handleEndChat = async () => {
     if (!accessToken || !conversationId) {
-      setShowChat(false)
+      // setShowChat(false)
+      setIsChatOpen(false)
+      setIsCurrentlyChatting(false)
+      setShowChatHeader(false)
+      setShowForm(false)
       return
     }
     try {
@@ -408,7 +476,11 @@ export const TollChat = ({
         apiSfName
       })
       console.log('Chat end success:', result)
-      setShowChat(false)
+      // setShowChat(false)
+      setIsChatOpen(false)
+      setIsCurrentlyChatting(false)
+      setShowChatHeader(false)
+      setShowForm(false)
     } catch (error) {
       console.error('Chat end error:', error.message)
     }
@@ -419,6 +491,8 @@ export const TollChat = ({
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages])
+
+  console.log('show chat: ', showChat)
 
   return (
     <>

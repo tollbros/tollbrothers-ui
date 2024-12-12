@@ -1,11 +1,12 @@
 
 .chatWrapper {
-    width: 90%;
-    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    
     position: fixed;
-    bottom: 35px;
+    bottom: 20px;
     z-index: 999;
-    right: 1vw;
+    right: 20px;
     color: #fff;
 
     p.waitMessage, p.persistentText {
@@ -23,15 +24,19 @@
     
 
     &.chatPanelOpen {
+        bottom: 0;
+        width: 100%;
         max-width: 345px;
         min-height: 500px;
         max-height: 650px;
-        padding: 0 0 8px;
+        padding-bottom: 20px;
         background-color: #fff;
+        box-shadow: 1px 1px 10px rgba(0,0,0,.1);
 
         &.isMinimized {
             min-height: auto;
             max-height: auto;
+            padding-bottom: 10px;
 
             .header {
                 margin-bottom: 0;
@@ -45,8 +50,9 @@
         }
 
         .messagesWrapper {
+            display: block;
             overflow: hidden;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
     }
 
@@ -63,9 +69,12 @@
 }
 
 .messagesWrapper {
+    display: none;
     position: relative;
-    padding: 20px 15px 50px;
+    padding: 20px 15px 0;
     max-height: 375px;
+    flex-grow: 1;
+    flex-shrink: 0;
 }
 
 .typingWrapper {
@@ -168,23 +177,26 @@
 
 
 .chatLaunch {
-    width: 25px;
-    height: 25px;
+    position: relative;
+    width: 65px;
+    height: 65px;
     border-radius: 100%;
-    background-color: #fff;
+    //background-color: #fff;
     cursor: pointer;
-    position: absolute;
-    bottom: 65px;
-    right: 7vw;
+    padding: 0;
+    //position: absolute;
+    //bottom: 65px;
+    //right: 7vw;
+    filter: drop-shadow(1px 1px 10px rgba(0,0,0,.1));
 
     img {
         &:nth-child(1) {
             width: 65px;
             height: 65px;
-            position: absolute;
-            top: 0%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            //position: absolute;
+            //top: 0%;
+            //left: 50%;
+            //transform: translate(-50%, -50%);
             border-radius: 100%;
         }
 
@@ -192,7 +204,7 @@
             width: 20px;
             height: 20px;
             position: absolute;
-            top: 35px;
+            bottom: -20px;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #004778;
@@ -296,8 +308,9 @@
 .chatInputWrapper {
     position: relative;
     padding: 0 15px;
-    position: absolute;
-    bottom: 15px;
+    //margin-top: 10px;
+    position: relative;
+    //bottom: 15px;
 }
 
 @keyframes bounce {

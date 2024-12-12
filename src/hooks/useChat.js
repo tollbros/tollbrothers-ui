@@ -3,11 +3,13 @@ import { fetchAvailability } from '../../utils/chat'
 
 export const useChat = (availabilityAPI) => {
   const [chatStatus, setChatStatus] = useState('offline')
+  const [region, setRegion] = useState(null)
   const [isFetching, setIsFeching] = useState(false)
 
   const setChatRegion = (region) => {
     setIsFeching(true)
     setChatStatus('offline')
+    setRegion(region)
     async function getOscInfo() {
       try {
         const availability = await fetchAvailability(region, availabilityAPI)
@@ -26,6 +28,7 @@ export const useChat = (availabilityAPI) => {
 
   return {
     chatStatus,
+    chatRegion: region,
     setChatRegion
   }
 }

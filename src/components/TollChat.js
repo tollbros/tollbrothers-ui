@@ -18,6 +18,7 @@ import Plus from '../icons/Plus'
 import CloseX from '../icons/CloseX'
 
 export const TollChat = ({
+  availabilityAPI,
   endPoint,
   oscAvailable,
   apiSfOrgId,
@@ -27,12 +28,12 @@ export const TollChat = ({
   state,
   classes = {},
   disableFloatingChatButton = false,
+  setChatStatus,
   chatStatus,
+  chatRegion,
   setIsChatOpen = () => null,
   isChatOpen // this is to open chat from a button in the parent app instead of a floating head
 }) => {
-  const region = 'FLW'
-
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
   // const [availableOscs, setAvailableOscs] = useState([])
@@ -55,6 +56,9 @@ export const TollChat = ({
   const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
   const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
   const [isMinimized, setIsMinimized] = useState(false) // form panel controls
+  const [systemMessage, setSystemMessage] = useState('') // system messages
+
+  console.log('current chat region in tollchat:', chatRegion)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -88,7 +92,7 @@ export const TollChat = ({
         conversationId: newUuid,
         firstName: 'john',
         lastName: '',
-        region,
+        region: chatRegion,
         endPoint,
         apiSfOrgId,
         apiSfName
@@ -161,6 +165,8 @@ export const TollChat = ({
 
     // console.log(firstName)
 
+    console.log(event.event)
+
     switch (event.event) {
       case 'ping':
         break
@@ -170,57 +176,68 @@ export const TollChat = ({
         setIsCurrentlyChatting(true)
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
-        setShowWaitMessage(false)
-        // fires when an agent accepts
-        sessionStorage.setItem(
-          'tbChat',
-          JSON.stringify({ accessToken, conversationId })
-        )
-        console.log(accessToken)
-        console.log(conversationId)
-
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
 
-        for (let i = 0; i < messagePayload?.entries?.length; i++) {
-          const entry = messagePayload.entries[i]
-          message = {
-            id: `${data.conversationEntry.identifier}${i}`, // just needs to be unique
-            type: data.conversationEntry.entryType,
-            initial: entry.displayName.charAt(0),
-            persistentText: `${
-              entry.operation === 'add'
-                ? `You're chatting with ` + entry.displayName
-                : entry.displayName + ' left the conversation.'
-            }`,
+        setShowWaitMessage(false)
 
-            // text: `${
-            //   entry.displayName +
-            //   (entry.operation === 'add' ? ' joined ' : ' left ')
-            // }the conversation.`,
+        console.log(data)
+        console.log(messagePayload)
 
-            timestamp: data.conversationEntry.clientTimestamp,
-            role: data.conversationEntry.sender.role,
-            sender:
-              data.conversationEntry.sender.role === 'EndUser' &&
-              data.conversationEntry.senderDisplayName === 'Guest'
-                ? `${firstName} ${lastName}`
-                : data.conversationEntry.senderDisplayName,
-            image: `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-              entry.participant.subject
-            )}.jpg`
+        if (messagePayload?.entries?.[0]?.operation === 'remove') {
+          sessionStorage.setItem('tbChat', JSON.stringify({}))
+          setShowChatButton(false)
+          setIsCurrentlyChatting(false)
+          setConversationId(null)
+          // setChatStartReady(false)
+          setAccessToken(null)
+          setSystemMessage(
+            messagePayload.entries[0].displayName + ' left the conversation.'
+          )
+          setMessages([])
+        } else {
+          // fires when an agent accepts
+          sessionStorage.setItem(
+            'tbChat',
+            JSON.stringify({ accessToken, conversationId, firstName, lastName })
+          )
+
+          for (let i = 0; i < messagePayload?.entries?.length; i++) {
+            const entry = messagePayload.entries[i]
+
+            if (entry.operation === 'add') {
+              setSystemMessage(`You're chatting with ` + entry.displayName)
+              continue
+            }
+
+            message = {
+              id: `${data.conversationEntry.identifier}${i}`, // just needs to be unique
+              type: data.conversationEntry.entryType,
+              initial: entry.displayName.charAt(0),
+              timestamp: data.conversationEntry.clientTimestamp,
+              role: data.conversationEntry.sender.role,
+              sender:
+                data.conversationEntry.sender.role === 'EndUser' &&
+                data.conversationEntry.senderDisplayName === 'Guest'
+                  ? `${firstName} ${lastName}`
+                  : data.conversationEntry.senderDisplayName,
+              image: `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
+                entry.participant.subject
+              )}.jpg`
+            }
+
+            console.log(message)
+
+            messages.push(message)
           }
-
-          messages.push(message)
         }
+
         break
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
 
         console.log('convo message')
-
-        console.log(event)
 
         message = {
           id: data.conversationEntry.identifier,
@@ -277,8 +294,6 @@ export const TollChat = ({
 
         typingMessages.push(message)
 
-        console.log('typing start:', message)
-
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':
         setShowActiveTyping(false)
@@ -303,7 +318,6 @@ export const TollChat = ({
           )}.jpg`
         }
 
-        console.log('typing stopped:', message)
         typingMessages.push(message)
 
         break
@@ -315,14 +329,12 @@ export const TollChat = ({
         setChatStartReady(false)
         setAccessToken(null)
         setMessages([])
-        // setShowChat(false)
         break
       default:
         console.log('Unknown event:', event)
         break
     }
     if (messages.length > 0) {
-      console.log('messages:', messages)
       setMessages((prevMessages) => [...prevMessages, ...messages])
       setShowWaitMessage(false)
     }
@@ -358,15 +370,18 @@ export const TollChat = ({
   }
 
   useEffect(() => {
-    console.log('ishcatopen:', isChatOpen)
+    if ((!chatRegion || chatStatus === 'offline') && !isCurrentlyChatting) {
+      setIsChatOpen(false)
+      setShowChatHeader(false)
+      setShowForm(false)
+      return
+    }
+
     if (isChatOpen && !isCurrentlyChatting) {
-      // setShowChatButton(false)
       showFormHandler()
       setIsMinimized(false)
-      // setShowForm(true)
-      // setShowChat(true)
     }
-  }, [isChatOpen, isCurrentlyChatting])
+  }, [isChatOpen, isCurrentlyChatting, chatStatus, chatRegion])
 
   useEffect(() => {
     if (
@@ -378,16 +393,31 @@ export const TollChat = ({
     } else {
       setShowChatButton(false)
     }
-  }, [chatStatus, isCurrentlyChatting])
+  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton])
 
   const popNextUUID = () => crypto.randomUUID()
 
   useEffect(() => {
-    if (restablishChat) {
-      setShowChatButton(false)
-      setIsCurrentlyChatting(true)
+    async function getOscInfo() {
+      try {
+        const availability = await fetchAvailability(
+          chatRegion,
+          availabilityAPI
+        )
+        if (availability?.data?.payload?.length > 0) {
+          setChatStatus('online')
+        }
+      } catch (error) {
+        console.error('Error fetching osc data:', error)
+      }
     }
-  }, [restablishChat])
+
+    if (chatRegion) {
+      getOscInfo()
+    }
+
+    setChatStatus('offline')
+  }, [chatRegion, availabilityAPI])
 
   useEffect(() => {
     const restart = async (tbChat) => {
@@ -396,8 +426,8 @@ export const TollChat = ({
         const { request } = listenToConversation(
           retryFunction,
           2000,
-          'Test',
-          'Reestablish',
+          tbChat.firstName,
+          tbChat.lastName,
           endPoint,
           apiSfOrgId,
           tbChat.accessToken,
@@ -417,29 +447,19 @@ export const TollChat = ({
       }
     }
 
-    while (true) {
-      if (window) {
-        const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
+    const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
 
-        console.log('tbChat:', tbChat)
+    console.log('tbChat:', tbChat)
 
-        if (tbChat?.conversationId && tbChat?.accessToken) {
-          setAccessToken(tbChat.accessToken)
-          setConversationId(tbChat.conversationId)
-          // setRestablishChat(true)
-
-          setShowChatButton(false)
-          setIsCurrentlyChatting(true)
-          // setConversationId(null)
-          setChatStartReady(true)
-          // setAccessToken(null)
-          setShowChat(true)
-          setShowChatHeader(true)
-
-          restart(tbChat)
-        }
-        break
-      }
+    if (tbChat?.conversationId && tbChat?.accessToken) {
+      setAccessToken(tbChat.accessToken)
+      setConversationId(tbChat.conversationId)
+      setShowChatButton(false)
+      setIsCurrentlyChatting(true)
+      setChatStartReady(true)
+      setShowChat(true)
+      setShowChatHeader(true)
+      restart(tbChat)
     }
   }, [])
 
@@ -492,8 +512,6 @@ export const TollChat = ({
     }
   }, [messages])
 
-  console.log('show chat: ', showChat)
-
   return (
     <>
       {showChat && (
@@ -505,6 +523,18 @@ export const TollChat = ({
           } js_chatWrapper`}
           key='wrapper'
         >
+          {showChatButton && (
+            <button className={styles.chatLaunch} onClick={showFormHandler}>
+              <img
+                src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
+                alt='osc'
+              />
+              <img
+                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                alt='chat'
+              />
+            </button>
+          )}
           {showChatHeader && (
             <div className={styles.header}>
               <div className={styles.location}>
@@ -572,27 +602,16 @@ export const TollChat = ({
                 </div>
               </div>
             )}
-            {showChatButton && (
-              <button className={styles.chatLaunch} onClick={showFormHandler}>
-                <img
-                  src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
-                  alt='osc'
-                />
-                <img
-                  src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                  alt='chat'
-                />
-              </button>
+
+            {systemMessage && (
+              <p className={styles.persistentText}>{systemMessage}.</p>
             )}
+
             {!isMinimized && (
               <>
-                <p className={styles.persistentText}>
-                  {messages[0]?.persistentText}.
-                </p>
-
                 {messages.map(
                   (message, index) =>
-                    index > 0 && (
+                    message.type === 'Message' && (
                       <>
                         <div className={styles.timestamp}>
                           {convertTimeStamp(message.timestamp)}
@@ -660,7 +679,7 @@ export const TollChat = ({
                             <>
                               {message.image && (
                                 <img
-                                  src='https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                                  src={message.image}
                                   width={30}
                                   height={30}
                                   alt='Agent Thumbnail'

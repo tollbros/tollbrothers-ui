@@ -196,6 +196,7 @@ export const TollChat = ({
           setShowForm(false)
           setMessages([])
           setIsMinimized(false)
+          setShowWaitMessage(false)
         } else {
           // fires when an agent accepts
           sessionStorage.setItem(
@@ -330,6 +331,7 @@ export const TollChat = ({
         setSystemMessage(null)
         setAccessToken(null)
         setMessages([])
+        setShowWaitMessage(false)
         break
       default:
         console.log('Unknown event:', event)
@@ -463,6 +465,7 @@ export const TollChat = ({
       setSystemMessage(null)
       setShowChat(true)
       setShowChatHeader(true)
+      setShowWaitMessage(false)
       restart(tbChat)
     }
   }, [])
@@ -484,6 +487,7 @@ export const TollChat = ({
 
   const handleEndChat = async () => {
     setSystemMessage(null)
+    setShowWaitMessage(false)
     setIsMinimized(false)
 
     if (!accessToken || !conversationId) {

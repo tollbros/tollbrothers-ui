@@ -3,6 +3,8 @@
 import React, { useState, useCallback } from 'react'
 import ChevronRight from '../icons/ChevronRight'
 
+import styles from './ChatInput.module.scss'
+
 export default function ChatInput({
   accessToken,
   conversationId,
@@ -102,6 +104,7 @@ export default function ChatInput({
 
   return (
     <div
+      className={styles.root}
       style={{
         position: 'relative',
         width: '100%',

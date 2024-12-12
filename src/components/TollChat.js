@@ -36,12 +36,12 @@ export const TollChat = ({
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
-  // const [availableOscs, setAvailableOscs] = useState([])
+
   const [messages, setMessages] = useState([])
-  const [conversationIds, setConversationIds] = useState([]) // a bunch of uuids to choose from
+
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
-  // const [showOsc, setShowOsc] = useState(true)
+
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
@@ -52,11 +52,10 @@ export const TollChat = ({
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
-  const [typingMessages, setTypingMessages] = useState([]) // this is the active/stopped typing messages
-  const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
-  const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
+
   const [isMinimized, setIsMinimized] = useState(false) // form panel controls
   const [systemMessage, setSystemMessage] = useState('') // system messages
+  const [chatPhoto, setChatPhoto] = useState(null) // osc image
 
   console.log('current chat region in tollchat:', chatRegion)
 
@@ -77,7 +76,6 @@ export const TollChat = ({
       if (!token) throw new Error('No token received.')
 
       setAccessToken(token.accessToken)
-      token ? setChatStartReady(true) : setChatStartReady(false)
 
       const newUuid = conversationId || crypto.randomUUID()
       if (!conversationId || conversationId === null) {
@@ -192,9 +190,12 @@ export const TollChat = ({
           // setChatStartReady(false)
           setAccessToken(null)
           setSystemMessage(
-            messagePayload.entries[0].displayName + ' left the conversation.'
+            messagePayload.entries[0].displayName + ' left the conversation'
           )
+          // setShowChatHeader(false)
+          setShowForm(false)
           setMessages([])
+          setIsMinimized(false)
         } else {
           // fires when an agent accepts
           sessionStorage.setItem(
@@ -326,7 +327,7 @@ export const TollChat = ({
         setShowChatButton(false)
         setIsCurrentlyChatting(false)
         setConversationId(null)
-        setChatStartReady(false)
+        setSystemMessage(null)
         setAccessToken(null)
         setMessages([])
         break
@@ -337,13 +338,6 @@ export const TollChat = ({
     if (messages.length > 0) {
       setMessages((prevMessages) => [...prevMessages, ...messages])
       setShowWaitMessage(false)
-    }
-
-    if (typingMessages.length > 0) {
-      setTypingMessages((prevTypingMessages) => [
-        ...prevTypingMessages,
-        ...typingMessages
-      ])
     }
   }
 
@@ -357,16 +351,15 @@ export const TollChat = ({
     setCustomerLastName(lastName)
     setShowWaitMessage(true)
     setShowForm(false)
+    setSystemMessage(null)
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
 
   const showFormHandler = () => {
+    setIsChatOpen(true)
     setShowChatHeader(true)
-
     setShowForm(true)
-    // setShowOsc(false)
     setShowChatButton(false)
-    // setShowWaitMessage(true)
   }
 
   useEffect(() => {
@@ -374,26 +367,35 @@ export const TollChat = ({
       setIsChatOpen(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setShowChatButton(false)
+      setIsMinimized(false)
       return
     }
 
     if (isChatOpen && !isCurrentlyChatting) {
       showFormHandler()
-      setIsMinimized(false)
+      // setIsMinimized(false)
+      return
     }
-  }, [isChatOpen, isCurrentlyChatting, chatStatus, chatRegion])
 
-  useEffect(() => {
     if (
+      chatRegion &&
       chatStatus === 'online' &&
       !isCurrentlyChatting &&
-      !disableFloatingChatButton
+      !disableFloatingChatButton &&
+      !showChatHeader
     ) {
       setShowChatButton(true)
     } else {
       setShowChatButton(false)
     }
-  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton])
+  }, [
+    chatStatus,
+    isCurrentlyChatting,
+    disableFloatingChatButton,
+    isChatOpen,
+    chatRegion
+  ])
 
   const popNextUUID = () => crypto.randomUUID()
 
@@ -404,8 +406,10 @@ export const TollChat = ({
           chatRegion,
           availabilityAPI
         )
+        console.log('availability:', availability)
         if (availability?.data?.payload?.length > 0) {
           setChatStatus('online')
+          setChatPhoto(availability.data.payload[0].photo)
         }
       } catch (error) {
         console.error('Error fetching osc data:', error)
@@ -456,7 +460,7 @@ export const TollChat = ({
       setConversationId(tbChat.conversationId)
       setShowChatButton(false)
       setIsCurrentlyChatting(true)
-      setChatStartReady(true)
+      setSystemMessage(null)
       setShowChat(true)
       setShowChatHeader(true)
       restart(tbChat)
@@ -479,28 +483,32 @@ export const TollChat = ({
   }
 
   const handleEndChat = async () => {
+    setSystemMessage(null)
+    setIsMinimized(false)
+
     if (!accessToken || !conversationId) {
-      // setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setSystemMessage(null)
       return
     }
     try {
       console.log('Ending chat...')
-      const result = await endChat({
+      await endChat({
         accessToken,
         conversationId,
         endPoint,
         apiSfName
       })
-      console.log('Chat end success:', result)
-      // setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setSystemMessage(null)
+      setConversationId(null)
+      setAccessToken(null)
     } catch (error) {
       console.error('Chat end error:', error.message)
     }
@@ -511,6 +519,8 @@ export const TollChat = ({
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages])
+
+  console.log('chat status: ', chatStatus)
 
   return (
     <>
@@ -526,7 +536,10 @@ export const TollChat = ({
           {showChatButton && (
             <button className={styles.chatLaunch} onClick={showFormHandler}>
               <img
-                src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
+                src={
+                  chatPhoto ??
+                  'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                }
                 alt='osc'
               />
               <img

@@ -118,7 +118,7 @@ export default function ChatInput({
         value={message}
       />
       {showArrow && (
-        <span
+        <button
           onClick={sendMessage}
           style={{
             position: 'absolute',
@@ -135,7 +135,7 @@ export default function ChatInput({
           }}
         >
           <ChevronRight fill='#fff' />
-        </span>
+        </button>
       )}
       {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>

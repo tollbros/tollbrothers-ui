@@ -556,7 +556,8 @@ export const TollChat = ({
             <div className={styles.header}>
               <div className={styles.location}>
                 <p>
-                  {city}, {state}
+                  {/* {city}, {state} NEED TO REVISIT THIS */}
+                  Toll Brothers
                 </p>
               </div>
               <h2>Chat</h2>
@@ -600,6 +601,17 @@ export const TollChat = ({
               />
 
               <br />
+              <p className={styles.privacyPolicy}>
+                The information you provide will be used in accordance with our{' '}
+                <a
+                  href='https://www.tollbrothers.com/privacy'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  Privacy Policy
+                </a>
+                .
+              </p>
 
               <button type='submit'>Start Chatting</button>
             </form>

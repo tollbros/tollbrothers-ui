@@ -1,3 +1,5 @@
+@import "styles/modules/all";
+
 .root {
     position: relative;
     width: 100%;
@@ -13,5 +15,11 @@
         padding: 20px 70px 10px 15px;
         line-height: 18px;
         resize: none;
+
+        &::placeholder {
+            color: rgba(0,0,0,.8);
+            font-family: $special_font_family;
+            font-size: 14px;
+        }
     }
 }

@@ -21,6 +21,42 @@
         color: #5f5e5e;
         letter-spacing: .5px;
     }
+
+    .confirmationEndMessage {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        bottom: 30px;
+        background: #fff;
+        z-index: 99;
+        color: #000;
+        opacity: 0.9;
+        font-weight: 500;
+
+        p {
+            font-size: 15px;
+        }
+
+        .buttonWrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            button {
+                width: 50%;
+                background: transparent;
+                font-weight: 600;
+
+                &:nth-child(2) {
+                    color: #8d0e27;
+                }
+            }
+            
+        }
+    }
     
 
     &.chatPanelOpen {

@@ -45,6 +45,8 @@ export const TollChat = ({
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
+    useState(false)
   const chatContainerRef = useRef(null)
 
   const [customerFirstName, setCustomerFirstName] = useState('John')
@@ -476,11 +478,20 @@ export const TollChat = ({
 
   const handleMinimize = () => {
     setIsMinimized(!isMinimized)
+    setShowConfirmationEndMessage(false)
+  }
+
+  const handleConfirmationEnd = () => {
+    setShowConfirmationEndMessage(true)
+  }
+
+  const handleStay = () => {
+    setShowConfirmationEndMessage(false)
   }
 
   const handleEndChat = async () => {
     if (!accessToken || !conversationId) {
-      // setShowChat(false)
+      setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
@@ -496,7 +507,7 @@ export const TollChat = ({
         apiSfName
       })
       console.log('Chat end success:', result)
-      // setShowChat(false)
+      setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
@@ -547,7 +558,7 @@ export const TollChat = ({
                 <button onClick={() => handleMinimize()} type='button'>
                   {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
                 </button>
-                <button onClick={() => handleEndChat()} type='button'>
+                <button onClick={() => handleConfirmationEnd()} type='button'>
                   <CloseX fill='#000' />
                 </button>
               </div>
@@ -557,6 +568,15 @@ export const TollChat = ({
             <p className={styles.waitMessage}>
               Please wait while we connect you with a representative.
             </p>
+          )}
+          {showConfirmationEndMessage && (
+            <div className={styles.confirmationEndMessage}>
+              <p>Are you sure you want to leave this chat?</p>
+              <div className={styles.buttonWrapper}>
+                <button onClick={handleStay}>Stay</button>
+                <button onClick={handleEndChat}>Leave</button>
+              </div>
+            </div>
           )}
           {showForm && !isMinimized && (
             <form onSubmit={handleSubmit} className={styles.form}>

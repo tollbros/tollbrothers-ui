@@ -522,9 +522,7 @@ export const TollChat = ({
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [messages])
-
-  console.log('chat status: ', chatStatus)
+  }, [messages, isMinimized])
 
   return (
     <>

@@ -565,9 +565,12 @@ export const TollChat = ({
             </div>
           )}
           {showWaitMessage && (
-            <p className={styles.waitMessage}>
-              Please wait while we connect you with a representative.
-            </p>
+            <>
+              <p className={styles.waitMessage}>
+                Please wait while we connect you with a representative.
+              </p>
+              <div className={styles.spinner} />
+            </>
           )}
           {showConfirmationEndMessage && (
             <div className={styles.confirmationEndMessage}>

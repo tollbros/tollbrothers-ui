@@ -238,3 +238,50 @@ export const endChat = async (
 
   return await performRequest(retries)
 }
+
+export const createConversationListener = ({
+  firstName,
+  lastName,
+  endPoint,
+  apiSfOrgId,
+  accessToken,
+  conversationId
+}) => {
+  const retryFunction = (attempts) => attempts < 3
+  const { request } = listenToConversation(
+    retryFunction,
+    2000,
+    firstName,
+    lastName,
+    endPoint,
+    apiSfOrgId,
+    accessToken,
+    conversationId
+  )
+  if (typeof request !== 'function') {
+    throw new Error(
+      'Invalid request function returned from listenToConversation'
+    )
+  }
+
+  return request
+}
+
+export const getConversationHistory = async ({
+  conversationId,
+  accessToken,
+  endPoint
+}) => {
+  const response = await fetch(
+    `${endPoint}/iamessage/api/v2/conversation/${conversationId}/entries?limit=50&direction=FromStart`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  )
+
+  return await response?.json()
+}

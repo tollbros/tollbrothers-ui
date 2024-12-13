@@ -33,7 +33,7 @@ export const TollChat = ({
   chatRegion,
   setIsChatOpen = () => null,
   isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
-  onChatClick
+  sms
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -47,6 +47,7 @@ export const TollChat = ({
   const [showChat, setShowChat] = useState(true)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
+  const [oscSsms, setOscSsms] = useState(sms || null)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
@@ -363,7 +364,7 @@ export const TollChat = ({
     setShowTextChatOptions(!showTextChatOptions)
   }
 
-  const showFormHandler = () => {
+  const showFormHandler = (e) => {
     setShowChatHeader(true)
 
     setShowForm(true)
@@ -551,7 +552,7 @@ export const TollChat = ({
                       Chat
                     </button>
                     <a
-                      href='#'
+                      href={oscSsms ? `sms:${oscSsms}` : '#'}
                       className={`${styles.textButton} ${styles.textChatButtons}`}
                       // onClick={}
                     >
@@ -761,7 +762,7 @@ export const TollChat = ({
                               {!message.image && message?.role === 'Agent' && (
                                 <span>{message.initial}</span>
                               )}
-                              <div
+                              <p
                                 className={`${styles.message} ${
                                   showActiveTyping
                                     ? styles.activeTyping
@@ -774,7 +775,7 @@ export const TollChat = ({
                                 {/* <div className={styles.timestamp}>
                             {convertTimeStamp(message.timestamp)}
                           </div> */}
-                              </div>
+                              </p>
                             </>
                           </div>
                         )}

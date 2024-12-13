@@ -1,86 +1,95 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import ChevronRight from '../icons/ChevronRight'
+import { popNextUUID } from '../../utils/chat/libs'
+
+import styles from './ChatInput.module.scss'
 
 export default function ChatInput({
   accessToken,
   conversationId,
-  popNextUUID,
+  // popNextUUID,
   customerFirstName,
   customerLastName,
   setCustomerFirstName,
   setCustomerLastName,
   apiSfName,
-  endPoint
+  endPoint,
+  reestablishedConnection
 }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showArrow, setShowArrow] = useState(false)
 
-  const sendMessage = useCallback(async () => {
-    if (!message.trim()) {
-      setError('Message cannot be empty')
-      return
-    }
-    setShowArrow(false)
-    setLoading(true)
-    setError(null)
+  const sendMessage = useCallback(
+    async (_event, customMessage) => {
+      if (!message.trim() && !customMessage) {
+        setError('Message cannot be empty')
+        return
+      }
+      setShowArrow(false)
+      setLoading(true)
+      setError(null)
 
-    const payload = {
+      const payload = {
+        accessToken,
+        conversationId,
+        nextUuid: popNextUUID(),
+        msg: customMessage || message,
+        customerFirstName: customerFirstName,
+        customerLastName: customerLastName
+      }
+
+      console.log('payload', payload)
+
+      try {
+        const response = await fetch(
+          `${endPoint}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${payload.accessToken}`
+            },
+            body: JSON.stringify({
+              message: {
+                id: payload.nextUuid,
+                messageType: 'StaticContentMessage',
+                staticContent: {
+                  formatType: 'Text',
+                  text: payload.msg
+                }
+              },
+              esDeveloperName: apiSfName,
+              isNewMessagingSession: false
+            })
+          }
+        )
+
+        if (response.status === 202) {
+          setMessage('')
+          setCustomerFirstName(customerFirstName)
+          setCustomerLastName(customerLastName)
+        } else {
+          throw new Error(`API error chatinput.js 68: ${response.statusText}`)
+        }
+      } catch (err) {
+        setError(err.message || 'Failed to send message')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [
       accessToken,
       conversationId,
-      nextUuid: popNextUUID(),
-      msg: message,
-      customerFirstName: customerFirstName,
-      customerLastName: customerLastName
-    }
-
-    try {
-      const response = await fetch(
-        `${endPoint}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${payload.accessToken}`
-          },
-          body: JSON.stringify({
-            message: {
-              id: payload.nextUuid,
-              messageType: 'StaticContentMessage',
-              staticContent: {
-                formatType: 'Text',
-                text: payload.msg
-              }
-            },
-            esDeveloperName: apiSfName,
-            isNewMessagingSession: false
-          })
-        }
-      )
-
-      if (response.status === 202) {
-        setMessage('')
-        setCustomerFirstName(customerFirstName)
-        setCustomerLastName(customerLastName)
-      } else {
-        throw new Error(`API error chatinput.js 68: ${response.statusText}`)
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to send message')
-    } finally {
-      setLoading(false)
-    }
-  }, [
-    accessToken,
-    conversationId,
-    message,
-    popNextUUID,
-    setCustomerFirstName,
-    setCustomerLastName
-  ])
+      message,
+      popNextUUID,
+      setCustomerFirstName,
+      setCustomerLastName
+    ]
+  )
 
   const handleInputChange = (e) => {
     setMessage(e.target.value)
@@ -100,8 +109,14 @@ export default function ChatInput({
     }
   }
 
+  useEffect(() => {
+    if (reestablishedConnection)
+      sendMessage(null, '::System Message:: Guest restored connection')
+  }, [reestablishedConnection])
+
   return (
     <div
+      className={styles.root}
       style={{
         position: 'relative',
         width: '100%',
@@ -118,7 +133,7 @@ export default function ChatInput({
         value={message}
       />
       {showArrow && (
-        <span
+        <button
           onClick={sendMessage}
           style={{
             position: 'absolute',
@@ -135,7 +150,7 @@ export default function ChatInput({
           }}
         >
           <ChevronRight fill='#fff' />
-        </span>
+        </button>
       )}
       {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>

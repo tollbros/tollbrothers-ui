@@ -8,9 +8,11 @@ import {
   handleChatInit,
   fetchAvailability,
   startConversation,
-  listenToConversation,
-  endChat
-} from '../../utils/chat'
+  endChat,
+  createConversationListener,
+  getConversationHistory
+} from '../../utils/chat/apis'
+import { convertTimeStamp, createMessagePayload } from '../../utils/chat/libs'
 import ChatInput from './ChatInput'
 
 import Minus from '../icons/Minus'
@@ -20,13 +22,10 @@ import CloseX from '../icons/CloseX'
 export const TollChat = ({
   availabilityAPI,
   endPoint,
-  oscAvailable,
   apiSfOrgId,
   apiSfName,
-  communityRegion,
   city,
   state,
-  classes = {},
   disableFloatingChatButton = false,
   setChatStatus,
   chatStatus,
@@ -37,12 +36,9 @@ export const TollChat = ({
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
-  // const [availableOscs, setAvailableOscs] = useState([])
   const [messages, setMessages] = useState([])
-  const [conversationIds, setConversationIds] = useState([]) // a bunch of uuids to choose from
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
-  // const [showOsc, setShowOsc] = useState(true)
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
@@ -51,17 +47,15 @@ export const TollChat = ({
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
-
   const [customerFirstName, setCustomerFirstName] = useState('John')
   const [customerLastName, setCustomerLastName] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
-  const [typingMessages, setTypingMessages] = useState([]) // this is the active/stopped typing messages
-  // const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
-  const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
   const [isMinimized, setIsMinimized] = useState(false) // form panel controls
   const [systemMessage, setSystemMessage] = useState('') // system messages
+  const [chatPhoto, setChatPhoto] = useState(null) // osc image
+  const [reestablishedConnection, setReestablishedConnection] = useState(false) // reestablished connection
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -69,6 +63,7 @@ export const TollChat = ({
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
+
   const initializeChat = async (
     firstName,
     lastName,
@@ -82,7 +77,6 @@ export const TollChat = ({
       if (!token) throw new Error('No token received.')
 
       setAccessToken(token.accessToken)
-      // token ? setChatStartReady(true) : setChatStartReady(false)
 
       const newUuid = conversationId || crypto.randomUUID()
       if (!conversationId || conversationId === null) {
@@ -92,11 +86,9 @@ export const TollChat = ({
       const payload = {
         accessToken: token.accessToken,
         customerEmail: formData.email,
-        customerFirstName: firstName || 'John',
+        customerFirstName: firstName || 'Guest',
         customerLastName: lastName || '',
         conversationId: newUuid,
-        firstName: 'john',
-        lastName: '',
         region: chatRegion,
         endPoint,
         apiSfOrgId,
@@ -104,27 +96,27 @@ export const TollChat = ({
       }
 
       await startConversation(payload, payload.apiSfName)
-
       setConversationId(payload.conversationId)
 
-      console.log('conversationId:', conversationId)
-
-      const retryFunction = (attempts) => attempts < 3
-      const { request } = listenToConversation(
-        retryFunction,
-        2000,
+      const request = createConversationListener({
         firstName,
         lastName,
-        payload.endPoint,
+        endPoint,
         apiSfOrgId,
-        token.accessToken,
-        payload.conversationId
+        accessToken: token.accessToken,
+        conversationId: newUuid
+      })
+
+      sessionStorage.setItem(
+        'tbChat',
+        JSON.stringify({
+          accessToken: token.accessToken,
+          conversationId: newUuid,
+          firstName,
+          lastName
+        })
       )
-      if (typeof request !== 'function') {
-        throw new Error(
-          'Invalid request function returned from listenToConversation'
-        )
-      }
+
       await request({
         accessToken: token.accessToken,
         handleChatMessage
@@ -134,43 +126,10 @@ export const TollChat = ({
     }
   }
 
-  const convertId15to18 = (id15) => {
-    // this converts the 15 character id to 18 character id for salesforce
-    let suffix = ''
-    const mapping = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ012345'
-
-    for (let block = 0; block < 3; block++) {
-      let loop = 0
-
-      for (let position = 4; position >= 0; position--) {
-        const char = id15.charAt(block * 5 + position)
-
-        if (char >= 'A' && char <= 'Z') {
-          loop += 1 << position
-        }
-      }
-
-      suffix += mapping.charAt(loop)
-    }
-
-    return id15 + suffix
-  }
-
-  const handleChatMessage = async (
-    event,
-    firstName,
-    lastName,
-    accessToken,
-    conversationId
-  ) => {
-    const typingMessages = []
+  const handleChatMessage = async (event, firstName, lastName) => {
     const messages = []
     let message = {}
     let data, messagePayload
-
-    // console.log(firstName)
-
-    console.log(event.event)
 
     switch (event.event) {
       case 'ping':
@@ -191,73 +150,37 @@ export const TollChat = ({
           setShowChatButton(false)
           setIsCurrentlyChatting(false)
           setConversationId(null)
-          // setChatStartReady(false)
           setAccessToken(null)
           setSystemMessage(
-            messagePayload.entries[0].displayName + ' left the conversation.'
+            messagePayload.entries[0].displayName + ' left the conversation'
           )
+          setShowForm(false)
           setMessages([])
+          setIsMinimized(false)
+          setShowWaitMessage(false)
         } else {
-          // fires when an agent accepts
-          sessionStorage.setItem(
-            'tbChat',
-            JSON.stringify({ accessToken, conversationId, firstName, lastName })
-          )
-
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
-
             if (entry.operation === 'add') {
               setSystemMessage(`You're chatting with ` + entry.displayName)
               continue
             }
-
-            message = {
-              id: `${data.conversationEntry.identifier}${i}`, // just needs to be unique
-              type: data.conversationEntry.entryType,
-              initial: entry.displayName.charAt(0),
-              timestamp: data.conversationEntry.clientTimestamp,
-              role: data.conversationEntry.sender.role,
-              sender:
-                data.conversationEntry.sender.role === 'EndUser' &&
-                data.conversationEntry.senderDisplayName === 'Guest'
-                  ? `${firstName} ${lastName}`
-                  : data.conversationEntry.senderDisplayName,
-              image: `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-                entry.participant.subject
-              )}.jpg`
-            }
-
-            // console.log(message)
-
-            messages.push(message)
           }
         }
 
         break
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
-        messagePayload = JSON.parse(data.conversationEntry.entryPayload)
+        console.log('convo message')
 
-        message = {
-          id: data.conversationEntry.identifier,
-          payload: messagePayload.abstractMessage.staticContent,
-          type: data.conversationEntry.entryType,
-          text: messagePayload.abstractMessage.staticContent.text,
-          timestamp: data.conversationEntry.clientTimestamp,
-          role: data.conversationEntry.sender.role,
-          sender:
-            data.conversationEntry.sender.role === 'EndUser' &&
-            data.conversationEntry.senderDisplayName === 'Guest'
-              ? `${firstName} ${lastName}`
-              : data.conversationEntry.senderDisplayName
-        }
-
-        if (data.conversationEntry.sender.role !== 'EndUser') {
-          message.image = `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-            data.conversationEntry.sender.subject
-          )}.jpg`
-        }
+        message = createMessagePayload(
+          {
+            ...data.conversationEntry,
+            entryPayload: JSON.parse(data.conversationEntry.entryPayload)
+          },
+          firstName,
+          lastName
+        )
 
         messages.push(message)
 
@@ -270,80 +193,31 @@ export const TollChat = ({
         break
       case 'CONVERSATION_TYPING_STARTED_INDICATOR':
         setShowActiveTyping(true)
-
-        data = JSON.parse(event.data)
-        messagePayload = JSON.parse(data.conversationEntry.entryPayload)
-
-        message = {
-          id: data.conversationEntry.identifier,
-          type: data.conversationEntry.entryType,
-          text: `${data.conversationEntry.senderDisplayName} is typing...`,
-          timestamp: data.conversationEntry.clientTimestamp,
-          sender:
-            data.conversationEntry.sender.role === 'EndUser' &&
-            data.conversationEntry.senderDisplayName === 'Guest'
-              ? `${customerFirstName} ${customerLastName}`
-              : data.conversationEntry.senderDisplayName
-        }
-
-        if (data.conversationEntry.sender.role === 'Agent') {
-          message.image = `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-            data.conversationEntry.sender.subject
-          )}.jpg`
-        }
-
-        typingMessages.push(message)
-
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':
         setShowActiveTyping(false)
-        data = JSON.parse(event.data)
-        messagePayload = JSON.parse(data.conversationEntry.entryPayload)
-
-        message = {
-          id: data.conversationEntry.identifier,
-          type: data.conversationEntry.entryType,
-          text: `${data.conversationEntry.senderDisplayName} stopped typing...`,
-          timestamp: data.conversationEntry.clientTimestamp,
-          sender:
-            data.conversationEntry.sender.role === 'EndUser' &&
-            data.conversationEntry.senderDisplayName === 'Guest'
-              ? `${customerFirstName} ${customerLastName}`
-              : data.conversationEntry.senderDisplayName
-        }
-
-        if (data.conversationEntry.sender.role === 'Agent') {
-          message.image = `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-            data.conversationEntry.sender.subject
-          )}.jpg`
-        }
-
-        typingMessages.push(message)
-
         break
       case 'CONVERSATION_CLOSE_CONVERSATION':
+        console.log('conversation close conversation...')
+
         sessionStorage.setItem('tbChat', JSON.stringify({}))
         setShowChatButton(false)
         setIsCurrentlyChatting(false)
         setConversationId(null)
-        // setChatStartReady(false)
+        setSystemMessage(null)
         setAccessToken(null)
         setMessages([])
+        setShowWaitMessage(false)
+        setReestablishedConnection(false)
         break
       default:
         console.log('Unknown event:', event)
         break
     }
+
     if (messages.length > 0) {
       setMessages((prevMessages) => [...prevMessages, ...messages])
       setShowWaitMessage(false)
-    }
-
-    if (typingMessages.length > 0) {
-      setTypingMessages((prevTypingMessages) => [
-        ...prevTypingMessages,
-        ...typingMessages
-      ])
     }
   }
 
@@ -357,6 +231,7 @@ export const TollChat = ({
     setCustomerLastName(lastName)
     setShowWaitMessage(true)
     setShowForm(false)
+    setSystemMessage(null)
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
 
@@ -364,13 +239,11 @@ export const TollChat = ({
     setShowTextChatOptions(!showTextChatOptions)
   }
 
-  const showFormHandler = (e) => {
+  const showFormHandler = () => {
+    setIsChatOpen(true)
     setShowChatHeader(true)
-
     setShowForm(true)
-    // setShowOsc(false)
     setShowChatButton(false)
-    // setShowWaitMessage(true)
   }
 
   useEffect(() => {
@@ -378,28 +251,35 @@ export const TollChat = ({
       setIsChatOpen(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setShowChatButton(false)
+      setIsMinimized(false)
       return
     }
 
     if (isChatOpen && !isCurrentlyChatting) {
       showFormHandler()
-      setIsMinimized(false)
+      // setIsMinimized(false)
+      return
     }
-  }, [isChatOpen, isCurrentlyChatting, chatStatus, chatRegion])
 
-  useEffect(() => {
     if (
+      chatRegion &&
       chatStatus === 'online' &&
       !isCurrentlyChatting &&
-      !disableFloatingChatButton
+      !disableFloatingChatButton &&
+      !showChatHeader
     ) {
       setShowChatButton(true)
     } else {
       setShowChatButton(false)
     }
-  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton])
-
-  const popNextUUID = () => crypto.randomUUID()
+  }, [
+    chatStatus,
+    isCurrentlyChatting,
+    disableFloatingChatButton,
+    isChatOpen,
+    chatRegion
+  ])
 
   useEffect(() => {
     async function getOscInfo() {
@@ -410,6 +290,7 @@ export const TollChat = ({
         )
         if (availability?.data?.payload?.length > 0) {
           setChatStatus('online')
+          setChatPhoto(availability.data.payload[0].photo)
         }
       } catch (error) {
         console.error('Error fetching osc data:', error)
@@ -424,59 +305,71 @@ export const TollChat = ({
   }, [chatRegion, availabilityAPI])
 
   useEffect(() => {
-    const restart = async (tbChat) => {
+    const getConvoList = async (tbChat) => {
       try {
-        const retryFunction = (attempts) => attempts < 3
-        const { request } = listenToConversation(
-          retryFunction,
-          2000,
-          tbChat.firstName,
-          tbChat.lastName,
+        const response = await getConversationHistory({
+          accessToken: tbChat.accessToken,
+          conversationId: tbChat.conversationId,
+          endPoint
+        })
+
+        if (response?.conversationEntries?.length > 0) {
+          const messages = response.conversationEntries.filter((entry) => {
+            return entry.entryType === 'Message'
+          })
+          const formattedMessages = messages.map((message, index) => {
+            return createMessagePayload(
+              message,
+              tbChat.firstName,
+              tbChat.lastName,
+              index
+            )
+          })
+
+          setMessages(formattedMessages ?? [])
+        } else {
+          throw new Error('No conversation history')
+        }
+      } catch (err) {
+        console.warn(`Conversation history error`)
+      }
+    }
+
+    const reestablishConnection = async (tbChat) => {
+      setReestablishedConnection(true)
+      try {
+        const request = createConversationListener({
+          firstName: tbChat.firstName,
+          lastName: tbChat.lastName,
           endPoint,
           apiSfOrgId,
-          tbChat.accessToken,
-          tbChat.conversationId
-        )
-        if (typeof request !== 'function') {
-          throw new Error(
-            'Invalid request function returned from listenToConversation'
-          )
-        }
+          accessToken: tbChat.accessToken,
+          conversationId: tbChat.conversationId
+        })
         await request({
           accessToken: tbChat.accessToken,
           handleChatMessage
         })
       } catch (error) {
-        console.error('Error initializing chat:', error)
+        console.error('Error reestablishing chat:', error)
       }
     }
 
     const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
-
-    console.log('tbChat:', tbChat)
 
     if (tbChat?.conversationId && tbChat?.accessToken) {
       setAccessToken(tbChat.accessToken)
       setConversationId(tbChat.conversationId)
       setShowChatButton(false)
       setIsCurrentlyChatting(true)
-      // setChatStartReady(true)
+      setSystemMessage(null)
       setShowChat(true)
       setShowChatHeader(true)
-      restart(tbChat)
+      setShowWaitMessage(false)
+      reestablishConnection(tbChat)
+      getConvoList(tbChat)
     }
   }, [])
-
-  const convertTimeStamp = (timestamp) => {
-    const date = new Date(timestamp)
-    const formattedDate = date.toLocaleDateString('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true
-    })
-    const time = formattedDate.split(', ')[1]
-    return time
-  }
 
   const handleMinimize = () => {
     setIsMinimized(!isMinimized)
@@ -492,28 +385,35 @@ export const TollChat = ({
   }
 
   const handleEndChat = async () => {
+    setSystemMessage(null)
+    setShowWaitMessage(false)
+    setIsMinimized(false)
+
     if (!accessToken || !conversationId) {
-      setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setSystemMessage(null)
+      setReestablishedConnection(false)
       return
     }
     try {
       console.log('Ending chat...')
-      const result = await endChat({
+      await endChat({
         accessToken,
         conversationId,
         endPoint,
         apiSfName
       })
-      console.log('Chat end success:', result)
-      setShowChat(false)
       setIsChatOpen(false)
       setIsCurrentlyChatting(false)
       setShowChatHeader(false)
       setShowForm(false)
+      setSystemMessage(null)
+      setConversationId(null)
+      setAccessToken(null)
+      setReestablishedConnection(false)
     } catch (error) {
       console.error('Chat end error:', error.message)
     }
@@ -523,7 +423,7 @@ export const TollChat = ({
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [messages])
+  }, [messages, isMinimized])
 
   return (
     <>
@@ -572,7 +472,10 @@ export const TollChat = ({
               >
                 <img
                   className={styles.oscHead}
-                  src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
+                  src={
+                    chatPhoto ??
+                    'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                  }
                   alt='osc'
                 />
 
@@ -601,7 +504,8 @@ export const TollChat = ({
             <div className={styles.header}>
               <div className={styles.location}>
                 <p>
-                  {city}, {state}
+                  {/* {city}, {state} NEED TO REVISIT THIS */}
+                  Toll Brothers
                 </p>
               </div>
               <h2>Chat</h2>
@@ -657,6 +561,17 @@ export const TollChat = ({
               />
 
               <br />
+              <p className={styles.privacyPolicy}>
+                The information you provide will be used in accordance with our{' '}
+                <a
+                  href='https://www.tollbrothers.com/privacy'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  Privacy Policy
+                </a>
+                .
+              </p>
 
               <button type='submit'>Start Chatting</button>
             </form>
@@ -685,7 +600,8 @@ export const TollChat = ({
               <>
                 {messages.map(
                   (message, index) =>
-                    message.type === 'Message' && (
+                    message.type === 'Message' &&
+                    !message.text?.includes('::System Message::') && (
                       <>
                         <div className={styles.timestamp}>
                           {convertTimeStamp(message.timestamp)}
@@ -769,12 +685,7 @@ export const TollChat = ({
                                     : styles.notActive
                                 }`}
                               >
-                                {/* {message.sender.charAt(0).toUpperCase() +
-                            message.sender.slice(1).toLowerCase()}: */}
                                 {message.text}
-                                {/* <div className={styles.timestamp}>
-                            {convertTimeStamp(message.timestamp)}
-                          </div> */}
                               </p>
                             </>
                           </div>
@@ -791,13 +702,13 @@ export const TollChat = ({
               <ChatInput
                 accessToken={accessToken}
                 conversationId={conversationId}
-                popNextUUID={popNextUUID}
                 customerFirstName={customerFirstName}
                 customerLastName={customerLastName}
                 setCustomerFirstName={setCustomerFirstName}
                 setCustomerLastName={setCustomerLastName}
                 apiSfName={apiSfName}
                 endPoint={endPoint}
+                reestablishedConnection={reestablishedConnection}
               />
             </div>
           )}

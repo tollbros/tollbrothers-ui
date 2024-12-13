@@ -31,7 +31,8 @@ export const TollChat = ({
   chatStatus,
   chatRegion,
   setIsChatOpen = () => null,
-  isChatOpen // this is to open chat from a button in the parent app instead of a floating head
+  isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
+  sms
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -40,7 +41,11 @@ export const TollChat = ({
   const [showForm, setShowForm] = useState(false)
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
+  const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
+  const [oscSsms, setOscSsms] = useState(sms || null)
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
+    useState(false)
   const chatContainerRef = useRef(null)
   const [customerFirstName, setCustomerFirstName] = useState('John')
   const [customerLastName, setCustomerLastName] = useState('')
@@ -52,7 +57,7 @@ export const TollChat = ({
   const [chatPhoto, setChatPhoto] = useState(null) // osc image
   const [reestablishedConnection, setReestablishedConnection] = useState(false) // reestablished connection
 
-  console.log('current chat region in tollchat:', chatRegion)
+  // console.log('current chat region in tollchat:', chatRegion)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -230,6 +235,10 @@ export const TollChat = ({
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
 
+  const showTextChatOption = () => {
+    setShowTextChatOptions(!showTextChatOptions)
+  }
+
   const showFormHandler = () => {
     setIsChatOpen(true)
     setShowChatHeader(true)
@@ -364,6 +373,15 @@ export const TollChat = ({
 
   const handleMinimize = () => {
     setIsMinimized(!isMinimized)
+    setShowConfirmationEndMessage(false)
+  }
+
+  const handleConfirmationEnd = () => {
+    setShowConfirmationEndMessage(true)
+  }
+
+  const handleStay = () => {
+    setShowConfirmationEndMessage(false)
   }
 
   const handleEndChat = async () => {
@@ -419,19 +437,68 @@ export const TollChat = ({
           key='wrapper'
         >
           {showChatButton && (
-            <button className={styles.chatLaunch} onClick={showFormHandler}>
-              <img
-                src={
-                  chatPhoto ??
-                  'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                }
-                alt='osc'
-              />
-              <img
-                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                alt='chat'
-              />
-            </button>
+            <>
+              {showTextChatOptions && (
+                <div className={styles.textChatOptions}>
+                  <div className={styles.textChatWrapper}>
+                    <button
+                      className={`${styles.chatButton} ${styles.textChatButtons}`}
+                      onClick={showFormHandler}
+                    >
+                      <img
+                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                        alt='chat'
+                      />
+                      Chat
+                    </button>
+                    <a
+                      href={oscSsms ? `sms:${oscSsms}` : '#'}
+                      className={`${styles.textButton} ${styles.textChatButtons}`}
+                      // onClick={}
+                    >
+                      <img
+                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                        alt='chat'
+                      />
+                      Text
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              <button
+                className={styles.chatLaunch}
+                onClick={showTextChatOption}
+              >
+                <img
+                  className={styles.oscHead}
+                  src={
+                    chatPhoto ??
+                    'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                  }
+                  alt='osc'
+                />
+
+                {!showTextChatOptions && (
+                  <span>
+                    <img
+                      className={styles.chatIcon}
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                      alt='chat'
+                    />
+                  </span>
+                )}
+                {showTextChatOptions && (
+                  <span>
+                    <img
+                      className={styles.closeIcon}
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
+                      alt='close'
+                    />
+                  </span>
+                )}
+              </button>
+            </>
           )}
           {showChatHeader && (
             <div className={styles.header}>
@@ -446,16 +513,28 @@ export const TollChat = ({
                 <button onClick={() => handleMinimize()} type='button'>
                   {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
                 </button>
-                <button onClick={() => handleEndChat()} type='button'>
+                <button onClick={() => handleConfirmationEnd()} type='button'>
                   <CloseX fill='#000' />
                 </button>
               </div>
             </div>
           )}
           {showWaitMessage && (
-            <p className={styles.waitMessage}>
-              Please wait while we connect you with a representative.
-            </p>
+            <>
+              <p className={styles.waitMessage}>
+                Please wait while we connect you with a representative.
+              </p>
+              <div className={styles.spinner} />
+            </>
+          )}
+          {showConfirmationEndMessage && (
+            <div className={styles.confirmationEndMessage}>
+              <p>Are you sure you want to leave this chat?</p>
+              <div className={styles.buttonWrapper}>
+                <button onClick={handleStay}>Stay</button>
+                <button onClick={handleEndChat}>Leave</button>
+              </div>
+            </div>
           )}
           {showForm && !isMinimized && (
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -499,7 +578,8 @@ export const TollChat = ({
           )}
 
           <div className={styles.messagesWrapper} ref={chatContainerRef}>
-            {showActiveTyping && (
+            {/* they might want to add this back in later */}
+            {/* {showActiveTyping && (
               <div className={`${styles.agent} ${styles.typingWrapper}`}>
                 <div className={`${styles.message} `}>
                   <p className={styles.typingIndictor}>
@@ -511,12 +591,11 @@ export const TollChat = ({
                   </p>
                 </div>
               </div>
-            )}
-
+            )}{' '}
+            */}
             {systemMessage && (
               <p className={styles.persistentText}>{systemMessage}.</p>
             )}
-
             {!isMinimized && (
               <>
                 {messages.map(
@@ -599,7 +678,7 @@ export const TollChat = ({
                               {!message.image && message?.role === 'Agent' && (
                                 <span>{message.initial}</span>
                               )}
-                              <div
+                              <p
                                 className={`${styles.message} ${
                                   showActiveTyping
                                     ? styles.activeTyping
@@ -607,7 +686,7 @@ export const TollChat = ({
                                 }`}
                               >
                                 {message.text}
-                              </div>
+                              </p>
                             </>
                           </div>
                         )}

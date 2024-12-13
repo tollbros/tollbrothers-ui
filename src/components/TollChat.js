@@ -32,7 +32,8 @@ export const TollChat = ({
   chatStatus,
   chatRegion,
   setIsChatOpen = () => null,
-  isChatOpen // this is to open chat from a button in the parent app instead of a floating head
+  isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
+  onChatClick
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -44,6 +45,7 @@ export const TollChat = ({
   // const [showOsc, setShowOsc] = useState(true)
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showChat, setShowChat] = useState(true)
+  const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
@@ -55,12 +57,12 @@ export const TollChat = ({
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
   const [typingMessages, setTypingMessages] = useState([]) // this is the active/stopped typing messages
-  const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
+  // const [chatStartReady, setChatStartReady] = useState(false) // trigger to setup the listener
   const [restablishChat, setRestablishChat] = useState(false) // for re-establishing chat on page reload
   const [isMinimized, setIsMinimized] = useState(false) // form panel controls
   const [systemMessage, setSystemMessage] = useState('') // system messages
 
-  console.log('current chat region in tollchat:', chatRegion)
+  // console.log('current chat region in tollchat:', chatRegion)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -79,7 +81,7 @@ export const TollChat = ({
       if (!token) throw new Error('No token received.')
 
       setAccessToken(token.accessToken)
-      token ? setChatStartReady(true) : setChatStartReady(false)
+      // token ? setChatStartReady(true) : setChatStartReady(false)
 
       const newUuid = conversationId || crypto.randomUUID()
       if (!conversationId || conversationId === null) {
@@ -183,9 +185,6 @@ export const TollChat = ({
 
         setShowWaitMessage(false)
 
-        console.log(data)
-        console.log(messagePayload)
-
         if (messagePayload?.entries?.[0]?.operation === 'remove') {
           sessionStorage.setItem('tbChat', JSON.stringify({}))
           setShowChatButton(false)
@@ -228,7 +227,7 @@ export const TollChat = ({
               )}.jpg`
             }
 
-            console.log(message)
+            // console.log(message)
 
             messages.push(message)
           }
@@ -238,8 +237,6 @@ export const TollChat = ({
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
-
-        console.log('convo message')
 
         message = {
           id: data.conversationEntry.identifier,
@@ -328,7 +325,7 @@ export const TollChat = ({
         setShowChatButton(false)
         setIsCurrentlyChatting(false)
         setConversationId(null)
-        setChatStartReady(false)
+        // setChatStartReady(false)
         setAccessToken(null)
         setMessages([])
         break
@@ -360,6 +357,10 @@ export const TollChat = ({
     setShowWaitMessage(true)
     setShowForm(false)
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
+  }
+
+  const showTextChatOption = () => {
+    setShowTextChatOptions(!showTextChatOptions)
   }
 
   const showFormHandler = () => {
@@ -458,7 +459,7 @@ export const TollChat = ({
       setConversationId(tbChat.conversationId)
       setShowChatButton(false)
       setIsCurrentlyChatting(true)
-      setChatStartReady(true)
+      // setChatStartReady(true)
       setShowChat(true)
       setShowChatHeader(true)
       restart(tbChat)
@@ -535,16 +536,65 @@ export const TollChat = ({
           key='wrapper'
         >
           {showChatButton && (
-            <button className={styles.chatLaunch} onClick={showFormHandler}>
-              <img
-                src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
-                alt='osc'
-              />
-              <img
-                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                alt='chat'
-              />
-            </button>
+            <>
+              {showTextChatOptions && (
+                <div className={styles.textChatOptions}>
+                  <div className={styles.textChatWrapper}>
+                    <button
+                      className={`${styles.chatButton} ${styles.textChatButtons}`}
+                      onClick={showFormHandler}
+                    >
+                      <img
+                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                        alt='chat'
+                      />
+                      Chat
+                    </button>
+                    <a
+                      href='#'
+                      className={`${styles.textButton} ${styles.textChatButtons}`}
+                      // onClick={}
+                    >
+                      <img
+                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                        alt='chat'
+                      />
+                      Text
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              <button
+                className={styles.chatLaunch}
+                onClick={showTextChatOption}
+              >
+                <img
+                  className={styles.oscHead}
+                  src='https://cdn.tollbrothers.com/images/osc/0051Q00000TXuNXQA1.jpg'
+                  alt='osc'
+                />
+
+                {!showTextChatOptions && (
+                  <span>
+                    <img
+                      className={styles.chatIcon}
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                      alt='chat'
+                    />
+                  </span>
+                )}
+                {showTextChatOptions && (
+                  <span>
+                    <img
+                      className={styles.closeIcon}
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
+                      alt='close'
+                    />
+                  </span>
+                )}
+              </button>
+            </>
           )}
           {showChatHeader && (
             <div className={styles.header}>
@@ -612,7 +662,8 @@ export const TollChat = ({
           )}
 
           <div className={styles.messagesWrapper} ref={chatContainerRef}>
-            {showActiveTyping && (
+            {/* they might want to add this back in later */}
+            {/* {showActiveTyping && (
               <div className={`${styles.agent} ${styles.typingWrapper}`}>
                 <div className={`${styles.message} `}>
                   <p className={styles.typingIndictor}>
@@ -624,12 +675,11 @@ export const TollChat = ({
                   </p>
                 </div>
               </div>
-            )}
-
+            )}{' '}
+            */}
             {systemMessage && (
               <p className={styles.persistentText}>{systemMessage}.</p>
             )}
-
             {!isMinimized && (
               <>
                 {messages.map(

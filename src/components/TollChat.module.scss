@@ -220,42 +220,101 @@
         }
     }
 }
+.textChatOptions {
+    position: fixed;
+    bottom: 19px;
+    right: 19px;
+    width: 62px;
+    z-index: 0;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, .65));
 
+    .textChatWrapper {
+        display: flex;
+        flex-direction: column;
+
+        img {
+            width: 20px;
+        }
+
+        .textChatButtons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            width: 100%;
+            margin: 0;
+            padding: 18px 0;
+            font-size: .6em;
+            background: #004778;
+            text-transform: none;
+            letter-spacing: normal;
+            text-align: center;
+            border: none;
+            border-radius: 62px;
+            
+        }
+
+        .chatButton {
+            position: relative;
+            padding-bottom: 14px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+
+            &::after {position: absolute;
+                bottom: 0;
+                left: 15%;
+                content: "";
+                display: block;
+                height: 1px;
+                width: 70%;
+                background: rgba(255, 255, 255, 0.3);}
+        }
+
+        .textButton {
+            padding-top: 10px;
+            padding-bottom: 72px;
+            border-top-right-radius: 0;
+            border-top-left-radius: 0;
+        }
+    }
+}
 
 .chatLaunch {
     position: relative;
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
+    z-index: 1;
     border-radius: 100%;
-    //background-color: #fff;
     cursor: pointer;
     padding: 0;
-    //position: absolute;
-    //bottom: 65px;
-    //right: 7vw;
     filter: drop-shadow(1px 1px 10px rgba(0,0,0,.1));
-
-    img {
-        &:nth-child(1) {
-            width: 65px;
-            height: 65px;
-            //position: absolute;
-            //top: 0%;
-            //left: 50%;
-            //transform: translate(-50%, -50%);
+    
+        .oscHead {
+            width: 100%;
+            height: auto;
             border-radius: 100%;
         }
 
-        &:nth-child(2) {
-            width: 20px;
-            height: 20px;
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #004778;
-            border-radius: 100%;
-            padding: 2px;
+    span {
+        display: block;
+        background-color: #004778;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 100%;
+        padding: 2px;
+
+        img {
+            width: 12px;
+            position: relative;
+            bottom: 4px;
+            &.closeIcon {
+                width: 8px;
+                filter: invert(100%);
+            }
         }
     }
 }

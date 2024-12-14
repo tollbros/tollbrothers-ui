@@ -41,16 +41,18 @@
         display: flex;
         align-items: center;
         flex-direction: column;
-        width: 100%;
+        width: 92%;
+        margin-left: 4%;
+        padding: 20px 10px;
         bottom: 30px;
         background: #fff;
         z-index: 99;
         color: #000;
-        opacity: 0.9;
         font-weight: 500;
+        box-shadow: 1px 4px 14px rgba(0, 0, 0, .2);
 
         p {
-            font-size: 15px;
+            font-size: .9em;
         }
 
         .buttonWrapper {
@@ -62,7 +64,7 @@
             button {
                 width: 50%;
                 background: transparent;
-                font-weight: 600;
+                font-size: .8em;
 
                 &:nth-child(2) {
                     color: #8d0e27;

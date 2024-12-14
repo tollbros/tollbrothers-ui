@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-import Link from 'next/link'
 
 import styles from './TollChat.module.scss'
 import {
@@ -32,7 +31,7 @@ export const TollChat = ({
   chatRegion,
   setIsChatOpen = () => null,
   isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
-  sms
+  chatSms
 }) => {
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
@@ -43,7 +42,6 @@ export const TollChat = ({
   const [showChat, setShowChat] = useState(true)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
-  const [oscSsms, setOscSsms] = useState(sms || null)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
@@ -209,6 +207,8 @@ export const TollChat = ({
         setMessages([])
         setShowWaitMessage(false)
         setReestablishedConnection(false)
+        setShowConfirmationEndMessage(false)
+        setShowTextChatOptions(false)
         break
       default:
         console.log('Unknown event:', event)
@@ -253,11 +253,15 @@ export const TollChat = ({
       setShowForm(false)
       setShowChatButton(false)
       setIsMinimized(false)
+      setShowConfirmationEndMessage(false)
+      setShowTextChatOptions(false)
       return
     }
 
     if (isChatOpen && !isCurrentlyChatting) {
       showFormHandler()
+      setShowConfirmationEndMessage(false)
+      setShowTextChatOptions(false)
       // setIsMinimized(false)
       return
     }
@@ -366,6 +370,7 @@ export const TollChat = ({
       setShowChat(true)
       setShowChatHeader(true)
       setShowWaitMessage(false)
+      setShowTextChatOptions(false)
       reestablishConnection(tbChat)
       getConvoList(tbChat)
     }
@@ -388,6 +393,8 @@ export const TollChat = ({
     setSystemMessage(null)
     setShowWaitMessage(false)
     setIsMinimized(false)
+    setShowConfirmationEndMessage(false)
+    setShowTextChatOptions(false)
 
     if (!accessToken || !conversationId) {
       setIsChatOpen(false)
@@ -433,7 +440,7 @@ export const TollChat = ({
             showChatHeader ? styles.chatPanelOpen : ''
           } ${isMinimized ? styles.isMinimized : ''} ${
             endChat ? styles.endChat : ''
-          } js_chatWrapper`}
+          } js_chatWrapper adjust_chatWrapper`}
           key='wrapper'
         >
           {showChatButton && (
@@ -452,7 +459,7 @@ export const TollChat = ({
                       Chat
                     </button>
                     <a
-                      href={oscSsms ? `sms:${oscSsms}` : '#'}
+                      href={chatSms ? `sms:${chatSms}` : '#'}
                       className={`${styles.textButton} ${styles.textChatButtons}`}
                       // onClick={}
                     >
@@ -602,12 +609,12 @@ export const TollChat = ({
                   (message, index) =>
                     message.type === 'Message' &&
                     !message.text?.includes('::System Message::') && (
-                      <>
+                      <React.Fragment key={message.id}>
                         <div className={styles.timestamp}>
                           {convertTimeStamp(message.timestamp)}
                         </div>
                         {message.payload?.formatType === 'RichLink' && (
-                          <Link
+                          <a
                             href={message.payload?.linkItem?.url}
                             key={`link${index}`}
                             className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
@@ -624,7 +631,7 @@ export const TollChat = ({
                               </p>
                               <p>{message.payload?.linkItem?.url}</p>
                             </div>
-                          </Link>
+                          </a>
                         )}
                         {message.payload?.formatType === 'Attachments' && (
                           <>
@@ -690,7 +697,7 @@ export const TollChat = ({
                             </>
                           </div>
                         )}
-                      </>
+                      </React.Fragment>
                     )
                 )}
               </>

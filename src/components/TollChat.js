@@ -14,7 +14,7 @@ import {
 } from '../../utils/chat/apis'
 import {
   convertTimeStamp,
-  createMessagePayload,
+  formatMessage,
   popNextUUID
 } from '../../utils/chat/libs'
 import ChatInput from './ChatInput'
@@ -156,7 +156,7 @@ export const TollChat = ({
         console.log('participant changed:', messagePayload)
 
         if (messagePayload?.entries?.[0]?.operation === 'remove') {
-          handleAgentEndChat()
+          afterEndChatReset()
           setSystemMessage(
             messagePayload.entries[0].displayName + ' ended the chat'
           )
@@ -176,7 +176,7 @@ export const TollChat = ({
         data = JSON.parse(event.data)
         console.log('convo message')
 
-        message = createMessagePayload(
+        message = formatMessage(
           {
             ...data.conversationEntry,
             entryPayload: JSON.parse(data.conversationEntry.entryPayload)
@@ -202,7 +202,7 @@ export const TollChat = ({
         break
       case 'CONVERSATION_CLOSE_CONVERSATION':
         console.log('conversation close conversation...')
-        handleAgentEndChat()
+        afterEndChatReset()
         break
       default:
         console.log('Unknown event:', event)
@@ -335,7 +335,7 @@ export const TollChat = ({
             return entry.entryType === 'Message'
           })
           const formattedMessages = messages.map((message, index) => {
-            return createMessagePayload(
+            return formatMessage(
               message,
               tbChat.firstName,
               tbChat.lastName,
@@ -357,7 +357,7 @@ export const TollChat = ({
                 } else if (entry.operation === 'remove') {
                   // see if the agent left the conversation while offline
 
-                  handleAgentEndChat()
+                  afterEndChatReset()
                   setSystemMessage(entry.displayName + ' ended the chat')
                   chatWasEndedByAgentWhileOffline = true
                 }
@@ -431,7 +431,7 @@ export const TollChat = ({
     setShowConfirmationEndMessage(false)
   }
 
-  const handleAgentEndChat = () => {
+  const afterEndChatReset = () => {
     sessionStorage.setItem('tbChat', JSON.stringify({}))
     setIsMinimized(false)
     setShowChatButton(false)
@@ -450,7 +450,7 @@ export const TollChat = ({
   }
 
   const handleEndChat = async () => {
-    handleAgentEndChat()
+    afterEndChatReset()
     setShowChatHeader(false)
     setIsChatOpen(false)
 
@@ -697,7 +697,7 @@ export const TollChat = ({
                         {message.payload?.formatType === 'Attachments' && (
                           <>
                             <a
-                              href={message?.payload?.attachments[0]?.url}
+                              href={message?.payload?.attachments?.[0]?.url}
                               download
                               className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
                             >

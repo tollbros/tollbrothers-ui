@@ -20,7 +20,7 @@ export const convertId15to18 = (id15) => {
   return id15 + suffix
 }
 
-export const createMessagePayload = (message, firstName, lastName, index) => {
+export const formatMessage = (message, firstName, lastName, index) => {
   const formatedMessage = {
     id: `${message.identifier}`,
     payload: message.entryPayload?.abstractMessage?.staticContent,

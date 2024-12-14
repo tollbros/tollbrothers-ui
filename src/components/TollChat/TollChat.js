@@ -11,17 +11,17 @@ import {
   createConversationListener,
   getConversationHistory,
   postMessage
-} from '../../utils/chat/apis'
+} from '../../../utils/chat/apis'
 import {
   convertTimeStamp,
   formatMessage,
   popNextUUID
-} from '../../utils/chat/libs'
+} from '../../../utils/chat/libs'
 import ChatInput from './ChatInput'
 
-import Minus from '../icons/Minus'
-import Plus from '../icons/Plus'
-import CloseX from '../icons/CloseX'
+import Minus from '../../icons/Minus'
+import Plus from '../../icons/Plus'
+import CloseX from '../../icons/CloseX'
 
 export const TollChat = ({
   availabilityAPI,

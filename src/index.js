@@ -6,7 +6,7 @@ export { TollButton } from './components/TollButton'
 export { DragSlider } from './components/DragSlider'
 export { MortgageCalculator } from './components/MortgageCalculator'
 export { HorizontalScroller } from './components/HorizontalScroller'
-export { TollChat } from './components/TollChat'
+export { TollChat } from './components/TollChat/TollChat'
 export { Slider }
 
 // Change to Trigger Build

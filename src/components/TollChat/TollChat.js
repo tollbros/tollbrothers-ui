@@ -22,6 +22,7 @@ import ChatInput from './ChatInput'
 import Minus from '../../icons/Minus'
 import Plus from '../../icons/Plus'
 import CloseX from '../../icons/CloseX'
+import ChatMessageText from './ChatMessageText'
 
 export const TollChat = ({
   availabilityAPI,
@@ -676,30 +677,49 @@ export const TollChat = ({
                           {convertTimeStamp(message.timestamp)}
                         </div>
                         {message.payload?.formatType === 'RichLink' && (
-                          <a
-                            href={message.payload?.linkItem?.url}
-                            className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
-                          >
-                            <img
-                              src={message?.payload?.image?.assetUrl}
-                              width={150}
-                              height={84}
-                              alt='Url'
-                            />
-                            <div className={styles.copyWrapper}>
-                              <p>
-                                {message.payload?.linkItem?.titleItem?.title}
-                              </p>
-                              <p>{message.payload?.linkItem?.url}</p>
-                            </div>
-                          </a>
+                          <>
+                            {message.text && (
+                              <ChatMessageText message={message} />
+                            )}
+                            <a
+                              href={message.payload?.linkItem?.url}
+                              className={`${styles.attachementWrapper} ${
+                                styles.richFormat
+                              } ${
+                                message?.role === 'Agent' ||
+                                message?.role === 'System'
+                                  ? styles.agent
+                                  : ''
+                              }`}
+                            >
+                              <img
+                                src={message?.payload?.image?.assetUrl}
+                                width={150}
+                                height={84}
+                                alt='Url'
+                              />
+                              <div className={styles.copyWrapper}>
+                                <p>
+                                  {message.payload?.linkItem?.titleItem?.title}
+                                </p>
+                                <p>{message.payload?.linkItem?.url}</p>
+                              </div>
+                            </a>
+                          </>
                         )}
                         {message.payload?.formatType === 'Attachments' && (
                           <>
+                            {message.text && (
+                              <ChatMessageText message={message} />
+                            )}
                             <a
                               href={message?.payload?.attachments?.[0]?.url}
                               download
-                              className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
+                              className={`${styles.attachementWrapper} ${
+                                styles.richFormat
+                              } ${styles.agent} ${
+                                message.text ? styles.withText : ''
+                              }`}
                             >
                               {message?.payload?.attachments[0]?.name.endsWith(
                                 '.pdf'
@@ -715,7 +735,7 @@ export const TollChat = ({
                                     src={message?.payload?.attachments[0]?.url}
                                     width={150}
                                     height={84}
-                                    alt='Agent Thumbnail'
+                                    alt='Attachment Thumbnail'
                                   />
                                   <div className={styles.copyWrapper}>
                                     <p>Click to download</p>
@@ -725,43 +745,9 @@ export const TollChat = ({
                             </a>
                           </>
                         )}
-                        {message.payload?.formatType === 'Text' && (
-                          <div
-                            className={`${styles.messageWrapper}  ${
-                              message?.role === 'Agent' ||
-                              message?.role === 'System'
-                                ? styles.agent
-                                : styles.guest
-                            }`}
-                          >
-                            <>
-                              {message.image && (
-                                <img
-                                  src={message.image}
-                                  width={30}
-                                  height={30}
-                                  alt='Agent Thumbnail'
-                                  onError={(e) => {
-                                    e.currentTarget.src =
-                                      'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                                  }}
-                                />
-                              )}
-                              <p className={`${styles.message}`}>
-                                {message.text}
-                              </p>
-                            </>
-                          </div>
-                        )}
-                        {message.payload?.formatType === 'Typing' && (
-                          <div
-                            key={`index${index}`}
-                            className={`${styles.messageWrapper} ${styles.typingIndicator}`}
-                          >
-                            <p className={`${styles.message}`}>
-                              {message.text}
-                            </p>
-                          </div>
+                        {(message.payload?.formatType === 'Text' ||
+                          message.payload?.formatType === 'Typing') && (
+                          <ChatMessageText message={message} />
                         )}
                       </React.Fragment>
                     )

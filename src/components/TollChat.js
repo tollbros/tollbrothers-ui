@@ -9,9 +9,14 @@ import {
   startConversation,
   endChat,
   createConversationListener,
-  getConversationHistory
+  getConversationHistory,
+  postMessage
 } from '../../utils/chat/apis'
-import { convertTimeStamp, createMessagePayload } from '../../utils/chat/libs'
+import {
+  convertTimeStamp,
+  createMessagePayload,
+  popNextUUID
+} from '../../utils/chat/libs'
 import ChatInput from './ChatInput'
 
 import Minus from '../icons/Minus'
@@ -45,15 +50,15 @@ export const TollChat = ({
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
-  const [customerFirstName, setCustomerFirstName] = useState('John')
+  const [customerFirstName, setCustomerFirstName] = useState('Guest')
   const [customerLastName, setCustomerLastName] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
-  const [showActiveTyping, setShowActiveTyping] = useState(false) // to differentiate between initial sender and agent
-  const [isMinimized, setIsMinimized] = useState(false) // form panel controls
+  const [showActiveTyping, setShowActiveTyping] = useState(false)
+  const [isMinimized, setIsMinimized] = useState(false)
   const [systemMessage, setSystemMessage] = useState('') // system messages
   const [chatPhoto, setChatPhoto] = useState(null) // osc image
-  const [reestablishedConnection, setReestablishedConnection] = useState(false) // reestablished connection
+  const [agentName, setAgentName] = useState('Agent') // agent name
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -115,6 +120,12 @@ export const TollChat = ({
         })
       )
 
+      sendSystemtMessage({
+        accessToken: token.accessToken,
+        conversationId: newUuid,
+        message: '::System Message:: User started chat'
+      })
+
       await request({
         accessToken: token.accessToken,
         handleChatMessage
@@ -140,27 +151,21 @@ export const TollChat = ({
       case 'CONVERSATION_PARTICIPANT_CHANGED':
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
-
         setShowWaitMessage(false)
 
+        console.log('participant changed:', messagePayload)
+
         if (messagePayload?.entries?.[0]?.operation === 'remove') {
-          sessionStorage.setItem('tbChat', JSON.stringify({}))
-          setShowChatButton(false)
-          setIsCurrentlyChatting(false)
-          setConversationId(null)
-          setAccessToken(null)
+          handleAgentEndChat()
           setSystemMessage(
-            messagePayload.entries[0].displayName + ' left the conversation'
+            messagePayload.entries[0].displayName + ' ended the chat'
           )
-          setShowForm(false)
-          setMessages([])
-          setIsMinimized(false)
-          setShowWaitMessage(false)
         } else {
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
             if (entry.operation === 'add') {
               setSystemMessage(`You're chatting with ` + entry.displayName)
+              setAgentName(entry.displayName)
               continue
             }
           }
@@ -197,18 +202,7 @@ export const TollChat = ({
         break
       case 'CONVERSATION_CLOSE_CONVERSATION':
         console.log('conversation close conversation...')
-
-        sessionStorage.setItem('tbChat', JSON.stringify({}))
-        setShowChatButton(false)
-        setIsCurrentlyChatting(false)
-        setConversationId(null)
-        setSystemMessage(null)
-        setAccessToken(null)
-        setMessages([])
-        setShowWaitMessage(false)
-        setReestablishedConnection(false)
-        setShowConfirmationEndMessage(false)
-        setShowTextChatOptions(false)
+        handleAgentEndChat()
         break
       default:
         console.log('Unknown event:', event)
@@ -217,7 +211,6 @@ export const TollChat = ({
 
     if (messages.length > 0) {
       setMessages((prevMessages) => [...prevMessages, ...messages])
-      setShowWaitMessage(false)
     }
   }
 
@@ -232,6 +225,7 @@ export const TollChat = ({
     setShowWaitMessage(true)
     setShowForm(false)
     setSystemMessage(null)
+    setShowActiveTyping(false)
     await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
   }
 
@@ -308,8 +302,26 @@ export const TollChat = ({
     setChatStatus('offline')
   }, [chatRegion, availabilityAPI])
 
+  const sendSystemtMessage = async ({
+    accessToken,
+    conversationId,
+    message
+  }) => {
+    try {
+      await postMessage({
+        accessToken,
+        conversationId,
+        msg: message,
+        endPoint,
+        apiSfName
+      })
+    } catch {
+      console.error('Error sending system message.')
+    }
+  }
+
   useEffect(() => {
-    const getConvoList = async (tbChat) => {
+    const getConversationList = async (tbChat) => {
       try {
         const response = await getConversationHistory({
           accessToken: tbChat.accessToken,
@@ -318,6 +330,7 @@ export const TollChat = ({
         })
 
         if (response?.conversationEntries?.length > 0) {
+          // return only messages
           const messages = response.conversationEntries.filter((entry) => {
             return entry.entryType === 'Message'
           })
@@ -330,17 +343,40 @@ export const TollChat = ({
             )
           })
 
-          setMessages(formattedMessages ?? [])
+          let chatWasEndedByAgentWhileOffline = false
+          response.conversationEntries.map((entry) => {
+            if (
+              entry.entryType === 'ParticipantChanged' &&
+              entry.entryPayload?.entries?.length > 0
+            ) {
+              entry.entryPayload.entries.map((entry) => {
+                // find the add entry to get agent name
+                if (entry.operation === 'add') {
+                  setSystemMessage(`You're chatting with ` + entry.displayName)
+                  setAgentName(entry.displayName)
+                } else if (entry.operation === 'remove') {
+                  // see if the agent left the conversation while offline
+
+                  handleAgentEndChat()
+                  setSystemMessage(entry.displayName + ' ended the chat')
+                  chatWasEndedByAgentWhileOffline = true
+                }
+              })
+            }
+          })
+
+          if (!chatWasEndedByAgentWhileOffline) {
+            setMessages(formattedMessages ?? [])
+          }
         } else {
-          throw new Error('No conversation history')
+          throw new Error()
         }
       } catch (err) {
-        console.warn(`Conversation history error`)
+        console.error('Error retreiving chat history')
       }
     }
 
     const reestablishConnection = async (tbChat) => {
-      setReestablishedConnection(true)
       try {
         const request = createConversationListener({
           firstName: tbChat.firstName,
@@ -355,7 +391,7 @@ export const TollChat = ({
           handleChatMessage
         })
       } catch (error) {
-        console.error('Error reestablishing chat:', error)
+        console.error('Error re-establishing chat: ', error)
       }
     }
 
@@ -367,12 +403,18 @@ export const TollChat = ({
       setShowChatButton(false)
       setIsCurrentlyChatting(true)
       setSystemMessage(null)
+      setShowActiveTyping(false)
       setShowChat(true)
       setShowChatHeader(true)
       setShowWaitMessage(false)
       setShowTextChatOptions(false)
       reestablishConnection(tbChat)
-      getConvoList(tbChat)
+      getConversationList(tbChat)
+      sendSystemtMessage({
+        accessToken: tbChat.accessToken,
+        conversationId: tbChat.conversationId,
+        message: '::System Message:: Guest restored connection'
+      })
     }
   }, [])
 
@@ -389,22 +431,33 @@ export const TollChat = ({
     setShowConfirmationEndMessage(false)
   }
 
-  const handleEndChat = async () => {
-    setSystemMessage(null)
-    setShowWaitMessage(false)
+  const handleAgentEndChat = () => {
+    sessionStorage.setItem('tbChat', JSON.stringify({}))
     setIsMinimized(false)
+    setShowChatButton(false)
+    setIsCurrentlyChatting(false)
+    setConversationId(null)
+    // setSystemMessage(null)
+    setShowActiveTyping(false)
+    setShowForm(false)
+    setAccessToken(null)
+    setMessages([])
+    setShowWaitMessage(false)
     setShowConfirmationEndMessage(false)
     setShowTextChatOptions(false)
+    setAgentName('Agent')
+    setSystemMessage(null)
+  }
+
+  const handleEndChat = async () => {
+    handleAgentEndChat()
+    setShowChatHeader(false)
+    setIsChatOpen(false)
 
     if (!accessToken || !conversationId) {
-      setIsChatOpen(false)
-      setIsCurrentlyChatting(false)
-      setShowChatHeader(false)
-      setShowForm(false)
-      setSystemMessage(null)
-      setReestablishedConnection(false)
       return
     }
+
     try {
       console.log('Ending chat...')
       await endChat({
@@ -413,14 +466,6 @@ export const TollChat = ({
         endPoint,
         apiSfName
       })
-      setIsChatOpen(false)
-      setIsCurrentlyChatting(false)
-      setShowChatHeader(false)
-      setShowForm(false)
-      setSystemMessage(null)
-      setConversationId(null)
-      setAccessToken(null)
-      setReestablishedConnection(false)
     } catch (error) {
       console.error('Chat end error:', error.message)
     }
@@ -431,6 +476,31 @@ export const TollChat = ({
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages, isMinimized])
+
+  useEffect(() => {
+    if (showActiveTyping) {
+      // add typing message to message list
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: popNextUUID(),
+          type: 'Message',
+          text: agentName + ' is typing...',
+          payload: { formatType: 'Typing' },
+          role: 'Agent'
+        }
+      ])
+    } else {
+      setMessages((prevMessages) => {
+        // remove typing message from message list
+        return prevMessages.filter((message) => {
+          return message.payload?.formatType !== 'Typing'
+        })
+      })
+    }
+  }, [showActiveTyping])
+
+  console.log('messagessss:', messages)
 
   return (
     <>
@@ -461,7 +531,6 @@ export const TollChat = ({
                     <a
                       href={chatSms ? `sms:${chatSms}` : '#'}
                       className={`${styles.textButton} ${styles.textChatButtons}`}
-                      // onClick={}
                     >
                       <img
                         src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
@@ -484,6 +553,10 @@ export const TollChat = ({
                     'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
                   }
                   alt='osc'
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                  }}
                 />
 
                 {!showTextChatOptions && (
@@ -531,7 +604,11 @@ export const TollChat = ({
               <p className={styles.waitMessage}>
                 Please wait while we connect you with a representative.
               </p>
-              <div className={styles.spinner} />
+              <div className={styles.loading}>
+                <span />
+                <span />
+                <span />
+              </div>
             </>
           )}
           {showConfirmationEndMessage && (
@@ -585,21 +662,6 @@ export const TollChat = ({
           )}
 
           <div className={styles.messagesWrapper} ref={chatContainerRef}>
-            {/* they might want to add this back in later */}
-            {/* {showActiveTyping && (
-              <div className={`${styles.agent} ${styles.typingWrapper}`}>
-                <div className={`${styles.message} `}>
-                  <p className={styles.typingIndictor}>
-                    <span className={styles.activeTypingWrapper}>
-                      <span />
-                      <span />
-                      <span />
-                    </span>
-                  </p>
-                </div>
-              </div>
-            )}{' '}
-            */}
             {systemMessage && (
               <p className={styles.persistentText}>{systemMessage}.</p>
             )}
@@ -616,7 +678,6 @@ export const TollChat = ({
                         {message.payload?.formatType === 'RichLink' && (
                           <a
                             href={message.payload?.linkItem?.url}
-                            key={`link${index}`}
                             className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
                           >
                             <img
@@ -638,13 +699,14 @@ export const TollChat = ({
                             <a
                               href={message?.payload?.attachments[0]?.url}
                               download
-                              key={`attachment${index}`}
                               className={`${styles.messageWrapper}  ${styles.agent}  ${styles.richFormat}`}
                             >
                               {message?.payload?.attachments[0]?.name.endsWith(
                                 '.pdf'
                               ) ? (
-                                <div className={styles.copyWrapper}>
+                                <div
+                                  className={`${styles.copyWrapper} ${styles.pdf}`}
+                                >
                                   <p>Download PDF</p>
                                 </div>
                               ) : (
@@ -665,13 +727,12 @@ export const TollChat = ({
                         )}
                         {message.payload?.formatType === 'Text' && (
                           <div
-                            key={`index${index}`}
                             className={`${styles.messageWrapper}  ${
                               message?.role === 'Agent' ||
                               message?.role === 'System'
                                 ? styles.agent
                                 : styles.guest
-                            }  js_messageWrapper`}
+                            }`}
                           >
                             <>
                               {message.image && (
@@ -680,21 +741,26 @@ export const TollChat = ({
                                   width={30}
                                   height={30}
                                   alt='Agent Thumbnail'
+                                  onError={(e) => {
+                                    e.currentTarget.src =
+                                      'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                                  }}
                                 />
                               )}
-                              {!message.image && message?.role === 'Agent' && (
-                                <span>{message.initial}</span>
-                              )}
-                              <p
-                                className={`${styles.message} ${
-                                  showActiveTyping
-                                    ? styles.activeTyping
-                                    : styles.notActive
-                                }`}
-                              >
+                              <p className={`${styles.message}`}>
                                 {message.text}
                               </p>
                             </>
+                          </div>
+                        )}
+                        {message.payload?.formatType === 'Typing' && (
+                          <div
+                            key={`index${index}`}
+                            className={`${styles.messageWrapper} ${styles.typingIndicator}`}
+                          >
+                            <p className={`${styles.message}`}>
+                              {message.text}
+                            </p>
                           </div>
                         )}
                       </React.Fragment>
@@ -715,7 +781,6 @@ export const TollChat = ({
                 setCustomerLastName={setCustomerLastName}
                 apiSfName={apiSfName}
                 endPoint={endPoint}
-                reestablishedConnection={reestablishedConnection}
               />
             </div>
           )}

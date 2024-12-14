@@ -1,4 +1,5 @@
 import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { popNextUUID } from './libs'
 
 // gets osc availability
 export const fetchAvailability = async (region, availabilityAPI) => {
@@ -273,7 +274,7 @@ export const getConversationHistory = async ({
   endPoint
 }) => {
   const response = await fetch(
-    `${endPoint}/iamessage/api/v2/conversation/${conversationId}/entries?limit=50&direction=FromStart`,
+    `${endPoint}/iamessage/api/v2/conversation/${conversationId}/entries?limit=100&direction=FromStart`,
     {
       method: 'GET',
       headers: {
@@ -284,4 +285,36 @@ export const getConversationHistory = async ({
   )
 
   return await response?.json()
+}
+
+export const postMessage = async (payload) => {
+  const response = await fetch(
+    `${payload.endPoint}/iamessage/api/v2/conversation/${payload.conversationId}/message`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${payload.accessToken}`
+      },
+      body: JSON.stringify({
+        message: {
+          id: popNextUUID(),
+          messageType: 'StaticContentMessage',
+          staticContent: {
+            formatType: 'Text',
+            text: payload.msg
+          }
+        },
+        esDeveloperName: payload.apiSfName,
+        isNewMessagingSession: false
+      })
+    }
+  )
+
+  if (response?.status < 300) {
+    return 'success'
+  } else {
+    console.log('throw the error')
+    throw new Error()
+  }
 }

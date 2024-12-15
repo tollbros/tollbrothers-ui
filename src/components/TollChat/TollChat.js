@@ -4,6 +4,12 @@ import React, { useRef, useState, useEffect } from 'react'
 
 import styles from './TollChat.module.scss'
 import {
+  clearLocalStorage,
+  getLocalStorage,
+  isExpired,
+  setLocalStorage
+} from '../../lib/utils'
+import {
   handleChatInit,
   fetchAvailability,
   startConversation,
@@ -111,14 +117,15 @@ export const TollChat = ({
         conversationId: newUuid
       })
 
-      sessionStorage.setItem(
+      setLocalStorage(
         'tbChat',
-        JSON.stringify({
+        {
           accessToken: token.accessToken,
           conversationId: newUuid,
           firstName,
           lastName
-        })
+        },
+        1000 * 60 * 60 * 2 // expire in 2 hours
       )
 
       sendSystemtMessage({
@@ -357,7 +364,6 @@ export const TollChat = ({
                   setAgentName(entry.displayName)
                 } else if (entry.operation === 'remove') {
                   // see if the agent left the conversation while offline
-
                   afterEndChatReset()
                   setSystemMessage(entry.displayName + ' ended the chat')
                   chatWasEndedByAgentWhileOffline = true
@@ -396,11 +402,18 @@ export const TollChat = ({
       }
     }
 
-    const tbChat = JSON.parse(sessionStorage.getItem('tbChat'))
+    const tbChat = getLocalStorage('tbChat')
 
-    if (tbChat?.conversationId && tbChat?.accessToken) {
-      setAccessToken(tbChat.accessToken)
-      setConversationId(tbChat.conversationId)
+    console.log('tbChat:', tbChat)
+
+    if (!tbChat || isExpired(tbChat.expiry)) {
+      clearLocalStorage('tbChat')
+      return
+    }
+
+    if (tbChat?.value?.conversationId && tbChat?.value?.accessToken) {
+      setAccessToken(tbChat.value.accessToken)
+      setConversationId(tbChat.value.conversationId)
       setShowChatButton(false)
       setIsCurrentlyChatting(true)
       setSystemMessage(null)
@@ -409,11 +422,11 @@ export const TollChat = ({
       setShowChatHeader(true)
       setShowWaitMessage(false)
       setShowTextChatOptions(false)
-      reestablishConnection(tbChat)
-      getConversationList(tbChat)
+      reestablishConnection(tbChat.value)
+      getConversationList(tbChat.value)
       sendSystemtMessage({
-        accessToken: tbChat.accessToken,
-        conversationId: tbChat.conversationId,
+        accessToken: tbChat.value.accessToken,
+        conversationId: tbChat.value.conversationId,
         message: '::System Message:: Guest restored connection'
       })
     }
@@ -433,7 +446,7 @@ export const TollChat = ({
   }
 
   const afterEndChatReset = () => {
-    sessionStorage.setItem('tbChat', JSON.stringify({}))
+    clearLocalStorage('tbChat')
     setIsMinimized(false)
     setShowChatButton(false)
     setIsCurrentlyChatting(false)
@@ -501,7 +514,7 @@ export const TollChat = ({
     }
   }, [showActiveTyping])
 
-  console.log('messagessss:', messages)
+  // console.log('messagessss:', messages)
 
   return (
     <>

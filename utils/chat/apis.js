@@ -311,6 +311,9 @@ export const postMessage = async (payload) => {
     }
   )
 
+  // if 403, most likely the conversation has ended so let's just end it
+  // this could happen if they have chat open in two tabs and the chat was ended
+
   if (response?.status < 300) {
     return 'success'
   } else {

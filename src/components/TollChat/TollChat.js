@@ -131,7 +131,7 @@ export const TollChat = ({
       sendSystemtMessage({
         accessToken: token.accessToken,
         conversationId: newUuid,
-        message: '::System Message:: User started chat'
+        message: '::System Message:: User initiated chat(' + location.href + ')'
       })
 
       await request({

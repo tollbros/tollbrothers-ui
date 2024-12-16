@@ -10,10 +10,10 @@ export default function ChatInput({
   accessToken,
   conversationId,
   apiSfName,
-  endPoint
+  endPoint,
+  setError
 }) {
   const [message, setMessage] = useState('')
-  const [error, setError] = useState(null)
   const [showArrow, setShowArrow] = useState(false)
 
   const sendMessage = async () => {
@@ -36,7 +36,7 @@ export default function ChatInput({
       await postMessage(payload)
       setMessage('')
     } catch (err) {
-      console.log('catch')
+      if (message) setShowArrow(true)
       setError('Failed to send message. Please try again.')
     }
   }
@@ -97,7 +97,6 @@ export default function ChatInput({
           <ChevronRight fill='#fff' />
         </button>
       )}
-      {error && <div style={{ color: 'red' }}>{error}</div>}
     </div>
   )
 }

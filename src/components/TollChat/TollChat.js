@@ -14,9 +14,9 @@ import {
   fetchAvailability,
   startConversation,
   endChat,
-  createConversationListener,
   getConversationHistory,
-  postMessage
+  postMessage,
+  listenToConversation
 } from '../../../utils/chat/apis'
 import {
   convertTimeStamp,
@@ -66,6 +66,8 @@ export const TollChat = ({
   const [systemMessage, setSystemMessage] = useState('') // system messages
   const [chatPhoto, setChatPhoto] = useState(null) // osc image
   const [agentName, setAgentName] = useState('Agent') // agent name
+  const [error, setError] = useState(null)
+  const [abortController, setAbortController] = useState(null)
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -105,41 +107,66 @@ export const TollChat = ({
         apiSfName
       }
 
-      await startConversation(payload, payload.apiSfName)
-      setConversationId(payload.conversationId)
+      const response = await startConversation(payload)
 
-      const request = createConversationListener({
-        firstName,
-        lastName,
-        endPoint,
-        apiSfOrgId,
-        accessToken: token.accessToken,
-        conversationId: newUuid
-      })
+      if (response) {
+        console.log('good to start listening')
+        let initialize = false
+        setConversationId(payload.conversationId)
 
-      setLocalStorage(
-        'tbChat',
-        {
+        const onSuccess = (abortController) => {
+          if (initialize) return
+
+          initialize = true
+          setLocalStorage(
+            'tbChat',
+            {
+              accessToken: token.accessToken,
+              conversationId: newUuid,
+              firstName,
+              lastName
+            },
+            1000 * 60 * 60 * 2 // expire in 2 hours
+          )
+
+          sendSystemtMessage({
+            accessToken: token.accessToken,
+            conversationId: newUuid,
+            message:
+              '::System Message:: User initiated chat(' + location.href + ')'
+          })
+
+          setAbortController(abortController)
+        }
+
+        listenToConversation({
+          handleChatMessage,
+          onSuccess,
+          firstName,
+          lastName,
+          endPoint,
+          apiSfOrgId,
           accessToken: token.accessToken,
           conversationId: newUuid,
-          firstName,
-          lastName
-        },
-        1000 * 60 * 60 * 2 // expire in 2 hours
-      )
-
-      sendSystemtMessage({
-        accessToken: token.accessToken,
-        conversationId: newUuid,
-        message: '::System Message:: User initiated chat(' + location.href + ')'
-      })
-
-      await request({
-        accessToken: token.accessToken,
-        handleChatMessage
-      })
+          onError: () => {
+            console.log('Error starting conversation')
+            handleEndChat(token.accessToken, newUuid)
+            setShowForm(true)
+            setShowChatHeader(true)
+            setIsChatOpen(true)
+            setError(
+              'There was an error initializing the chat. Please try again.'
+            )
+          }
+        })
+      }
     } catch (error) {
-      console.error('Error initializing chat:', error)
+      console.error('Error initializing chat')
+      handleEndChat()
+      setShowForm(true)
+      setShowChatHeader(true)
+      setIsChatOpen(true)
+      setError('There was an error initializing the chat. Please try again.')
     }
   }
 
@@ -160,8 +187,6 @@ export const TollChat = ({
         data = JSON.parse(event.data)
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
         setShowWaitMessage(false)
-
-        console.log('participant changed:', messagePayload)
 
         if (messagePayload?.entries?.[0]?.operation === 'remove') {
           afterEndChatReset()
@@ -228,6 +253,7 @@ export const TollChat = ({
     const [firstName, ...lastNameParts] = formData.name.trim().split(' ')
     const lastName = lastNameParts.join(' ') || '(none)'
 
+    setError(null)
     setCustomerFirstName(firstName)
     setCustomerLastName(lastName)
     setShowWaitMessage(true)
@@ -328,124 +354,145 @@ export const TollChat = ({
     }
   }
 
-  useEffect(() => {
-    const getConversationList = async (tbChat) => {
-      try {
-        const response = await getConversationHistory({
-          accessToken: tbChat.accessToken,
-          conversationId: tbChat.conversationId,
-          endPoint
+  const getConversationList = async (tbChat) => {
+    try {
+      const response = await getConversationHistory({
+        accessToken: tbChat.accessToken,
+        conversationId: tbChat.conversationId,
+        endPoint
+      })
+
+      if (response?.conversationEntries?.length > 0) {
+        // return only messages
+        const messages = response.conversationEntries.filter((entry) => {
+          return entry.entryType === 'Message'
+        })
+        const formattedMessages = messages.map((message, index) => {
+          return formatMessage(
+            message,
+            tbChat.firstName,
+            tbChat.lastName,
+            index
+          )
         })
 
-        if (response?.conversationEntries?.length > 0) {
-          // return only messages
-          const messages = response.conversationEntries.filter((entry) => {
-            return entry.entryType === 'Message'
-          })
-          const formattedMessages = messages.map((message, index) => {
-            return formatMessage(
-              message,
-              tbChat.firstName,
-              tbChat.lastName,
-              index
-            )
-          })
-
-          let chatWasEndedByAgentWhileOffline = false
-          response.conversationEntries.map((entry) => {
-            if (
-              entry.entryType === 'ParticipantChanged' &&
-              entry.entryPayload?.entries?.length > 0
-            ) {
-              entry.entryPayload.entries.map((entry) => {
-                // find the add entry to get agent name
-                if (entry.operation === 'add') {
-                  setSystemMessage(`You're chatting with ` + entry.displayName)
-                  setAgentName(entry.displayName)
-                } else if (entry.operation === 'remove') {
-                  // see if the agent left the conversation while offline
-                  afterEndChatReset()
-                  setSystemMessage(entry.displayName + ' ended the chat')
-                  chatWasEndedByAgentWhileOffline = true
-                }
-              })
-            }
-          })
-
-          if (!chatWasEndedByAgentWhileOffline) {
-            setMessages(formattedMessages ?? [])
+        let chatWasEndedByAgentWhileOffline = false
+        response.conversationEntries.map((entry) => {
+          if (
+            entry.entryType === 'ParticipantChanged' &&
+            entry.entryPayload?.entries?.length > 0
+          ) {
+            entry.entryPayload.entries.map((entry) => {
+              // find the add entry to get agent name
+              if (entry.operation === 'add') {
+                setSystemMessage(`You're chatting with ` + entry.displayName)
+                setAgentName(entry.displayName)
+              } else if (entry.operation === 'remove') {
+                // see if the agent left the conversation while offline
+                afterEndChatReset()
+                setSystemMessage(entry.displayName + ' ended the chat')
+                chatWasEndedByAgentWhileOffline = true
+              }
+            })
           }
-        } else {
-          throw new Error()
+        })
+
+        if (!chatWasEndedByAgentWhileOffline) {
+          setMessages(formattedMessages ?? [])
         }
-      } catch (err) {
-        console.error('Error retreiving chat history')
+      } else {
+        throw new Error()
       }
+    } catch (err) {
+      console.error('Error retreiving chat history')
+    }
+  }
+
+  const reestablishConnection = (event) => {
+    if (event && event.type === 'visibilitychange' && document.hidden) {
+      return
     }
 
-    const reestablishConnection = async (tbChat) => {
-      try {
-        const request = createConversationListener({
-          firstName: tbChat.firstName,
-          lastName: tbChat.lastName,
-          endPoint,
-          apiSfOrgId,
-          accessToken: tbChat.accessToken,
-          conversationId: tbChat.conversationId
-        })
-        await request({
-          accessToken: tbChat.accessToken,
-          handleChatMessage
-        })
-      } catch (error) {
-        console.error('Error re-establishing chat: ', error)
-      }
-    }
-
+    let initialize = false
+    const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
     const tbChat = getLocalStorage('tbChat')
-
-    console.log('tbChat:', tbChat)
 
     if (!tbChat || isExpired(tbChat.expiry)) {
       clearLocalStorage('tbChat')
       return
     }
 
-    if (tbChat?.value?.conversationId && tbChat?.value?.accessToken) {
-      setAccessToken(tbChat.value.accessToken)
-      setConversationId(tbChat.value.conversationId)
-      setShowChatButton(false)
-      setIsCurrentlyChatting(true)
-      setSystemMessage(null)
-      setShowActiveTyping(false)
-      setShowChat(true)
-      setShowChatHeader(true)
-      setShowWaitMessage(false)
-      setShowTextChatOptions(false)
-      reestablishConnection(tbChat.value)
-      getConversationList(tbChat.value)
-      sendSystemtMessage({
-        accessToken: tbChat.value.accessToken,
-        conversationId: tbChat.value.conversationId,
-        message: '::System Message:: Guest restored connection'
-      })
+    const value = tbChat.value
+    if (!value?.conversationId || !value?.accessToken) {
+      return
+    }
+
+    listenToConversation({
+      handleChatMessage,
+      firstName: value.firstName,
+      lastName: value.lastName,
+      endPoint,
+      apiSfOrgId,
+      accessToken: value.accessToken,
+      conversationId: value.conversationId,
+      onError: () => {
+        handleEndChat(value.accessToken, value.conversationId)
+      },
+      onSuccess: (abortController) => {
+        if (initialize) return
+
+        initialize = true
+        setAccessToken(value.accessToken)
+        setConversationId(value.conversationId)
+        setShowChatButton(false)
+        setIsCurrentlyChatting(true)
+        setSystemMessage(null)
+        setShowActiveTyping(false)
+        setShowChat(true)
+        setShowChatHeader(true)
+        setShowWaitMessage(false)
+        setShowTextChatOptions(false)
+        getConversationList(value)
+        if (!isTabVisiblilityEvent) {
+          sendSystemtMessage({
+            accessToken: value.accessToken,
+            conversationId: value.conversationId,
+            message: '::System Message:: Guest restored connection'
+          })
+        }
+        setAbortController(abortController)
+        setIsChatOpen(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    reestablishConnection()
+    window.addEventListener('visibilitychange', reestablishConnection)
+
+    return () => {
+      window.removeEventListener('visibilitychange', reestablishConnection)
     }
   }, [])
 
   const handleMinimize = () => {
+    setError(null)
     setIsMinimized(!isMinimized)
     setShowConfirmationEndMessage(false)
   }
 
   const handleConfirmationEnd = () => {
+    setError(null)
     setShowConfirmationEndMessage(true)
   }
 
   const handleStay = () => {
+    setError(null)
     setShowConfirmationEndMessage(false)
   }
 
   const afterEndChatReset = () => {
+    setError(null)
     clearLocalStorage('tbChat')
     setIsMinimized(false)
     setShowChatButton(false)
@@ -461,12 +508,19 @@ export const TollChat = ({
     setShowTextChatOptions(false)
     setAgentName('Agent')
     setSystemMessage(null)
+    if (abortController) {
+      // closes sse connection
+      abortController.abort()
+      setAbortController(null)
+    }
   }
 
-  const handleEndChat = async () => {
+  const handleEndChat = async (accessToken, conversationId) => {
     afterEndChatReset()
     setShowChatHeader(false)
     setIsChatOpen(false)
+
+    console.log(accessToken, conversationId)
 
     if (!accessToken || !conversationId) {
       return
@@ -630,7 +684,11 @@ export const TollChat = ({
               <p>Are you sure you want to leave this chat?</p>
               <div className={styles.buttonWrapper}>
                 <button onClick={handleStay}>Stay</button>
-                <button onClick={handleEndChat}>Leave</button>
+                <button
+                  onClick={() => handleEndChat(accessToken, conversationId)}
+                >
+                  Leave
+                </button>
               </div>
             </div>
           )}
@@ -774,15 +832,13 @@ export const TollChat = ({
               <ChatInput
                 accessToken={accessToken}
                 conversationId={conversationId}
-                customerFirstName={customerFirstName}
-                customerLastName={customerLastName}
-                setCustomerFirstName={setCustomerFirstName}
-                setCustomerLastName={setCustomerLastName}
                 apiSfName={apiSfName}
                 endPoint={endPoint}
+                setError={setError}
               />
             </div>
           )}
+          {error && <span className={styles.error}>{error}</span>}
         </div>
       )}
     </>

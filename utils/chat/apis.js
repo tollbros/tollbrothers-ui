@@ -66,9 +66,7 @@ export async function handleChatInit(endPoint, apiSfOrgId, apiSfName) {
 export const startConversation = async (
   payload,
   retries = 2,
-  retryDelay = 1000,
-  endPoint,
-  apiSfName
+  retryDelay = 1000
 ) => {
   if (!payload || !payload.accessToken || !payload.customerEmail) {
     throw new Error('Invalid payload provided chat.js 143')
@@ -97,18 +95,13 @@ export const startConversation = async (
         }
       )
 
-      if (response?.status === 201) {
+      if (response?.ok) {
         return {}
       } else {
-        throw new Error(
-          `API error chat.js 122: ${response.status} ${response.statusText}`
-        )
+        throw new Error()
       }
     } catch (error) {
       if (remainingRetries > 0) {
-        console.warn(
-          `Retrying... Attempts left: ${remainingRetries}, Error: ${error.message}`
-        )
         await new Promise((resolve) => setTimeout(resolve, retryDelay))
         return performRequest(remainingRetries - 1)
       } else {
@@ -120,85 +113,83 @@ export const startConversation = async (
   return performRequest(retries)
 }
 
-export function listenToConversation(
-  retryFunction,
-  retryDelay = 1000,
+export function listenToConversation({
+  handleChatMessage,
+  onSuccess,
   firstName,
   lastName,
   endPoint,
   apiSfOrgId,
   accessToken,
-  conversationId
-) {
-  const request = async (payload) => {
-    let attempts = 0
-    const customerFirstName = firstName
-    const customerLastName = lastName
-    const executeRequest = async () => {
-      try {
-        await fetchEventSource(`${endPoint}/eventrouter/v1/sse`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${payload.accessToken}`,
-            'X-Org-Id': apiSfOrgId
-          },
-          onmessage: (event) => {
-            if (typeof payload.handleChatMessage === 'function') {
-              payload.handleChatMessage(
-                event,
-                customerFirstName,
-                customerLastName,
-                accessToken,
-                conversationId
-              )
-            } else {
-              console.error('handleChatMessage is not a function!')
-            }
-          }
-        })
-      } catch (error) {
-        console.error('Error in fetchEventSource:', error)
-        if (retryFunction && retryFunction(attempts)) {
-          attempts += 1
-          await new Promise((resolve) => setTimeout(resolve, retryDelay))
-          return executeRequest()
+  conversationId,
+  onError
+}) {
+  try {
+    let retryErrorCount = 0
+    const retryErrorOnOpenCount = 0
+    const abortController = new AbortController()
+
+    fetchEventSource(`${endPoint}/eventrouter/v1/sse`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'X-Org-Id': apiSfOrgId
+      },
+      signal: abortController.signal,
+      openWhenHidden: true,
+      async onopen(res) {
+        if (res.ok) {
+          if (onSuccess) onSuccess(abortController)
+        } else if (
+          res.status >= 400 &&
+          res.status < 500 &&
+          res.status !== 429
+        ) {
+          throw new Error('FatalError')
         } else {
-          throw error
+          throw new Error()
+        }
+      },
+      onmessage: (msg) => {
+        if (msg.event === 'FatalError') {
+          console.log('message error?')
+          throw new Error('FatalError')
+        }
+
+        if (typeof handleChatMessage === 'function') {
+          handleChatMessage(
+            msg,
+            firstName,
+            lastName,
+            accessToken,
+            conversationId
+          )
+        } else {
+          console.error('handleChatMessage is not a function!')
+        }
+      },
+      onclose() {
+        abortController.abort()
+      },
+      onerror(err) {
+        if (
+          err === 'FatalError' ||
+          retryErrorCount > 2 ||
+          retryErrorOnOpenCount > 2
+        ) {
+          throw err // rethrow to stop the operation
+        } else {
+          retryErrorCount++
         }
       }
-    }
-
-    return executeRequest()
+    }).catch((error) => {
+      console.log(error)
+      abortController.abort()
+      if (onError) onError()
+    })
+  } catch (error) {
+    if (onError) onError()
   }
-  return { request }
-}
-
-export const fetchUuid = async () => {
-  let data = null
-  let error = null
-  let loading = true
-
-  try {
-    const response = await fetch(`/api/uuid`)
-
-    if (!response.ok) {
-      throw new Error('API error')
-    }
-
-    const result = await response.json()
-
-    if (result?.uuids) {
-      data = result.uuids
-    } else {
-      error = 'No data found'
-    }
-  } catch (err) {
-    error = err.message
-  } finally {
-    loading = false
-  }
-
-  return { data, loading, error }
 }
 
 // end chat
@@ -206,9 +197,9 @@ const RETRY_DELAY = 1000 // Adjust retry delay as needed
 
 export const endChat = async (
   { accessToken, conversationId, endPoint, apiSfName },
-  retries = 3
+  retries = 2
 ) => {
-  const performRequest = async () => {
+  const performRequest = async (remainingRetries) => {
     try {
       const response = await fetch(
         `${endPoint}/iamessage/api/v2/conversation/${conversationId}?esDeveloperName=${apiSfName}`,
@@ -227,45 +218,16 @@ export const endChat = async (
         throw new Error('API error')
       }
     } catch (err) {
-      if (retries > 0) {
-        console.warn(`Retrying... (${retries} attempts left)`)
+      if (remainingRetries > 0) {
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
-        return await performRequest(retries - 1) // Retry
+        return await performRequest(remainingRetries - 1) // Retry
       } else {
-        throw new Error(err.message || 'Failed to end chat after retries.')
+        throw new Error(err.message)
       }
     }
   }
 
   return await performRequest(retries)
-}
-
-export const createConversationListener = ({
-  firstName,
-  lastName,
-  endPoint,
-  apiSfOrgId,
-  accessToken,
-  conversationId
-}) => {
-  const retryFunction = (attempts) => attempts < 3
-  const { request } = listenToConversation(
-    retryFunction,
-    2000,
-    firstName,
-    lastName,
-    endPoint,
-    apiSfOrgId,
-    accessToken,
-    conversationId
-  )
-  if (typeof request !== 'function') {
-    throw new Error(
-      'Invalid request function returned from listenToConversation'
-    )
-  }
-
-  return request
 }
 
 export const getConversationHistory = async ({

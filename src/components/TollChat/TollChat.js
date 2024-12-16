@@ -35,8 +35,6 @@ export const TollChat = ({
   endPoint,
   apiSfOrgId,
   apiSfName,
-  city,
-  state,
   disableFloatingChatButton = false,
   setChatStatus,
   chatStatus,
@@ -57,8 +55,6 @@ export const TollChat = ({
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
-  const [customerFirstName, setCustomerFirstName] = useState('Guest')
-  const [customerLastName, setCustomerLastName] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
   const [showActiveTyping, setShowActiveTyping] = useState(false)
@@ -199,6 +195,7 @@ export const TollChat = ({
             if (entry.operation === 'add') {
               setSystemMessage(`You're chatting with ` + entry.displayName)
               setAgentName(entry.displayName)
+              setIsMinimized(false)
               continue
             }
           }
@@ -254,8 +251,6 @@ export const TollChat = ({
     const lastName = lastNameParts.join(' ') || '(none)'
 
     setError(null)
-    setCustomerFirstName(firstName)
-    setCustomerLastName(lastName)
     setShowWaitMessage(true)
     setShowForm(false)
     setSystemMessage(null)
@@ -650,12 +645,6 @@ export const TollChat = ({
           )}
           {showChatHeader && (
             <div className={styles.header}>
-              <div className={styles.location}>
-                <p>
-                  {/* {city}, {state} NEED TO REVISIT THIS */}
-                  Toll Brothers
-                </p>
-              </div>
               <h2>Chat</h2>
               <div className={styles.panelControls}>
                 <button onClick={() => handleMinimize()} type='button'>

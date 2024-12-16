@@ -60,15 +60,7 @@ export default function ChatInput({
   }
 
   return (
-    <div
-      className={styles.root}
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '60px',
-        padding: '0'
-      }}
-    >
+    <div className={styles.root}>
       <textarea
         rows={2}
         cols={50}
@@ -78,22 +70,7 @@ export default function ChatInput({
         value={message}
       />
       {showArrow && (
-        <button
-          onClick={sendMessage}
-          style={{
-            position: 'absolute',
-            right: '5px',
-            bottom: '5px',
-            top: '5px',
-            width: '52px',
-            height: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#1463c2',
-            cursor: 'pointer'
-          }}
-        >
+        <button onClick={sendMessage}>
           <ChevronRight fill='#fff' />
         </button>
       )}

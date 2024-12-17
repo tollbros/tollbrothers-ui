@@ -49,7 +49,7 @@ export const TollChat = ({
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [showChatHeader, setShowChatHeader] = useState(false)
-  const [showChat, setShowChat] = useState(true)
+  // const [showChat, setShowChat] = useState(true)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
@@ -64,6 +64,8 @@ export const TollChat = ({
   const [agentName, setAgentName] = useState('Agent') // agent name
   const [error, setError] = useState(null)
   const [abortController, setAbortController] = useState(null)
+  const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
+    useState(null)
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -170,6 +172,8 @@ export const TollChat = ({
     const messages = []
     let message = {}
     let data, messagePayload
+
+    console.log('event:', event)
 
     switch (event.event) {
       case 'ping':
@@ -317,15 +321,23 @@ export const TollChat = ({
         )
         if (availability?.data?.payload?.length > 0) {
           setChatStatus('online')
-          setChatPhoto(availability.data.payload[0].photo)
+          const index = Math.floor(
+            Math.random() * availability.data.payload.length
+          )
+          setChatPhoto(availability.data.payload[index]?.photo)
         }
+        setIsChatAvailabilityChecked(true)
       } catch (error) {
+        setIsChatAvailabilityChecked(true)
         console.error('Error fetching osc data:', error)
       }
     }
 
     if (chatRegion) {
       getOscInfo()
+    } else {
+      // if no chatRegion (pages with no OSC) just set this to true.
+      setIsChatAvailabilityChecked(true)
     }
 
     setChatStatus('offline')
@@ -357,6 +369,7 @@ export const TollChat = ({
         endPoint
       })
 
+      setShowWaitMessage(true)
       if (response?.conversationEntries?.length > 0) {
         // return only messages
         const messages = response.conversationEntries.filter((entry) => {
@@ -382,6 +395,7 @@ export const TollChat = ({
               if (entry.operation === 'add') {
                 setSystemMessage(`You're chatting with ` + entry.displayName)
                 setAgentName(entry.displayName)
+                setShowWaitMessage(false)
               } else if (entry.operation === 'remove') {
                 // see if the agent left the conversation while offline
                 afterEndChatReset()
@@ -391,6 +405,8 @@ export const TollChat = ({
             })
           }
         })
+
+        console.log(response.conversationEntries)
 
         if (!chatWasEndedByAgentWhileOffline) {
           setMessages(formattedMessages ?? [])
@@ -443,7 +459,6 @@ export const TollChat = ({
         setIsCurrentlyChatting(true)
         setSystemMessage(null)
         setShowActiveTyping(false)
-        setShowChat(true)
         setShowChatHeader(true)
         setShowWaitMessage(false)
         setShowTextChatOptions(false)
@@ -462,13 +477,20 @@ export const TollChat = ({
   }
 
   useEffect(() => {
-    reestablishConnection()
     window.addEventListener('visibilitychange', reestablishConnection)
 
     return () => {
       window.removeEventListener('visibilitychange', reestablishConnection)
     }
   }, [])
+
+  useEffect(() => {
+    // need to wait for availabilty api to return before reestablishing connection
+    // else we might show chat input too soon (race condition)
+    if (isChatAvailabilityChecked) {
+      reestablishConnection()
+    }
+  }, [isChatAvailabilityChecked])
 
   const handleMinimize = () => {
     setError(null)
@@ -566,270 +588,252 @@ export const TollChat = ({
   // console.log('messagessss:', messages)
 
   return (
-    <>
-      {showChat && (
-        <div
-          className={`${styles.chatWrapper} ${
-            showChatHeader ? styles.chatPanelOpen : ''
-          } ${isMinimized ? styles.isMinimized : ''} ${
-            endChat ? styles.endChat : ''
-          } js_chatWrapper adjust_chatWrapper`}
-          key='wrapper'
-        >
-          {showChatButton && (
-            <>
-              {showTextChatOptions && (
-                <div className={styles.textChatOptions}>
-                  <div className={styles.textChatWrapper}>
-                    <button
-                      className={`${styles.chatButton} ${styles.textChatButtons}`}
-                      onClick={showFormHandler}
-                    >
-                      <img
-                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                        alt='chat'
-                      />
-                      Chat
-                    </button>
-                    <a
-                      href={chatSms ? `sms:${chatSms}` : '#'}
-                      className={`${styles.textButton} ${styles.textChatButtons}`}
-                    >
-                      <img
-                        src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                        alt='chat'
-                      />
-                      Text
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              <button
-                className={styles.chatLaunch}
-                onClick={showTextChatOption}
-              >
-                <img
-                  className={styles.oscHead}
-                  src={
-                    chatPhoto ??
-                    'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                  }
-                  alt='osc'
-                  onError={(e) => {
-                    e.currentTarget.src =
-                      'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-                  }}
-                />
-
-                {!showTextChatOptions && (
-                  <span>
-                    <img
-                      className={styles.chatIcon}
-                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                      alt='chat'
-                    />
-                  </span>
-                )}
-                {showTextChatOptions && (
-                  <span>
-                    <img
-                      className={styles.closeIcon}
-                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
-                      alt='close'
-                    />
-                  </span>
-                )}
-              </button>
-            </>
-          )}
-          {showChatHeader && (
-            <div className={styles.header}>
-              <h2>Chat</h2>
-              <div className={styles.panelControls}>
-                <button onClick={() => handleMinimize()} type='button'>
-                  {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
-                </button>
-                <button onClick={() => handleConfirmationEnd()} type='button'>
-                  <CloseX fill='#000' />
-                </button>
-              </div>
-            </div>
-          )}
-          {showWaitMessage && (
-            <>
-              <p className={styles.waitMessage}>
-                Please wait while we connect you with a representative.
-              </p>
-              <div className={styles.loading}>
-                <span />
-                <span />
-                <span />
-              </div>
-            </>
-          )}
-          {showConfirmationEndMessage && (
-            <div className={styles.confirmationEndMessage}>
-              <p>Are you sure you want to leave this chat?</p>
-              <div className={styles.buttonWrapper}>
-                <button onClick={handleStay}>Stay</button>
+    <div
+      className={`${styles.chatWrapper} ${
+        showChatHeader ? styles.chatPanelOpen : ''
+      } ${isMinimized ? styles.isMinimized : ''}`}
+    >
+      {showChatButton && (
+        <>
+          {showTextChatOptions && (
+            <div className={styles.textChatOptions}>
+              <div className={styles.textChatWrapper}>
                 <button
-                  onClick={() => handleEndChat(accessToken, conversationId)}
+                  className={`${styles.chatButton} ${styles.textChatButtons}`}
+                  onClick={showFormHandler}
                 >
-                  Leave
+                  <img
+                    src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                    alt='chat'
+                  />
+                  Chat
                 </button>
+                <a
+                  href={chatSms ? `sms:${chatSms}` : '#'}
+                  className={`${styles.textButton} ${styles.textChatButtons}`}
+                >
+                  <img
+                    src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                    alt='chat'
+                  />
+                  Text
+                </a>
               </div>
             </div>
           )}
-          {showForm && !isMinimized && (
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <input
-                type='text'
-                id='name'
-                name='name'
-                value={formData.name}
-                onChange={handleChange}
-                required
-                pattern='[A-Za-z\s]+'
-                title='Name can only contain letters and spaces'
-                placeholder='Full Name'
-              />
 
-              <input
-                type='email'
-                id='email'
-                name='email'
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder='Email*'
-              />
+          <button className={styles.chatLaunch} onClick={showTextChatOption}>
+            <img
+              className={styles.oscHead}
+              src={
+                chatPhoto ??
+                'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+              }
+              alt='osc'
+              onError={(e) => {
+                e.currentTarget.src =
+                  'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+              }}
+            />
 
-              <br />
-              <p className={styles.privacyPolicy}>
-                The information you provide will be used in accordance with our{' '}
-                <a
-                  href='https://www.tollbrothers.com/privacy'
-                  target='_blank'
-                  rel='noreferrer'
-                >
-                  Privacy Policy
-                </a>
-                .
-              </p>
-
-              <button type='submit'>Start Chatting</button>
-            </form>
-          )}
-
-          <div className={styles.messagesWrapper} ref={chatContainerRef}>
-            {systemMessage && (
-              <p className={styles.persistentText}>{systemMessage}.</p>
+            {!showTextChatOptions && (
+              <span>
+                <img
+                  className={styles.chatIcon}
+                  src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                  alt='chat'
+                />
+              </span>
             )}
-            {!isMinimized && (
-              <>
-                {messages.map(
-                  (message, index) =>
-                    message.type === 'Message' &&
-                    !message.text?.includes('::System Message::') && (
-                      <React.Fragment key={message.id}>
-                        <div className={styles.timestamp}>
-                          {convertTimeStamp(message.timestamp)}
-                        </div>
-                        {message.payload?.formatType === 'RichLink' && (
-                          <>
-                            {message.text && (
-                              <ChatMessageText message={message} />
-                            )}
-                            <a
-                              href={message.payload?.linkItem?.url}
-                              className={`${styles.attachementWrapper} ${
-                                styles.richFormat
-                              } ${
-                                message?.role === 'Agent' ||
-                                message?.role === 'System'
-                                  ? styles.agent
-                                  : ''
-                              }`}
-                            >
-                              <img
-                                src={message?.payload?.image?.assetUrl}
-                                width={150}
-                                height={84}
-                                alt='Url'
-                              />
-                              <div className={styles.copyWrapper}>
-                                <p>
-                                  {message.payload?.linkItem?.titleItem?.title}
-                                </p>
-                                <p>{message.payload?.linkItem?.url}</p>
-                              </div>
-                            </a>
-                          </>
-                        )}
-                        {message.payload?.formatType === 'Attachments' && (
-                          <>
-                            {message.text && (
-                              <ChatMessageText message={message} />
-                            )}
-                            <a
-                              href={message?.payload?.attachments?.[0]?.url}
-                              download
-                              className={`${styles.attachementWrapper} ${
-                                styles.richFormat
-                              } ${styles.agent} ${
-                                message.text ? styles.withText : ''
-                              }`}
-                            >
-                              {message?.payload?.attachments[0]?.name.endsWith(
-                                '.pdf'
-                              ) ? (
-                                <div
-                                  className={`${styles.copyWrapper} ${styles.pdf}`}
-                                >
-                                  <p>Download PDF</p>
-                                </div>
-                              ) : (
-                                <>
-                                  <img
-                                    src={message?.payload?.attachments[0]?.url}
-                                    width={150}
-                                    height={84}
-                                    alt='Attachment Thumbnail'
-                                  />
-                                  <div className={styles.copyWrapper}>
-                                    <p>Click to download</p>
-                                  </div>
-                                </>
-                              )}
-                            </a>
-                          </>
-                        )}
-                        {(message.payload?.formatType === 'Text' ||
-                          message.payload?.formatType === 'Typing') && (
-                          <ChatMessageText message={message} />
-                        )}
-                      </React.Fragment>
-                    )
-                )}
-              </>
+            {showTextChatOptions && (
+              <span>
+                <img
+                  className={styles.closeIcon}
+                  src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
+                  alt='close'
+                />
+              </span>
             )}
+          </button>
+        </>
+      )}
+      {showChatHeader && (
+        <div className={styles.header}>
+          <h2>Chat</h2>
+          <div className={styles.panelControls}>
+            <button onClick={() => handleMinimize()} type='button'>
+              {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
+            </button>
+            <button onClick={() => handleConfirmationEnd()} type='button'>
+              <CloseX fill='#000' />
+            </button>
           </div>
-
-          {conversationId && accessToken && !isMinimized && (
-            <div className={styles.chatInputWrapper}>
-              <ChatInput
-                accessToken={accessToken}
-                conversationId={conversationId}
-                apiSfName={apiSfName}
-                endPoint={endPoint}
-                setError={setError}
-              />
-            </div>
-          )}
-          {error && <span className={styles.error}>{error}</span>}
         </div>
       )}
-    </>
+      {showWaitMessage && (
+        <>
+          <p className={styles.waitMessage}>
+            Please wait while we connect you with a representative.
+          </p>
+          <div className={styles.loading}>
+            <span />
+            <span />
+            <span />
+          </div>
+        </>
+      )}
+      {showConfirmationEndMessage && (
+        <div className={styles.confirmationEndMessage}>
+          <p>Are you sure you want to leave this chat?</p>
+          <div className={styles.buttonWrapper}>
+            <button onClick={handleStay}>Stay</button>
+            <button onClick={() => handleEndChat(accessToken, conversationId)}>
+              Leave
+            </button>
+          </div>
+        </div>
+      )}
+      {showForm && !isMinimized && (
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input
+            type='text'
+            id='name'
+            name='name'
+            value={formData.name}
+            onChange={handleChange}
+            required
+            pattern='[A-Za-z\s]+'
+            title='Name can only contain letters and spaces'
+            placeholder='Full Name'
+          />
+
+          <input
+            type='email'
+            id='email'
+            name='email'
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder='Email*'
+          />
+
+          <br />
+          <p className={styles.privacyPolicy}>
+            The information you provide will be used in accordance with our{' '}
+            <a
+              href='https://www.tollbrothers.com/privacy'
+              target='_blank'
+              rel='noreferrer'
+            >
+              Privacy Policy
+            </a>
+            .
+          </p>
+
+          <button type='submit'>Start Chatting</button>
+        </form>
+      )}
+
+      <div className={styles.messagesWrapper} ref={chatContainerRef}>
+        {systemMessage && (
+          <p className={styles.persistentText}>{systemMessage}.</p>
+        )}
+        {!isMinimized && (
+          <>
+            {messages.map(
+              (message, index) =>
+                message.type === 'Message' &&
+                !message.text?.includes('::System Message::') && (
+                  <React.Fragment key={message.id}>
+                    <div className={styles.timestamp}>
+                      {convertTimeStamp(message.timestamp)}
+                    </div>
+                    {message.payload?.formatType === 'RichLink' && (
+                      <>
+                        {message.text && <ChatMessageText message={message} />}
+                        <a
+                          href={message.payload?.linkItem?.url}
+                          className={`${styles.attachementWrapper} ${
+                            styles.richFormat
+                          } ${
+                            message?.role === 'Agent' ||
+                            message?.role === 'System'
+                              ? styles.agent
+                              : ''
+                          }`}
+                        >
+                          <img
+                            src={message?.payload?.image?.assetUrl}
+                            width={150}
+                            height={84}
+                            alt='Url'
+                          />
+                          <div className={styles.copyWrapper}>
+                            <p>{message.payload?.linkItem?.titleItem?.title}</p>
+                            <p>{message.payload?.linkItem?.url}</p>
+                          </div>
+                        </a>
+                      </>
+                    )}
+                    {message.payload?.formatType === 'Attachments' && (
+                      <>
+                        {message.text && <ChatMessageText message={message} />}
+                        <a
+                          href={message?.payload?.attachments?.[0]?.url}
+                          download
+                          className={`${styles.attachementWrapper} ${
+                            styles.richFormat
+                          } ${styles.agent} ${
+                            message.text ? styles.withText : ''
+                          }`}
+                        >
+                          {message?.payload?.attachments[0]?.name.endsWith(
+                            '.pdf'
+                          ) ? (
+                            <div
+                              className={`${styles.copyWrapper} ${styles.pdf}`}
+                            >
+                              <p>Download PDF</p>
+                            </div>
+                          ) : (
+                            <>
+                              <img
+                                src={message?.payload?.attachments[0]?.url}
+                                width={150}
+                                height={84}
+                                alt='Attachment Thumbnail'
+                              />
+                              <div className={styles.copyWrapper}>
+                                <p>Click to download</p>
+                              </div>
+                            </>
+                          )}
+                        </a>
+                      </>
+                    )}
+                    {(message.payload?.formatType === 'Text' ||
+                      message.payload?.formatType === 'Typing') && (
+                      <ChatMessageText message={message} />
+                    )}
+                  </React.Fragment>
+                )
+            )}
+          </>
+        )}
+      </div>
+
+      {conversationId && accessToken && !isMinimized && (
+        <div className={styles.chatInputWrapper}>
+          <ChatInput
+            accessToken={accessToken}
+            conversationId={conversationId}
+            apiSfName={apiSfName}
+            endPoint={endPoint}
+            setError={setError}
+          />
+        </div>
+      )}
+      {error && <span className={styles.error}>{error}</span>}
+    </div>
   )
 }

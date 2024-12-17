@@ -66,6 +66,7 @@ export const TollChat = ({
   const [abortController, setAbortController] = useState(null)
   const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
     useState(null)
+  const [hasAgentEngaged, setHasAgentEngaged] = useState(false)
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -200,6 +201,7 @@ export const TollChat = ({
               setSystemMessage(`You're chatting with ` + entry.displayName)
               setAgentName(entry.displayName)
               setIsMinimized(false)
+              setHasAgentEngaged(true)
               continue
             }
           }
@@ -396,10 +398,12 @@ export const TollChat = ({
                 setSystemMessage(`You're chatting with ` + entry.displayName)
                 setAgentName(entry.displayName)
                 setShowWaitMessage(false)
+                setHasAgentEngaged(true)
               } else if (entry.operation === 'remove') {
                 // see if the agent left the conversation while offline
                 afterEndChatReset()
                 setSystemMessage(entry.displayName + ' ended the chat')
+                setHasAgentEngaged(false)
                 chatWasEndedByAgentWhileOffline = true
               }
             })
@@ -514,6 +518,7 @@ export const TollChat = ({
     setIsMinimized(false)
     setShowChatButton(false)
     setIsCurrentlyChatting(false)
+    setHasAgentEngaged(false)
     setConversationId(null)
     // setSystemMessage(null)
     setShowActiveTyping(false)
@@ -593,14 +598,14 @@ export const TollChat = ({
         showChatHeader ? styles.chatPanelOpen : ''
       } ${isMinimized ? styles.isMinimized : ''}`}
     >
-      {showChatButton && (
+      {(showChatButton || isMinimized) && (
         <>
-          {showTextChatOptions && (
+          {(showTextChatOptions || isMinimized) && (
             <div className={styles.textChatOptions}>
               <div className={styles.textChatWrapper}>
                 <button
                   className={`${styles.chatButton} ${styles.textChatButtons}`}
-                  onClick={showFormHandler}
+                  onClick={!isMinimized ? showFormHandler : handleMinimize}
                 >
                   <img
                     src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
@@ -608,21 +613,26 @@ export const TollChat = ({
                   />
                   Chat
                 </button>
-                <a
-                  href={chatSms ? `sms:${chatSms}` : '#'}
-                  className={`${styles.textButton} ${styles.textChatButtons}`}
-                >
-                  <img
-                    src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                    alt='chat'
-                  />
-                  Text
-                </a>
+                {!isMinimized && (
+                  <a
+                    href={chatSms ? `sms:${chatSms}` : '#'}
+                    className={`${styles.textButton} ${styles.textChatButtons}`}
+                  >
+                    <img
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                      alt='chat'
+                    />
+                    Text
+                  </a>
+                )}
               </div>
             </div>
           )}
 
-          <button className={styles.chatLaunch} onClick={showTextChatOption}>
+          <button
+            className={styles.chatLaunch}
+            onClick={!isMinimized ? showTextChatOption : handleMinimize}
+          >
             <img
               className={styles.oscHead}
               src={
@@ -657,20 +667,22 @@ export const TollChat = ({
           </button>
         </>
       )}
-      {showChatHeader && (
+      {showChatHeader && !isMinimized && (
         <div className={styles.header}>
           <h2>Chat</h2>
           <div className={styles.panelControls}>
-            <button onClick={() => handleMinimize()} type='button'>
-              {isMinimized ? <Plus fill='#000' /> : <Minus fill='#000' />}
-            </button>
+            {hasAgentEngaged && (
+              <button onClick={() => handleMinimize()} type='button'>
+                <Minus fill='#000' />
+              </button>
+            )}
             <button onClick={() => handleConfirmationEnd()} type='button'>
               <CloseX fill='#000' />
             </button>
           </div>
         </div>
       )}
-      {showWaitMessage && (
+      {showWaitMessage && !isMinimized && (
         <>
           <p className={styles.waitMessage}>
             Please wait while we connect you with a representative.
@@ -682,7 +694,7 @@ export const TollChat = ({
           </div>
         </>
       )}
-      {showConfirmationEndMessage && (
+      {showConfirmationEndMessage && !isMinimized && (
         <div className={styles.confirmationEndMessage}>
           <p>Are you sure you want to leave this chat?</p>
           <div className={styles.buttonWrapper}>
@@ -735,7 +747,7 @@ export const TollChat = ({
       )}
 
       <div className={styles.messagesWrapper} ref={chatContainerRef}>
-        {systemMessage && (
+        {systemMessage && !isMinimized && (
           <p className={styles.persistentText}>{systemMessage}.</p>
         )}
         {!isMinimized && (

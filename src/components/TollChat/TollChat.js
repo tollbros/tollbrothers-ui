@@ -29,6 +29,8 @@ import ChatInput from './ChatInput'
 import Minus from '../../icons/Minus'
 import CloseX from '../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
+import ChatMessageAttachment from './ChatMessageAttachment'
+import ChatMessageRichLink from './ChatMessageRichLink'
 
 export const TollChat = ({
   availabilityAPI,
@@ -788,64 +790,23 @@ export const TollChat = ({
                     {message.payload?.formatType === 'RichLink' && (
                       <>
                         {message.text && <ChatMessageText message={message} />}
-                        <a
-                          href={message.payload?.linkItem?.url}
-                          className={`${styles.attachementWrapper} ${
-                            styles.richFormat
-                          } ${
+                        <ChatMessageRichLink
+                          richLink={message.payload}
+                          leftAlign={
                             message?.role === 'Agent' ||
                             message?.role === 'System'
-                              ? styles.agent
-                              : ''
-                          }`}
-                        >
-                          <img
-                            src={message?.payload?.image?.assetUrl}
-                            width={150}
-                            height={84}
-                            alt='Url'
-                          />
-                          <div className={styles.copyWrapper}>
-                            <p>{message.payload?.linkItem?.titleItem?.title}</p>
-                            <p>{message.payload?.linkItem?.url}</p>
-                          </div>
-                        </a>
+                          }
+                        />
                       </>
                     )}
                     {message.payload?.formatType === 'Attachments' && (
                       <>
                         {message.text && <ChatMessageText message={message} />}
-                        <a
-                          href={message?.payload?.attachments?.[0]?.url}
-                          download
-                          className={`${styles.attachementWrapper} ${
-                            styles.richFormat
-                          } ${styles.agent} ${
-                            message.text ? styles.withText : ''
-                          }`}
-                        >
-                          {message?.payload?.attachments[0]?.name.endsWith(
-                            '.pdf'
-                          ) ? (
-                            <div
-                              className={`${styles.copyWrapper} ${styles.pdf}`}
-                            >
-                              <p>Download PDF</p>
-                            </div>
-                          ) : (
-                            <>
-                              <img
-                                src={message?.payload?.attachments[0]?.url}
-                                width={150}
-                                height={84}
-                                alt='Attachment Thumbnail'
-                              />
-                              <div className={styles.copyWrapper}>
-                                <p>Click to download</p>
-                              </div>
-                            </>
-                          )}
-                        </a>
+                        <ChatMessageAttachment
+                          attachments={message?.payload?.attachments}
+                          hasText={Boolean(message.text)}
+                          leftAlign={message.role === 'Agent'}
+                        />
                       </>
                     )}
                     {(message.payload?.formatType === 'Text' ||

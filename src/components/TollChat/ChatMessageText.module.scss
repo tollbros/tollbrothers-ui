@@ -22,7 +22,7 @@
         min-height: 25px;
         font-family: $alt_font_family;
         font-size: 14px;
-        background-color: #101f36;
+        background-color: $navy_blue;
         color: #e6eaee;
         word-wrap: break-word;
         max-width: 100%;
@@ -46,7 +46,7 @@
 
         .message {
             background-color: #e6eaee;
-            color: #101f36;
+            color: black;
         }
     }
 

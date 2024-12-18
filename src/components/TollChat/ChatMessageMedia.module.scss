@@ -1,0 +1,74 @@
+@import "styles/modules/all";
+
+.root {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin: 15px 0 15px auto;
+    text-decoration: none;
+    width: 225px;
+
+    &.leftAlign {
+        margin-left: 20px;
+    }
+
+    &.withText {
+        margin-top: -15px;
+    }
+
+    .attachmentImageWrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 16/9;
+        background: $light_gray;
+        object-fit: cover;
+        border-radius: 5px 5px 0 0;
+        height: 122px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+            &.pdf {
+                width: 30px;
+                height: 36px;
+                object-fit: contain;
+            }
+        }
+    }
+
+    .copyWrapper {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        background-color: $navy_blue;
+        padding: 10px 10px;
+        font-size: 14px;
+        border-radius: 0 0 5px 5px;
+        line-height: 1;
+
+        &.column {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1)
+        }
+
+        p {
+            word-wrap: break-word;
+            margin: 0;
+            line-height: 1.3;
+
+            &:nth-child(1) {
+                font-weight: 500;
+            }
+        }
+    }
+}

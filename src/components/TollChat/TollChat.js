@@ -20,13 +20,13 @@ import {
 } from '../../../utils/chat/apis'
 import {
   convertTimeStamp,
+  formatAgentImage,
   formatMessage,
   popNextUUID
 } from '../../../utils/chat/libs'
 import ChatInput from './ChatInput'
 
 import Minus from '../../icons/Minus'
-import Plus from '../../icons/Plus'
 import CloseX from '../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 
@@ -49,7 +49,6 @@ export const TollChat = ({
   const [conversationId, setConversationId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [showChatHeader, setShowChatHeader] = useState(false)
-  // const [showChat, setShowChat] = useState(true)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
@@ -67,6 +66,10 @@ export const TollChat = ({
   const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
     useState(null)
   const [hasAgentEngaged, setHasAgentEngaged] = useState(false)
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState({
+    count: 0,
+    lastMessageId: null
+  })
 
   // console.log('current chat region in tollchat:', chatRegion)
 
@@ -169,12 +172,20 @@ export const TollChat = ({
     }
   }
 
+  const handleAddAgent = (entry) => {
+    setChatPhoto(formatAgentImage(entry.participant?.subject))
+    setSystemMessage(`You're chatting with ` + entry.displayName)
+    setAgentName(entry.displayName)
+    setShowWaitMessage(false)
+    setHasAgentEngaged(true)
+  }
+
   const handleChatMessage = async (event, firstName, lastName) => {
     const messages = []
     let message = {}
     let data, messagePayload
 
-    console.log('event:', event)
+    // console.log('event:', event)
 
     switch (event.event) {
       case 'ping':
@@ -198,10 +209,7 @@ export const TollChat = ({
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
             if (entry.operation === 'add') {
-              setSystemMessage(`You're chatting with ` + entry.displayName)
-              setAgentName(entry.displayName)
-              setIsMinimized(false)
-              setHasAgentEngaged(true)
+              handleAddAgent(entry)
               continue
             }
           }
@@ -326,7 +334,9 @@ export const TollChat = ({
           const index = Math.floor(
             Math.random() * availability.data.payload.length
           )
-          setChatPhoto(availability.data.payload[index]?.photo)
+          if (!isCurrentlyChatting) {
+            setChatPhoto(availability.data.payload[index]?.photo)
+          }
         }
         setIsChatAvailabilityChecked(true)
       } catch (error) {
@@ -377,13 +387,8 @@ export const TollChat = ({
         const messages = response.conversationEntries.filter((entry) => {
           return entry.entryType === 'Message'
         })
-        const formattedMessages = messages.map((message, index) => {
-          return formatMessage(
-            message,
-            tbChat.firstName,
-            tbChat.lastName,
-            index
-          )
+        const formattedMessages = messages.map((message) => {
+          return formatMessage(message, tbChat.firstName, tbChat.lastName)
         })
 
         let chatWasEndedByAgentWhileOffline = false
@@ -395,10 +400,7 @@ export const TollChat = ({
             entry.entryPayload.entries.map((entry) => {
               // find the add entry to get agent name
               if (entry.operation === 'add') {
-                setSystemMessage(`You're chatting with ` + entry.displayName)
-                setAgentName(entry.displayName)
-                setShowWaitMessage(false)
-                setHasAgentEngaged(true)
+                handleAddAgent(entry)
               } else if (entry.operation === 'remove') {
                 // see if the agent left the conversation while offline
                 afterEndChatReset()
@@ -409,8 +411,6 @@ export const TollChat = ({
             })
           }
         })
-
-        console.log(response.conversationEntries)
 
         if (!chatWasEndedByAgentWhileOffline) {
           setMessages(formattedMessages ?? [])
@@ -500,6 +500,7 @@ export const TollChat = ({
     setError(null)
     setIsMinimized(!isMinimized)
     setShowConfirmationEndMessage(false)
+    setUnreadMessagesCount({ count: 0, lastMessageId: null })
   }
 
   const handleConfirmationEnd = () => {
@@ -530,6 +531,7 @@ export const TollChat = ({
     setShowTextChatOptions(false)
     setAgentName('Agent')
     setSystemMessage(null)
+    setUnreadMessagesCount({ count: 0, lastMessageId: null })
     if (abortController) {
       // closes sse connection
       abortController.abort()
@@ -542,7 +544,7 @@ export const TollChat = ({
     setShowChatHeader(false)
     setIsChatOpen(false)
 
-    console.log(accessToken, conversationId)
+    // console.log(accessToken, conversationId)
 
     if (!accessToken || !conversationId) {
       return
@@ -590,7 +592,25 @@ export const TollChat = ({
     }
   }, [showActiveTyping])
 
-  // console.log('messagessss:', messages)
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1]
+
+    if (
+      !document.hidden &&
+      lastMessage?.id !== unreadMessagesCount.lastMessageId &&
+      lastMessage?.payload?.formatType !== 'Typing' &&
+      lastMessage?.type === 'Message' &&
+      lastMessage?.role === 'Agent' &&
+      isMinimized
+    ) {
+      setUnreadMessagesCount((prev) => {
+        return {
+          count: prev.count + 1,
+          lastMessageId: lastMessage?.id
+        }
+      })
+    }
+  }, [messages])
 
   return (
     <div
@@ -602,6 +622,11 @@ export const TollChat = ({
         <>
           {(showTextChatOptions || isMinimized) && (
             <div className={styles.textChatOptions}>
+              {unreadMessagesCount?.count > 0 && (
+                <div className={styles.unreadMessagesIndicator}>
+                  {unreadMessagesCount.count}
+                </div>
+              )}
               <div className={styles.textChatWrapper}>
                 <button
                   className={`${styles.chatButton} ${styles.textChatButtons}`}

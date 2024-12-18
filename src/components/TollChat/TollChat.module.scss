@@ -204,6 +204,25 @@
     z-index: 0;
     //filter: drop-shadow(0 0 2px rgba(0, 0, 0, .65));
 
+    .unreadMessagesIndicator {
+        position: absolute;
+        right: 0px;
+        top: -3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-family: $alt_font_family;
+        font-weight: 500;
+        background: #1a9d47;
+        border: 1px solid white;
+        line-height: 1;
+        z-index: 1;
+    }
+
     .textChatWrapper {
         display: flex;
         flex-direction: column;
@@ -291,6 +310,8 @@
         height: 100%;
         border-radius: 100%;
     }
+
+
 
     span {
         display: block;

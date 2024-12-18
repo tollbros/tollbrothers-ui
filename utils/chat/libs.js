@@ -20,7 +20,15 @@ export const convertId15to18 = (id15) => {
   return id15 + suffix
 }
 
-export const formatMessage = (message, firstName, lastName, index) => {
+export const formatAgentImage = (subject) => {
+  if (!subject) return ''
+
+  return `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
+    subject
+  )}.jpg`
+}
+
+export const formatMessage = (message, firstName, lastName) => {
   const formatedMessage = {
     id: `${message.identifier}`,
     payload: message.entryPayload?.abstractMessage?.staticContent,
@@ -35,9 +43,7 @@ export const formatMessage = (message, firstName, lastName, index) => {
   }
 
   if (message.sender?.role !== 'EndUser') {
-    formatedMessage.image = `https://cdn.tollbrothers.com/images/osc/${convertId15to18(
-      message.sender?.subject
-    )}.jpg`
+    formatedMessage.image = formatAgentImage(message.sender?.subject)
   }
 
   return formatedMessage

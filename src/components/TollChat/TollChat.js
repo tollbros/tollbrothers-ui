@@ -45,6 +45,7 @@ export const TollChat = ({
   isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
   chatSms
 }) => {
+  const isTransfering = useRef(false)
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
   const [messages, setMessages] = useState([])
@@ -73,8 +74,6 @@ export const TollChat = ({
     lastMessageId: null
   })
 
-  // console.log('current chat region in tollchat:', chatRegion)
-
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
@@ -83,6 +82,7 @@ export const TollChat = ({
   const initializeChat = async (
     firstName,
     lastName,
+    email,
     endPoint,
     apiSfOrgId,
     apiSfName
@@ -101,7 +101,7 @@ export const TollChat = ({
 
       const payload = {
         accessToken: token.accessToken,
-        customerEmail: formData.email,
+        customerEmail: email,
         customerFirstName: firstName || 'Guest',
         customerLastName: lastName || '',
         conversationId: newUuid,
@@ -114,7 +114,6 @@ export const TollChat = ({
       const response = await startConversation(payload)
 
       if (response) {
-        console.log('good to start listening')
         let initialize = false
         setConversationId(payload.conversationId)
 
@@ -180,6 +179,8 @@ export const TollChat = ({
     setAgentName(entry.displayName)
     setShowWaitMessage(false)
     setHasAgentEngaged(true)
+    setShowForm(false)
+    setIsCurrentlyChatting(true)
   }
 
   const handleChatMessage = async (event, firstName, lastName) => {
@@ -187,14 +188,19 @@ export const TollChat = ({
     let message = {}
     let data, messagePayload
 
-    // console.log('event:', event)
-
     switch (event.event) {
       case 'ping':
         break
       case 'CONVERSATION_ROUTING_RESULT':
         // seems to fire once when the the start conversation is called but agent has not
         // accepted and no messages yet sent/delivered
+        data = JSON.parse(event.data)
+        messagePayload = JSON.parse(data.conversationEntry.entryPayload)
+
+        if (messagePayload?.routingType === 'Transfer') {
+          isTransfering.current = true
+        }
+
         setIsCurrentlyChatting(true)
         break
       case 'CONVERSATION_PARTICIPANT_CHANGED':
@@ -203,10 +209,17 @@ export const TollChat = ({
         setShowWaitMessage(false)
 
         if (messagePayload?.entries?.[0]?.operation === 'remove') {
-          afterEndChatReset()
-          setSystemMessage(
-            messagePayload.entries[0].displayName + ' ended the chat'
-          )
+          if (!isTransfering.current) {
+            afterEndChatReset()
+            setSystemMessage(
+              messagePayload.entries[0].displayName + ' ended the chat'
+            )
+          } else {
+            setSystemMessage(null)
+            setShowWaitMessage(true)
+            setMessages([])
+            isTransfering.current = false
+          }
         } else {
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
@@ -261,17 +274,44 @@ export const TollChat = ({
   }
 
   const handleSubmit = async (e) => {
+    const offlineMessage =
+      'Our apologies, but all members of our Online Sales Team are currently unavailable. Please try again later.'
     e.preventDefault()
-
-    const [firstName, ...lastNameParts] = formData.name.trim().split(' ')
-    const lastName = lastNameParts.join(' ') || '(none)'
-
     setError(null)
-    setShowWaitMessage(true)
-    setShowForm(false)
     setSystemMessage(null)
     setShowActiveTyping(false)
-    await initializeChat(firstName, lastName, endPoint, apiSfOrgId, apiSfName)
+    setShowWaitMessage(true)
+    setShowForm(false)
+
+    console.log(e)
+
+    try {
+      const availability = await fetchAvailability(chatRegion, availabilityAPI)
+      if (availability?.data?.payload?.length > 0) {
+        const form = e.target
+        const [firstName, ...lastNameParts] = form.name?.value
+          ?.trim()
+          .split(' ')
+        const lastName = lastNameParts?.join(' ') || '(none)'
+
+        await initializeChat(
+          firstName,
+          lastName,
+          form.email?.value?.trim(),
+          endPoint,
+          apiSfOrgId,
+          apiSfName
+        )
+      } else {
+        setShowForm(true)
+        setShowWaitMessage(false)
+        setError(offlineMessage)
+      }
+    } catch (error) {
+      setShowForm(true)
+      setShowWaitMessage(false)
+      setError(offlineMessage)
+    }
   }
 
   const showTextChatOption = () => {
@@ -394,6 +434,7 @@ export const TollChat = ({
         })
 
         let chatWasEndedByAgentWhileOffline = false
+        const tbChatBackup = { ...tbChat }
         response.conversationEntries.map((entry) => {
           if (
             entry.entryType === 'ParticipantChanged' &&
@@ -403,6 +444,19 @@ export const TollChat = ({
               // find the add entry to get agent name
               if (entry.operation === 'add') {
                 handleAddAgent(entry)
+                setLocalStorage(
+                  'tbChat',
+                  {
+                    accessToken: tbChatBackup.accessToken,
+                    conversationId: tbChatBackup.conversationId,
+                    firstName: tbChatBackup.firstName,
+                    lastName: tbChatBackup.lastName
+                  },
+                  1000 * 60 * 60 * 2 // expire in 2 hours
+                )
+                setAccessToken(tbChatBackup.accessToken)
+                setConversationId(tbChatBackup.conversationId)
+                chatWasEndedByAgentWhileOffline = false
               } else if (entry.operation === 'remove') {
                 // see if the agent left the conversation while offline
                 afterEndChatReset()
@@ -534,6 +588,7 @@ export const TollChat = ({
     setAgentName('Agent')
     setSystemMessage(null)
     setUnreadMessagesCount({ count: 0, lastMessageId: null })
+    isTransfering.current = false
     if (abortController) {
       // closes sse connection
       abortController.abort()
@@ -743,7 +798,7 @@ export const TollChat = ({
             required
             pattern='[A-Za-z\s]+'
             title='Name can only contain letters and spaces'
-            placeholder='Full Name'
+            placeholder='Full Name*'
           />
 
           <input
@@ -752,6 +807,7 @@ export const TollChat = ({
             name='email'
             value={formData.email}
             onChange={handleChange}
+            pattern='\S+@\S+\.\S+'
             required
             placeholder='Email*'
           />

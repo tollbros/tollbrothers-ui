@@ -43,7 +43,10 @@ export const TollChat = ({
   chatRegion,
   setIsChatOpen = () => null,
   isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
-  chatSms
+  chatSms,
+  trackChatEvent = () => null,
+  chatClickedEventString = 'chatClicked',
+  chatStartedEventString = 'chatStarted'
 }) => {
   const isTransfering = useRef(false)
   const [showChatButton, setShowChatButton] = useState(false)
@@ -225,6 +228,7 @@ export const TollChat = ({
             const entry = messagePayload.entries[i]
             if (entry.operation === 'add') {
               handleAddAgent(entry)
+              trackChatEvent(chatStartedEventString)
               continue
             }
           }
@@ -283,8 +287,6 @@ export const TollChat = ({
     setShowWaitMessage(true)
     setShowForm(false)
 
-    console.log(e)
-
     try {
       const availability = await fetchAvailability(chatRegion, availabilityAPI)
       if (availability?.data?.payload?.length > 0) {
@@ -318,7 +320,8 @@ export const TollChat = ({
     setShowTextChatOptions(!showTextChatOptions)
   }
 
-  const showFormHandler = () => {
+  const showFormHandler = (trackEvent) => {
+    if (trackEvent) trackChatEvent(chatClickedEventString)
     setIsChatOpen(true)
     setShowChatHeader(true)
     setShowForm(true)
@@ -443,8 +446,12 @@ export const TollChat = ({
             entry.entryPayload.entries.map((entry) => {
               // find the add entry to get agent name
               if (entry.operation === 'add') {
+                // always first since the messages are in chronological order.
+                // If the user was transfered this will be in the message list a second time
+                // so we need to add all the chat data back into localStorage and React state
                 handleAddAgent(entry)
                 setLocalStorage(
+                  // restoring chat data in case there was a transfer
                   'tbChat',
                   {
                     accessToken: tbChatBackup.accessToken,
@@ -458,7 +465,9 @@ export const TollChat = ({
                 setConversationId(tbChatBackup.conversationId)
                 chatWasEndedByAgentWhileOffline = false
               } else if (entry.operation === 'remove') {
-                // see if the agent left the conversation while offline
+                // always after the add event since the messages are in chronological order
+                // so if there was no transfer this will be the last event and we can clear all the chat data
+                // note 2: we want to clear the data if the agent left the conversation while user was offline or in another tab
                 afterEndChatReset()
                 setSystemMessage(entry.displayName + ' ended the chat')
                 setHasAgentEngaged(false)

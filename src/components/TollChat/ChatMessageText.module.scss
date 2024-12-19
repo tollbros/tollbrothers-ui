@@ -1,0 +1,53 @@
+@import "styles/modules/all";
+
+.messageWrapper {
+    margin: 15px 0;
+    width: 100%;
+    display: flex;
+    margin-left: auto;
+    justify-content: flex-start;
+
+    img { // small agent avatar
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 100%;
+        margin-right: 5px;
+    }
+
+    .message {
+        padding: 10px;
+        position: relative;
+        margin: 0 0 10px 0;
+        min-height: 25px;
+        font-family: $alt_font_family;
+        font-size: 14px;
+        background-color: $navy_blue;
+        color: #e6eaee;
+        word-wrap: break-word;
+        max-width: 100%;
+        line-height: 1.5
+    }
+
+    &.typingIndicator {
+        margin: 4px 0;
+
+        .message {
+            background: transparent;
+            color: black;
+            font-size: .7em;
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &.guest {
+        justify-content: flex-end;
+
+        .message {
+            background-color: #e6eaee;
+            color: black;
+        }
+    }
+
+}

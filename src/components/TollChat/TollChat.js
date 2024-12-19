@@ -220,7 +220,6 @@ export const TollChat = ({
           } else {
             setSystemMessage(null)
             setShowWaitMessage(true)
-            setMessages([])
             isTransfering.current = false
           }
         } else {
@@ -228,7 +227,6 @@ export const TollChat = ({
             const entry = messagePayload.entries[i]
             if (entry.operation === 'add') {
               handleAddAgent(entry)
-              trackChatEvent(chatStartedEventString)
               continue
             }
           }
@@ -286,6 +284,7 @@ export const TollChat = ({
     setShowActiveTyping(false)
     setShowWaitMessage(true)
     setShowForm(false)
+    trackChatEvent(chatStartedEventString)
 
     try {
       const availability = await fetchAvailability(chatRegion, availabilityAPI)

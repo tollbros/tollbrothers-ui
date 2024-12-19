@@ -710,7 +710,7 @@ export const TollChat = ({
                     className={`${styles.textButton} ${styles.textChatButtons}`}
                   >
                     <img
-                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/sms.svg'
                       alt='chat'
                     />
                     Text
@@ -808,6 +808,7 @@ export const TollChat = ({
             pattern='[A-Za-z\s]+'
             title='Name can only contain letters and spaces'
             placeholder='Full Name*'
+            maxLength={240}
           />
 
           <input
@@ -819,6 +820,7 @@ export const TollChat = ({
             pattern='\S+@\S+\.\S+'
             required
             placeholder='Email*'
+            maxLength={80}
           />
 
           <br />

@@ -6,7 +6,7 @@ export const HorizontalScroller = ({
   showArrows,
   classes = {},
   newIndex,
-  closeScrollTo,
+  indexToScrollOnClose,
   getCurrentIndex = () => {}
 }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
@@ -55,8 +55,10 @@ export const HorizontalScroller = ({
   }, [newIndex])
 
   useEffect(() => {
-    scrollToImage(closeScrollTo)
-  }, [closeScrollTo])
+    if (indexToScrollOnClose >= 0) {
+      scrollToImage(indexToScrollOnClose)
+    }
+  }, [indexToScrollOnClose])
 
   const handlePrev = () => {
     const gallery = galleryRef.current
@@ -109,9 +111,7 @@ export const HorizontalScroller = ({
     window.addEventListener('resize', handleResize)
 
     handleResize()
-
     setTimeout(() => setInitialized(true), 500)
-
     return () => {
       window.removeEventListener('resize', handleResize)
     }

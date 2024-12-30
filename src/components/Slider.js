@@ -70,7 +70,8 @@ const Slider = ({
             onClick={() => {
               onPrevious({
                 mediaList,
-                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex,
+                direction: 'prev'
               })
             }}
             className={`blaze-prev ${styles.button}`}
@@ -82,7 +83,8 @@ const Slider = ({
             onClick={() =>
               onNext({
                 mediaList,
-                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex,
+                direction: 'next'
               })
             }
             className={`blaze-next ${styles.button}`}

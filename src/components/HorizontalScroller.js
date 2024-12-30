@@ -6,6 +6,7 @@ export const HorizontalScroller = ({
   showArrows,
   classes = {},
   newIndex,
+  closeScrollTo,
   getCurrentIndex = () => {}
 }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
@@ -52,6 +53,10 @@ export const HorizontalScroller = ({
   useEffect(() => {
     scrollToImage(newIndex)
   }, [newIndex])
+
+  useEffect(() => {
+    scrollToImage(closeScrollTo)
+  }, [closeScrollTo])
 
   const handlePrev = () => {
     const gallery = galleryRef.current

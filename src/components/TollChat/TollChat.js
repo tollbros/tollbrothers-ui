@@ -835,7 +835,7 @@ export const TollChat = ({
             .
           </p>
 
-          <button type='submit'>Start Chatting</button>
+          <button type='submit'>Start Chat</button>
         </form>
       )}
 

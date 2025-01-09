@@ -62,10 +62,13 @@
         }
 
         p {
+            font-family: $alt_font_family;
             font-size: 1em;
             word-wrap: break-word;
             margin: 0;
             line-height: 1.3;
+            text-align: left;
+            letter-spacing: normal;
 
             &:nth-child(1) {
                 font-weight: 500;

@@ -1,0 +1,39 @@
+@import "styles/modules/all";
+
+.root {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+
+    textarea {
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        border: 2px solid #d0d7db;
+        font-family: $alt_font_family;
+        font-size: .875em;
+        color: #000;
+        padding: 13px 64px 10px 15px;
+        line-height: 18px;
+        resize: none;
+
+        &::placeholder {
+            color: rgba(0,0,0,.8);
+            font-family: $special_font_family;
+            font-size: 14px;
+        }
+    }
+
+    button {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        top: 5px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1463c2;
+    }
+}

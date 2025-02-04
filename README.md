@@ -1,10 +1,29 @@
-## Tollbrothers UI 
-React library for Tollbrothers.
+## Tollbrothers UI
+React library for Tollbrothers
 
 ## Workflow
 1. From `tollbrothers-ui-library` point package.json to local e.g. `npm i ../tollbrothers-ui`
 2. Make sure your library file is exporting e.g. export const
 3. Run `tollbrothers-ui` repo with `npm run start` this will listen to changes and be reflected in `tollbrothers-ui-library`
+
+### Workflow Alternative if above doesn't work
+
+# Install yalc
+Run `npm i yalc -g` (you only have to ever do this once on your computer)
+
+# Step 1.
+Run `yalc push --sig` in the tollbrothers-ui project
+Run `npm run start` in the tollbrothers-ui project
+Run `npm run watch` in the tollbrothers-ui project in another terminal window
+
+# Step 2.
+Run `yalc link @tollbrothers/tollbrothers-ui` in the parent project
+
+# Clean up
+Run `yalc remove @tollbrothers/tollbrothers-ui && npm install` in the parent project
+Stop the running scripts from Step 1 in the tollbrothers-ui project
+Run `yalc installations clean @tollbrothers/tollbrothers-ui` in the tollbrothers-ui project
+
 
 ## Installation
 ```bash
@@ -62,3 +81,6 @@ e.g. fix:*
 e.g feat:*
 
 if not, i think it defaults to a minor release
+
+## If you see publish errors
+Make sure the NPM package has read/write turned on under @tollbrothers org -> developers

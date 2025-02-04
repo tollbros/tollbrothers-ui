@@ -245,17 +245,12 @@ const getModelSearchParams = () => {
 
 const getWalkthroughURL = (walkthrough) => {
   let src = ''
-  if (walkthrough.type === 'walkthrough::matterport') {
-    let extraParams = '&nt=1'
-    if (getMediaMatch(992)) {
-      extraParams = '&play=1'
-    }
 
+  if (walkthrough.type === 'walkthrough::matterport') {
     src =
       'https://my.matterport.com/show/?m=' +
       walkthrough.link +
-      '&ts=2&lp=1&hl=1&qs=1&search=0' +
-      extraParams
+      '&ts=2&lp=1&hl=1&qs=1&play=1&nt=0&search=0'
   } else {
     src = walkthrough.link
     if (!walkthrough.link.includes('?')) {
@@ -299,6 +294,42 @@ const getVideoURL = (video) => {
   return src
 }
 
+const setLocalStorage = (key, value, ttl) => {
+  const item = {
+    value: value,
+    expiry: Date.now() + ttl
+  }
+  try {
+    localStorage.setItem(key, JSON.stringify(item))
+  } catch {}
+}
+
+const getLocalStorage = (key) => {
+  try {
+    const storedData = localStorage.getItem(key)
+    if (!storedData) {
+      return null
+    }
+    return JSON.parse(storedData)
+  } catch {
+    return null
+  }
+}
+
+const clearLocalStorage = (key) => {
+  try {
+    localStorage.removeItem(key)
+  } catch {}
+}
+
+const isExpired = (timeToCompare) => {
+  const now = Date.now()
+  if (now > timeToCompare) {
+    return true
+  }
+  return false
+}
+
 export { getMediaMatch }
 export { elementInViewport }
 export { getUrlParams }
@@ -315,3 +346,7 @@ export { getModelSearchParams }
 export { getWalkthroughURL }
 export { getWalkthroughThumbnail }
 export { getVideoURL }
+export { setLocalStorage }
+export { getLocalStorage }
+export { isExpired }
+export { clearLocalStorage }

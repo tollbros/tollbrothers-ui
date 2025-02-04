@@ -12,10 +12,15 @@ export const HorizontalScroller = ({
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
   const [showGalleryNav, setShowGalleryNav] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [initialized, setInitialized] = useState(false)
   const galleryRef = useRef(null)
   const slideRef = useRef([])
   // const [imageWidths, setImageWidths] = useState([])
   const handleScroll = () => {
+    if (!initialized) {
+      return
+    }
+
     const gallery = galleryRef.current
     gallery.scrollLeft > gallery.scrollWidth - gallery.clientWidth - 10
       ? setIsNextDisabled(true)
@@ -73,7 +78,13 @@ export const HorizontalScroller = ({
       // const imageWidth = galleryRef.current.firstChild.clientWidth
       let totalWidth = 0
       for (let i = 0; i < index; i++) {
-        totalWidth += galleryRef.current.children[i].clientWidth
+        const computedStyle = window.getComputedStyle(
+          galleryRef.current.children[i]
+        )
+        const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
+        const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
+        totalWidth +=
+          galleryRef.current.children[i].clientWidth + marginLeft + marginRight
       }
       galleryRef.current.scrollTo({
         left: totalWidth,
@@ -93,6 +104,8 @@ export const HorizontalScroller = ({
     window.addEventListener('resize', handleResize)
 
     handleResize()
+
+    setTimeout(() => setInitialized(true), 500)
 
     return () => {
       window.removeEventListener('resize', handleResize)

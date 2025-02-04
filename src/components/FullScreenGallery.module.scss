@@ -18,11 +18,15 @@
     width: 40px;
     height: 40px;
     z-index: 1;
-    border-radius: 0;
     background: #004876 center/18px url(https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/svg/close-white.svg) no-repeat;
     box-shadow: none;
     border: none;
     cursor: pointer;
+
+    &.closeLeft {
+      right: auto;
+      left: 0;
+    }
   }
 
   .fullscreenMedia {

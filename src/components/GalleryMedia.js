@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 
 import { getWalkthroughURL, getVideoURL, getImage } from '../lib/utils'
 
@@ -16,7 +15,8 @@ function GalleryMedia({
   mediaCount,
   onLoad,
   backgroundColor,
-  classes = {}
+  classes = {},
+  Link
 }) {
   let isSvg = false
   const src = getImage(media, 'url')

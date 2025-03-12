@@ -29,4 +29,11 @@
 
 .fullscreen {
   height: 100%;
+  width: 100%;
+
+  .transformWrapper, .transformContentClass {
+    width: 100% ;
+    height: 100%;
+  }
+
 }

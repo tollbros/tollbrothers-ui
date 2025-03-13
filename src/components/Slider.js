@@ -168,9 +168,9 @@ const Slider = ({
       <div className={`blaze-container ${styles.fullscreen}`}>
         <div className={`blaze-track-container ${styles.fullscreen}`}>
           <div
-            className={`${styles.slidesContainer} ${
-              !disableSlider ? 'blaze-track' : ''
-            } ${styles.fullscreen}`}
+            className={`${!disableSlider ? 'blaze-track' : ''} ${
+              styles.fullscreen
+            }`}
           >
             {children}
           </div>

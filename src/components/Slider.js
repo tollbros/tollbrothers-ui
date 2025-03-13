@@ -25,12 +25,10 @@ const Slider = ({
   onNext = () => {},
   onPrevious = () => {},
   disableSlider = false,
-  disableZoom
+  disableZoom,
+  setIsZoomedIn = () => null,
+  isZoomedInRef
 }) => {
-  const [isZoomedIn, setIsZoomedIn] = useState(false)
-  const isZoomedInRef = useRef(false)
-  const transformComponentRef = useRef(null)
-
   const enableControls = Children.count(children) > 1
   const defaultConfig = {
     all: {
@@ -53,7 +51,6 @@ const Slider = ({
   const sliderRef = React.useRef()
 
   const moveSlide = (direction, isManual) => {
-    transformComponentRef.current.resetTransform()
     setIsZoomedIn(false)
     isZoomedInRef.current = false
 
@@ -139,7 +136,6 @@ const Slider = ({
     }
 
     const handleResize = () => {
-      transformComponentRef.current.resetTransform()
       setIsZoomedIn(false)
       isZoomedInRef.current = false
     }
@@ -169,45 +165,17 @@ const Slider = ({
 
   return (
     <div className={`blaze-slider ${styles.fullscreen}`} ref={sliderRef}>
-      <TransformWrapper
-        ref={transformComponentRef}
-        initialScale={1}
-        centerOnInit
-        centerZoomedOut
-        limitToBounds
-        disabled={disableZoom}
-        panning={{ disabled: !isZoomedIn }}
-        onZoomStart={() => {
-          setIsZoomedIn(true)
-          isZoomedInRef.current = true
-        }}
-        onZoomStop={(ref, _event) => {
-          if (ref?.state?.scale > 1) {
-            setIsZoomedIn(true)
-            isZoomedInRef.current = true
-          } else {
-            setIsZoomedIn(false)
-            isZoomedInRef.current = false
-          }
-        }}
-      >
-        <TransformComponent
-          wrapperClass={styles.transformWrapper}
-          contentClass={styles.transformContentClass}
-        >
-          <div className={`blaze-container ${styles.fullscreen}`}>
-            <div className={`blaze-track-container ${styles.fullscreen}`}>
-              <div
-                className={`${!disableSlider ? 'blaze-track' : ''} ${
-                  styles.fullscreen
-                }`}
-              >
-                {children}
-              </div>
-            </div>
+      <div className={`blaze-container ${styles.fullscreen}`}>
+        <div className={`blaze-track-container ${styles.fullscreen}`}>
+          <div
+            className={`${styles.slidesContainer} ${
+              !disableSlider ? 'blaze-track' : ''
+            } ${styles.fullscreen}`}
+          >
+            {children}
           </div>
-        </TransformComponent>
-      </TransformWrapper>
+        </div>
+      </div>
       {enableControls && (
         <div className={`controls ${styles.controls}`}>
           <button

@@ -138,6 +138,12 @@ const Slider = ({
       }
     }
 
+    const handleResize = () => {
+      transformComponentRef.current.resetTransform()
+      setIsZoomedIn(false)
+      isZoomedInRef.current = false
+    }
+
     if (!disableZoom) {
       sliderElement.addEventListener('touchstart', handleTouchStart)
       sliderElement.addEventListener('touchmove', handleTouchMove)
@@ -146,6 +152,7 @@ const Slider = ({
       sliderElement.addEventListener('mousedown', handleTouchStart)
       sliderElement.addEventListener('mousemove', handleTouchMove)
       sliderElement.addEventListener('mouseup', handleTouchEnd)
+      window.addEventListener('resize', handleResize)
     }
 
     return () => {
@@ -153,9 +160,10 @@ const Slider = ({
       sliderElement.removeEventListener('touchmove', handleTouchMove)
       sliderElement.removeEventListener('touchend', handleTouchEnd)
       sliderElement.removeEventListener('touchcancel', handleTouchCancel)
-      sliderElement.addEventListener('mousedown', handleTouchStart)
-      sliderElement.addEventListener('mousemove', handleTouchMove)
-      sliderElement.addEventListener('mouseup', handleTouchEnd)
+      sliderElement.removeEventListener('mousedown', handleTouchStart)
+      sliderElement.removeEventListener('mousemove', handleTouchMove)
+      sliderElement.removeEventListener('mouseup', handleTouchEnd)
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 

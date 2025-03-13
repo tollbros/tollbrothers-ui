@@ -1,4 +1,4 @@
-import React, { useEffect, Children, useState, useRef, use } from 'react'
+import React, { useEffect, Children, useState, useRef } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import BlazeSlider from 'blaze-slider'
 import ArrowLeft from '../icons/ArrowLeft'
@@ -25,9 +25,10 @@ const Slider = ({
   onNext = () => {},
   onPrevious = () => {},
   disableSlider = false,
-  disableZoom = false
+  disableZoom
 }) => {
-  const [draggable, setDraggable] = useState(true)
+  const [isZoomedIn, setIsZoomedIn] = useState(false)
+  const isZoomedInRef = useRef(false)
   const transformComponentRef = useRef(null)
 
   const enableControls = Children.count(children) > 1
@@ -44,12 +45,32 @@ const Slider = ({
       enablePagination: false,
       transitionDuration: TRANSITION_DURATION,
       transitionTimingFunction: 'ease',
-      draggable: draggable
+      draggable: disableZoom
     }
   }
 
   const refTracker = React.useRef()
   const sliderRef = React.useRef()
+
+  const moveSlide = (direction, isManual) => {
+    transformComponentRef.current.resetTransform()
+    setIsZoomedIn(false)
+    isZoomedInRef.current = false
+
+    if (direction === 'next') {
+      if (isManual) refTracker.current.next()
+      onNext({
+        mediaList,
+        slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+      })
+    } else {
+      if (isManual) refTracker.current.prev()
+      onPrevious({
+        mediaList,
+        slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
+      })
+    }
+  }
 
   useEffect(() => {
     // if not already initialized
@@ -63,89 +84,102 @@ const Slider = ({
   }, [])
 
   useEffect(() => {
-    if (refTracker.current) {
-      if (!draggable) {
-        console.log('destroy!!!!')
-        refTracker.current.destroy()
-        // refTracker.current.refresh()
-      } else {
-        // console.log('redo')
-        const config = {
-          ...defaultConfig,
-          ...cascadingConfig
-        }
-        refTracker.current = new BlazeSlider(sliderRef.current, config)
-        refTracker.current.refresh()
-      }
+    const sliderElement = sliderRef.current
+    let startX = 0
+    let swipeDirection = null
+    let mouseDown = null
+    const screenWidth = window.innerWidth
+    let threshold = 40 // Minimum distance in pixels to detect swipe
 
-      // console.log(refTracker.current)
-      // refTracker.current.destroy()
-      // const config = {
-      //   ...defaultConfig,
-      //   ...cascadingConfig
-      // }
-      // console.log(config)
-      // refTracker.current = new BlazeSlider(sliderRef.current, config)
-      // console.log(sliderRef?.current?.blazeSlider?.stateIndex)
-      // refTracker.current.next(sliderRef?.current?.blazeSlider?.stateIndex - 1)
-      // refTracker.current.refresh()
-      // console.log(refTracker.current)
-      // refTracker.current.config.draggable = draggable
-      // refTracker.current.passedConfig.all.draggable = draggable
-      // // refTracker.current.refresh()
-      // refTracker.current.destroy()
-      // console.log('not draggable')
+    if (screenWidth >= 1200) {
+      threshold = 120
+    } else if (screenWidth >= 800) {
+      threshold = 90
     }
-  }, [draggable])
 
-  useEffect(() => {
-    //  listenter for 2 fingers down
-    // const handleTouchStart = (event) => {
-    //   // event.preventDefault()
-    //   console.log('touch start')
-    //   console.log(event.touches)
-    //   event.preventDefault()
-    //   if (event.touches?.length === 2) {
-    //     console.log('2 fingers down')
-    //     setDraggable(false)
-    //     refTracker.current.destroy()
-    //     // refTracker.current.refresh()
-    //     console.log(refTracker.current)
-    //   }
-    // }
-    // const images = document.querySelectorAll('.react-transform-wrapper img')
-    // // console.log(images)
-    // // iterate over dom node list
-    // images.forEach((image) => {
-    //   image.addEventListener('touchmove', handleTouchStart)
-    // })
-    // sliderRef.current.addEventListener('touchmove', handleTouchStart)
+    const handleTouchStart = (e) => {
+      startX = e.touches?.[0]?.clientX || e.clientX
+      if (e.type === 'mousedown') mouseDown = true
+    }
+
+    const handleTouchEnd = () => {
+      swipeDirection = null
+      mouseDown = null
+    }
+
+    const handleTouchCancel = () => {
+      swipeDirection = null
+      mouseDown = null
+    }
+
+    const handleTouchMove = (e) => {
+      const isMouseEvent = e.type === 'mousemove'
+      const currentX = e.touches?.[0]?.clientX || e.clientX
+      const difference = currentX - startX
+
+      if (
+        Math.abs(difference) > threshold &&
+        ((isMouseEvent && mouseDown) ||
+          (!isMouseEvent && e.touches?.length === 1))
+      ) {
+        const newDirection = difference > 0 ? 'right' : 'left'
+        if (newDirection !== swipeDirection) {
+          swipeDirection = newDirection
+          if (swipeDirection === 'left') {
+            if (!isZoomedInRef.current) {
+              moveSlide('next', true)
+            }
+          } else if (swipeDirection === 'right') {
+            if (!isZoomedInRef.current) moveSlide('prev', true)
+          }
+        }
+      } else if (swipeDirection !== null) {
+        swipeDirection = null
+      }
+    }
+
+    if (!disableZoom) {
+      sliderElement.addEventListener('touchstart', handleTouchStart)
+      sliderElement.addEventListener('touchmove', handleTouchMove)
+      sliderElement.addEventListener('touchend', handleTouchEnd)
+      sliderElement.addEventListener('touchcancel', handleTouchCancel)
+      sliderElement.addEventListener('mousedown', handleTouchStart)
+      sliderElement.addEventListener('mousemove', handleTouchMove)
+      sliderElement.addEventListener('mouseup', handleTouchEnd)
+    }
+
+    return () => {
+      sliderElement.removeEventListener('touchstart', handleTouchStart)
+      sliderElement.removeEventListener('touchmove', handleTouchMove)
+      sliderElement.removeEventListener('touchend', handleTouchEnd)
+      sliderElement.removeEventListener('touchcancel', handleTouchCancel)
+      sliderElement.addEventListener('mousedown', handleTouchStart)
+      sliderElement.addEventListener('mousemove', handleTouchMove)
+      sliderElement.addEventListener('mouseup', handleTouchEnd)
+    }
   }, [])
 
   return (
-    <div
-      className={`blaze-slider ${styles.fullscreen} ${
-        !draggable ? styles.disablePanning : ''
-      }`}
-      ref={sliderRef}
-    >
+    <div className={`blaze-slider ${styles.fullscreen}`} ref={sliderRef}>
       <TransformWrapper
         ref={transformComponentRef}
         initialScale={1}
         centerOnInit
         centerZoomedOut
         limitToBounds
-        // minScale={1}
         disabled={disableZoom}
-        panning={{ disabled: draggable }}
-        onZoomStart={(ref, event) => {
-          setDraggable(false)
+        panning={{ disabled: !isZoomedIn }}
+        onZoomStart={() => {
+          setIsZoomedIn(true)
+          isZoomedInRef.current = true
         }}
         onZoomStop={(ref, _event) => {
           if (ref?.state?.scale > 1) {
-            setDraggable(false)
+            setIsZoomedIn(true)
+            isZoomedInRef.current = true
           } else {
-            setDraggable(true)
+            setIsZoomedIn(false)
+            isZoomedInRef.current = false
           }
         }}
       >
@@ -169,28 +203,14 @@ const Slider = ({
       {enableControls && (
         <div className={`controls ${styles.controls}`}>
           <button
-            onClick={() => {
-              transformComponentRef.current.resetTransform()
-              setTimeout(() => setDraggable(true), TRANSITION_DURATION)
-              onPrevious({
-                mediaList,
-                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
-              })
-            }}
+            onClick={() => moveSlide('prev')}
             className={`blaze-prev ${styles.button}`}
           >
             <ArrowLeft fill='#fff' />
           </button>
           {!disablePagination && <div className='blaze-pagination' />}
           <button
-            onClick={() => {
-              transformComponentRef.current.resetTransform()
-              setTimeout(() => setDraggable(true), TRANSITION_DURATION)
-              onNext({
-                mediaList,
-                slideIndex: sliderRef?.current?.blazeSlider?.stateIndex
-              })
-            }}
+            onClick={() => moveSlide('next')}
             className={`blaze-next ${styles.button}`}
           >
             <ArrowRight fill='#fff' />

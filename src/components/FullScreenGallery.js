@@ -32,7 +32,8 @@ export const FullScreenGallery = ({
   portalId,
   classes = {},
   disableSlider = false,
-  showLeftCloseButton = false
+  showLeftCloseButton = false,
+  disableZoom = false
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
   return (
@@ -58,6 +59,7 @@ export const FullScreenGallery = ({
               onNext={onNext}
               onPrevious={onPrevious}
               disableSlider={disableSlider}
+              disableZoom={disableZoom}
             >
               {newMediaList.map(function (media, idx) {
                 return (

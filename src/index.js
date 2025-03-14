@@ -6,7 +6,7 @@ export { TollButton } from './components/TollButton'
 export { DragSlider } from './components/DragSlider'
 export { MortgageCalculator } from './components/MortgageCalculator'
 export { HorizontalScroller } from './components/HorizontalScroller'
-// export { TollChat } from './components/TollChat/TollChat' // removing this for now since we aren't using it and it needs a npm package
+export { TollChat } from './components/TollChat/TollChat'
 export { Slider }
 
 // Change to Trigger Build

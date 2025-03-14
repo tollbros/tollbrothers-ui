@@ -160,7 +160,6 @@ const Slider = ({
     }
 
     return () => {
-      console.log('unmount')
       sliderElement.removeEventListener('touchstart', handleTouchStart)
       sliderElement.removeEventListener('touchmove', handleTouchMove)
       sliderElement.removeEventListener('touchend', handleTouchEnd)

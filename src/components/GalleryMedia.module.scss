@@ -56,6 +56,7 @@
         align-items: center;
         cursor: pointer;
         filter: invert(1);
+        pointer-events: auto;
 
         &.mediaFacebookShare {
             background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg") no-repeat center;

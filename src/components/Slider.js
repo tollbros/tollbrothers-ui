@@ -1,5 +1,4 @@
-import React, { useEffect, Children, useState, useRef } from 'react'
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import React, { useEffect, Children } from 'react'
 import BlazeSlider from 'blaze-slider'
 import ArrowLeft from '../icons/ArrowLeft'
 import ArrowRight from '../icons/ArrowRight'
@@ -49,8 +48,16 @@ const Slider = ({
 
   const refTracker = React.useRef()
   const sliderRef = React.useRef()
+  const canSlide = React.useRef(true)
+  const timer = React.useRef(null)
 
   const moveSlide = (direction, isManual) => {
+    canSlide.current = false
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      canSlide.current = true
+    }, TRANSITION_DURATION + 50)
+
     setIsZoomedIn(false)
     isZoomedInRef.current = false
 
@@ -116,6 +123,7 @@ const Slider = ({
 
       if (
         Math.abs(difference) > threshold &&
+        canSlide.current &&
         ((isMouseEvent && mouseDown) ||
           (!isMouseEvent && e.touches?.length === 1))
       ) {
@@ -152,6 +160,7 @@ const Slider = ({
     }
 
     return () => {
+      console.log('unmount')
       sliderElement.removeEventListener('touchstart', handleTouchStart)
       sliderElement.removeEventListener('touchmove', handleTouchMove)
       sliderElement.removeEventListener('touchend', handleTouchEnd)
@@ -160,6 +169,7 @@ const Slider = ({
       sliderElement.removeEventListener('mousemove', handleTouchMove)
       sliderElement.removeEventListener('mouseup', handleTouchEnd)
       window.removeEventListener('resize', handleResize)
+      canSlide.current = true
     }
   }, [])
 

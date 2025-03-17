@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react'
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
 import { getWalkthroughURL, getVideoURL, getImage } from '../lib/utils'
 
@@ -16,8 +17,13 @@ function GalleryMedia({
   onLoad,
   backgroundColor,
   classes = {},
-  Link
+  Link,
+  disableZoom = false,
+  setIsZoomedIn = () => null,
+  isZoomedIn = false,
+  isZoomedInRef
 }) {
+  const transformComponentRef = useRef(null)
   let isSvg = false
   const src = getImage(media, 'url')
   let iframeSrc = null
@@ -99,6 +105,17 @@ function GalleryMedia({
       setShowMedia(true)
     }
   }, [])
+
+  useEffect(() => {
+    if (
+      isZoomedInRef &&
+      !isZoomedInRef.current &&
+      transformComponentRef?.current
+    ) {
+      transformComponentRef.current.resetTransform()
+    }
+  }, [isZoomedInRef?.current])
+
   return (
     <div className={styles.mediaWrapper}>
       {!showMedia && <span className='spinner' />}
@@ -108,15 +125,43 @@ function GalleryMedia({
         } ${iframeWithCaption}`}
       >
         {type === 'image' && (
-          <img
-            className={`${isSvg ? 'mediaSVG__adjust' : ''}`}
-            src={src}
-            alt={altName}
-            onClick={useCallback(imageClicked, [index])}
-            onLoad={onImageLoad}
-            loading='lazy'
-            ref={imgRef}
-          />
+          <TransformWrapper
+            ref={transformComponentRef}
+            initialScale={1}
+            centerOnInit
+            centerZoomedOut
+            limitToBounds
+            disabled={disableZoom}
+            panning={{ disabled: !isZoomedIn }}
+            onZoomStart={() => {
+              setIsZoomedIn(true)
+              isZoomedInRef.current = true
+            }}
+            onZoomStop={(ref, _event) => {
+              if (ref?.state?.scale > 1) {
+                setIsZoomedIn(true)
+                isZoomedInRef.current = true
+              } else {
+                setIsZoomedIn(false)
+                isZoomedInRef.current = false
+              }
+            }}
+          >
+            <TransformComponent
+              wrapperClass={styles.transformWrapper}
+              contentClass={styles.transformContentClass}
+            >
+              <img
+                className={`${isSvg ? 'mediaSVG__adjust' : ''}`}
+                src={src}
+                alt={altName}
+                onClick={useCallback(imageClicked, [index])}
+                onLoad={onImageLoad}
+                loading='lazy'
+                ref={imgRef}
+              />
+            </TransformComponent>
+          </TransformWrapper>
         )}
 
         {(type === 'video' || type === 'walkthrough') && (

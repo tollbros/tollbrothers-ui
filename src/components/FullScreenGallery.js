@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import Slider from './Slider'
 import GalleryMedia from './GalleryMedia'
 import PopupModal from './PopupModal'
@@ -32,9 +32,19 @@ export const FullScreenGallery = ({
   portalId,
   classes = {},
   disableSlider = false,
-  showLeftCloseButton = false
+  showLeftCloseButton = false,
+  disableZoom = false
 }) => {
   const newMediaList = rotate([...mediaList], initialSlide - 1)
+  const [isZoomedIn, setIsZoomedIn] = useState(false)
+  const isZoomedInRef = useRef(false)
+
+  const closeGallery = () => {
+    setIsZoomedIn(false)
+    isZoomedInRef.current = false
+    onClose()
+  }
+
   return (
     show && (
       <PopupModal show portalId={portalId}>
@@ -44,12 +54,12 @@ export const FullScreenGallery = ({
               className={`${styles.close} ${styles.closeLeft} ${
                 classes.closeButton ?? ''
               }`}
-              onClick={onClose}
+              onClick={closeGallery}
             />
           )}
           <button
             className={`${styles.close} ${classes.closeButton ?? ''}`}
-            onClick={onClose}
+            onClick={closeGallery}
           />
           <div className={styles.container}>
             <Slider
@@ -58,6 +68,9 @@ export const FullScreenGallery = ({
               onNext={onNext}
               onPrevious={onPrevious}
               disableSlider={disableSlider}
+              disableZoom={disableZoom}
+              isZoomedInRef={isZoomedInRef}
+              setIsZoomedIn={setIsZoomedIn}
             >
               {newMediaList.map(function (media, idx) {
                 return (
@@ -71,6 +84,10 @@ export const FullScreenGallery = ({
                       showCaption
                       backgroundColor={backgroundColor}
                       classes={classes}
+                      disableZoom={disableZoom}
+                      isZoomedIn={isZoomedIn}
+                      setIsZoomedIn={setIsZoomedIn}
+                      isZoomedInRef={isZoomedInRef}
                     />
                   </div>
                 )

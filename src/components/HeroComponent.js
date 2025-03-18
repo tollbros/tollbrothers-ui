@@ -36,7 +36,7 @@ export function HeroComponent({
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
       let nextIndex = currentSlideIndex + 1
-      if (nextIndex == slides.length) {
+      if (nextIndex === slides.length) {
         nextIndex = 0
       }
       setCurrentSlideIndex(nextIndex)
@@ -62,7 +62,7 @@ export function HeroComponent({
   return (
     <div className={styles.heroContainer}>
       <div
-        className={`${styles.imageHolder} ${styles.nextImage} ${
+        className={`${styles.mediaHolder} ${styles.nextImage} ${
           isFading ? styles.fading : ''
         }`}
       >
@@ -78,7 +78,7 @@ export function HeroComponent({
           />
         )}
       </div>
-      <div className={styles.imageHolder}>
+      <div className={styles.mediaHolder}>
         <HeroSlide
           src={currentSlide.image}
           alt={currentSlide.title ? currentSlide.title : ''}

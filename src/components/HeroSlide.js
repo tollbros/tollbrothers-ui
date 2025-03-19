@@ -8,8 +8,6 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
   const mainMediaRef = useRef(null)
 
   const isVideo = src && /\.(mp4|webm|ogg)$/i.test(src)
-  // const poster =
-  //  'https://cdn.tollbrothers.com/communities/masters/934/video/sugarcreek-poster.jpg'
   const poster = isVideo ? src.replace('.mp4', '.jpg') : ''
   const imgSrc = src
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src

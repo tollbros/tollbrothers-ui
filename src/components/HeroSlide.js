@@ -3,17 +3,20 @@ import styles from './HeroSlide.module.scss'
 
 const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
   const [isVertical, setIsVertical] = useState(false)
-  const [isVideo, setIsVideo] = useState(false)
+  const [videoSRC, setVideoSRC] = useState(null)
   const bkgdImgRef = useRef(null)
   const mainMediaRef = useRef(null)
-  useEffect(() => {
-    if (src) {
-      setIsVideo(/\.(mp4|webm|ogg)$/i.test(src))
-    }
-  }, [src])
 
+  const isVideo = src && /\.(mp4|webm|ogg)$/i.test(src)
+  const poster = isVideo ? src.replace('.mp4', '.jpg') : ''
   const imgSrc = src
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src
+
+  useEffect(() => {
+    if (src && isVideo) {
+      setVideoSRC(src)
+    }
+  }, [])
 
   const overlayOpacityStyle = {
     width: '100%',
@@ -56,11 +59,12 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
       {isVideo ? (
         <video
           className={styles.modelCardVideo}
-          src={src}
+          src={videoSRC}
           autoPlay
           loop
           muted
           playsInline
+          poster={poster}
           onLoadedData={onMediaLoad}
           ref={mainMediaRef}
         />

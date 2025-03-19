@@ -49,6 +49,7 @@ export function HeroComponent({
     waitToFade.current = setTimeout(() => {
       // console.log("Fading in next image");
       setIsFading(true)
+      // eslint-disable-next-line no-unused-vars
       const flipSlides = setTimeout(() => {
         // console.log("Changing slides");
         if (nextSlide) {

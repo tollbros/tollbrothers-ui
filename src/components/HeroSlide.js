@@ -3,12 +3,20 @@ import styles from './HeroSlide.module.scss'
 
 const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
   const [isVertical, setIsVertical] = useState(false)
-
-  const mainImgRef = useRef(null)
+  const [videoSRC, setVideoSRC] = useState(null)
   const bkgdImgRef = useRef(null)
+  const mainMediaRef = useRef(null)
 
+  const isVideo = src && /\.(mp4|webm|ogg)$/i.test(src)
+  const poster = isVideo ? src.replace('.mp4', '.jpg') : ''
   const imgSrc = src
-  const image920 = imgSrc.replace('_1920.', '_920.')
+  const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src
+
+  useEffect(() => {
+    if (src && isVideo) {
+      setVideoSRC(src)
+    }
+  }, [])
 
   const overlayOpacityStyle = {
     width: '100%',
@@ -19,27 +27,28 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
     zIndex: '2'
   }
 
-  const onImageLoad = (e) => {
-    const { naturalWidth, naturalHeight } = e.target
-    setIsVertical(naturalWidth < naturalHeight)
-
+  const onMediaLoad = (e) => {
+    if (!isVideo) {
+      const { naturalWidth, naturalHeight } = e.target
+      setIsVertical(naturalWidth < naturalHeight)
+    }
     if (callBack) {
       callBack()
     }
   }
 
   useEffect(() => {
-    ;[mainImgRef, bkgdImgRef].forEach((imgRef) => {
+    ;[mainMediaRef, bkgdImgRef].forEach((imgRef) => {
       if (imgRef.current && imgRef.current.complete) {
         const { naturalWidth, naturalHeight } = imgRef.current
         setIsVertical(naturalWidth < naturalHeight)
       }
     })
-  }, [onImageLoad])
+  }, [])
 
   return (
     <div
-      className={`${styles.imageHolder} ${isVertical ? styles.vertical : null}`}
+      className={`${styles.mediaHolder} ${isVertical ? styles.vertical : null}`}
     >
       {url && (
         <Link href={url} className={styles.caption}>
@@ -47,20 +56,33 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
         </Link>
       )}
       <div style={overlayOpacityStyle} />
-
-      <picture>
-        <source media='(max-width: 920px)' srcSet={image920} />
-        <source media='(min-width: 921px)' srcSet={imgSrc} />
-        <img
-          className={styles.modelCardImg}
-          src={image920}
-          alt={alt || ''}
-          onLoad={onImageLoad}
-          ref={mainImgRef}
+      {isVideo ? (
+        <video
+          className={styles.modelCardVideo}
+          src={videoSRC}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={poster}
+          onLoadedData={onMediaLoad}
+          ref={mainMediaRef}
         />
-      </picture>
+      ) : (
+        <picture>
+          <source media='(max-width: 920px)' srcSet={image920} />
+          <source media='(min-width: 921px)' srcSet={imgSrc} />
+          <img
+            className={styles.modelCardImg}
+            src={image920}
+            alt={alt || ''}
+            onLoad={onMediaLoad}
+            ref={mainMediaRef}
+          />
+        </picture>
+      )}
 
-      {isVertical && (
+      {isVertical && !isVideo && (
         <picture>
           <source media='(max-width: 920px)' srcSet={image920} />
           <source media='(min-width: 921px)' srcSet={imgSrc} />
@@ -68,7 +90,7 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
             className={styles.modelCardImgBG}
             src={image920}
             alt={alt || ''}
-            onLoad={onImageLoad}
+            onLoad={onMediaLoad}
             ref={bkgdImgRef}
           />
         </picture>

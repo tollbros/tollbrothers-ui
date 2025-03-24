@@ -87,6 +87,7 @@ export function HeroComponent({
           url={currentSlide.URL}
           opacity={overlayOpacity}
           Link={Link}
+          type={currentSlide.type}
         />
       </div>
     </div>

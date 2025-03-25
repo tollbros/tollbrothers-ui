@@ -1,7 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HeroSlide.module.scss'
 
-const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link, type }) => {
+const HeroSlide = ({
+  src,
+  alt,
+  title,
+  url,
+  opacity,
+  callBack,
+  Link,
+  type,
+  poster
+}) => {
   const [isVertical, setIsVertical] = useState(false)
   const [videoSRC, setVideoSRC] = useState(null)
   const bkgdImgRef = useRef(null)
@@ -62,7 +72,7 @@ const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link, type }) => {
           loop
           muted
           playsInline
-          // poster={poster}
+          poster={poster}
           onLoadedData={onMediaLoad}
           ref={mainMediaRef}
         />

@@ -1,17 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HeroSlide.module.scss'
 
-const HeroSlide = ({ src, alt, title, url, opacity, callBack, Link }) => {
+const HeroSlide = ({
+  src,
+  alt,
+  title,
+  url,
+  opacity,
+  callBack,
+  Link,
+  type,
+  poster
+}) => {
   const [isVertical, setIsVertical] = useState(false)
   const [videoSRC, setVideoSRC] = useState(null)
   const bkgdImgRef = useRef(null)
   const mainMediaRef = useRef(null)
 
-  const isVideo = src && /\.(mp4|webm|ogg)$/i.test(src)
-  const poster = isVideo ? src.replace('.mp4', '.jpg') : ''
+  const isVideo = src && type?.toLowerCase().includes('video')
   const imgSrc = src
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src
-
   useEffect(() => {
     if (src && isVideo) {
       setVideoSRC(src)

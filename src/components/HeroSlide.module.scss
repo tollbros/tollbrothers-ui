@@ -1,8 +1,24 @@
 
-.imageHolder {
+.mediaHolder {
     width: 100%;
     height: 100%;
     position: relative;
+
+    .modelCardImg, .modelCardVideo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        object-fit: cover;
+        z-index: 1;
+    }
+
+    .modelCardVideo {
+        @media (max-width: 450px) {
+            height: 101%; // I know but there's a really annoying white line at the bottom on mobile
+          }
+    }
 
     picture {
         display: flex;
@@ -10,16 +26,6 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-
-        .modelCardImg {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            object-fit: cover;
-            z-index: 1;
-        }
     
         .modelCardImgBG {
             position: absolute;

@@ -4,6 +4,11 @@
   position: relative;
   width: 100%;
   height: 100%;
+
+  .transformWrapper, .transformContentClass {
+    width: 100% ;
+    height: 100%;
+  }
 }
 
 .media {
@@ -51,6 +56,7 @@
         align-items: center;
         cursor: pointer;
         filter: invert(1);
+        pointer-events: auto;
 
         &.mediaFacebookShare {
             background: url("https://tollbrothers-static-public.s3.amazonaws.com/sites/comtollbrotherswww/icons/Facebook.svg") no-repeat center;

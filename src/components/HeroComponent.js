@@ -11,6 +11,7 @@ export function HeroComponent({
   Link,
   ...props
 }) {
+  const slidesRef = useRef(slides)
   const [currentSlide, setCurrentSlide] = useState(
     slides[0] || { image: '', title: '', URL: '' }
   )
@@ -22,26 +23,31 @@ export function HeroComponent({
   const flipSlides = useRef(null)
 
   useEffect(() => {
-    if (slides.length > 1) {
-      if (currentSlideIndex + 1 < slides.length) {
-        setNextSlide(slides[currentSlideIndex + 1])
+    if (slidesRef?.current?.length > 1) {
+      if (currentSlideIndex + 1 < slidesRef?.current?.length) {
+        setNextSlide(slidesRef.current[currentSlideIndex + 1])
       } else {
-        setNextSlide(slides[0])
+        setNextSlide(slidesRef.current[0])
       }
     }
   }, [currentSlideIndex])
 
-  useEffect(() => {
+  const flipSlidesTimeout = () => {
     clearTimeout(flipSlides.current)
+    window.toll.isHeroComponentFlipping = true
+    // console.log('Flipping slides')
+
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
       let nextIndex = currentSlideIndex + 1
-      if (nextIndex === slides.length) {
+      if (nextIndex >= slidesRef.current.length) {
         nextIndex = 0
       }
       setCurrentSlideIndex(nextIndex)
+      window.toll.isHeroComponentFlipping = false
+      // console.log('Flipping slides done')
     }, 1000)
-  }, [currentSlide])
+  }
 
   const nextImageLoaded = () => {
     // console.log("Next Image Loaded");
@@ -55,10 +61,34 @@ export function HeroComponent({
         if (nextSlide) {
           // console.log("Setting current slide to next slide");
           setCurrentSlide(nextSlide)
+          flipSlidesTimeout()
         }
       }, 2000)
     }, 6000)
   }
+
+  const swapSlides = (newSlides) => {
+    if (window.toll.isHeroComponentFlipping) {
+      console.log('Flipping slides, please wait')
+      return
+    }
+    slidesRef.current = newSlides
+  }
+
+  useEffect(() => {
+    if (!window.toll) {
+      window.toll = {}
+    }
+
+    window.toll.swapHeroComponentSlides = swapSlides
+    window.toll.isHeroComponentFlipping = false
+
+    return () => {
+      clearTimeout(flipSlides.current)
+      clearTimeout(waitToFade.current)
+      delete window.swapHeroComponentSlides // Cleanup when component unmounts
+    }
+  }, [])
 
   return (
     <div className={styles.heroContainer}>

@@ -22,16 +22,6 @@ export function HeroComponent({
   const waitToFade = useRef(null)
   const flipSlides = useRef(null)
 
-  useEffect(() => {
-    if (slidesRef?.current?.length > 1) {
-      if (currentSlideIndex + 1 < slidesRef?.current?.length) {
-        setNextSlide(slidesRef.current[currentSlideIndex + 1])
-      } else {
-        setNextSlide(slidesRef.current[0])
-      }
-    }
-  }, [currentSlideIndex])
-
   const flipSlidesTimeout = () => {
     clearTimeout(flipSlides.current)
     window.toll.isHeroComponentFlipping = true
@@ -67,12 +57,76 @@ export function HeroComponent({
     }, 6000)
   }
 
-  const swapSlides = (newSlides) => {
-    if (window.toll.isHeroComponentFlipping) {
-      console.log('Flipping slides, please wait')
+  const prepareHeroSlides = (slides, onlineStatus) => {
+    return slides
+      .map((a) => ({ sort: Math.random(), value: a }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((a) => a.value)
+      .filter((slide) => {
+        if (!onlineStatus) return true
+
+        if (
+          slide.mcid &&
+          onlineStatus.some(
+            (com) => com.masterCommunityId === slide.mcid && com.online
+          )
+        ) {
+          return true
+        } else if (
+          slide.cid &&
+          onlineStatus.some(
+            (com) => com.communityId === slide.cid && com.online
+          )
+        ) {
+          return true
+        }
+
+        return false
+      })
+  }
+
+  const setHeroSlides = (newSlides) => {
+    if (!Array.isArray(newSlides)) {
+      console.error('setHeroSlides must be called with an array of slides')
       return
     }
-    slidesRef.current = newSlides
+
+    if (newSlides.length < 3) {
+      console.error('setHeroSlides must be called with at least three slides')
+      return
+    }
+
+    const errors = newSlides
+      .map((slide) => {
+        if (
+          typeof slide.URL !== 'string' ||
+          typeof slide.image !== 'string' ||
+          typeof slide.title !== 'string'
+        ) {
+          return 'Each slide must have a URL, image, and title property'
+        }
+
+        return null
+      })
+      .filter((error) => error !== null)
+
+    if (errors.length > 0) {
+      console.error(errors)
+      return
+    }
+
+    const preparedNewSlides = prepareHeroSlides(newSlides).map((slide) => {
+      if (slide.city && slide.state) {
+        return {
+          ...slide,
+          title: `${slide.title} in ${slide.city}, ${slide.state}`
+        }
+      }
+
+      return slide
+    })
+
+    slidesRef.current = preparedNewSlides
   }
 
   useEffect(() => {
@@ -80,15 +134,28 @@ export function HeroComponent({
       window.toll = {}
     }
 
-    window.toll.swapHeroComponentSlides = swapSlides
+    window.toll.setHeroSlides = setHeroSlides
     window.toll.isHeroComponentFlipping = false
 
     return () => {
       clearTimeout(flipSlides.current)
       clearTimeout(waitToFade.current)
-      delete window.swapHeroComponentSlides // Cleanup when component unmounts
+      delete window.toll.setHeroSlides // Cleanup when component unmounts
+      delete window.toll.isHeroComponentFlipping // Cleanup when component unmounts
     }
   }, [])
+
+  useEffect(() => {
+    const slidesArray = slidesRef.current
+
+    if (slidesArray?.length > 1) {
+      if (currentSlideIndex + 1 < slidesArray?.length) {
+        setNextSlide(slidesArray[currentSlideIndex + 1])
+      } else {
+        setNextSlide(slidesArray[0])
+      }
+    }
+  }, [currentSlideIndex])
 
   return (
     <div className={styles.heroContainer}>

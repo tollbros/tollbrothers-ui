@@ -24,13 +24,14 @@ export function HeroComponent({
 
   const flipSlidesTimeout = () => {
     clearTimeout(flipSlides.current)
+    const slidesArray = window.toll.heroComponentSlides || slidesRef.current
     window.toll.isHeroComponentFlipping = true
     // console.log('Flipping slides')
 
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
       let nextIndex = currentSlideIndex + 1
-      if (nextIndex >= slidesRef.current.length) {
+      if (nextIndex >= slidesArray.length) {
         nextIndex = 0
       }
       setCurrentSlideIndex(nextIndex)
@@ -57,96 +58,24 @@ export function HeroComponent({
     }, 6000)
   }
 
-  const prepareHeroSlides = (slides, onlineStatus) => {
-    return slides
-      .map((a) => ({ sort: Math.random(), value: a }))
-      .sort((a, b) => a.sort - b.sort)
-      .map((a) => a.value)
-      .filter((slide) => {
-        if (!onlineStatus) return true
-
-        if (
-          slide.mcid &&
-          onlineStatus.some(
-            (com) => com.masterCommunityId === slide.mcid && com.online
-          )
-        ) {
-          return true
-        } else if (
-          slide.cid &&
-          onlineStatus.some(
-            (com) => com.communityId === slide.cid && com.online
-          )
-        ) {
-          return true
-        }
-
-        return false
-      })
-  }
-
-  const setHeroSlides = (newSlides) => {
-    if (!Array.isArray(newSlides)) {
-      console.error('setHeroSlides must be called with an array of slides')
-      return
-    }
-
-    if (newSlides.length < 3) {
-      console.error('setHeroSlides must be called with at least three slides')
-      return
-    }
-
-    const errors = newSlides
-      .map((slide) => {
-        if (
-          typeof slide.URL !== 'string' ||
-          typeof slide.image !== 'string' ||
-          typeof slide.title !== 'string'
-        ) {
-          return 'Each slide must have a URL, image, and title property'
-        }
-
-        return null
-      })
-      .filter((error) => error !== null)
-
-    if (errors.length > 0) {
-      console.error(errors)
-      return
-    }
-
-    const preparedNewSlides = prepareHeroSlides(newSlides).map((slide) => {
-      if (slide.city && slide.state) {
-        return {
-          ...slide,
-          title: `${slide.title} in ${slide.city}, ${slide.state}`
-        }
-      }
-
-      return slide
-    })
-
-    slidesRef.current = preparedNewSlides
-  }
-
   useEffect(() => {
     if (!window.toll) {
       window.toll = {}
     }
 
-    window.toll.setHeroSlides = setHeroSlides
+    window.toll.heroComponentSlides = null
     window.toll.isHeroComponentFlipping = false
 
     return () => {
       clearTimeout(flipSlides.current)
       clearTimeout(waitToFade.current)
-      delete window.toll.setHeroSlides // Cleanup when component unmounts
+      delete window.toll.heroComponentSlides // Cleanup when component unmounts
       delete window.toll.isHeroComponentFlipping // Cleanup when component unmounts
     }
   }, [])
 
   useEffect(() => {
-    const slidesArray = slidesRef.current
+    const slidesArray = window.toll.heroComponentSlides || slidesRef.current
 
     if (slidesArray?.length > 1) {
       if (currentSlideIndex + 1 < slidesArray?.length) {

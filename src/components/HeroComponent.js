@@ -11,6 +11,7 @@ export function HeroComponent({
   Link,
   ...props
 }) {
+  const slidesRef = useRef(slides)
   const [currentSlide, setCurrentSlide] = useState(
     slides[0] || { image: '', title: '', URL: '' }
   )
@@ -21,27 +22,23 @@ export function HeroComponent({
   const waitToFade = useRef(null)
   const flipSlides = useRef(null)
 
-  useEffect(() => {
-    if (slides.length > 1) {
-      if (currentSlideIndex + 1 < slides.length) {
-        setNextSlide(slides[currentSlideIndex + 1])
-      } else {
-        setNextSlide(slides[0])
-      }
-    }
-  }, [currentSlideIndex])
-
-  useEffect(() => {
+  const flipSlidesTimeout = () => {
     clearTimeout(flipSlides.current)
+    const slidesArray = window.toll.heroComponentSlides || slidesRef.current
+    window.toll.isHeroComponentFlipping = true
+    // console.log('Flipping slides')
+
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
       let nextIndex = currentSlideIndex + 1
-      if (nextIndex === slides.length) {
+      if (nextIndex >= slidesArray.length) {
         nextIndex = 0
       }
       setCurrentSlideIndex(nextIndex)
+      window.toll.isHeroComponentFlipping = false
+      // console.log('Flipping slides done')
     }, 1000)
-  }, [currentSlide])
+  }
 
   const nextImageLoaded = () => {
     // console.log("Next Image Loaded");
@@ -55,10 +52,39 @@ export function HeroComponent({
         if (nextSlide) {
           // console.log("Setting current slide to next slide");
           setCurrentSlide(nextSlide)
+          flipSlidesTimeout()
         }
       }, 2000)
     }, 6000)
   }
+
+  useEffect(() => {
+    if (!window.toll) {
+      window.toll = {}
+    }
+
+    window.toll.heroComponentSlides = null
+    window.toll.isHeroComponentFlipping = false
+
+    return () => {
+      clearTimeout(flipSlides.current)
+      clearTimeout(waitToFade.current)
+      delete window.toll.heroComponentSlides // Cleanup when component unmounts
+      delete window.toll.isHeroComponentFlipping // Cleanup when component unmounts
+    }
+  }, [])
+
+  useEffect(() => {
+    const slidesArray = window.toll.heroComponentSlides || slidesRef.current
+
+    if (slidesArray?.length > 1) {
+      if (currentSlideIndex + 1 < slidesArray?.length) {
+        setNextSlide(slidesArray[currentSlideIndex + 1])
+      } else {
+        setNextSlide(slidesArray[0])
+      }
+    }
+  }, [currentSlideIndex])
 
   return (
     <div className={styles.heroContainer}>

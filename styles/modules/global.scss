@@ -1,0 +1,7 @@
+:global {
+    @media print {
+        body.print-mode *:not(.printable), body.print-mode .js-noprint {
+            display: none !important;
+        }
+    }
+}

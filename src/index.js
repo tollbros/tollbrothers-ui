@@ -1,3 +1,4 @@
+import '../styles/modules/global.scss'
 import Slider from './components/Slider'
 
 export { HeroComponent } from './components/HeroComponent.js'
@@ -7,6 +8,8 @@ export { DragSlider } from './components/DragSlider'
 export { MortgageCalculator } from './components/MortgageCalculator'
 export { HorizontalScroller } from './components/HorizontalScroller'
 export { TollChat } from './components/TollChat/TollChat'
+export { PrintButton } from './components/PrintButton'
 export { Slider }
 
-// Change to Trigger Build
+// utils
+export { printElement } from '../utils/printElement'

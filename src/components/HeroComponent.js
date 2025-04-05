@@ -47,16 +47,25 @@ export function HeroComponent({
   }
 
   const nextImageLoaded = () => {
-    // console.log("Next Image Loaded");
+    if (window.toll.debugHeroComponent) {
+      console.log('Next image loaded')
+    }
     clearTimeout(waitToFade.current)
     waitToFade.current = setTimeout(() => {
-      // console.log("Fading in next image");
+      if (window.toll.debugHeroComponent) {
+        console.log('Fading in next image')
+      }
       setIsFading(true)
       // eslint-disable-next-line no-unused-vars
       const flipSlides = setTimeout(() => {
-        // console.log("Changing slides");
+        if (window.toll.debugHeroComponent) {
+          console.log('Changing slides')
+        }
+
         if (nextSlide) {
-          // console.log("Setting current slide to next slide");
+          if (window.toll.debugHeroComponent) {
+            console.log('Setting current slide to next slide')
+          }
           setCurrentSlide(nextSlide)
           flipSlidesTimeout()
         }
@@ -71,6 +80,10 @@ export function HeroComponent({
 
     window.toll.heroComponentSlides = null
     window.toll.isHeroComponentFlipping = false
+
+    if (window.toll.debugHeroComponent) {
+      console.log('Hero component mounted')
+    }
 
     return () => {
       clearTimeout(flipSlides.current)

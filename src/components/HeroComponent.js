@@ -26,7 +26,10 @@ export function HeroComponent({
     clearTimeout(flipSlides.current)
     const slidesArray = window.toll.heroComponentSlides || slidesRef.current
     window.toll.isHeroComponentFlipping = true
-    // console.log('Flipping slides')
+
+    if (window.toll.debugHeroComponent) {
+      console.log('Flipping slides', slidesArray)
+    }
 
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
@@ -36,21 +39,33 @@ export function HeroComponent({
       }
       setCurrentSlideIndex(nextIndex)
       window.toll.isHeroComponentFlipping = false
-      // console.log('Flipping slides done')
+
+      if (window.toll.debugHeroComponent) {
+        console.log('Flipping slides done')
+      }
     }, 1000)
   }
 
   const nextImageLoaded = () => {
-    // console.log("Next Image Loaded");
+    if (window.toll.debugHeroComponent) {
+      console.log('Next image loaded')
+    }
     clearTimeout(waitToFade.current)
     waitToFade.current = setTimeout(() => {
-      // console.log("Fading in next image");
+      if (window.toll.debugHeroComponent) {
+        console.log('Fading in next image')
+      }
       setIsFading(true)
       // eslint-disable-next-line no-unused-vars
       const flipSlides = setTimeout(() => {
-        // console.log("Changing slides");
+        if (window.toll.debugHeroComponent) {
+          console.log('Changing slides')
+        }
+
         if (nextSlide) {
-          // console.log("Setting current slide to next slide");
+          if (window.toll.debugHeroComponent) {
+            console.log('Setting current slide to next slide')
+          }
           setCurrentSlide(nextSlide)
           flipSlidesTimeout()
         }
@@ -66,10 +81,15 @@ export function HeroComponent({
     window.toll.heroComponentSlides = null
     window.toll.isHeroComponentFlipping = false
 
+    if (window.toll.debugHeroComponent) {
+      console.log('Hero component mounted')
+    }
+
     return () => {
       clearTimeout(flipSlides.current)
       clearTimeout(waitToFade.current)
-      delete window.toll.heroComponentSlides // Cleanup when component unmounts
+      // We want this to persist since SPA
+      // delete window.toll.heroComponentSlides // Cleanup when component unmounts
       delete window.toll.isHeroComponentFlipping // Cleanup when component unmounts
     }
   }, [])

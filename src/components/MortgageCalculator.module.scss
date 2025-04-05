@@ -564,7 +564,7 @@ input[type=range]::-webkit-slider-runnable-track {
 @media print {
     .calculatorWrapper {
         justify-content: flex-start;
-        width: 7.75in !important;
+        width: 100% !important;
 
         .right, .left {
             width: 49% !important;
@@ -592,11 +592,21 @@ input[type=range]::-webkit-slider-runnable-track {
         width: 100% !important;
     }
 
-}
+    .details {
+        span {
+            font-size: 16px !important;
 
-@media print and (min-width: 9in) {
-      .calculatorWrapper {
-        //width: 9in !important;
-      }
-    
-  }
+            &:before {
+                top: 5px!important;
+            }
+        }
+    }
+
+    .graphic {
+        p {
+            //this forces safari to print the circle (sigh)
+            border: 1px solid lightgray !important;
+        }
+    }
+
+}

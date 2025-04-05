@@ -48,7 +48,10 @@ const printElement = (pelm) => {
 
   window.addEventListener('afterprint', cleanup)
 
-  window.print()
+  setTimeout(() => {
+    // sigh safari
+    window.print()
+  }, 200)
 }
 
 export { printElement }

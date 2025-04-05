@@ -26,7 +26,10 @@ export function HeroComponent({
     clearTimeout(flipSlides.current)
     const slidesArray = window.toll.heroComponentSlides || slidesRef.current
     window.toll.isHeroComponentFlipping = true
-    // console.log('Flipping slides')
+
+    if (window.toll.debugHeroComponent) {
+      console.log('Flipping slides', slidesArray)
+    }
 
     flipSlides.current = setTimeout(() => {
       setIsFading(false)
@@ -36,7 +39,10 @@ export function HeroComponent({
       }
       setCurrentSlideIndex(nextIndex)
       window.toll.isHeroComponentFlipping = false
-      // console.log('Flipping slides done')
+
+      if (window.toll.debugHeroComponent) {
+        console.log('Flipping slides done')
+      }
     }, 1000)
   }
 

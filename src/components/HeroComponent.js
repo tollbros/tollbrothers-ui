@@ -69,7 +69,8 @@ export function HeroComponent({
     return () => {
       clearTimeout(flipSlides.current)
       clearTimeout(waitToFade.current)
-      delete window.toll.heroComponentSlides // Cleanup when component unmounts
+      // We want this to persist since SPA
+      // delete window.toll.heroComponentSlides // Cleanup when component unmounts
       delete window.toll.isHeroComponentFlipping // Cleanup when component unmounts
     }
   }, [])

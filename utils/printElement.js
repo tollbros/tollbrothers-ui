@@ -1,18 +1,22 @@
-function addDisplayStylesToChildren(element) {
-  if (element.hasChildNodes()) {
-    const children = element.children
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i]
-      const style = window.getComputedStyle(child)
-      const displayValue = style.display
-      if (!child.style.display && !child.classList.contains('js-noprint')) {
-        child.style.setProperty('display', displayValue, 'important')
-        child.classList.add('js-clear-display-style')
-      }
-      addDisplayStylesToChildren(child)
-    }
-  }
-}
+// function addDisplayStylesToChildren(element) {
+//   if (element.hasChildNodes()) {
+//     const children = element.children
+//     for (let i = 0; i < children.length; i++) {
+//       const child = children[i]
+//       const style = window.getComputedStyle(child)
+//       const displayValue = style.display
+//       if (
+//         !child.style.display &&
+//         !child.classList.contains('js-noprint') &&
+//         !child.nodeName === 'SVG'
+//       ) {
+//         child.style.setProperty('display', displayValue, 'important')
+//         child.classList.add('js-clear-display-style')
+//       }
+//       addDisplayStylesToChildren(child)
+//     }
+//   }
+// }
 
 const printElement = (pelm) => {
   if (!pelm) return
@@ -31,12 +35,13 @@ const printElement = (pelm) => {
     parent = parent.parentElement
   }
 
-  addDisplayStylesToChildren(pelm)
+  // addDisplayStylesToChildren(pelm)
 
   document.body.classList.add('print-mode')
 
   const cleanup = () => {
     document.body.classList.remove('print-mode')
+    pelm.classList.remove('printable')
 
     document.querySelectorAll('.js-clear-display-style').forEach((el) => {
       el.classList.remove('js-clear-display-style')

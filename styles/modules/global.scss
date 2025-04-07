@@ -5,7 +5,7 @@
             height: 100%;
         }
 
-        body.print-mode *:not(.printable), body.print-mode .js-noprint {
+        body.print-mode *:not(.printable, .printable *, svg, svg *), body.print-mode .js-noprint {
             display: none !important;
         }
     }

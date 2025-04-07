@@ -99,7 +99,6 @@ const HeroSlide = ({
             if (posterRef.current) {
               posterRef.current.classList.add(styles.loaded)
             }
-            console.log('Poster loaded')
           }}
         />
       )}

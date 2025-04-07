@@ -67,7 +67,6 @@ const HeroSlide = ({
       /* eslint-enable */
     }
   }, [])
-
   return (
     <div
       className={`${styles.mediaHolder} ${isVertical ? styles.vertical : null}`}
@@ -100,6 +99,7 @@ const HeroSlide = ({
             if (posterRef.current) {
               posterRef.current.classList.add(styles.loaded)
             }
+            console.log('Poster loaded')
           }}
         />
       )}
@@ -111,7 +111,6 @@ const HeroSlide = ({
           loop
           muted
           playsInline
-          poster={poster}
           onLoadedData={onMediaLoad}
           ref={mainMediaRef}
         />

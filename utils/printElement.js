@@ -1,23 +1,3 @@
-// function addDisplayStylesToChildren(element) {
-//   if (element.hasChildNodes()) {
-//     const children = element.children
-//     for (let i = 0; i < children.length; i++) {
-//       const child = children[i]
-//       const style = window.getComputedStyle(child)
-//       const displayValue = style.display
-//       if (
-//         !child.style.display &&
-//         !child.classList.contains('js-noprint') &&
-//         !child.nodeName === 'SVG'
-//       ) {
-//         child.style.setProperty('display', displayValue, 'important')
-//         child.classList.add('js-clear-display-style')
-//       }
-//       addDisplayStylesToChildren(child)
-//     }
-//   }
-// }
-
 const printElement = (pelm) => {
   if (!pelm) return
 
@@ -34,8 +14,6 @@ const printElement = (pelm) => {
     }
     parent = parent.parentElement
   }
-
-  // addDisplayStylesToChildren(pelm)
 
   document.body.classList.add('print-mode')
 

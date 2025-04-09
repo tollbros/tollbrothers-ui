@@ -1,17 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HeroSlide.module.scss'
 
-const HeroSlide = ({
-  src,
-  alt,
-  title,
-  url,
-  opacity,
-  callBack,
-  Link,
-  type,
-  poster
-}) => {
+const HeroSlide = ({ src, alt, title, url, callBack, Link, type, poster }) => {
   const [isVertical, setIsVertical] = useState(false)
   const [videoSRC, setVideoSRC] = useState(null)
   const [videoReady, setVideoReady] = useState(false)
@@ -77,7 +67,6 @@ const HeroSlide = ({
 
       {isVideo && !videoReady && (
         <img
-          style={{ opacity: 0 }}
           className={`${styles.posterImage} `}
           src={poster}
           alt={alt || 'Toll Brothers'}

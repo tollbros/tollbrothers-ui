@@ -15,17 +15,19 @@
     }
 
     .overlay {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        position: absolute;
+        z-index: 2;
+        opacity: 0;
         &.videoOverlay {
-
-            &.posterLoaded {
-                background-color: rgba(0,0,0,0.7) !important;
-
-            }
+            background-color: rgba(0,0,0,0.7);
         }
     }
 
     .posterImage {
-        opacity: 0 !important;
+        opacity: 0;
         position: absolute;
         top: 0;
         left: 0;
@@ -33,9 +35,6 @@
         height: 100%;
         z-index: 1;
         object-fit: cover;
-        &.loaded {
-            opacity: 1 !important;
-        }
     }
 
     

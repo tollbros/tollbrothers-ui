@@ -1,7 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styles from './HeroSlide.module.scss'
 
-const HeroSlide = ({ src, alt, title, url, callBack, Link, type, poster }) => {
+const HeroSlide = ({
+  src,
+  alt,
+  title,
+  url,
+  opacity,
+  callBack,
+  Link,
+  type,
+  poster
+}) => {
   const [isVertical, setIsVertical] = useState(false)
   const [videoSRC, setVideoSRC] = useState(null)
   const [videoReady, setVideoReady] = useState(false)
@@ -28,10 +38,10 @@ const HeroSlide = ({ src, alt, title, url, callBack, Link, type, poster }) => {
 
   const showPosterAndOverlay = () => {
     if (bkgdImgRef.current) {
-      bkgdImgRef.current.style.opacity = 1
+      bkgdImgRef.current.style.opacity = opacity
     }
     if (overlayRef.current) {
-      overlayRef.current.style.opacity = 1
+      overlayRef.current.style.opacity = opacity
     }
   }
 
@@ -58,10 +68,7 @@ const HeroSlide = ({ src, alt, title, url, callBack, Link, type, poster }) => {
           {title}
         </Link>
       )}
-      <div
-        className={`${styles.overlay} ${isVideo ? styles.videoOverlay : ''}`}
-        ref={overlayRef}
-      >
+      <div className={`${styles.overlay}`} ref={overlayRef}>
         {' '}
       </div>
 

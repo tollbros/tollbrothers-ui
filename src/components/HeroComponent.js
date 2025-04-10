@@ -6,6 +6,7 @@ export function HeroComponent({
   children,
   slides,
   placeholderSrc,
+  overlayOpacity,
   mainSrc,
   Link,
   ...props
@@ -117,6 +118,7 @@ export function HeroComponent({
             src={nextSlide.image}
             alt={nextSlide.title ? nextSlide.title : ''}
             title={nextSlide.title}
+            opacity={overlayOpacity}
             url={nextSlide.URL}
             callBack={nextImageLoaded}
             Link={Link}
@@ -129,6 +131,7 @@ export function HeroComponent({
           alt={currentSlide.title ? currentSlide.title : ''}
           title={currentSlide.title}
           url={currentSlide.URL}
+          opacity={overlayOpacity}
           Link={Link}
           type={currentSlide.type}
           poster={currentSlide.poster}

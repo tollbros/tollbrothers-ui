@@ -24,10 +24,10 @@ const HeroSlide = ({
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src
 
   const onMediaLoad = (e) => {
+    showPosterAndOverlay()
     if (!isVideo) {
       const { naturalWidth, naturalHeight } = e.target
       setIsVertical(naturalWidth < naturalHeight)
-      showPosterAndOverlay()
     } else {
       setVideoReady(true)
     }

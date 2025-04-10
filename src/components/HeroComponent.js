@@ -78,7 +78,6 @@ export function HeroComponent({
       window.toll = {}
     }
 
-    window.toll.heroComponentSlides = null
     window.toll.isHeroComponentFlipping = false
 
     if (window.toll.debugHeroComponent) {

@@ -23,7 +23,7 @@ const HeroSlide = ({
   const imgSrc = src && !isVideo ? src : poster
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : poster
 
-  const onVideoLoad = (e) => {
+  const onVideoLoad = () => {
     setVideoReady(true)
     showImageAndOverlay()
   }
@@ -54,9 +54,6 @@ const HeroSlide = ({
       const { naturalWidth, naturalHeight } = mainMediaRef.current
       setIsVertical(naturalWidth < naturalHeight)
       showImageAndOverlay()
-      if (callBack) {
-        callBack()
-      }
     }
 
     if (src && isVideo) {

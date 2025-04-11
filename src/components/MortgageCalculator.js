@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
+import { printElement } from '../../utils/printElement'
 import { convertToMoney } from '../lib/convertToMoney'
 import { calculateValueByPercent } from '../lib/calculateValueByPercent'
 import { calculateFixedPercentage } from '../lib/calculateFixedPercentage'
 import { getCleanNumbericInputValue } from '../lib/getCleanNumbericInputValue'
 import { DragSlider } from './DragSlider'
+import { PrintButton } from './PrintButton'
 import styles from './MortgageCalculator.module.scss'
 
 const DEFAULT_SALES = 100000
@@ -46,8 +48,10 @@ export const MortgageCalculator = ({
   initialInterestRate = DEFAULT_INTEREST_RATE,
   maxSalePrice = SALES_MAX,
   targetClass,
+  printElementRef,
   classes = {}
 }) => {
+  const calculator = useRef(null)
   const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
   const [loanTerm, setLoanTerm] = useState(30)
   const [interestNumber, setInterestNumber] = useState(initialInterestRate)
@@ -213,7 +217,10 @@ export const MortgageCalculator = ({
   }
 
   return (
-    <div className={`${styles.calculatorWrapper} ${styles[targetClass]}`}>
+    <div
+      className={`${styles.calculatorWrapper} ${styles[targetClass]}`}
+      ref={calculator}
+    >
       <div className={styles.left}>
         <div
           className={`${styles.sliderWrapper} ${classes.sliderWrapper ?? ''}`}
@@ -231,7 +238,7 @@ export const MortgageCalculator = ({
               value={`$${convertToMoney(salesNumber)}`}
             />
           </div>
-          <div className={styles.dragWrapper}>
+          <div className={`${styles.dragWrapper} js-noprint`}>
             <DragSlider
               minValue={SALES_MIN}
               maxValue={maxSalePrice}
@@ -271,7 +278,7 @@ export const MortgageCalculator = ({
               <option value='30'>30 Years</option>
             </select>
           </div>
-          <div className={styles.dragWrapper}>
+          <div className={`${styles.dragWrapper} js-noprint`}>
             <DragSlider
               minValue={0}
               maxValue={loanTermArray.length - 1}
@@ -325,7 +332,7 @@ export const MortgageCalculator = ({
               <span className={styles.inputFont}>%</span>
             </div>
           </div>
-          <div className={styles.dragWrapper}>
+          <div className={`${styles.dragWrapper} js-noprint`}>
             <DragSlider
               minValue={DOWN_PAYMENT_PERCENTAGE_MIN}
               maxValue={DOWN_PAYMENT_PERCENTAGE_MAX}
@@ -366,7 +373,7 @@ export const MortgageCalculator = ({
               <span className={styles.inputFont}>%</span>
             </div>
           </div>
-          <div className={styles.dragWrapper}>
+          <div className={`${styles.dragWrapper} js-noprint`}>
             <DragSlider
               minValue={INTEREST_RATE_MIN}
               maxValue={INTEREST_RATE_MAX}
@@ -377,7 +384,10 @@ export const MortgageCalculator = ({
           </div>
         </div>
 
-        <div className={styles.advancedButtonWrapper} onClick={toggleAdvanced}>
+        <div
+          className={`${styles.advancedButtonWrapper} js-noprint`}
+          onClick={toggleAdvanced}
+        >
           <button
             className={`${showAdvancedToggle ? styles.open : ''}`}
             onClick={showLegend}
@@ -430,7 +440,7 @@ export const MortgageCalculator = ({
                   <span className={styles.inputFont}>%</span>
                 </div>
               </div>
-              <div className={styles.dragWrapper}>
+              <div className={`${styles.dragWrapper} js-noprint`}>
                 <DragSlider
                   minValue={TAX_PERCENTAGE_MIN}
                   maxValue={TAX_PERCENTAGE_MAX}
@@ -491,7 +501,7 @@ export const MortgageCalculator = ({
                   <span className={styles.inputFont}>%</span>
                 </div>
               </div>
-              <div className={styles.dragWrapper}>
+              <div className={`${styles.dragWrapper} js-noprint`}>
                 <DragSlider
                   minValue={INSURANCE_MIN}
                   maxValue={INSURANCE_MAX}
@@ -523,7 +533,7 @@ export const MortgageCalculator = ({
                   value={`$${convertToMoney(hoaNumber)}`}
                 />
               </div>
-              <div className={styles.dragWrapper}>
+              <div className={`${styles.dragWrapper} js-noprint`}>
                 <DragSlider
                   minValue={HOA_MIN}
                   maxValue={HOA_MAX}
@@ -581,7 +591,7 @@ export const MortgageCalculator = ({
                 <span>Principal and Interest</span>
                 <span>${convertToMoney(piNumber)}/mo</span>
                 <span
-                  className={styles.toolTipLaunch}
+                  className={`${styles.toolTipLaunch} js-noprint`}
                   onMouseOver={launchToolTip}
                   onMouseOut={hideToolTip}
                 />
@@ -598,7 +608,7 @@ export const MortgageCalculator = ({
                 <span>Taxes</span>
                 <span>${convertToMoney(Math.round(tax / 12))}/mo</span>
                 <span
-                  className={styles.toolTipLaunch}
+                  className={`${styles.toolTipLaunch} js-noprint`}
                   onMouseOver={launchToolTip}
                   onMouseOut={hideToolTip}
                 />
@@ -615,7 +625,7 @@ export const MortgageCalculator = ({
                 <span>Insurance</span>
                 <span>${convertToMoney(Math.round(insurance / 12))}/mo</span>
                 <span
-                  className={styles.toolTipLaunch}
+                  className={`${styles.toolTipLaunch} js-noprint`}
                   onMouseOver={launchToolTip}
                   onMouseOut={hideToolTip}
                 />
@@ -633,7 +643,7 @@ export const MortgageCalculator = ({
                 <span>HOA</span>
                 <span>${convertToMoney(hoaNumber)}/mo</span>
                 <span
-                  className={styles.toolTipLaunch}
+                  className={`${styles.toolTipLaunch} js-noprint`}
                   onMouseOver={launchToolTip}
                   onMouseOut={hideToolTip}
                 />
@@ -647,6 +657,12 @@ export const MortgageCalculator = ({
               </div>
             </div>
           )}
+          <PrintButton
+            classes={{ root: styles.printButton }}
+            onClick={() => {
+              printElement(printElementRef?.current || calculator?.current)
+            }}
+          />
         </div>
       </div>
     </div>

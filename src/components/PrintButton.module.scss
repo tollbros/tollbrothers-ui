@@ -1,0 +1,18 @@
+@import "styles/modules/all";
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: transparent;
+
+  .icon {
+    width: 30px;
+    height: auto;
+  }
+
+  .content {
+    font-size: inherit;
+  }
+}

@@ -1,0 +1,12 @@
+:global {
+    @media print {
+        html, body {
+            width: 210mm; // A4 Paper width
+            height: 100%;
+        }
+
+        body.print-mode *:not(.printable, .printable *, svg, svg *), body.print-mode .js-noprint {
+            display: none !important;
+        }
+    }
+}

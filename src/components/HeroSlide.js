@@ -32,6 +32,9 @@ const HeroSlide = ({
     const { naturalWidth, naturalHeight } = e.target
     setIsVertical(naturalWidth < naturalHeight)
     showImageAndOverlay()
+    if (callBack) {
+      callBack()
+    }
   }
 
   const showImageAndOverlay = () => {
@@ -42,7 +45,7 @@ const HeroSlide = ({
       mainMediaRef.current.style.opacity = 1
     }
     if (overlayRef.current) {
-      overlayRef.current.style.opacity = opacity
+      overlayRef.current.style.opacity = opacity || 0
     }
   }
 
@@ -51,6 +54,9 @@ const HeroSlide = ({
       const { naturalWidth, naturalHeight } = mainMediaRef.current
       setIsVertical(naturalWidth < naturalHeight)
       showImageAndOverlay()
+      if (callBack) {
+        callBack()
+      }
     }
 
     if (src && isVideo) {

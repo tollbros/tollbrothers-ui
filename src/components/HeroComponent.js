@@ -5,8 +5,8 @@ import HeroSlide from './HeroSlide'
 export function HeroComponent({
   children,
   slides,
-  overlayOpacity,
   placeholderSrc,
+  overlayOpacity,
   mainSrc,
   Link,
   ...props
@@ -118,8 +118,8 @@ export function HeroComponent({
             src={nextSlide.image}
             alt={nextSlide.title ? nextSlide.title : ''}
             title={nextSlide.title}
-            url={nextSlide.URL}
             opacity={overlayOpacity}
+            url={nextSlide.URL}
             callBack={nextImageLoaded}
             Link={Link}
           />

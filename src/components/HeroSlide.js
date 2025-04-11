@@ -85,7 +85,7 @@ const HeroSlide = ({
         </picture>
       )}
 
-      {isVideo && (
+      {isVideo && videoSRC && (
         <video
           className={styles.modelCardVideo}
           src={videoSRC}
@@ -97,7 +97,7 @@ const HeroSlide = ({
         />
       )}
 
-      {isVertical && (
+      {isVertical && !videoReady && (
         <picture>
           <source media='(max-width: 920px)' srcSet={image920} />
           <source media='(min-width: 921px)' srcSet={imgSrc} />

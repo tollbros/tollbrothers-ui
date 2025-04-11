@@ -22,7 +22,7 @@ Run `yalc link @tollbrothers/tollbrothers-ui` in the parent project
 # Clean up
 Run `yalc remove @tollbrothers/tollbrothers-ui && npm install` in the parent project 
 Stop the running scripts from Step 1 in the tollbrothers-ui project
-Run `yalc installations clean @tollbrothers/tollbrothers-ui` in the tollbrothers-ui project
+Run `yalc installations clean @tollbrothers/tollbrothers-ui` in the tollbrothers-ui project.
 
 
 ## Installation

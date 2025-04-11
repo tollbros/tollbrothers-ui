@@ -19,26 +19,29 @@ const HeroSlide = ({
   const mainMediaRef = useRef(null)
   const overlayRef = useRef(null)
 
-  const isVideo = src && type?.toLowerCase().includes('video')
-  const imgSrc = src
-  const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : src
+  const isVideo = type?.toLowerCase().includes('video')
+  const imgSrc = src && !isVideo ? src : poster
+  const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : poster
 
   const onMediaLoad = (e) => {
-    showPosterAndOverlay()
-    if (!isVideo) {
-      const { naturalWidth, naturalHeight } = e.target
-      setIsVertical(naturalWidth < naturalHeight)
-    } else {
-      setVideoReady(true)
-    }
-    if (callBack) {
-      callBack()
-    }
+    console.log('video loaded')
+    setVideoReady(true)
+    showImageAndOverlay()
   }
 
-  const showPosterAndOverlay = () => {
+  const onImageLoad = (e) => {
+    console.log('image loaded')
+    const { naturalWidth, naturalHeight } = e.target
+    setIsVertical(naturalWidth < naturalHeight)
+    showImageAndOverlay()
+  }
+
+  const showImageAndOverlay = () => {
     if (bkgdImgRef.current) {
-      bkgdImgRef.current.style.opacity = opacity
+      bkgdImgRef.current.style.opacity = 1
+    }
+    if (mainMediaRef.current) {
+      mainMediaRef.current.style.opacity = 1
     }
     if (overlayRef.current) {
       overlayRef.current.style.opacity = opacity
@@ -46,13 +49,12 @@ const HeroSlide = ({
   }
 
   useEffect(() => {
-    ;[mainMediaRef, bkgdImgRef].forEach((imgRef) => {
-      if (imgRef.current && imgRef.current.complete) {
-        const { naturalWidth, naturalHeight } = imgRef.current
-        setIsVertical(naturalWidth < naturalHeight)
-        showPosterAndOverlay()
-      }
-    })
+    if (mainMediaRef.current && mainMediaRef.current.complete) {
+      console.log('image already loaded - complete')
+      const { naturalWidth, naturalHeight } = mainMediaRef.current
+      setIsVertical(naturalWidth < naturalHeight)
+      showImageAndOverlay()
+    }
 
     if (src && isVideo) {
       setVideoSRC(src)
@@ -72,16 +74,21 @@ const HeroSlide = ({
         {' '}
       </div>
 
-      {isVideo && !videoReady && (
-        <img
-          className={`${styles.posterImage} `}
-          src={poster}
-          alt={alt || 'Toll Brothers'}
-          ref={bkgdImgRef}
-          onLoad={showPosterAndOverlay}
-        />
+      {!videoReady && (
+        <picture>
+          <source media='(max-width: 920px)' srcSet={image920} />
+          <source media='(min-width: 921px)' srcSet={imgSrc} />
+          <img
+            className={styles.modelCardImg}
+            src={image920}
+            alt={alt || ''}
+            onLoad={onImageLoad}
+            ref={mainMediaRef}
+          />
+        </picture>
       )}
-      {isVideo ? (
+
+      {isVideo && (
         <video
           className={styles.modelCardVideo}
           src={videoSRC}
@@ -90,22 +97,10 @@ const HeroSlide = ({
           muted
           playsInline
           onLoadedData={onMediaLoad}
-          ref={mainMediaRef}
         />
-      ) : (
-        <picture>
-          <source media='(max-width: 920px)' srcSet={image920} />
-          <source media='(min-width: 921px)' srcSet={imgSrc} />
-          <img
-            className={styles.modelCardImg}
-            src={image920}
-            alt={alt || ''}
-            onLoad={onMediaLoad}
-            ref={mainMediaRef}
-          />
-        </picture>
       )}
-      {isVertical && !isVideo && (
+
+      {isVertical && !videoReady && (
         <picture>
           <source media='(max-width: 920px)' srcSet={image920} />
           <source media='(min-width: 921px)' srcSet={imgSrc} />
@@ -113,7 +108,6 @@ const HeroSlide = ({
             className={styles.modelCardImgBG}
             src={image920}
             alt={alt || ''}
-            onLoad={onMediaLoad}
             ref={bkgdImgRef}
           />
         </picture>

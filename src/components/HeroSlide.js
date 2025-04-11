@@ -23,7 +23,7 @@ const HeroSlide = ({
   const imgSrc = src && !isVideo ? src : poster
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : poster
 
-  const onMediaLoad = (e) => {
+  const onVideoLoad = (e) => {
     setVideoReady(true)
     showImageAndOverlay()
   }
@@ -99,7 +99,7 @@ const HeroSlide = ({
           loop
           muted
           playsInline
-          onLoadedData={onMediaLoad}
+          onLoadedData={onVideoLoad}
         />
       )}
 

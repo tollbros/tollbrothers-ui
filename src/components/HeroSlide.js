@@ -24,13 +24,11 @@ const HeroSlide = ({
   const image920 = src && !isVideo ? src.replace('_1920.', '_920.') : poster
 
   const onMediaLoad = (e) => {
-    console.log('video loaded')
     setVideoReady(true)
     showImageAndOverlay()
   }
 
   const onImageLoad = (e) => {
-    console.log('image loaded')
     const { naturalWidth, naturalHeight } = e.target
     setIsVertical(naturalWidth < naturalHeight)
     showImageAndOverlay()
@@ -50,7 +48,6 @@ const HeroSlide = ({
 
   useEffect(() => {
     if (mainMediaRef.current && mainMediaRef.current.complete) {
-      console.log('image already loaded - complete')
       const { naturalWidth, naturalHeight } = mainMediaRef.current
       setIsVertical(naturalWidth < naturalHeight)
       showImageAndOverlay()
@@ -100,7 +97,7 @@ const HeroSlide = ({
         />
       )}
 
-      {isVertical && !videoReady && (
+      {isVertical && (
         <picture>
           <source media='(max-width: 920px)' srcSet={image920} />
           <source media='(min-width: 921px)' srcSet={imgSrc} />

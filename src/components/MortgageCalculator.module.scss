@@ -42,6 +42,12 @@
         }
     }
 
+    .printButton {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+    }
+
     .estimatedPayment {
         display: flex;
         flex-direction: column;
@@ -552,4 +558,55 @@ input[type=range]::-webkit-slider-runnable-track {
 // tollbrothersmortgage.com-specific styles
 .tbmortgage {
     margin-bottom: 50px;
+}
+
+
+@media print {
+    .calculatorWrapper {
+        justify-content: flex-start;
+        width: 100% !important;
+
+        .right, .left {
+            width: 49% !important;
+
+            &:before {
+                display: none !important;
+            }
+        }
+
+    }
+
+    .sliderWrapper {
+        height: 54px !important;
+        margin: 10px 0 !important;
+        border-radius: 0 !important;
+    }
+
+    .callOutWrapper label {
+        color: black !important;
+        white-space: nowrap !important;
+        font-size: 16px !important;
+    }
+
+    .estimatedPayment {
+        width: 100% !important;
+    }
+
+    .details {
+        span {
+            font-size: 16px !important;
+
+            &:before {
+                top: 5px!important;
+            }
+        }
+    }
+
+    .graphic {
+        p {
+            //this forces safari to print the circle (sigh)
+            border: 1px solid lightgray !important;
+        }
+    }
+
 }

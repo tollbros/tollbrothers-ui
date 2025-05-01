@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react'
 import styles from './HeroComponent.module.scss'
 import HeroSlide from './HeroSlide'
 
+function arrayRotate(arr, reverse) {
+  if (reverse) arr.unshift(arr.pop())
+  else arr.push(arr.shift())
+  return arr
+}
+
 export function HeroComponent({
   children,
   slides,
@@ -21,6 +27,12 @@ export function HeroComponent({
 
   const waitToFade = useRef(null)
   const flipSlides = useRef(null)
+
+  const resetHeroSlides = () => {
+    arrayRotate(window.toll.heroComponentSlides, true)
+    arrayRotate(window.toll.heroComponentSlides, true)
+    setCurrentSlideIndex((prevIndex) => prevIndex + 1)
+  }
 
   const flipSlidesTimeout = () => {
     clearTimeout(flipSlides.current)
@@ -80,6 +92,7 @@ export function HeroComponent({
 
     window.toll.heroComponentSlides = null
     window.toll.isHeroComponentFlipping = false
+    window.toll.resetHeroSlides = resetHeroSlides
 
     if (window.toll.debugHeroComponent) {
       console.log('Hero component mounted')

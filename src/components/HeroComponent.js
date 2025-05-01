@@ -29,9 +29,11 @@ export function HeroComponent({
   const flipSlides = useRef(null)
 
   const resetHeroSlides = () => {
-    arrayRotate(window.toll.heroComponentSlides, true)
-    arrayRotate(window.toll.heroComponentSlides, true)
-    setCurrentSlideIndex((prevIndex) => prevIndex + 1)
+    if (window.toll?.heroComponentSlides) {
+      arrayRotate(window.toll.heroComponentSlides, true)
+      arrayRotate(window.toll.heroComponentSlides, true)
+      setCurrentSlideIndex((prevIndex) => prevIndex + 1)
+    }
   }
 
   const flipSlidesTimeout = () => {

@@ -14,6 +14,34 @@
         z-index: 1;
     }
 
+    .modelCardImg {
+        opacity: 0;
+    }
+
+    .overlay {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,1);
+        position: absolute;
+        z-index: 2;
+        opacity: 0;
+    }
+
+    .posterImage {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        object-fit: cover;
+    }
+
+    
+
+    
+
     .modelCardVideo {
         @media (max-width: 450px) {
             height: 101%; // I know but there's a really annoying white line at the bottom on mobile

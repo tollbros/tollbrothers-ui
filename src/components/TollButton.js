@@ -1,6 +1,26 @@
 import React from 'react'
 import styles from './TollButton.module.scss'
 
-export const TollButton = () => {
-  return <div className={styles.tollButton}>Button</div>
+export const TollButton = ({
+  children,
+  onClick,
+  buttonColor,
+  className = '',
+  type = 'button'
+}) => {
+  let altColor = ''
+
+  if (buttonColor == 'white') {
+    altColor = styles.white
+  }
+
+  return (
+    <button
+      type={type}
+      className={`${styles.root} ${altColor} ${className}`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
 }

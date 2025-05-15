@@ -6,7 +6,8 @@ export const TollButton = ({
   onClick,
   buttonColor,
   className = '',
-  type = 'button'
+  type = 'button',
+  disabled = false
 }) => {
   let altColor = ''
 
@@ -17,6 +18,7 @@ export const TollButton = ({
   return (
     <button
       type={type}
+      disabled={disabled}
       className={`${styles.root} ${altColor} ${className}`}
       onClick={onClick}
     >

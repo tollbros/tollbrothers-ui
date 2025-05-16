@@ -9,6 +9,7 @@ export { MortgageCalculator } from './components/MortgageCalculator'
 export { HorizontalScroller } from './components/HorizontalScroller'
 export { TollChat } from './components/TollChat/TollChat'
 export { PrintButton } from './components/PrintButton'
+export { FavoritesSignIn } from './components/FavoritesSignIn'
 export { Slider }
 
 // utils

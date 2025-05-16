@@ -1,5 +1,4 @@
 import React from 'react'
-// import { signInWithRedirect, getCurrentUser } from 'aws-amplify/auth'
 
 import { TollButton } from './TollButton'
 import styles from './FavoritesSignIn.module.scss'

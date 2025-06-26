@@ -6,7 +6,8 @@ export const HorizontalScroller = ({
   showArrows,
   classes = {},
   newIndex,
-  getCurrentIndex = () => {}
+  getCurrentIndex = () => {},
+  useContainerWidth = false
 }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(false)
   const [isPrevDisabled, setIsPrevDisabled] = useState(true)
@@ -96,7 +97,11 @@ export const HorizontalScroller = ({
   // to detect if window is wider than gallery
   useEffect(() => {
     const handleResize = () => {
-      window.innerWidth >= galleryRef.current?.scrollWidth
+      const containerWidth = useContainerWidth
+        ? galleryRef?.current?.clientWidth
+        : window.innerWidth
+
+      containerWidth >= galleryRef.current?.scrollWidth
         ? setShowGalleryNav(false)
         : setShowGalleryNav(true)
     }

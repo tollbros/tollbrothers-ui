@@ -32,6 +32,33 @@ import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
 
+const getGaClientId = () => {
+  const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
+  if (
+    typeof window.ga !== 'undefined' &&
+    typeof window.ga.getAll === 'function'
+  ) {
+    const gaTracker = window.ga.getAll()[0]
+    const gaClientId = gaTracker.get('clientId')
+    const gaUserId = gaTracker.get('userId')
+    const gaTrackId = gaTracker.get('trackingId')
+
+    if (typeof gaClientId !== 'undefined' && gaClientId !== '') {
+      gaIds.gaClientId = gaClientId
+    }
+
+    if (typeof gaUserId !== 'undefined' && gaUserId !== '') {
+      gaIds.gaUserId = gaUserId
+    }
+
+    if (typeof gaTrackId !== 'undefined' && gaTrackId !== '') {
+      gaIds.gaTrackId = gaTrackId
+    }
+  }
+
+  return gaIds
+}
+
 export const TollChat = ({
   availabilityAPI,
   endPoint,
@@ -72,6 +99,7 @@ export const TollChat = ({
   const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
     useState(null)
   const [hasAgentEngaged, setHasAgentEngaged] = useState(false)
+  const [callbackUrl, setCallbackUrl] = useState(null)
   const [unreadMessagesCount, setUnreadMessagesCount] = useState({
     count: 0,
     lastMessageId: null
@@ -79,6 +107,7 @@ export const TollChat = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target
+    e.target.setCustomValidity('')
     setFormData({ ...formData, [name]: value })
   }
 
@@ -282,6 +311,36 @@ export const TollChat = ({
     setError(null)
     setSystemMessage(null)
     setShowActiveTyping(false)
+
+    const form = e.target
+    const [firstName, ...lastNameParts] = form.name?.value?.trim().split(' ')
+    const lastName = lastNameParts?.join(' ')
+
+    if (
+      !firstName ||
+      !lastName ||
+      firstName?.length < 2 ||
+      lastName?.length < 2
+    ) {
+      form.name.setCustomValidity(
+        'First and last name must both be at least 2 characters long.'
+      )
+      form.reportValidity()
+      return false
+    } else if (firstName && firstName.trim().length > 40) {
+      form.name.setCustomValidity(
+        'First name cannot be longer than 40 characters.'
+      )
+      form.reportValidity()
+      return false
+    } else if (lastName && lastName.trim().length > 80) {
+      form.name.setCustomValidity(
+        'Last name cannot be longer than 80 characters.'
+      )
+      form.reportValidity()
+      return false
+    }
+
     setShowWaitMessage(true)
     setShowForm(false)
     trackChatEvent(chatStartedEventString)
@@ -289,16 +348,24 @@ export const TollChat = ({
     try {
       const availability = await fetchAvailability(chatRegion, availabilityAPI)
       if (availability?.data?.payload?.length > 0) {
-        const form = e.target
-        const [firstName, ...lastNameParts] = form.name?.value
-          ?.trim()
-          .split(' ')
-        const lastName = lastNameParts?.join(' ') || '(none)'
+        const email = form.email?.value?.trim()
+        const gaClientIds = getGaClientId()
+        setCallbackUrl(
+          `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
+            email
+          )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
+            lastName
+          )}&gaClientId=${encodeURIComponent(
+            gaClientIds.gaClientId
+          )}&gaUserId=${encodeURIComponent(
+            gaClientIds.gaUserId
+          )}&gaTrackId=${encodeURIComponent(gaClientIds.gaTrackId)}`
+        )
 
         await initializeChat(
           firstName,
           lastName,
-          form.email?.value?.trim(),
+          email,
           endPoint,
           apiSfOrgId,
           apiSfName
@@ -807,7 +874,7 @@ export const TollChat = ({
             pattern='[A-Za-z\s]+'
             title='Name can only contain letters and spaces'
             placeholder='Full Name*'
-            maxLength={240}
+            maxLength={123}
           />
 
           <input
@@ -898,6 +965,9 @@ export const TollChat = ({
         </div>
       )}
       {error && <span className={styles.error}>{error}</span>}
+      {callbackUrl && (
+        <iframe className={styles.callbackIframe} src={callbackUrl} />
+      )}
     </div>
   )
 }

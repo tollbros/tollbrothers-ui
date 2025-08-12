@@ -676,8 +676,6 @@ export const TollChat = ({
     setShowChatHeader(false)
     setIsChatOpen(false)
 
-    // console.log(accessToken, conversationId)
-
     if (!accessToken || !conversationId) {
       return
     }

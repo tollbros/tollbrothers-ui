@@ -296,18 +296,6 @@ export const TollChat = ({
         break
       case 'CONVERSATION_TYPING_STARTED_INDICATOR':
         data = JSON.parse(event.data)
-        console.log('typing message')
-
-        // const typingData = formatMessage(
-        //   {
-        //     ...data.conversationEntry,
-        //     entryPayload: JSON.parse(data.conversationEntry.entryPayload)
-        //   },
-        //   firstName,
-        //   lastName
-        // )
-
-        // messages.push(message)
         setShowActiveTyping(data)
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':
@@ -753,7 +741,6 @@ export const TollChat = ({
 
   useEffect(() => {
     if (showActiveTyping) {
-      console.log(showActiveTyping)
       // add typing message to message list
       setMessages((prevMessages) => [
         ...prevMessages,

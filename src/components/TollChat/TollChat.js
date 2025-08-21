@@ -76,6 +76,7 @@ export const TollChat = ({
   chatStartedEventString = 'chatStarted'
 }) => {
   const isTransfering = useRef(false)
+  const isInConference = useRef(false)
   const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
   const [messages, setMessages] = useState([])
@@ -231,6 +232,8 @@ export const TollChat = ({
 
         if (messagePayload?.routingType === 'Transfer') {
           isTransfering.current = true
+        } else if (messagePayload?.routingType === 'Conference') {
+          isInConference.current = true
         }
 
         setIsCurrentlyChatting(true)
@@ -240,21 +243,28 @@ export const TollChat = ({
         messagePayload = JSON.parse(data.conversationEntry.entryPayload)
         setShowWaitMessage(false)
 
-        if (messagePayload?.entries?.[0]?.operation === 'remove') {
-          if (!isTransfering.current) {
+        if (
+          messagePayload?.entries?.[0]?.operation === 'remove' &&
+          messagePayload?.entries?.[0]?.participant?.role !== 'Supervisor'
+        ) {
+          if (!isTransfering.current && !isInConference.current) {
             afterEndChatReset()
             setSystemMessage(
               messagePayload.entries[0].displayName + ' ended the chat'
             )
           } else {
             setSystemMessage(null)
-            setShowWaitMessage(true)
+            if (isTransfering.current) setShowWaitMessage(false)
             isTransfering.current = false
+            isInConference.current = false
           }
         } else {
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
-            if (entry.operation === 'add') {
+            if (
+              entry.operation === 'add' &&
+              entry.participant?.role !== 'Supervisor'
+            ) {
               handleAddAgent(entry)
               continue
             }
@@ -285,7 +295,8 @@ export const TollChat = ({
         console.log('conversation read acknowledge...')
         break
       case 'CONVERSATION_TYPING_STARTED_INDICATOR':
-        setShowActiveTyping(true)
+        data = JSON.parse(event.data)
+        setShowActiveTyping(data)
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':
         setShowActiveTyping(false)
@@ -504,6 +515,23 @@ export const TollChat = ({
 
         let chatWasEndedByAgentWhileOffline = false
         const tbChatBackup = { ...tbChat }
+
+        const hasTransferEvent = response.conversationEntries.some((entry) => {
+          return (
+            entry.entryType === 'RoutingResult' &&
+            entry.entryPayload?.routingType === 'Transfer'
+          )
+        })
+
+        const hasConferenceEvent = response.conversationEntries.some(
+          (entry) => {
+            return (
+              entry.entryType === 'RoutingResult' &&
+              entry.entryPayload?.routingType === 'Conference'
+            )
+          }
+        )
+
         response.conversationEntries.map((entry) => {
           if (
             entry.entryType === 'ParticipantChanged' &&
@@ -511,7 +539,10 @@ export const TollChat = ({
           ) {
             entry.entryPayload.entries.map((entry) => {
               // find the add entry to get agent name
-              if (entry.operation === 'add') {
+              if (
+                entry.operation === 'add' &&
+                entry.participant?.role !== 'Supervisor'
+              ) {
                 // always first since the messages are in chronological order.
                 // If the user was transfered this will be in the message list a second time
                 // so we need to add all the chat data back into localStorage and React state
@@ -530,7 +561,12 @@ export const TollChat = ({
                 setAccessToken(tbChatBackup.accessToken)
                 setConversationId(tbChatBackup.conversationId)
                 chatWasEndedByAgentWhileOffline = false
-              } else if (entry.operation === 'remove') {
+              } else if (
+                entry.operation === 'remove' &&
+                entry.participant?.role !== 'Supervisor' &&
+                !hasTransferEvent &&
+                !hasConferenceEvent
+              ) {
                 // always after the add event since the messages are in chronological order
                 // so if there was no transfer this will be the last event and we can clear all the chat data
                 // note 2: we want to clear the data if the agent left the conversation while user was offline or in another tab
@@ -598,13 +634,16 @@ export const TollChat = ({
         setShowWaitMessage(false)
         setShowTextChatOptions(false)
         getConversationList(value)
-        if (!isTabVisiblilityEvent) {
-          sendSystemtMessage({
-            accessToken: value.accessToken,
-            conversationId: value.conversationId,
-            message: '::System Message:: Guest restored connection'
-          })
-        }
+
+        // turned this off since it was sending a system message every time the tab was restored
+        // can confuse agents
+        // if (!isTabVisiblilityEvent) {
+        //   sendSystemtMessage({
+        //     accessToken: value.accessToken,
+        //     conversationId: value.conversationId,
+        //     message: '::System Message:: Guest restored connection'
+        //   })
+        // }
         setAbortController(abortController)
         setIsChatOpen(true)
       }
@@ -664,6 +703,7 @@ export const TollChat = ({
     setSystemMessage(null)
     setUnreadMessagesCount({ count: 0, lastMessageId: null })
     isTransfering.current = false
+    isInConference.current = false
     if (abortController) {
       // closes sse connection
       abortController.abort()
@@ -707,7 +747,9 @@ export const TollChat = ({
         {
           id: popNextUUID(),
           type: 'Message',
-          text: agentName + ' is typing...',
+          text:
+            showActiveTyping?.conversationEntry?.senderDisplayName +
+            ' is typing...',
           payload: { formatType: 'Typing' },
           role: 'Agent'
         }

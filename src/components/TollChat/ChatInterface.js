@@ -14,12 +14,12 @@ export const ChatInterface = ({
   showChatHeader,
   isMinimized,
   showChatButton,
+  setShowTextChatOptions,
   showTextChatOptions,
   unreadMessagesCount,
   showFormHandler,
   handleMinimize,
   chatPhoto,
-  showTextChatOption,
   chatSms,
   hasAgentEngaged,
   handleConfirmationEnd,
@@ -85,7 +85,11 @@ export const ChatInterface = ({
 
           <button
             className={styles.chatLaunch}
-            onClick={!isMinimized ? showTextChatOption : handleMinimize}
+            onClick={
+              !isMinimized
+                ? () => setShowTextChatOptions(!showTextChatOptions)
+                : handleMinimize
+            }
           >
             <img
               className={styles.oscHead}

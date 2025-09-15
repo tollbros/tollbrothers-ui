@@ -50,7 +50,10 @@ export const TollChat = ({
 }) => {
   const [showWaitMessage, setShowWaitMessage] = useState(false)
   const [systemMessage, setSystemMessage] = useState('') // system messages
+  const [showChatHeader, setShowChatHeader] = useState(false)
+  const [showChatButton, setShowChatButton] = useState(false)
   const [showActiveTyping, setShowActiveTyping] = useState(false)
+  const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [chatPhoto, setChatPhoto] = useState(null) // osc image
   const [callbackUrl, setCallbackUrl] = useState(null)
@@ -131,6 +134,14 @@ export const TollChat = ({
     }
   }
 
+  const showFormHandler = (trackEvent) => {
+    if (trackEvent) trackChatEvent(chatClickedEventString)
+    setIsChatOpen(true)
+    setShowChatHeader(true)
+    setShowForm(true)
+    setShowChatButton(false)
+  }
+
   useEffect(() => {
     async function getOscInfo() {
       try {
@@ -176,8 +187,11 @@ export const TollChat = ({
         setIsChatOpen={setIsChatOpen}
         isChatOpen={isChatOpen}
         chatSms={chatSms}
-        trackChatEvent={trackChatEvent}
-        chatClickedEventString={chatClickedEventString}
+        setShowChatHeader={setShowChatHeader}
+        showChatHeader={showChatHeader}
+        setShowChatButton={setShowChatButton}
+        showChatButton={showChatButton}
+        showFormHandler={showFormHandler}
         showWaitMessage={showWaitMessage}
         systemMessage={systemMessage}
         showActiveTyping={showActiveTyping}
@@ -192,6 +206,8 @@ export const TollChat = ({
         setShowWaitMessage={setShowWaitMessage}
         setSystemMessage={setSystemMessage}
         setShowActiveTyping={setShowActiveTyping}
+        setShowTextChatOptions={setShowTextChatOptions}
+        showTextChatOptions={showTextChatOptions}
         error={error}
         setError={setError}
         userInfo={userInfo}

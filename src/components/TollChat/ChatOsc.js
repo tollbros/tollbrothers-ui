@@ -34,9 +34,11 @@ export const ChatOsc = ({
   setIsChatOpen,
   isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
   chatSms,
-  trackChatEvent,
-  chatClickedEventString,
   isChatAvailabilityChecked,
+  setShowChatHeader,
+  showChatHeader,
+  setShowChatButton,
+  showChatButton,
   setShowForm,
   showForm,
   setError,
@@ -52,16 +54,16 @@ export const ChatOsc = ({
   setShowActiveTyping,
   showActiveTyping,
   handleSubmit,
+  showFormHandler,
+  setShowTextChatOptions,
+  showTextChatOptions,
   userInfo
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
-  const [showChatButton, setShowChatButton] = useState(false)
   const [accessToken, setAccessToken] = useState(null)
   const [messages, setMessages] = useState([])
   const [conversationId, setConversationId] = useState(null)
-  const [showChatHeader, setShowChatHeader] = useState(false)
-  const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
     useState(false)
   const chatContainerRef = useRef(null)
@@ -283,18 +285,6 @@ export const ChatOsc = ({
     if (messages.length > 0) {
       setMessages((prevMessages) => [...prevMessages, ...messages])
     }
-  }
-
-  const showTextChatOption = () => {
-    setShowTextChatOptions(!showTextChatOptions)
-  }
-
-  const showFormHandler = (trackEvent) => {
-    if (trackEvent) trackChatEvent(chatClickedEventString)
-    setIsChatOpen(true)
-    setShowChatHeader(true)
-    setShowForm(true)
-    setShowChatButton(false)
   }
 
   useEffect(() => {
@@ -662,12 +652,12 @@ export const ChatOsc = ({
       showChatHeader={showChatHeader}
       isMinimized={isMinimized}
       showChatButton={showChatButton}
+      setShowTextChatOptions={setShowTextChatOptions}
       showTextChatOptions={showTextChatOptions}
       unreadMessagesCount={unreadMessagesCount}
       showFormHandler={showFormHandler}
       handleMinimize={handleMinimize}
       chatPhoto={chatPhoto}
-      showTextChatOption={showTextChatOption}
       chatSms={chatSms}
       hasAgentEngaged={hasAgentEngaged}
       handleConfirmationEnd={handleConfirmationEnd}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { ChatOsc } from './ChatOsc'
 import { fetchAvailability } from '../../../utils/chat/apis'

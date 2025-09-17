@@ -1,3 +1,5 @@
+@import "styles/modules/all";
+
 .track {
     font-size: 12px;
     padding: 2px 0;
@@ -20,6 +22,10 @@
         outline: none;
         border: none;
         color: #000;
+
+        &:focus-visible {
+            outline: none;
+        }
     }
 
 
@@ -50,3 +56,16 @@
     background: none;
 }
 
+.rangeInput:focus-visible {
+    outline: none;
+}
+
+.rangeInput:focus-visible::-webkit-slider-thumb {
+    border: 2px solid $accent_blue;
+    box-shadow: 0 0 0 4px rgba($accent_blue, .2);
+}
+
+.rangeInput:focus-visible::-moz-range-thumb {
+    border: 2px solid $accent_blue;
+    box-shadow: 0 0 0 4px rgba($accent_blue, .2);
+}

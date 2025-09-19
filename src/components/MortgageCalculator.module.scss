@@ -1,635 +1,630 @@
-@import "styles/modules/all";
+@import 'styles/modules/all';
 
 // default styles are for storybooknewhomes.com. Modifications for other sites are below
 .calculatorWrapper {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  @media screen and (max-width: 850px) {
+    flex-direction: column;
+  }
+
+  .left,
+  .right {
+    width: 46%;
 
     @media screen and (max-width: 850px) {
-        flex-direction: column;
+      width: 100%;
     }
-
-    .left,
-    .right {
-        width: 46%;
-
-        @media screen and (max-width: 850px) {
-            width: 100%;
-        }
-    }
+  }
 }
 
 .right {
-    position: relative;
+  position: relative;
+
+  @media screen and (max-width: 850px) {
+    margin-top: 20px;
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 90%;
+    left: -18px;
+    top: 10px;
+    background-color: #aaa;
 
     @media screen and (max-width: 850px) {
-        margin-top: 20px;
+      display: none;
     }
+  }
 
-    &::before {
-        content: '';
-        display: block;
+  .printButton {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+
+  .estimatedPayment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .graphic {
+      width: 100%;
+      height: 290px;
+      position: relative;
+
+      p {
+        width: 290px;
+        height: 290px;
         position: absolute;
-        width: 1px;
-        height: 90%;
-        left: -18px;
-        top: 10px;
-        background-color: #aaa;
-
-        @media screen and (max-width: 850px) {
-            display: none;
-        }
-    }
-
-    .printButton {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-    }
-
-    .estimatedPayment {
+        border-radius: 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
 
-        .graphic {
-            width: 100%;
-            height: 290px;
-            position: relative;
+      p.principal {
+        background-color: #008289;
+        z-index: 1;
+      }
 
-            p {
-                width: 290px;
-                height: 290px;
-                position: absolute;
-                border-radius: 50%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                top: 0;
-                left: 0;
-                right: 0;
-            }
+      p.taxes {
+        z-index: 2;
 
-            p.principal {
-                background-color: #008289;
-                z-index: 1;
-            }
-
-            p.taxes {
-                z-index: 2;
-                //display: none;
-
-                &.storyBook {
-                    display: block; 
-                }
-
-                span {
-                    font-size: 48px;
-                    font-weight: bold;
-                    background-color: #fff;
-                    border-radius: 50%;
-                    width: 240px;
-                    height: 240px;
-                    display: flex;
-                    align-items: center;
-                    flex-direction: column;
-                    justify-content: center;
-                    color: #000;
-
-                    span {
-                        font-size: 15px;
-                        line-height: 20px;
-                        font-weight: 300;
-                        display: block;
-                        max-width: 120px;
-                        text-align: center;
-                        margin-top: 20px;
-                        background-color: transparent;
-                        height: auto;
-                    }
-                }
-            }
+        &.storyBook {
+          display: block;
         }
 
-        p:nth-child(1) {
-            font-size: 1.3em;
-            font-weight: 500;
-            margin: 0 auto;
+        span {
+          font-size: 48px;
+          font-weight: bold;
+          background-color: #fff;
+          border-radius: 50%;
+          width: 240px;
+          height: 240px;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          color: #000;
+
+          span {
+            font-size: 15px;
+            line-height: 20px;
+            font-weight: 300;
+            display: block;
+            max-width: 120px;
+            text-align: center;
+            margin-top: 20px;
+            background-color: transparent;
+            height: auto;
+          }
         }
-
-        p:nth-child(2) {
-            width: 290px;
-            height: 290px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-        }
-
-        .details {
-            width: 80%;
-            margin-top: 25px;
-
-            >div {
-                width: 100%;
-                text-align: center;
-                display: flex;
-                justify-content: space-between;
-                border-top: 1px solid #cdcbcb;
-                padding: 3px 10px 3px 20px;
-                position: relative;
-
-
-                span {
-                    font-size: 13px;
-                    color: #39484F;
-                    font-weight: 400;
-                    position: relative;
-
-                    &:nth-child(1) {
-
-                        &::before {
-                            content: '';
-                            display: block;
-                            position: absolute;
-                            width: 12px;
-                            height: 12px;
-                            background-color: #008289;
-                            border-radius: 100%;
-                            left: -17px;
-                            top: 4px;
-                        }
-                    }
-                }
-
-                .toolTipLaunch {
-                    position: absolute;
-                    width: 14px;
-                    height: 14px;
-                    background: url(https://cdn.tollbrothers.com/sites/icons/informationIcon.svg) 0 0 / 100% no-repeat;
-                    border: none;
-                    padding: 0;
-                    appearance: none;
-                    background-color: transparent;
-                    right: -16px;
-                    top: 6px;
-                    cursor: pointer;
-                    z-index: 2;
-
-                    &:focus-visible {
-                        outline: none;
-                        box-shadow: 0 0 0 2px $accent_blue;
-                        border-radius: 50%;
-                    }
-                }
-
-                .toolTip {
-                    position: absolute;
-                    bottom: -50%;
-                    right: 0;
-                    width: 200px;
-                    border-radius: 15px;
-                    padding: 12px;
-                    opacity: 0;
-                    z-index: 1;
-                    background-color: white;
-                    box-shadow: 0 0 4px 0px rgba(0, 0, 0, .25);
-                    transition: opacity .5s;
-                    text-align: left;
-                    font-weight: 400;
-
-                    &.isActive {
-                        opacity: 1;
-                        z-index: 3;
-                    }
-
-                    .close {
-                        position: absolute;
-                        right: 10px;
-                        top: 0;
-                        font-size: 18px;
-                        font-weight: 600;
-                        border: none;
-                        background: transparent;
-                        padding: 0;
-                        cursor: pointer;
-                        outline: none;
-
-                        
-                        &::before {
-                            display: none;
-                        }
-                    }
-                }
-
-                &:nth-child(2) {
-                    span {
-                        &:nth-child(1) {
-                            &::before {
-                                background-color: #7CBF92;
-                            }
-                        }
-                    }
-                }
-
-                &:nth-child(3) {
-                    span {
-                        &:nth-child(1) {
-                            &::before {
-                                background-color: #39484F;
-                            }
-                        }
-                    }
-                }
-
-                &:nth-child(4) {
-                    span {
-                        &:nth-child(1) {
-                            &::before {
-                                background-color: #CEC18B;
-                            }
-                        }
-                    }
-                }
-
-                &:last-child {
-                    border-bottom: 1px solid #cdcbcb;
-                }
-            }
-        }
+      }
     }
+
+    p:nth-child(1) {
+      font-size: 1.3em;
+      font-weight: 500;
+      margin: 0 auto;
+    }
+
+    p:nth-child(2) {
+      width: 290px;
+      height: 290px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .details {
+      width: 80%;
+      margin-top: 25px;
+
+      > div {
+        width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #cdcbcb;
+        padding: 3px 10px 3px 20px;
+        position: relative;
+
+        span {
+          font-size: 13px;
+          color: #39484f;
+          font-weight: 400;
+          position: relative;
+
+          &:nth-child(1) {
+            &::before {
+              content: '';
+              display: block;
+              position: absolute;
+              width: 12px;
+              height: 12px;
+              background-color: #008289;
+              border-radius: 100%;
+              left: -17px;
+              top: 4px;
+            }
+          }
+        }
+
+        .toolTipLaunch {
+          position: absolute;
+          width: 14px;
+          height: 14px;
+          background: url(https://cdn.tollbrothers.com/sites/icons/informationIcon.svg)
+            0 0 / 100% no-repeat;
+          border: none;
+          padding: 0;
+          appearance: none;
+          background-color: transparent;
+          right: -16px;
+          top: 6px;
+          cursor: pointer;
+          z-index: 2;
+
+          &:focus-visible {
+            outline: none;
+            outline: 2px solid $accent_blue;
+            outline-offset: -3px;
+            border-radius: 50%;
+          }
+        }
+
+        .toolTip {
+          position: absolute;
+          bottom: -50%;
+          right: 0;
+          width: 200px;
+          border-radius: 15px;
+          padding: 12px;
+          opacity: 0;
+          z-index: 1;
+          background-color: white;
+          box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.25);
+          transition: opacity 0.5s;
+          text-align: left;
+          font-weight: 400;
+
+          &.isActive {
+            opacity: 1;
+            z-index: 3;
+          }
+
+          .close {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            outline: none;
+
+            &::before {
+              display: none;
+            }
+          }
+        }
+
+        &:nth-child(2) {
+          span {
+            &:nth-child(1) {
+              &::before {
+                background-color: #7cbf92;
+              }
+            }
+          }
+        }
+
+        &:nth-child(3) {
+          span {
+            &:nth-child(1) {
+              &::before {
+                background-color: #39484f;
+              }
+            }
+          }
+        }
+
+        &:nth-child(4) {
+          span {
+            &:nth-child(1) {
+              &::before {
+                background-color: #cec18b;
+              }
+            }
+          }
+        }
+
+        &:last-child {
+          border-bottom: 1px solid #cdcbcb;
+        }
+      }
+    }
+  }
 }
 
 .dragSliderWrapper {
-    border: 1px solid #667;
-    margin: 5px 0;
-
+  border: 1px solid #667;
+  margin: 5px 0;
 }
 
 .sliderWrapper {
-    position: relative;
-    height: 60px;
-    border: 1px solid #aaa;
-    padding: 0 10px;
-    margin: 10px 0 40px;
-    background-color: white;
+  position: relative;
+  height: 60px;
+  border: 1px solid #aaa;
+  padding: 0 10px;
+  margin: 10px 0 40px;
+  background-color: white;
 
-    @include breakpoint(xs) {
-        padding: 0 18px;
-    }
-
+  @include breakpoint(xs) {
+    //padding: 0 18px;
+    padding: 0 10px 0 18px;
+  }
 }
 
 .dragWrapper {
-    width: 100%;
-    left: 0;
-    position: absolute;
-    bottom: -19px;
-    z-index: 2;
+  width: 100%;
+  left: 0;
+  position: absolute;
+  bottom: -19px;
+  z-index: 2;
 }
 
 .error {
-    color: red;
-    font-size: 14px;
-    font-weight: 300;
-    position: absolute;
-    bottom: -32px;
+  color: red;
+  font-size: 14px;
+  font-weight: 300;
+  position: absolute;
+  bottom: -32px;
 }
 
 .callOutWrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  z-index: 1;
+
+  &.estimatedPayment {
+    height: auto;
+  }
+
+  label {
+    flex-shrink: 1;
+    color: $medium_blue;
+    font-family: $alt_font_family;
+    font-weight: $font_weight_medium;
+    font-size: 0.875em;
+  }
+
+  &.down {
+    p {
+      span {
+        display: inline;
+      }
+    }
+  }
+
+  span.dropDownArrow {
+    display: block;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-bottom: 1px solid #222;
+    border-right: 1px solid #222;
+    transform: rotate(45deg);
+    right: 9px;
+    top: 22px;
+  }
+
+  select {
+    border: none;
+    height: 98%;
+    cursor: pointer;
+    background-color: transparent;
+    -webkit-appearance: none;
     position: relative;
-    height: 100%;
-    z-index: 1;
-
-    &.estimatedPayment {
-        height: auto;
-    }
-
-    label {
-        flex-shrink: 1;
-        color: $medium_blue;
-        font-family: $alt_font_family;
-        font-weight: $font_weight_medium;
-        font-size: .875em;
-    }
-
-    &.down {
-        p {
-            span {
-                display: inline;
-            }
-        }
-    }
-
-    span.dropDownArrow {
-        display: block;
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        border-bottom: 1px solid #222;
-        border-right: 1px solid #222;
-        transform: rotate(45deg);
-        right: 4px;
-        top: 22px;
-    }
-
-    select {
-        border: none;
-        cursor: pointer;
-        background-color: transparent;
-        -webkit-appearance: none;
-        position: relative;
-        right: 2px;
-        padding-right: 18px;
-        text-align: right;
-    }
+    right: 2px;
+    padding-right: 18px;
+    padding: 0 20px 0 18px;
+    text-align: right;
+  }
 }
 
 .input {
-    height: 100%;
-    width: 100px;
-    padding: 0;
+  height: 98%;
+  width: 100px;
+  padding: 0;
+  margin: 0;
+  text-align: right;
+  background: transparent;
+  border: none;
+  padding: 0 10px 0 0;
+
+  &:focus-visible {
+    outline: none; // this suppresses the default browser outline so we keep control
+    outline: 2px solid $accent_blue;
+    outline-offset: -3px;
+    border-radius: $border-radius;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
     margin: 0;
-    text-align: right;
-    background: transparent;
-    border: none;
-
-    &:focus-visible {
-        outline: none; // this suppresses the default browser outline so we keep control 
-        box-shadow: 0 0 0 2px $accent_blue;
-        border-radius: $border-radius;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+  }
 }
 
 .inputFont {
-    color: $medium_blue;
-    font-family: $alt_font_family;
-    font-weight: $font_weight_bold;
-    font-size: 1em;
+  color: $medium_blue;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  font-size: 1em;
 }
 
 .inputPercentage {
-    width: 64px;
-    padding-right: 12px;
-    margin-left: 12px;
+  width: 64px;
+  padding-right: 16px;
+  margin-left: 12px;
 
-    &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px $accent_blue;
-        border-radius: $border-radius;
-    }
+  &:focus-visible {
+    outline: none;
+    outline: 2px solid $accent_blue;
+    outline-offset: -3px;
+    border-radius: $border-radius;
+  }
 
-    @include breakpoint(xs) {
-        width: 70px;
-        margin-left: 18px;
-    }
+  @include breakpoint(xs) {
+    width: 70px;
+    margin-left: 18px;
+  }
 
-
-    & + span {
-        margin-left: -12px;
-        pointer-events: none;
-    }
+  & + span {
+    margin-left: -16px;
+    pointer-events: none;
+  }
 }
 
 .inputWrapper {
-    flex-shrink: 0;
-    height: 100%;
+  flex-shrink: 0;
+  height: 100%;
 
-    .inputPercentage {
-        border-left: 1px solid #aaa;
-    }
+  .inputPercentage {
+    border-left: 1px solid #aaa;
+  }
 }
 
-input[type=number] {
-    -moz-appearance: textfield;
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 
-input[type="range"] {
-    -webkit-appearance: none;
-    margin-right: 15px;
-    width: calc(100% + 2px);
-    height: 5px;
-    margin-left: -1px;
-    background: #DFDFDF;
-    border-radius: 0;
-    background-image: linear-gradient(#7CBF92, #7CBF92);
-    background-repeat: no-repeat;
+input[type='range'] {
+  -webkit-appearance: none;
+  margin-right: 15px;
+  width: calc(100% + 2px);
+  height: 5px;
+  margin-left: -1px;
+  background: #dfdfdf;
+  border-radius: 0;
+  background-image: linear-gradient(#7cbf92, #7cbf92);
+  background-repeat: no-repeat;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-    background: #7CBF92;
-    cursor: ew-resize;
-    box-shadow: 0 0 2px 0 #555;
-    transition: background .3s ease-in-out;
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #7cbf92;
+  cursor: ew-resize;
+  box-shadow: 0 0 2px 0 #555;
+  transition: background 0.3s ease-in-out;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-    -webkit-appearance: none;
-    box-shadow: none;
-    border: none;
-    background: transparent;
+input[type='range']::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  box-shadow: none;
+  border: none;
+  background: transparent;
 }
 
 .advancedButtonWrapper {
+  button {
+    padding-right: 20px;
+    background-color: transparent;
+    border: none;
+    color: #00828a;
+    font-family: $alt_font_family;
+    font-weight: $font_weight_bold;
+    position: relative;
+    cursor: pointer;
 
-    button {
-        padding-right: 20px;
-        background-color: transparent;
-        border: none;
-        color: #00828A;
-        font-family: $alt_font_family;
-        font-weight: $font_weight_bold;
-        position: relative;
-        cursor: pointer;
-
-        &::after {
-            content: '';
-            display: block;
-            width: 8px;
-            height: 8px;
-            position: absolute;
-            top: 5px;
-            right: 0px;
-            border-right: 2px solid #00828A;
-            border-bottom: 2px solid #00828A;
-            transition: transform, .2s;
-            transform: rotate(45deg);
-        }
-
-        &.open {
-            &::after {
-                top: 11px;
-                transform: rotate(-135deg);
-            }
-        }
+    &::after {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      position: absolute;
+      top: 5px;
+      right: 0px;
+      border-right: 2px solid #00828a;
+      border-bottom: 2px solid #00828a;
+      transition: transform, 0.2s;
+      transform: rotate(45deg);
     }
 
-    .sliderWrapper {
-        min-height: 60px;
+    &.open {
+      &::after {
+        top: 11px;
+        transform: rotate(-135deg);
+      }
     }
+  }
+
+  .sliderWrapper {
+    min-height: 60px;
+  }
 }
 
 // tollbrothers.com-specific styles
-.tbdotcom, .tbmortgage {
+.tbdotcom,
+.tbmortgage {
+  .right {
+    .estimatedPayment {
+      .graphic {
+        p {
+          width: 265px;
+          height: 265px;
 
-    .right {
-        .estimatedPayment {
-           
-            .graphic {
-                p {
-                    width: 265px;
-                    height: 265px;
-
-                    span {
-                        width: 225px;
-                        height: 225px;
-                        font-size: 40px;
-                    }
-                }
-                .taxes {
-                    span {
-                        span {
-                            font-size: 13px;
-                        }
-                    }
-                }
-            }
+          span {
+            width: 225px;
+            height: 225px;
+            font-size: 40px;
+          }
         }
-
-        .details {
-            width: 90%;
-            div {
-                > span {
-                    font-size: 12px;
-                }
+        .taxes {
+          span {
+            span {
+              font-size: 13px;
             }
-
-            > div {
-                span {
-                    &:first-child {
-                        &::before {
-                            background-color: #0070CD;
-                            top: 3px;
-                        }
-                    }
-                }
-
-                &:nth-child(2) {
-                    span {
-                        &:first-child {
-                            &::before {
-                                background-color: #8195A2;
-                            }
-                        }
-                    }
-                }
-                &:nth-child(3) {
-                    span {
-                        &:first-child {
-                            &::before {
-                                background-color: #0C223F;
-                            }
-                        }
-                    }
-                }
-                &:nth-child(4) {
-                    span {
-                        &:first-child {
-                            &::before {
-                                background-color: #CEC18B;
-                            }
-                        }
-                    }
-                }
-            }
+          }
         }
+      }
     }
 
-    input[type="range"] {
-        background-image: linear-gradient(#0070CD, #0070CD);
-    }
-
-    .advancedButtonWrapper {
-        button {
-            color: #0070CD;
-            &::after {
-                border-right: 2px solid #0070CD;
-                border-bottom: 2px solid #0070CD;
-            }
+    .details {
+      width: 90%;
+      div {
+        > span {
+          font-size: 12px;
         }
-    }
+      }
 
+      > div {
+        span {
+          &:first-child {
+            &::before {
+              background-color: #0070cd;
+              top: 3px;
+            }
+          }
+        }
+
+        &:nth-child(2) {
+          span {
+            &:first-child {
+              &::before {
+                background-color: #8195a2;
+              }
+            }
+          }
+        }
+        &:nth-child(3) {
+          span {
+            &:first-child {
+              &::before {
+                background-color: #0c223f;
+              }
+            }
+          }
+        }
+        &:nth-child(4) {
+          span {
+            &:first-child {
+              &::before {
+                background-color: #cec18b;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  input[type='range'] {
+    background-image: linear-gradient(#0070cd, #0070cd);
+  }
+
+  .advancedButtonWrapper {
+    button {
+      color: #0070cd;
+      &::after {
+        border-right: 2px solid #0070cd;
+        border-bottom: 2px solid #0070cd;
+      }
+    }
+  }
 }
 
 // tollbrothersmortgage.com-specific styles
 .tbmortgage {
-    margin-bottom: 50px;
+  margin-bottom: 50px;
 }
 
-
 @media print {
-    .calculatorWrapper {
-        justify-content: flex-start;
-        width: 100% !important;
+  .calculatorWrapper {
+    justify-content: flex-start;
+    width: 100% !important;
 
-        .right, .left {
-            width: 49% !important;
+    .right,
+    .left {
+      width: 49% !important;
 
-            &:before {
-                display: none !important;
-            }
-        }
-
+      &:before {
+        display: none !important;
+      }
     }
+  }
 
-    .sliderWrapper {
-        height: 54px !important;
-        margin: 10px 0 !important;
-        border-radius: 0 !important;
+  .sliderWrapper {
+    height: 54px !important;
+    margin: 10px 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .callOutWrapper label {
+    color: black !important;
+    white-space: nowrap !important;
+    font-size: 16px !important;
+  }
+
+  .estimatedPayment {
+    width: 100% !important;
+  }
+
+  .details {
+    span {
+      font-size: 16px !important;
+
+      &:before {
+        top: 5px !important;
+      }
     }
+  }
 
-    .callOutWrapper label {
-        color: black !important;
-        white-space: nowrap !important;
-        font-size: 16px !important;
+  .graphic {
+    p {
+      //this forces safari to print the circle (sigh)
+      border: 1px solid lightgray !important;
     }
-
-    .estimatedPayment {
-        width: 100% !important;
-    }
-
-    .details {
-        span {
-            font-size: 16px !important;
-
-            &:before {
-                top: 5px!important;
-            }
-        }
-    }
-
-    .graphic {
-        p {
-            //this forces safari to print the circle (sigh)
-            border: 1px solid lightgray !important;
-        }
-    }
-
+  }
 }

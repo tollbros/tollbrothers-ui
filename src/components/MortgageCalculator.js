@@ -150,9 +150,9 @@ export const MortgageCalculator = ({
     // Close all other open tooltips first
     const allTooltips = document.querySelectorAll('[role="tooltip"]')
     const allTriggers = document.querySelectorAll('.js-tooltip-trigger')
-    
-    allTooltips.forEach(t => t.classList.remove(styles.isActive))
-    allTriggers.forEach(t => t.setAttribute('aria-expanded', 'false'))
+
+    allTooltips.forEach((t) => t.classList.remove(styles.isActive))
+    allTriggers.forEach((t) => t.setAttribute('aria-expanded', 'false'))
 
     // Then open the tooltip
     tooltip?.classList.add(styles.isActive)
@@ -205,7 +205,6 @@ export const MortgageCalculator = ({
     trigger?.setAttribute('aria-expanded', 'false')
   }
 
-
   const toggleToolTip = (event) => {
     if (skipNextClick.current) {
       skipNextClick.current = false
@@ -220,10 +219,10 @@ export const MortgageCalculator = ({
       // Close all other open tooltips first
       const allTooltips = document.querySelectorAll('[role="tooltip"]')
       const allTriggers = document.querySelectorAll('.js-tooltip-trigger')
-      
-      allTooltips.forEach(t => t.classList.remove(styles.isActive))
-      allTriggers.forEach(t => t.setAttribute('aria-expanded', 'false'))
-      
+
+      allTooltips.forEach((t) => t.classList.remove(styles.isActive))
+      allTriggers.forEach((t) => t.setAttribute('aria-expanded', 'false'))
+
       // Then open the clicked tooltip
       launchToolTip(event)
     }
@@ -425,7 +424,7 @@ export const MortgageCalculator = ({
         >
           <div className={styles.callOutWrapper}>
             <label htmlFor='mort-int-rate'>Interest Rate</label>
-            <div>
+            <div className={styles.inputWrapper}>
               <input
                 id='mort-int-rate'
                 type='text'
@@ -574,7 +573,9 @@ export const MortgageCalculator = ({
                   <DragSlider
                     minValue={INSURANCE_MIN}
                     maxValue={INSURANCE_MAX}
-                    number={Number(insurancePercentage) ? insurancePercentage : 0}
+                    number={
+                      Number(insurancePercentage) ? insurancePercentage : 0
+                    }
                     setNumber={(value) => {
                       setInsurancePercentage(value)
                       setInsurance(calculateValueByPercent(value, salesNumber))
@@ -597,7 +598,9 @@ export const MortgageCalculator = ({
                     onChange={(e) =>
                       handleAmountDirectInput(e.target.value, setHoaNumber)
                     }
-                    onBlur={() => setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)}
+                    onBlur={() =>
+                      setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)
+                    }
                     className={`${styles.input} ${styles.inputFont}`}
                     value={`$${convertToMoney(hoaNumber)}`}
                   />
@@ -680,7 +683,7 @@ export const MortgageCalculator = ({
                   <button
                     type='button'
                     className={styles.close}
-                    tabIndex="-1"
+                    tabIndex='-1'
                     aria-label='Close principal and interest details'
                     onClick={closeToolTip}
                   >
@@ -714,7 +717,7 @@ export const MortgageCalculator = ({
                   <button
                     type='button'
                     className={styles.close}
-                    tabIndex="-1"
+                    tabIndex='-1'
                     aria-label='Close taxes details'
                     onClick={closeToolTip}
                   >
@@ -748,7 +751,7 @@ export const MortgageCalculator = ({
                   <button
                     type='button'
                     className={styles.close}
-                    tabIndex="-1"
+                    tabIndex='-1'
                     aria-label='Close insurance details'
                     onClick={closeToolTip}
                   >
@@ -783,7 +786,7 @@ export const MortgageCalculator = ({
                   <button
                     type='button'
                     className={styles.close}
-                    tabIndex="-1"
+                    tabIndex='-1'
                     aria-label='Close HOA details'
                     onClick={closeToolTip}
                   >

@@ -52,13 +52,14 @@ export const MortgageCalculator = ({
   classes = {}
 }) => {
   const calculator = useRef(null)
+  const keyboardFocus = useRef(false)
+  const skipNextClick = useRef(false)
   const [salesNumber, setSalesNumber] = useState(initialSalesNumber)
   const [loanTerm, setLoanTerm] = useState(30)
   const [interestNumber, setInterestNumber] = useState(initialInterestRate)
 
   const [hoaNumber, setHoaNumber] = useState(0)
   const [piNumber, setPiNumber] = useState(0) // principal and interest
-  const [showLegendToggle, setShowLegendToggle] = useState(false)
   const [monthlyPayment, setMonthlyPayment] = useState(0)
   const [downPayment, setDownPayment] = useState(() => {
     return calculateValueByPercent(20, initialSalesNumber)
@@ -73,15 +74,10 @@ export const MortgageCalculator = ({
   const [hoaDegrees, setHoaDegrees] = useState(0)
   const [showDefalutGraphic, setShowDefalutGraphic] = useState(true)
   const [showAdvancedToggle, setShowAdvancedToggle] = useState(false)
-
   let rangeInputs
 
-  const toggleAdvanced = (e) => {
-    setShowAdvancedToggle(!showAdvancedToggle)
-  }
-
-  const showLegend = (e) => {
-    setShowLegendToggle(!showLegendToggle)
+  const toggleAdvancedOptions = () => {
+    setShowAdvancedToggle((prev) => !prev)
   }
 
   const calculateMonthlyPayment = () => {
@@ -147,16 +143,89 @@ export const MortgageCalculator = ({
     }
   }
 
-  const launchToolTip = (e) => {
-    e.target.nextElementSibling.classList.add(styles.isActive)
+  const launchToolTip = (event) => {
+    const trigger = event.currentTarget
+    const tooltip = trigger.nextElementSibling
+
+    // Close all other open tooltips first
+    const allTooltips = document.querySelectorAll('[role="tooltip"]')
+    const allTriggers = document.querySelectorAll('.js-tooltip-trigger')
+
+    allTooltips.forEach((t) => t.classList.remove(styles.isActive))
+    allTriggers.forEach((t) => t.setAttribute('aria-expanded', 'false'))
+
+    // Then open the tooltip
+    tooltip?.classList.add(styles.isActive)
+    trigger.setAttribute('aria-expanded', 'true')
   }
 
-  const hideToolTip = (e) => {
-    e.target.nextElementSibling.classList.remove(styles.isActive)
+  const hideToolTip = (event) => {
+    const trigger = event.currentTarget
+    const tooltip = trigger.nextElementSibling
+
+    tooltip?.classList.remove(styles.isActive)
+    trigger.setAttribute('aria-expanded', 'false')
   }
 
-  const hideMobileToolTip = (e) => {
-    e.target.parentNode.classList.remove(styles.isActive)
+  useEffect(() => {
+    // to handle click, hover or focus on the tooltip trigger
+    const handleKeyDown = (event) => {
+      keyboardFocus.current = event.key === 'Tab'
+    }
+
+    const handlePointerDown = () => {
+      keyboardFocus.current = false
+    }
+
+    window.addEventListener('keydown', handleKeyDown, true)
+    window.addEventListener('pointerdown', handlePointerDown, true)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true)
+      window.removeEventListener('pointerdown', handlePointerDown, true)
+    }
+  }, [])
+
+  const handleToolTipFocus = (event) => {
+    const triggeredByKeyboard = keyboardFocus.current
+    keyboardFocus.current = false
+
+    launchToolTip(event)
+
+    if (!triggeredByKeyboard) {
+      skipNextClick.current = true
+    }
+  }
+
+  const closeToolTip = (event) => {
+    const tooltip = event.currentTarget.parentElement
+    const trigger = tooltip?.previousElementSibling
+
+    tooltip?.classList.remove(styles.isActive)
+    trigger?.setAttribute('aria-expanded', 'false')
+  }
+
+  const toggleToolTip = (event) => {
+    if (skipNextClick.current) {
+      skipNextClick.current = false
+      return
+    }
+
+    const tooltip = event.currentTarget.nextElementSibling
+
+    if (tooltip?.classList.contains(styles.isActive)) {
+      hideToolTip(event)
+    } else {
+      // Close all other open tooltips first
+      const allTooltips = document.querySelectorAll('[role="tooltip"]')
+      const allTriggers = document.querySelectorAll('.js-tooltip-trigger')
+
+      allTooltips.forEach((t) => t.classList.remove(styles.isActive))
+      allTriggers.forEach((t) => t.setAttribute('aria-expanded', 'false'))
+
+      // Then open the clicked tooltip
+      launchToolTip(event)
+    }
   }
 
   const loanTermArray = [10, 15, 20, 30]
@@ -355,7 +424,7 @@ export const MortgageCalculator = ({
         >
           <div className={styles.callOutWrapper}>
             <label htmlFor='mort-int-rate'>Interest Rate</label>
-            <div>
+            <div className={styles.inputWrapper}>
               <input
                 id='mort-int-rate'
                 type='text'
@@ -384,19 +453,19 @@ export const MortgageCalculator = ({
           </div>
         </div>
 
-        <div
-          className={`${styles.advancedButtonWrapper} js-noprint`}
-          onClick={toggleAdvanced}
-        >
+        <div className={`${styles.advancedButtonWrapper} js-noprint`}>
           <button
+            type='button'
             className={`${showAdvancedToggle ? styles.open : ''}`}
-            onClick={showLegend}
+            onClick={toggleAdvancedOptions}
+            aria-expanded={showAdvancedToggle}
+            aria-controls='mortgage-advanced-options'
           >
             Advanced Options
           </button>
         </div>
         {showAdvancedToggle && (
-          <>
+          <div id='mortgage-advanced-options'>
             <div
               className={`${styles.sliderWrapper} ${
                 classes.sliderWrapper ?? ''
@@ -543,7 +612,7 @@ export const MortgageCalculator = ({
                 />
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
@@ -585,20 +654,37 @@ export const MortgageCalculator = ({
               </p>
             )}
           </div>
-          {showLegendToggle && (
+          {showAdvancedToggle && (
             <div className={styles.details}>
               <div>
                 <span>Principal and Interest</span>
                 <span>${convertToMoney(piNumber)}/mo</span>
-                <span
-                  className={`${styles.toolTipLaunch} js-noprint`}
-                  onMouseOver={launchToolTip}
-                  onMouseOut={hideToolTip}
+                <button
+                  type='button'
+                  className={`${styles.toolTipLaunch} js-noprint js-tooltip-trigger`}
+                  onMouseEnter={launchToolTip}
+                  onMouseLeave={hideToolTip}
+                  onFocus={handleToolTipFocus}
+                  onBlur={hideToolTip}
+                  onClick={toggleToolTip}
+                  aria-describedby='mortgage-tooltip-principal'
+                  aria-expanded='false'
+                  aria-label='Learn about principal and interest'
                 />
-                <span className={styles.toolTip}>
-                  <span className={styles.close} onClick={hideMobileToolTip}>
+                <span
+                  className={styles.toolTip}
+                  role='tooltip'
+                  id='mortgage-tooltip-principal'
+                >
+                  <button
+                    type='button'
+                    className={styles.close}
+                    tabIndex='-1'
+                    aria-label='Close principal and interest details'
+                    onClick={closeToolTip}
+                  >
                     x
-                  </span>
+                  </button>
                   Principal is the amount borrowed to purchase your home or the
                   amount yet to be repaid. Interest is the cost of borrowing
                   from your lender.
@@ -607,16 +693,33 @@ export const MortgageCalculator = ({
               <div>
                 <span>Taxes</span>
                 <span>${convertToMoney(Math.round(tax / 12))}/mo</span>
-                <span
-                  className={`${styles.toolTipLaunch} js-noprint`}
-                  onMouseOver={launchToolTip}
-                  onMouseOut={hideToolTip}
+                <button
+                  type='button'
+                  className={`${styles.toolTipLaunch} js-noprint js-tooltip-trigger`}
+                  onMouseEnter={launchToolTip}
+                  onMouseLeave={hideToolTip}
+                  onFocus={handleToolTipFocus}
+                  onBlur={hideToolTip}
+                  onClick={toggleToolTip}
+                  aria-describedby='mortgage-tooltip-taxes'
+                  aria-expanded='false'
+                  aria-label='Learn about property taxes'
                 />
-                <span className={styles.toolTip}>
-                  <span className={styles.close} onClick={hideMobileToolTip}>
+                <span
+                  className={styles.toolTip}
+                  role='tooltip'
+                  id='mortgage-tooltip-taxes'
+                >
+                  <button
+                    type='button'
+                    className={styles.close}
+                    tabIndex='-1'
+                    aria-label='Close taxes details'
+                    onClick={closeToolTip}
+                  >
                     x
-                  </span>
-                  Your lender typically puts one-twelfth of your home’s
+                  </button>
+                  Your lender typically puts one-twelfth of your home's
                   estimated annual property taxes into an escrow account to pay
                   on your behalf.
                 </span>
@@ -624,15 +727,32 @@ export const MortgageCalculator = ({
               <div>
                 <span>Insurance</span>
                 <span>${convertToMoney(Math.round(insurance / 12))}/mo</span>
-                <span
-                  className={`${styles.toolTipLaunch} js-noprint`}
-                  onMouseOver={launchToolTip}
-                  onMouseOut={hideToolTip}
+                <button
+                  type='button'
+                  className={`${styles.toolTipLaunch} js-noprint js-tooltip-trigger`}
+                  onMouseEnter={launchToolTip}
+                  onMouseLeave={hideToolTip}
+                  onFocus={handleToolTipFocus}
+                  onBlur={hideToolTip}
+                  onClick={toggleToolTip}
+                  aria-describedby='mortgage-tooltip-insurance'
+                  aria-expanded='false'
+                  aria-label='Learn about insurance'
                 />
-                <span className={styles.toolTip}>
-                  <span className={styles.close} onClick={hideMobileToolTip}>
+                <span
+                  className={styles.toolTip}
+                  role='tooltip'
+                  id='mortgage-tooltip-insurance'
+                >
+                  <button
+                    type='button'
+                    className={styles.close}
+                    tabIndex='-1'
+                    aria-label='Close insurance details'
+                    onClick={closeToolTip}
+                  >
                     x
-                  </span>
+                  </button>
                   Your lender typically puts one-twelfth of your annual
                   homeowners insurance premium into an escrow account to pay on
                   your behalf. If your down payment is less than 20%, you may
@@ -642,15 +762,32 @@ export const MortgageCalculator = ({
               <div>
                 <span>HOA</span>
                 <span>${convertToMoney(hoaNumber)}/mo</span>
-                <span
-                  className={`${styles.toolTipLaunch} js-noprint`}
-                  onMouseOver={launchToolTip}
-                  onMouseOut={hideToolTip}
+                <button
+                  type='button'
+                  className={`${styles.toolTipLaunch} js-noprint js-tooltip-trigger`}
+                  onMouseEnter={launchToolTip}
+                  onMouseLeave={hideToolTip}
+                  onFocus={handleToolTipFocus}
+                  onBlur={hideToolTip}
+                  onClick={toggleToolTip}
+                  aria-describedby='mortgage-tooltip-hoa'
+                  aria-expanded='false'
+                  aria-label='Learn about HOA fees'
                 />
-                <span className={styles.toolTip}>
-                  <span className={styles.close} onClick={hideMobileToolTip}>
+                <span
+                  className={styles.toolTip}
+                  role='tooltip'
+                  id='mortgage-tooltip-hoa'
+                >
+                  <button
+                    type='button'
+                    className={styles.close}
+                    tabIndex='-1'
+                    aria-label='Close HOA details'
+                    onClick={closeToolTip}
+                  >
                     x
-                  </span>
+                  </button>
                   While not part of your mortgage payment, you may be required
                   to pay fees imposed by your homeowners association.
                 </span>

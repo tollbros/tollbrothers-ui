@@ -20,7 +20,7 @@ export const DragSlider = ({
     <div className={styles.dragSliderWrapper}>
       <div className={styles.track} id='track'>
         <input
-          className={`${styles.rangeInput} ${className}`}
+          className={`${styles.rangeInput} ${className} ada-override`}
           name='minDragSlider'
           type='range'
           min={minValue}

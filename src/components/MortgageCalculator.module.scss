@@ -352,13 +352,13 @@
 
 .input {
   height: 98%;
-  width: 100px;
-  padding: 0;
+  width: 112px;
+  //padding: 0;
   margin: 0;
   text-align: right;
   background: transparent;
   border: none;
-  padding: 0 10px 0 0;
+  padding: 0 6px 0 6px;
 
   &:focus-visible {
     outline: none; // this suppresses the default browser outline so we keep control
@@ -407,6 +407,7 @@
 .inputWrapper {
   flex-shrink: 0;
   height: 100%;
+  white-space: nowrap;
 
   .inputPercentage {
     border-left: 1px solid #aaa;

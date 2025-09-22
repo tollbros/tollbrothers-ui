@@ -463,161 +463,157 @@ export const MortgageCalculator = ({
           >
             Advanced Options
           </button>
-          {showAdvancedToggle && (
-            <div id='mortgage-advanced-options'>
-              <div
-                className={`${styles.sliderWrapper} ${
-                  classes.sliderWrapper ?? ''
-                }`}
-              >
-                <div className={styles.callOutWrapper}>
-                  <label htmlFor='mort-taxes'>Taxes (Annual)</label>
-                  <div className={styles.inputWrapper}>
-                    <input
-                      id='mort-taxes-by-amount'
-                      type='text'
-                      onChange={(e) => {
-                        handleAmountDirectInput(
-                          e.target.value,
-                          setTax,
-                          setTaxPercentage
-                        )
-                      }}
-                      onBlur={() => setTax(Number(tax) ? tax : 0)}
-                      className={`${styles.input} ${styles.inputFont}`}
-                      value={`$${convertToMoney(tax)}`}
-                    />
-                    <input
-                      id='mort-taxes-by-percentage'
-                      type='text'
-                      onChange={(e) =>
-                        handlePercentageDirectInput(
-                          e.target.value,
-                          setTaxPercentage,
-                          setTax
-                        )
-                      }
-                      onBlur={() =>
-                        setTaxPercentage(
-                          Number(taxPercentage) ? Number(taxPercentage) : 0
-                        )
-                      }
-                      className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
-                      value={taxPercentage}
-                    />
-                    <span className={styles.inputFont}>%</span>
-                  </div>
-                </div>
-                <div className={`${styles.dragWrapper} js-noprint`}>
-                  <DragSlider
-                    minValue={TAX_PERCENTAGE_MIN}
-                    maxValue={TAX_PERCENTAGE_MAX}
-                    number={Number(taxPercentage) ? Number(taxPercentage) : 0}
-                    setNumber={(value) => {
-                      setTaxPercentage(value)
-                      setTax(calculateValueByPercent(value, salesNumber))
-                    }}
-                    step={TAX_PERCENTAGE_STEP}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={`${styles.sliderWrapper} ${
-                  classes.sliderWrapper ?? ''
-                }`}
-              >
-                <div className={styles.callOutWrapper}>
-                  <label htmlFor='mort-insurance'>Insurance (Annual)</label>
-                  <div className={styles.inputWrapper}>
-                    <input
-                      id='mort-insurance-by-amount'
-                      type='text'
-                      onChange={(e) =>
-                        handleAmountDirectInput(
-                          e.target.value,
-                          setInsurance,
-                          setInsurancePercentage
-                        )
-                      }
-                      onBlur={() =>
-                        setInsurance(Number(insurance) ? insurance : 0)
-                      }
-                      className={`${styles.input} ${styles.inputFont}`}
-                      value={`$${convertToMoney(insurance)}`}
-                    />
-                    <input
-                      id='mort-insurance-by-percentage'
-                      type='text'
-                      onChange={(e) =>
-                        handlePercentageDirectInput(
-                          e.target.value,
-                          setInsurancePercentage,
-                          setInsurance
-                        )
-                      }
-                      onBlur={() =>
-                        setInsurancePercentage(
-                          Number(insurancePercentage)
-                            ? Number(insurancePercentage)
-                            : 0
-                        )
-                      }
-                      className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
-                      value={insurancePercentage}
-                    />
-                    <span className={styles.inputFont}>%</span>
-                  </div>
-                </div>
-                <div className={`${styles.dragWrapper} js-noprint`}>
-                  <DragSlider
-                    minValue={INSURANCE_MIN}
-                    maxValue={INSURANCE_MAX}
-                    number={
-                      Number(insurancePercentage) ? insurancePercentage : 0
-                    }
-                    setNumber={(value) => {
-                      setInsurancePercentage(value)
-                      setInsurance(calculateValueByPercent(value, salesNumber))
-                    }}
-                    step={INSURANCE_STEP}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={`${styles.sliderWrapper} ${
-                  classes.sliderWrapper ?? ''
-                }`}
-              >
-                <div className={styles.callOutWrapper}>
-                  <label htmlFor='mort-hoa'>HOA (Monthly)</label>
+        </div>
+        {showAdvancedToggle && (
+          <div id='mortgage-advanced-options'>
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
+              <div className={styles.callOutWrapper}>
+                <label htmlFor='mort-taxes'>Taxes (Annual)</label>
+                <div className={styles.inputWrapper}>
                   <input
-                    id='mort-hoa'
+                    id='mort-taxes-by-amount'
+                    type='text'
+                    onChange={(e) => {
+                      handleAmountDirectInput(
+                        e.target.value,
+                        setTax,
+                        setTaxPercentage
+                      )
+                    }}
+                    onBlur={() => setTax(Number(tax) ? tax : 0)}
+                    className={`${styles.input} ${styles.inputFont}`}
+                    value={`$${convertToMoney(tax)}`}
+                  />
+                  <input
+                    id='mort-taxes-by-percentage'
                     type='text'
                     onChange={(e) =>
-                      handleAmountDirectInput(e.target.value, setHoaNumber)
+                      handlePercentageDirectInput(
+                        e.target.value,
+                        setTaxPercentage,
+                        setTax
+                      )
                     }
                     onBlur={() =>
-                      setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)
+                      setTaxPercentage(
+                        Number(taxPercentage) ? Number(taxPercentage) : 0
+                      )
                     }
-                    className={`${styles.input} ${styles.inputFont}`}
-                    value={`$${convertToMoney(hoaNumber)}`}
+                    className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
+                    value={taxPercentage}
                   />
-                </div>
-                <div className={`${styles.dragWrapper} js-noprint`}>
-                  <DragSlider
-                    minValue={HOA_MIN}
-                    maxValue={HOA_MAX}
-                    number={Number(hoaNumber) ? hoaNumber : 0}
-                    setNumber={setHoaNumber}
-                    step={HOA_STEP}
-                  />
+                  <span className={styles.inputFont}>%</span>
                 </div>
               </div>
+              <div className={`${styles.dragWrapper} js-noprint`}>
+                <DragSlider
+                  minValue={TAX_PERCENTAGE_MIN}
+                  maxValue={TAX_PERCENTAGE_MAX}
+                  number={Number(taxPercentage) ? Number(taxPercentage) : 0}
+                  setNumber={(value) => {
+                    setTaxPercentage(value)
+                    setTax(calculateValueByPercent(value, salesNumber))
+                  }}
+                  step={TAX_PERCENTAGE_STEP}
+                />
+              </div>
             </div>
-          )}
-        </div>
+
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
+              <div className={styles.callOutWrapper}>
+                <label htmlFor='mort-insurance'>Insurance (Annual)</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    id='mort-insurance-by-amount'
+                    type='text'
+                    onChange={(e) =>
+                      handleAmountDirectInput(
+                        e.target.value,
+                        setInsurance,
+                        setInsurancePercentage
+                      )
+                    }
+                    onBlur={() =>
+                      setInsurance(Number(insurance) ? insurance : 0)
+                    }
+                    className={`${styles.input} ${styles.inputFont}`}
+                    value={`$${convertToMoney(insurance)}`}
+                  />
+                  <input
+                    id='mort-insurance-by-percentage'
+                    type='text'
+                    onChange={(e) =>
+                      handlePercentageDirectInput(
+                        e.target.value,
+                        setInsurancePercentage,
+                        setInsurance
+                      )
+                    }
+                    onBlur={() =>
+                      setInsurancePercentage(
+                        Number(insurancePercentage)
+                          ? Number(insurancePercentage)
+                          : 0
+                      )
+                    }
+                    className={`${styles.input} ${styles.inputFont} ${styles.inputPercentage}`}
+                    value={insurancePercentage}
+                  />
+                  <span className={styles.inputFont}>%</span>
+                </div>
+              </div>
+              <div className={`${styles.dragWrapper} js-noprint`}>
+                <DragSlider
+                  minValue={INSURANCE_MIN}
+                  maxValue={INSURANCE_MAX}
+                  number={Number(insurancePercentage) ? insurancePercentage : 0}
+                  setNumber={(value) => {
+                    setInsurancePercentage(value)
+                    setInsurance(calculateValueByPercent(value, salesNumber))
+                  }}
+                  step={INSURANCE_STEP}
+                />
+              </div>
+            </div>
+
+            <div
+              className={`${styles.sliderWrapper} ${
+                classes.sliderWrapper ?? ''
+              }`}
+            >
+              <div className={styles.callOutWrapper}>
+                <label htmlFor='mort-hoa'>HOA (Monthly)</label>
+                <input
+                  id='mort-hoa'
+                  type='text'
+                  onChange={(e) =>
+                    handleAmountDirectInput(e.target.value, setHoaNumber)
+                  }
+                  onBlur={() => setHoaNumber(Number(hoaNumber) ? hoaNumber : 0)}
+                  className={`${styles.input} ${styles.inputFont}`}
+                  value={`$${convertToMoney(hoaNumber)}`}
+                />
+              </div>
+              <div className={`${styles.dragWrapper} js-noprint`}>
+                <DragSlider
+                  minValue={HOA_MIN}
+                  maxValue={HOA_MAX}
+                  number={Number(hoaNumber) ? hoaNumber : 0}
+                  setNumber={setHoaNumber}
+                  step={HOA_STEP}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.right}>

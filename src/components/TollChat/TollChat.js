@@ -76,8 +76,6 @@ export const TollChat = ({
   chatStartedEventString = 'chatStarted',
   productCode // ie JDE number of community/model/qmi
 }) => {
-  console.log('product code', productCode)
-
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
   const [showChatButton, setShowChatButton] = useState(false)
@@ -929,7 +927,7 @@ export const TollChat = ({
             title='Name can only contain letters and spaces'
             placeholder='Full Name*'
             maxLength={123}
-            aria-label='Full Name'
+            aria-label='full name'
           />
           <input
             type='email'
@@ -941,6 +939,7 @@ export const TollChat = ({
             required
             placeholder='Email*'
             maxLength={80}
+            aria-label='email address'
           />
 
           <div className={styles.agent}>

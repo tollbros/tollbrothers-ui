@@ -421,6 +421,37 @@
             text-decoration: underline;
         }
     }
+
+    .agent {
+
+        label, .radioLabel {
+            font-size: .875em;
+            font-family: $special_font_family;
+            color: #000;
+        }
+
+        .radioGroup {
+            display: flex;
+            gap: 12px;
+
+            label {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: .875em;
+                color: #000;
+
+                input {
+                    width: auto;
+                    margin: 0;
+
+                    &:focus-visible {
+                        box-shadow: inset 0 0 1px 1px #0070cd;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .chatInputWrapper {

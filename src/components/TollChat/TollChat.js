@@ -360,13 +360,15 @@ export const TollChat = ({
       const availability = await fetchAvailability(chatRegion, availabilityAPI)
       if (availability?.data?.payload?.length > 0) {
         const email = form.email?.value?.trim()
+        const isAgent = form.isAgent?.value ?? '0'
+
         const gaClientIds = getGaClientId()
         setCallbackUrl(
           `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
             email
           )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
             lastName
-          )}&gaClientId=${encodeURIComponent(
+          )}&isAgent=${isAgent}&gaClientId=${encodeURIComponent(
             gaClientIds.gaClientId
           )}&gaUserId=${encodeURIComponent(
             gaClientIds.gaUserId
@@ -915,8 +917,8 @@ export const TollChat = ({
             title='Name can only contain letters and spaces'
             placeholder='Full Name*'
             maxLength={123}
+            aria-label='Full Name'
           />
-
           <input
             type='email'
             id='email'
@@ -928,6 +930,33 @@ export const TollChat = ({
             placeholder='Email*'
             maxLength={80}
           />
+
+          <div className={styles.agent}>
+            <span className={styles.radioLabel}>
+              Are you a Real Estate Agent?
+            </span>
+            <div className={styles.radioGroup}>
+              <label>
+                <input
+                  type='radio'
+                  id='chat-is-agent-yes'
+                  name='isAgent'
+                  value='1'
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type='radio'
+                  id='chat-is-agent-no'
+                  name='isAgent'
+                  value='0'
+                  defaultChecked
+                />
+                No
+              </label>
+            </div>
+          </div>
 
           <br />
           <p className={styles.privacyPolicy}>

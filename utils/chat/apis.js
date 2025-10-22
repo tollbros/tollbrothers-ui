@@ -89,7 +89,9 @@ export const startConversation = async (
               _email: payload.customerEmail,
               _firstName: payload.customerFirstName,
               _lastName: payload.customerLastName,
-              region: payload.region
+              region: payload.region,
+              isAgent: payload.isAgent,
+              productCode: payload.productCode
             }
           })
         }

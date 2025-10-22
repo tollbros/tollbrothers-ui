@@ -73,8 +73,11 @@ export const TollChat = ({
   chatSms,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
-  chatStartedEventString = 'chatStarted'
+  chatStartedEventString = 'chatStarted',
+  productCode // ie JDE number of community/model/qmi
 }) => {
+  console.log('product code', productCode)
+
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
   const [showChatButton, setShowChatButton] = useState(false)
@@ -116,6 +119,8 @@ export const TollChat = ({
     firstName,
     lastName,
     email,
+    isAgent,
+    productCode,
     endPoint,
     apiSfOrgId,
     apiSfName
@@ -137,11 +142,16 @@ export const TollChat = ({
         customerEmail: email,
         customerFirstName: firstName || 'Guest',
         customerLastName: lastName || '',
+        isAgent: isAgent,
         conversationId: newUuid,
         region: chatRegion,
         endPoint,
         apiSfOrgId,
         apiSfName
+      }
+
+      if (productCode) {
+        payload.productCode = productCode
       }
 
       const response = await startConversation(payload)
@@ -368,7 +378,7 @@ export const TollChat = ({
             email
           )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
             lastName
-          )}&isAgent=${isAgent}&gaClientId=${encodeURIComponent(
+          )}&gaClientId=${encodeURIComponent(
             gaClientIds.gaClientId
           )}&gaUserId=${encodeURIComponent(
             gaClientIds.gaUserId
@@ -379,6 +389,8 @@ export const TollChat = ({
           firstName,
           lastName,
           email,
+          isAgent,
+          productCode,
           endPoint,
           apiSfOrgId,
           apiSfName

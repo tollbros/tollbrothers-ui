@@ -288,7 +288,6 @@ export const TollChat = ({
         break
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
-        console.log('convo message')
 
         message = formatMessage(
           {
@@ -298,8 +297,6 @@ export const TollChat = ({
           firstName,
           lastName
         )
-
-        console.log('message:', message)
 
         if (
           accessToken &&
@@ -328,7 +325,6 @@ export const TollChat = ({
         break
       case 'CONVERSATION_TYPING_STARTED_INDICATOR':
         data = JSON.parse(event.data)
-        console.log(data)
         setShowActiveTyping(data)
         break
       case 'CONVERSATION_TYPING_STOPPED_INDICATOR':

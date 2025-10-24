@@ -281,7 +281,7 @@ export const postMessage = async (payload) => {
   if (response?.status < 300) {
     return 'success'
   } else {
-    console.log('throw the error')
-    throw new Error()
+    const errorBody = await response.json()
+    throw new Error(errorBody?.errorCode || 'Error')
   }
 }

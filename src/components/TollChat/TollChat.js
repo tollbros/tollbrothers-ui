@@ -73,7 +73,8 @@ export const TollChat = ({
   chatSms,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
-  chatStartedEventString = 'chatStarted'
+  chatStartedEventString = 'chatStarted',
+  productCode // ie JDE number of community/model/qmi
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
@@ -116,6 +117,8 @@ export const TollChat = ({
     firstName,
     lastName,
     email,
+    isAgent,
+    productCode,
     endPoint,
     apiSfOrgId,
     apiSfName
@@ -137,11 +140,16 @@ export const TollChat = ({
         customerEmail: email,
         customerFirstName: firstName || 'Guest',
         customerLastName: lastName || '',
+        isAgent: isAgent,
         conversationId: newUuid,
         region: chatRegion,
         endPoint,
         apiSfOrgId,
         apiSfName
+      }
+
+      if (productCode) {
+        payload.productCode = productCode
       }
 
       const response = await startConversation(payload)
@@ -216,7 +224,13 @@ export const TollChat = ({
     setIsCurrentlyChatting(true)
   }
 
-  const handleChatMessage = async (event, firstName, lastName) => {
+  const handleChatMessage = async (
+    event,
+    firstName,
+    lastName,
+    accessToken,
+    conversationId
+  ) => {
     const messages = []
     let message = {}
     let data, messagePayload
@@ -247,17 +261,17 @@ export const TollChat = ({
           messagePayload?.entries?.[0]?.operation === 'remove' &&
           messagePayload?.entries?.[0]?.participant?.role !== 'Supervisor'
         ) {
-          if (!isTransfering.current && !isInConference.current) {
-            afterEndChatReset()
-            setSystemMessage(
-              messagePayload.entries[0].displayName + ' ended the chat'
-            )
-          } else {
-            setSystemMessage(null)
-            if (isTransfering.current) setShowWaitMessage(false)
-            isTransfering.current = false
-            isInConference.current = false
-          }
+          // if (!isTransfering.current && !isInConference.current) {
+          // afterEndChatReset()
+          setSystemMessage(
+            messagePayload.entries[0].displayName + ' left the conversation'
+          )
+          // } else {
+          // setSystemMessage(null)
+          // if (isTransfering.current) setShowWaitMessage(false)
+          // isTransfering.current = false
+          // isInConference.current = false
+          // }
         } else {
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
@@ -274,7 +288,6 @@ export const TollChat = ({
         break
       case 'CONVERSATION_MESSAGE':
         data = JSON.parse(event.data)
-        console.log('convo message')
 
         message = formatMessage(
           {
@@ -284,6 +297,22 @@ export const TollChat = ({
           firstName,
           lastName
         )
+
+        if (
+          accessToken &&
+          conversationId &&
+          message.role === 'Agent' &&
+          message.payload?.formatType === 'Text' &&
+          message.payload?.text === '/url'
+        ) {
+          sendSystemtMessage({
+            accessToken: accessToken,
+            conversationId: conversationId,
+            message: '::System Message:: User on page: (' + location.href + ')'
+          })
+
+          return
+        }
 
         messages.push(message)
 
@@ -303,7 +332,7 @@ export const TollChat = ({
         break
       case 'CONVERSATION_CLOSE_CONVERSATION':
         console.log('conversation close conversation...')
-        afterEndChatReset()
+        // afterEndChatReset()
         break
       default:
         console.log('Unknown event:', event)
@@ -360,6 +389,8 @@ export const TollChat = ({
       const availability = await fetchAvailability(chatRegion, availabilityAPI)
       if (availability?.data?.payload?.length > 0) {
         const email = form.email?.value?.trim()
+        const isAgent = form.isAgent?.value ?? '0'
+
         const gaClientIds = getGaClientId()
         setCallbackUrl(
           `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
@@ -377,6 +408,8 @@ export const TollChat = ({
           firstName,
           lastName,
           email,
+          isAgent,
+          productCode,
           endPoint,
           apiSfOrgId,
           apiSfName
@@ -568,10 +601,10 @@ export const TollChat = ({
                 !hasConferenceEvent
               ) {
                 // always after the add event since the messages are in chronological order
-                // so if there was no transfer this will be the last event and we can clear all the chat data
-                // note 2: we want to clear the data if the agent left the conversation while user was offline or in another tab
-                afterEndChatReset()
-                setSystemMessage(entry.displayName + ' ended the chat')
+                // so if there was no transfer this will be the last event and we can display the agent left messsage
+
+                // afterEndChatReset()
+                setSystemMessage(entry.displayName + ' left the conversation')
                 setHasAgentEngaged(false)
                 chatWasEndedByAgentWhileOffline = true
               }
@@ -915,8 +948,8 @@ export const TollChat = ({
             title='Name can only contain letters and spaces'
             placeholder='Full Name*'
             maxLength={123}
+            aria-label='full name'
           />
-
           <input
             type='email'
             id='email'
@@ -927,7 +960,35 @@ export const TollChat = ({
             required
             placeholder='Email*'
             maxLength={80}
+            aria-label='email address'
           />
+
+          <div className={styles.agent}>
+            <span className={styles.radioLabel}>
+              Are you a Real Estate Agent?
+            </span>
+            <div className={styles.radioGroup}>
+              <label>
+                <input
+                  type='radio'
+                  id='chat-is-agent-yes'
+                  name='isAgent'
+                  value='1'
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type='radio'
+                  id='chat-is-agent-no'
+                  name='isAgent'
+                  value='0'
+                  defaultChecked
+                />
+                No
+              </label>
+            </div>
+          </div>
 
           <br />
           <p className={styles.privacyPolicy}>
@@ -946,16 +1007,20 @@ export const TollChat = ({
         </form>
       )}
 
+      {systemMessage && !isMinimized && (
+        <p className={styles.persistentText}>{systemMessage}.</p>
+      )}
+
       <div className={styles.messagesWrapper} ref={chatContainerRef}>
-        {systemMessage && !isMinimized && (
-          <p className={styles.persistentText}>{systemMessage}.</p>
-        )}
         {!isMinimized && (
           <>
             {messages.map(
               (message, index) =>
                 message.type === 'Message' &&
-                !message.text?.includes('::System Message::') && (
+                !message.text?.includes('::System Message::') &&
+                !(
+                  message.text?.startsWith('/url') && message?.role === 'Agent'
+                ) && (
                   <React.Fragment key={message.id}>
                     <div className={styles.timestamp}>
                       {convertTimeStamp(message.timestamp)}

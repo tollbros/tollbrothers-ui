@@ -89,7 +89,9 @@ export const startConversation = async (
               _email: payload.customerEmail,
               _firstName: payload.customerFirstName,
               _lastName: payload.customerLastName,
-              region: payload.region
+              region: payload.region,
+              isAgent: payload.isAgent,
+              productCode: payload.productCode
             }
           })
         }
@@ -279,7 +281,7 @@ export const postMessage = async (payload) => {
   if (response?.status < 300) {
     return 'success'
   } else {
-    console.log('throw the error')
-    throw new Error()
+    const errorBody = await response.json()
+    throw new Error(errorBody?.errorCode || 'Error')
   }
 }

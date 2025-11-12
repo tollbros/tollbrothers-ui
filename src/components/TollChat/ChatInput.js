@@ -37,7 +37,11 @@ export default function ChatInput({
       setMessage('')
     } catch (err) {
       if (message) setShowArrow(true)
-      setError('Failed to send message. Please try again.')
+      setError(
+        err?.message?.includes('PRECHAT_FORM_REQUIRED')
+          ? 'Your conversation has ended. Please close this window if you wish to start a new chat.'
+          : 'Failed to send message. Please try again.'
+      )
     }
   }
 

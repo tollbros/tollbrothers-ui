@@ -773,6 +773,12 @@ export const TollChat = ({
   }, [messages, isMinimized])
 
   useEffect(() => {
+    const typingMessageExists = messages.some((message) => {
+      return message.payload?.formatType === 'Typing'
+    })
+
+    if (typingMessageExists && showActiveTyping) return
+
     if (showActiveTyping) {
       // add typing message to message list
       setMessages((prevMessages) => [

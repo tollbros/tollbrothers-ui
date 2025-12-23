@@ -1,69 +1,35 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-
 import styles from './Chatbot.module.scss'
-
-import ChatInput from '../TollChat/ChatInput'
-
-import Minus from '../../icons/Minus'
-import CloseX from '../../icons/CloseX'
-import ChatMessageText from '../TollChat/ChatMessageText'
-import ArrowLeft from '../../icons/ArrowLeft'
-// import ChatMessageAttachment from './ChatMessageAttachment'
-// import ChatMessageRichLink from './ChatMessageRichLink'
 
 export const Chatbot = ({
   availabilityAPI,
   endPoint,
-  apiSfOrgId,
-  apiSfName,
-  // disableFloatingChatButton = false,
-  setChatStatus,
-  // chatStatus,
   chatRegion,
-  // setIsChatOpen = () => null,
-  // isChatOpen, // this is to open chat from a button in the parent app instead of a floating head
-  // chatSms,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
-  chatStartedEventString = 'chatStarted',
-  productCode // ie JDE number of community/model/qmi
+  chatStartedEventString = 'chatStarted'
 }) => {
+  const chatInterfaceRef = useRef(null)
   const [showChatbot, setShowChatbot] = useState(true)
-  const [isMinimized, setIsMinimized] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
-
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
-  const [showSendButton, setShowSendButton] = useState(false)
-
-  // const [showChatHeader, setShowChatHeader] = useState(false)
-
-  const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
-    useState(false)
-
-  const chatContainerRef = useRef(null)
-
-  /// const [systemMessage, setSystemMessage] = useState('') // system messages
-  // const [chatPhoto, setChatPhoto] = useState(null) // osc image
-  // const [agentName, setAgentName] = useState('Agent') // agent name
   const [error, setError] = useState(null)
-  // const [abortController, setAbortController] = useState(null)
-  const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
-    useState(null)
-  //   const [hasAgentEngaged, setHasAgentEngaged] = useState(false)
-  //   const [callbackUrl, setCallbackUrl] = useState(null)
+  const chatContainerRef = useRef(null)
+  const closeButtonRef = useRef(null)
   const [unreadMessagesCount, setUnreadMessagesCount] = useState({
     count: 0,
     lastMessageId: null
   })
 
   const onChatButtonClick = () => {
-    // setShowChatbot(false)
     setIsChatOpen(true)
-    // setShowChatHeader(true)
-    // trackChatEvent(chatClickedEventString)
+  }
+
+  const onCloseChat = () => {
+    setIsChatOpen(false)
   }
 
   const reestablishConnection = (event) => {
@@ -71,45 +37,12 @@ export const Chatbot = ({
       return
     }
 
-    const initialize = false
     const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
-  }
-
-  useEffect(() => {
-    window.addEventListener('visibilitychange', reestablishConnection)
-
-    return () => {
-      window.removeEventListener('visibilitychange', reestablishConnection)
-    }
-  }, [])
-
-  const handleMinimize = () => {
-    setError(null)
-    setIsMinimized(!isMinimized)
-    setShowConfirmationEndMessage(false)
-    setUnreadMessagesCount({ count: 0, lastMessageId: null })
-  }
-
-  const handleConfirmationEnd = () => {
-    setError(null)
-    setShowConfirmationEndMessage(true)
-  }
-
-  const handleStay = () => {
-    setError(null)
-    setShowConfirmationEndMessage(false)
-  }
-
-  const handleEndChat = async (accessToken, conversationId) => {
-    // afterEndChatReset()
-    setShowChatHeader(false)
-    setIsChatOpen(false)
   }
 
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
-    setShowSendButton(value.trim() !== '')
   }
 
   const handleSendMessage = () => {
@@ -119,7 +52,6 @@ export const Chatbot = ({
     console.log('Sending message:', inputMessage)
     setMessages([...messages, { text: inputMessage, sender: 'user' }])
     setInputMessage('')
-    setShowSendButton(false)
   }
 
   const handleKeyDown = (e) => {
@@ -128,6 +60,14 @@ export const Chatbot = ({
       handleSendMessage()
     }
   }
+
+  useEffect(() => {
+    window.addEventListener('visibilitychange', reestablishConnection)
+
+    return () => {
+      window.removeEventListener('visibilitychange', reestablishConnection)
+    }
+  }, [])
 
   //   useEffect(() => {
   //     if (chatContainerRef.current) {
@@ -154,16 +94,21 @@ export const Chatbot = ({
       </button>
 
       {isChatOpen && (
-        <div id='chatbot-interface' className={`${styles.interface}`}>
+        <div
+          id='chatbot-interface'
+          className={`${styles.interface}`}
+          ref={chatInterfaceRef}
+        >
           <div className={styles.header}>
             <div className={styles.title}>
               <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
               <span>Hi, I'm TollBot</span>
             </div>
             <button
+              ref={closeButtonRef}
               className={`${styles.closeButton} ${styles.buttonReset}`}
               aria-label="Close Toll Brothers' AI Assistant"
-              onClick={() => setIsChatOpen(false)}
+              onClick={onCloseChat}
             >
               <img
                 src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
@@ -181,6 +126,7 @@ export const Chatbot = ({
           <div className={styles.footer}>
             <div className={styles.inputContainer}>
               <input
+                id='chatbot-input'
                 type='text'
                 className={styles.input}
                 placeholder='Ask TollBot your question here.'

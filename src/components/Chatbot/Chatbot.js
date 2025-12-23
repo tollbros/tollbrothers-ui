@@ -9,6 +9,7 @@ import ChatInput from '../TollChat/ChatInput'
 import Minus from '../../icons/Minus'
 import CloseX from '../../icons/CloseX'
 import ChatMessageText from '../TollChat/ChatMessageText'
+import ArrowLeft from '../../icons/ArrowLeft'
 // import ChatMessageAttachment from './ChatMessageAttachment'
 // import ChatMessageRichLink from './ChatMessageRichLink'
 
@@ -34,6 +35,8 @@ export const Chatbot = ({
   const [isChatOpen, setIsChatOpen] = useState(false)
 
   const [messages, setMessages] = useState([])
+  const [inputMessage, setInputMessage] = useState('')
+  const [showSendButton, setShowSendButton] = useState(false)
 
   // const [showChatHeader, setShowChatHeader] = useState(false)
 
@@ -103,6 +106,29 @@ export const Chatbot = ({
     setIsChatOpen(false)
   }
 
+  const handleInputChange = (e) => {
+    const value = e.target.value
+    setInputMessage(value)
+    setShowSendButton(value.trim() !== '')
+  }
+
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return
+
+    // TODO: Implement actual message sending logic
+    console.log('Sending message:', inputMessage)
+    setMessages([...messages, { text: inputMessage, sender: 'user' }])
+    setInputMessage('')
+    setShowSendButton(false)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
   //   useEffect(() => {
   //     if (chatContainerRef.current) {
   //       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
@@ -144,6 +170,34 @@ export const Chatbot = ({
                 alt=''
               />
             </button>
+          </div>
+          <div className={styles.body} ref={chatContainerRef}>
+            <p>
+              I am the Toll Brothers AI assistant. I can assist with your home
+              search using the prompts below or direct you to one of our human
+              experts for additional help.
+            </p>
+          </div>
+          <div className={styles.footer}>
+            <div className={styles.inputContainer}>
+              <input
+                type='text'
+                className={styles.input}
+                placeholder='Ask TollBot your question here.'
+                value={inputMessage}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                aria-label='Ask TollBot your question here.'
+              />
+
+              <button
+                className={`${styles.sendButton} ${styles.buttonReset}`}
+                onClick={handleSendMessage}
+                aria-label='Send message'
+              >
+                <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg' />
+              </button>
+            </div>
           </div>
         </div>
       )}

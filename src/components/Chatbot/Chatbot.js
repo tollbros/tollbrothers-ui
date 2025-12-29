@@ -14,7 +14,7 @@ const TEST_DATA = [
   {
     id: 2,
     sender: 'bot',
-    text: 'I’m happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
+    text: 'I am happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
   },
   {
     id: 3,
@@ -25,6 +25,16 @@ const TEST_DATA = [
     id: 4,
     sender: 'bot',
     text: 'Thank you!'
+  },
+  {
+    id: 5,
+    sender: 'user',
+    text: 'You are quite welcome. I would like to know more about your home designs.'
+  },
+  {
+    id: 6,
+    sender: 'user',
+    text: 'And another thing I want is a pool!'
   }
 ]
 
@@ -94,11 +104,11 @@ export const Chatbot = ({
     }
   }, [])
 
-  //   useEffect(() => {
-  //     if (chatContainerRef.current) {
-  //       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-  //     }
-  //   }, [messages, isMinimized])
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages, isChatOpen])
 
   if (!showChatbot) {
     return null

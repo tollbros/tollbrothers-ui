@@ -109,7 +109,7 @@ export const Chatbot = ({
       // Simulate bot response
       const botResponse = {
         id: Date.now() + 1,
-        text: 'This is a simulated response. Replace this with your actual API call.',
+        text: 'This is a simulated response. Replace this with actual API response.',
         sender: 'bot'
       }
 

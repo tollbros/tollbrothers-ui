@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
+import { ThinkingIndicator } from './ThinkingIndicator'
 
 const TEST_DATA = [
   {
@@ -58,6 +59,8 @@ export const Chatbot = ({
     count: 0,
     lastMessageId: null
   })
+  const [isThinking, setIsThinking] = useState(false)
+  const [pendingUserMessages, setPendingUserMessages] = useState(0)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -80,13 +83,55 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
 
-    // TODO: Implement actual message sending logic
-    console.log('Sending message:', inputMessage)
-    setMessages([...messages, { text: inputMessage, sender: 'user' }])
+    const userMessageText = inputMessage
+    const newUserMessage = {
+      id: Date.now(),
+      text: userMessageText,
+      sender: 'user'
+    }
+
+    setMessages([...messages, newUserMessage])
     setInputMessage('')
+    setPendingUserMessages((prev) => prev + 1)
+    setIsThinking(true)
+
+    // TODO: Implement actual message sending logic to your API
+    // Simulating API call for now
+    try {
+      console.log('Sending message:', userMessageText)
+
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // Simulate bot response
+      const botResponse = {
+        id: Date.now() + 1,
+        text: 'This is a simulated response. Replace this with your actual API call.',
+        sender: 'bot'
+      }
+
+      setMessages((prev) => [...prev, botResponse])
+      setPendingUserMessages((prev) => {
+        const newCount = prev - 1
+        if (newCount <= 0) {
+          setIsThinking(false)
+        }
+        return newCount
+      })
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setError('Failed to send message')
+      setPendingUserMessages((prev) => {
+        const newCount = prev - 1
+        if (newCount <= 0) {
+          setIsThinking(false)
+        }
+        return newCount
+      })
+    }
   }
 
   const handleKeyDown = (e) => {
@@ -108,7 +153,7 @@ export const Chatbot = ({
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [messages, isChatOpen])
+  }, [messages, isChatOpen, isThinking])
 
   if (!showChatbot) {
     return null
@@ -165,6 +210,7 @@ export const Chatbot = ({
                   return <BotMessage key={msg.id} message={msg.text} />
                 }
               })}
+              {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             </div>
           </div>
           <div className={styles.footer}>

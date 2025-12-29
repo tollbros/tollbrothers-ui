@@ -3,17 +3,28 @@
 import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
+import { UserMessage } from './UserMessage'
 
 const TEST_DATA = [
   {
     id: 1,
+    sender: 'user',
+    text: 'I am looking for a new home'
+  },
+  {
+    id: 2,
     sender: 'bot',
     text: 'I’m happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
   },
   {
-    id: 2,
+    id: 3,
     sender: 'user',
-    text: 'I am looking for a new home.'
+    text: 'Wow that was fast! What a great AI assistant you are.'
+  },
+  {
+    id: 4,
+    sender: 'bot',
+    text: 'Thank you!'
   }
 ]
 
@@ -139,11 +150,7 @@ export const Chatbot = ({
             <div className={styles.messages}>
               {messages.map((msg) => {
                 if (msg.sender === 'user') {
-                  return (
-                    <div key={msg.id} className={styles.userMessage}>
-                      <p className={styles.text}>{msg.text}</p>
-                    </div>
-                  )
+                  return <UserMessage key={msg.id} message={msg.text} />
                 } else {
                   return <BotMessage key={msg.id} message={msg.text} />
                 }

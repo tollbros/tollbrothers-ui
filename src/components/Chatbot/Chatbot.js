@@ -2,6 +2,20 @@
 
 import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
+import { BotMessage } from './BotMessage'
+
+const TEST_DATA = [
+  {
+    id: 1,
+    sender: 'bot',
+    text: 'I’m happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
+  },
+  {
+    id: 2,
+    sender: 'user',
+    text: 'I am looking for a new home.'
+  }
+]
 
 export const Chatbot = ({
   availabilityAPI,
@@ -14,7 +28,7 @@ export const Chatbot = ({
   const chatInterfaceRef = useRef(null)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(TEST_DATA)
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
@@ -122,6 +136,19 @@ export const Chatbot = ({
               search using the prompts below or direct you to one of our human
               experts for additional help.
             </p>
+            <div className={styles.messages}>
+              {messages.map((msg) => {
+                if (msg.sender === 'user') {
+                  return (
+                    <div key={msg.id} className={styles.userMessage}>
+                      <p className={styles.text}>{msg.text}</p>
+                    </div>
+                  )
+                } else {
+                  return <BotMessage key={msg.id} message={msg.text} />
+                }
+              })}
+            </div>
           </div>
           <div className={styles.footer}>
             <div className={styles.inputContainer}>

@@ -2,6 +2,42 @@
 
 import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
+import { BotMessage } from './BotMessage'
+import { UserMessage } from './UserMessage'
+import { ThinkingIndicator } from './ThinkingIndicator'
+
+const TEST_DATA = [
+  {
+    id: 1,
+    sender: 'user',
+    text: 'I am looking for a new home'
+  },
+  {
+    id: 2,
+    sender: 'bot',
+    text: 'I am happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
+  },
+  {
+    id: 3,
+    sender: 'user',
+    text: 'Wow that was fast! What a great AI assistant you are.'
+  },
+  {
+    id: 4,
+    sender: 'bot',
+    text: 'Thank you!'
+  },
+  {
+    id: 5,
+    sender: 'user',
+    text: 'You are quite welcome. I would like to know more about your home designs.'
+  },
+  {
+    id: 6,
+    sender: 'user',
+    text: 'And another thing I want is a pool!'
+  }
+]
 
 export const Chatbot = ({
   availabilityAPI,
@@ -14,7 +50,7 @@ export const Chatbot = ({
   const chatInterfaceRef = useRef(null)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(TEST_DATA)
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
@@ -23,6 +59,8 @@ export const Chatbot = ({
     count: 0,
     lastMessageId: null
   })
+  const [isThinking, setIsThinking] = useState(false)
+  const [pendingUserMessages, setPendingUserMessages] = useState(0)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -45,13 +83,55 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
 
-    // TODO: Implement actual message sending logic
-    console.log('Sending message:', inputMessage)
-    setMessages([...messages, { text: inputMessage, sender: 'user' }])
+    const userMessageText = inputMessage
+    const newUserMessage = {
+      id: Date.now(),
+      text: userMessageText,
+      sender: 'user'
+    }
+
+    setMessages([...messages, newUserMessage])
     setInputMessage('')
+    setPendingUserMessages((prev) => prev + 1)
+    setIsThinking(true)
+
+    // TODO: Implement actual message sending logic to your API
+    // Simulating API call for now
+    try {
+      console.log('Sending message:', userMessageText)
+
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // Simulate bot response
+      const botResponse = {
+        id: Date.now() + 1,
+        text: 'This is a simulated response. Replace this with actual API response.',
+        sender: 'bot'
+      }
+
+      setMessages((prev) => [...prev, botResponse])
+      setPendingUserMessages((prev) => {
+        const newCount = prev - 1
+        if (newCount <= 0) {
+          setIsThinking(false)
+        }
+        return newCount
+      })
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setError('Failed to send message')
+      setPendingUserMessages((prev) => {
+        const newCount = prev - 1
+        if (newCount <= 0) {
+          setIsThinking(false)
+        }
+        return newCount
+      })
+    }
   }
 
   const handleKeyDown = (e) => {
@@ -69,11 +149,11 @@ export const Chatbot = ({
     }
   }, [])
 
-  //   useEffect(() => {
-  //     if (chatContainerRef.current) {
-  //       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-  //     }
-  //   }, [messages, isMinimized])
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [messages, isChatOpen, isThinking])
 
   if (!showChatbot) {
     return null
@@ -122,6 +202,16 @@ export const Chatbot = ({
               search using the prompts below or direct you to one of our human
               experts for additional help.
             </p>
+            <div className={styles.messages}>
+              {messages.map((msg) => {
+                if (msg.sender === 'user') {
+                  return <UserMessage key={msg.id} message={msg.text} />
+                } else {
+                  return <BotMessage key={msg.id} message={msg.text} />
+                }
+              })}
+              {isThinking && <BotMessage component={<ThinkingIndicator />} />}
+            </div>
           </div>
           <div className={styles.footer}>
             <div className={styles.inputContainer}>

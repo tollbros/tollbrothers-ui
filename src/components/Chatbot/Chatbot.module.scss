@@ -43,7 +43,7 @@
     max-width: 345px;
     min-height: 500px;
     max-height: 650px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     background-color: #fff;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
     border-top-left-radius: 8px;
@@ -98,6 +98,13 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 16px;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    gap: 20px;
 }
 
 .footer {

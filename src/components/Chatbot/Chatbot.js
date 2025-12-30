@@ -6,6 +6,7 @@ import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { OptionsList } from './OptionsList'
+import { ActionButton } from './ActionButton'
 
 const TEST_DATA = [
   {
@@ -41,6 +42,11 @@ const TEST_DATA = [
   },
   {
     id: 7,
+    type: 'bot',
+    text: 'Could you please tell me in what location you are interested in?'
+  },
+  {
+    id: 8,
     type: 'prompt',
     options: [
       {
@@ -101,7 +107,7 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
-  const handleSendMessage = async (systemMessage) => {
+  const handleSendMessage = async (_event, systemMessage) => {
     if (!inputMessage.trim() && !systemMessage) return
 
     console.log(systemMessage)
@@ -130,6 +136,7 @@ export const Chatbot = ({
       const botResponse = {
         id: Date.now() + 1,
         text: 'This is a simulated response. Replace this with actual API response.',
+        component: <ActionButton>Tell Me More</ActionButton>,
         type: 'bot'
       }
 
@@ -162,7 +169,7 @@ export const Chatbot = ({
   }
 
   const handleOptionSelect = (option) => {
-    handleSendMessage(option.value)
+    handleSendMessage(null, option.value)
   }
 
   useEffect(() => {
@@ -213,6 +220,7 @@ export const Chatbot = ({
               className={`${styles.closeButton} ${styles.buttonReset}`}
               aria-label="Close Toll Brothers' AI Assistant"
               onClick={onCloseChat}
+              type='button'
             >
               <img
                 src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
@@ -231,7 +239,13 @@ export const Chatbot = ({
                 if (msg.type === 'user') {
                   return <UserMessage key={msg.id} message={msg.text} />
                 } else if (msg.type === 'bot') {
-                  return <BotMessage key={msg.id} message={msg.text} />
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={msg.component}
+                    />
+                  )
                 } else if (msg.type === 'prompt') {
                   return (
                     <OptionsList
@@ -242,6 +256,7 @@ export const Chatbot = ({
                   )
                 }
               })}
+
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             </div>
           </div>
@@ -262,6 +277,7 @@ export const Chatbot = ({
                 className={`${styles.sendButton} ${styles.buttonReset}`}
                 onClick={handleSendMessage}
                 aria-label='Send message'
+                type='button'
               >
                 <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg' />
               </button>

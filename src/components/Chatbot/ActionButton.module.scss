@@ -1,0 +1,43 @@
+@import "styles/modules/all";
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  gap: 5px;
+  padding: 5px 8px 5px 10px;
+  background-color: $accent_blue;
+  border: none;
+  border-radius: 100px;
+
+  &:hover {
+    background-color: $medium_blue3;
+  }
+
+}
+
+.text {
+  font-family: $special_font_family;
+  font-size: .75em;
+  font-weight: $font_weight_bold;
+  line-height: 18px;
+  color: $white;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: $white;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 10px;
+  height: 10px;
+  filter: invert(1);
+}

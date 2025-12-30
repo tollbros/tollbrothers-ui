@@ -5,37 +5,61 @@ import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
+import { OptionsList } from './OptionsList'
+import { ActionButton } from './ActionButton'
 
 const TEST_DATA = [
   {
     id: 1,
-    sender: 'user',
+    type: 'user',
     text: 'I am looking for a new home'
   },
   {
     id: 2,
-    sender: 'bot',
+    type: 'bot',
     text: 'I am happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
   },
+
   {
     id: 3,
-    sender: 'user',
+    type: 'user',
     text: 'Wow that was fast! What a great AI assistant you are.'
   },
   {
     id: 4,
-    sender: 'bot',
+    type: 'bot',
     text: 'Thank you!'
   },
   {
     id: 5,
-    sender: 'user',
+    type: 'user',
     text: 'You are quite welcome. I would like to know more about your home designs.'
   },
   {
     id: 6,
-    sender: 'user',
+    type: 'user',
     text: 'And another thing I want is a pool!'
+  },
+  {
+    id: 7,
+    type: 'bot',
+    text: 'Could you please tell me in what location you are interested in?'
+  },
+  {
+    id: 8,
+    type: 'prompt',
+    options: [
+      {
+        id: 'opt1',
+        text: 'North Carolina',
+        value: 'North Carolina'
+      },
+      {
+        id: 'opt2',
+        text: 'Charlotte, NC',
+        value: 'Charlotte, NC'
+      }
+    ]
   }
 ]
 
@@ -83,14 +107,16 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return
+  const handleSendMessage = async (_event, systemMessage) => {
+    if (!inputMessage.trim() && !systemMessage) return
 
-    const userMessageText = inputMessage
+    console.log(systemMessage)
+
+    const userMessageText = inputMessage || systemMessage
     const newUserMessage = {
       id: Date.now(),
       text: userMessageText,
-      sender: 'user'
+      type: 'user'
     }
 
     setMessages([...messages, newUserMessage])
@@ -110,7 +136,8 @@ export const Chatbot = ({
       const botResponse = {
         id: Date.now() + 1,
         text: 'This is a simulated response. Replace this with actual API response.',
-        sender: 'bot'
+        component: <ActionButton>Tell Me More</ActionButton>,
+        type: 'bot'
       }
 
       setMessages((prev) => [...prev, botResponse])
@@ -139,6 +166,10 @@ export const Chatbot = ({
       e.preventDefault()
       handleSendMessage()
     }
+  }
+
+  const handleOptionSelect = (option) => {
+    handleSendMessage(null, option.value)
   }
 
   useEffect(() => {
@@ -189,6 +220,7 @@ export const Chatbot = ({
               className={`${styles.closeButton} ${styles.buttonReset}`}
               aria-label="Close Toll Brothers' AI Assistant"
               onClick={onCloseChat}
+              type='button'
             >
               <img
                 src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
@@ -204,12 +236,27 @@ export const Chatbot = ({
             </p>
             <div className={styles.messages}>
               {messages.map((msg) => {
-                if (msg.sender === 'user') {
+                if (msg.type === 'user') {
                   return <UserMessage key={msg.id} message={msg.text} />
-                } else {
-                  return <BotMessage key={msg.id} message={msg.text} />
+                } else if (msg.type === 'bot') {
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={msg.component}
+                    />
+                  )
+                } else if (msg.type === 'prompt') {
+                  return (
+                    <OptionsList
+                      key={msg.id}
+                      options={msg.options}
+                      onOptionSelect={handleOptionSelect}
+                    />
+                  )
                 }
               })}
+
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             </div>
           </div>
@@ -230,6 +277,7 @@ export const Chatbot = ({
                 className={`${styles.sendButton} ${styles.buttonReset}`}
                 onClick={handleSendMessage}
                 aria-label='Send message'
+                type='button'
               >
                 <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg' />
               </button>

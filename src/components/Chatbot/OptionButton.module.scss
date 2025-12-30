@@ -1,0 +1,29 @@
+@import "styles/modules/all";
+
+.option {
+  background-color: white;
+  border: 1px solid $gray;
+  border-radius: 100px;
+  padding: 6px 12px;
+  font-family: $special_font_family;
+  font-size: .75rem;
+  font-weight: $font_weight_bold;
+  line-height: 1.5;
+  color: $medium_blue3;
+  text-align: right;
+  cursor: pointer;
+
+  &.lg {
+    padding: 11px 20px;
+  }
+
+  &:hover {
+    background-color: #f5f7f8;
+    border-color: $medium_blue3;
+  }
+
+  &:active {
+    background-color: #e9edf0;
+  }
+
+}

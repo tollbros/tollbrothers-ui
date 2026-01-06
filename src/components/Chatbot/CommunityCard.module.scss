@@ -1,0 +1,116 @@
+@import "styles/modules/all";
+
+.communityCard {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid $medium_gray;
+  //width: 100%;
+  width: 260px;
+  text-align: left;
+}
+
+.communityImage {
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+}
+
+.communityContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  align-items: flex-end;
+}
+
+.communityHeader {
+  display: flex;
+  width: 100%;
+}
+
+.communityName {
+  margin: 0;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  font-size: 1em;
+  line-height: 24px;
+  color: black;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  flex: 1;
+}
+
+.communityStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  font-size: .875em;
+  color: black;
+  white-space: nowrap;
+}
+
+.statValue {
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  line-height: 20px;
+}
+
+.statLabel {
+  font-family: $alt_font_family;
+  line-height: 20px;
+}
+
+.communityInfo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+
+
+}
+
+.communityPrice {
+  margin: 0 0 4px 0;
+  font-family: $special_font_family;
+  font-weight: $font_weight_bold;
+  font-size: .75em;
+  line-height: 18px;
+  color: black;
+
+   &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.communityDescription {
+  margin: 0;
+  font-family: $alt_font_family;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 20px;
+  color: black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}

@@ -182,10 +182,9 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
-    const route =
-      '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates'
+    let route = '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates'
     // route = '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta'
-    // route = '/luxury-homes-for-sale/California/The-Station/Outlook'
+    route = '/luxury-homes-for-sale/California/The-Station/Outlook'
     // route = '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
     fetch(`${tollRouteApi}${route}`)
       .then((response) => {
@@ -199,9 +198,9 @@ export const Chatbot = ({
 
         const newBotMessage = {
           id: Date.now(),
-          text: 'Here is a community you might like:',
+          text: 'Here are some communities that you might like:',
           type: 'products',
-          products: [data.communityComponent]
+          products: [data.communityComponent, data.communityComponent]
         }
 
         setMessages([...messages, newBotMessage])
@@ -286,7 +285,15 @@ export const Chatbot = ({
                     />
                   )
                 } else if (msg.type === 'products') {
-                  return <ProductsList key={msg.id} products={msg.products} />
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={
+                        <ProductsList key={msg.id} products={msg.products} />
+                      }
+                    />
+                  )
                 }
               })}
 

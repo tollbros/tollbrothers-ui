@@ -6,6 +6,7 @@ import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { OptionsList } from './OptionsList'
+import { ProductsList } from './ProductsList'
 import { ActionButton } from './ActionButton'
 
 const TEST_DATA = [
@@ -64,7 +65,7 @@ const TEST_DATA = [
 ]
 
 export const Chatbot = ({
-  availabilityAPI,
+  tollRouteApi,
   endPoint,
   chatRegion,
   trackChatEvent = () => null,
@@ -181,6 +182,36 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
+    const route =
+      '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates'
+    // route = '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta'
+    // route = '/luxury-homes-for-sale/California/The-Station/Outlook'
+    // route = '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
+    fetch(`${tollRouteApi}${route}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((data) => {
+        console.log('Route data:', data)
+
+        const newBotMessage = {
+          id: Date.now(),
+          text: 'Here is a community you might like:',
+          type: 'products',
+          products: [data.communityComponent]
+        }
+
+        setMessages([...messages, newBotMessage])
+      })
+      .catch((error) => {
+        console.error('Error fetching route:', error)
+      })
+  }, [])
+
+  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
@@ -254,6 +285,8 @@ export const Chatbot = ({
                       onOptionSelect={handleOptionSelect}
                     />
                   )
+                } else if (msg.type === 'products') {
+                  return <ProductsList key={msg.id} products={msg.products} />
                 }
               })}
 

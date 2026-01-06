@@ -16,7 +16,7 @@
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 .icon {
@@ -36,4 +36,8 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.component {
+  text-align: right;
 }

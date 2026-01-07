@@ -9,6 +9,7 @@
   border: 1px solid $medium_gray;
   //width: 100%;
   width: 260px;
+  height: 100%;
   text-align: left;
 }
 
@@ -17,6 +18,7 @@
   height: 80px;
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
 
   img {
     width: 100%;
@@ -32,6 +34,7 @@
   gap: 12px;
   padding: 12px;
   align-items: flex-end;
+  flex-grow: 1;
 }
 
 .communityHeader {
@@ -84,8 +87,6 @@
   flex-direction: column;
   width: 100%;
   gap: 4px;
-
-
 }
 
 .communityPrice {
@@ -113,4 +114,8 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+.actionButtonWrapper {
+  margin-top: auto;
 }

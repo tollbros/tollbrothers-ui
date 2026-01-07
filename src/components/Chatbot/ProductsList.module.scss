@@ -8,8 +8,7 @@
   margin-left: -12px;
 
   .scrollWrap {
-    display: grid;
-    grid-auto-flow: column;
+    display: flex;
     padding-bottom: 10px;
     padding-left: 12px;
     scroll-padding: 0 0 0 12px;
@@ -17,6 +16,7 @@
   }
 
   .scrollItem {
+    height: auto  !important;
 
     &:last-child {
       padding-right: 12px;

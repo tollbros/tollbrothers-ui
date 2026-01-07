@@ -101,7 +101,9 @@ export const CommunityCard = ({ community }) => {
         </div>
 
         {community.url && (
-          <ActionButton onClick={() => null}>Tell Me More</ActionButton>
+          <div className={styles.actionButtonWrapper}>
+            <ActionButton onClick={() => null}>Tell Me More</ActionButton>
+          </div>
         )}
       </div>
     </div>

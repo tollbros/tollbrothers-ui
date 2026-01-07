@@ -182,31 +182,48 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
-    let route = '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates'
-    // route = '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta'
-    route = '/luxury-homes-for-sale/California/The-Station/Outlook'
-    // route = '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
-    fetch(`${tollRouteApi}${route}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        return response.json()
-      })
-      .then((data) => {
-        console.log('Route data:', data)
+    const routes = [
+      '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
+      '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
+      '/luxury-homes-for-sale/California/The-Station/Outlook',
+      '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
+    ]
 
-        const newBotMessage = {
-          id: Date.now(),
-          text: 'Here are some communities that you might like:',
-          type: 'products',
-          products: [data.communityComponent, data.communityComponent]
-        }
+    Promise.allSettled(
+      routes.map((route) =>
+        fetch(`${tollRouteApi}${route}`)
+          .then((response) => {
+            console.log('Fetch response for', route, ':', response)
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            return response.json()
+          })
+          .then((data) => data.communityComponent)
+      )
+    )
+      .then((results) => {
+        const communities = results
+          .filter((result) => result.status === 'fulfilled' && result.value)
+          .map((result) => result.value)
 
-        setMessages([...messages, newBotMessage])
+        console.log('Fetched communities:', communities)
+
+        if (communities.length > 0) {
+          const newBotMessage = {
+            id: Date.now(),
+            text: 'Here are some communities that you might like:',
+            type: 'products',
+            products: communities
+          }
+
+          setMessages([...messages, newBotMessage])
+        } else {
+          console.error('No communities were successfully fetched')
+        }
       })
       .catch((error) => {
-        console.error('Error fetching route:', error)
+        console.error('Error fetching routes:', error)
       })
   }, [])
 

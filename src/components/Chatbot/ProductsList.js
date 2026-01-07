@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './ProductsList.module.scss'
 import { CommunityCard } from './CommunityCard'
+import { ModelCard } from './ModelCard'
 import { HorizontalScroller } from '../HorizontalScroller'
 
 export const ProductsList = ({ products }) => {
@@ -21,12 +22,16 @@ export const ProductsList = ({ products }) => {
           controls: styles.controls
         }}
       >
-        {products.map((product, index) => (
-          <CommunityCard
-            key={product.communityId || index}
-            community={product}
-          />
-        ))}
+        {products.map((product, index) =>
+          product.commPlanID ? (
+            <ModelCard key={product.commPlanID || index} model={product} />
+          ) : (
+            <CommunityCard
+              key={product.communityId || product.masterCommunityId || index}
+              community={product}
+            />
+          )
+        )}
       </HorizontalScroller>
     </div>
   )

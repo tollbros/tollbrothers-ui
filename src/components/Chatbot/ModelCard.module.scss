@@ -7,14 +7,26 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid $medium_gray;
-  //width: 100%;
   width: 260px;
   height: 100%;
   text-align: left;
 }
 
-.communityImage {
+.header {
+  display: flex;
   width: 100%;
+  padding: 12px;
+  gap: 12px;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.imageContainer {
+  width: 88px;
   height: 80px;
   overflow: hidden;
   position: relative;
@@ -28,26 +40,13 @@
   }
 }
 
-.communityContent {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  align-items: flex-end;
-  flex-grow: 1;
-}
 
-.communityHeader {
-  display: flex;
-  width: 100%;
-}
-
-.communityName {
+.name {
   margin: 0;
   font-family: $alt_font_family;
   font-weight: $font_weight_bold;
-  font-size: 1em;
-  line-height: 24px;
+  font-size: .9em;
+  line-height: 20px;
   color: black;
   text-decoration: underline;
   text-decoration-skip-ink: none;
@@ -55,10 +54,10 @@
   flex: 1;
 }
 
-.communityStats {
+.stats {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
   align-items: center;
   width: 100%;
 }
@@ -66,7 +65,7 @@
 .stat {
   display: flex;
   flex-direction: column;
-  font-size: .875em;
+  font-size: .75em;
   color: black;
   white-space: nowrap;
 }
@@ -82,14 +81,28 @@
   line-height: 20px;
 }
 
-.communityInfo {
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  align-items: flex-end;
+  flex-grow: 1;
+}
+
+// .communityHeader {
+//   display: flex;
+//   width: 100%;
+// }
+
+.info {
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 4px;
 }
 
-.communityPrice {
+.price {
   margin: 0 0 4px 0;
   font-family: $special_font_family;
   font-weight: $font_weight_bold;
@@ -102,7 +115,7 @@
   }
 }
 
-.communityDescription {
+.description {
   margin: 0;
   font-family: $alt_font_family;
   font-weight: 300;

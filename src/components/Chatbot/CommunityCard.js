@@ -1,35 +1,10 @@
 import React from 'react'
 import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
+import { displayPricing } from './utils/pricing'
 
-const displayPricing = (priceData) => {
-  const pricedFrom = priceData || 0
-  const pricedFromFormatted = pricedFrom.toLocaleString('en-US')
-
-  if (
-    !pricedFromFormatted ||
-    pricedFromFormatted === '0' ||
-    pricedFromFormatted === 'null' ||
-    priceData === 999999999999
-  ) {
-    return null // no breaking space
-  }
-
-  let moneySign = '$'
-
-  if (Number.isNaN(parseInt(pricedFromFormatted))) {
-    moneySign = ''
-  }
-
-  return `${moneySign}${pricedFromFormatted}`
-}
-
-const getPriceLabelText = (isFuture, toLowerCase) => {
-  let label = isFuture ? 'anticipated from' : 'starting at'
-
-  if (toLowerCase) {
-    label = label.toLowerCase()
-  }
+const getPriceLabelText = (isFuture) => {
+  const label = isFuture ? 'anticipated from' : 'starting at'
 
   return label
 }
@@ -40,7 +15,7 @@ export const CommunityCard = ({ community }) => {
     community.overview?.shortDescription || community.overview?.description
 
   return (
-    <div className={styles.communityCard}>
+    <div className={styles.root}>
       {headShotImage && (
         <div className={styles.communityImage}>
           <img src={headShotImage} alt={community.name || 'Community'} />

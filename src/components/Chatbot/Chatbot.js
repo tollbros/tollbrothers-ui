@@ -182,49 +182,54 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
-    const routes = [
-      '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
-      '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
-      '/luxury-homes-for-sale/California/The-Station/Outlook',
-      '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
-    ]
+    setIsThinking(true)
 
-    Promise.allSettled(
-      routes.map((route) =>
-        fetch(`${tollRouteApi}${route}`)
-          .then((response) => {
-            console.log('Fetch response for', route, ':', response)
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            return response.json()
-          })
-          .then((data) => data.communityComponent)
+    setTimeout(() => {
+      const routes = [
+        '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
+        '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
+        '/luxury-homes-for-sale/California/The-Station/Outlook',
+        '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
+      ]
+
+      Promise.allSettled(
+        routes.map((route) =>
+          fetch(`${tollRouteApi}${route}`)
+            .then((response) => {
+              console.log('Fetch response for', route, ':', response)
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+              }
+              return response.json()
+            })
+            .then((data) => data.communityComponent)
+        )
       )
-    )
-      .then((results) => {
-        const communities = results
-          .filter((result) => result.status === 'fulfilled' && result.value)
-          .map((result) => result.value)
+        .then((results) => {
+          setIsThinking(false)
+          const communities = results
+            .filter((result) => result.status === 'fulfilled' && result.value)
+            .map((result) => result.value)
 
-        console.log('Fetched communities:', communities)
+          console.log('Fetched communities:', communities)
 
-        if (communities.length > 0) {
-          const newBotMessage = {
-            id: Date.now(),
-            text: 'Here are some communities that you might like:',
-            type: 'products',
-            products: communities
+          if (communities.length > 0) {
+            const newBotMessage = {
+              id: Date.now(),
+              text: 'Here are some communities that you might like:',
+              type: 'products',
+              products: communities
+            }
+
+            setMessages([...messages, newBotMessage])
+          } else {
+            console.error('No communities were successfully fetched')
           }
-
-          setMessages([...messages, newBotMessage])
-        } else {
-          console.error('No communities were successfully fetched')
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching routes:', error)
-      })
+        })
+        .catch((error) => {
+          console.error('Error fetching routes:', error)
+        })
+    }, 5000)
   }, [])
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { OptionsList } from './OptionsList'
+import { ProductsList } from './ProductsList'
 import { ActionButton } from './ActionButton'
 
 const TEST_DATA = [
@@ -64,7 +65,7 @@ const TEST_DATA = [
 ]
 
 export const Chatbot = ({
-  availabilityAPI,
+  tollRouteApi,
   endPoint,
   chatRegion,
   trackChatEvent = () => null,
@@ -181,6 +182,57 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
+    setIsThinking(true)
+
+    setTimeout(() => {
+      const routes = [
+        '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
+        '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
+        '/luxury-homes-for-sale/California/The-Station/Outlook',
+        '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main'
+      ]
+
+      Promise.allSettled(
+        routes.map((route) =>
+          fetch(`${tollRouteApi}${route}`)
+            .then((response) => {
+              console.log('Fetch response for', route, ':', response)
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+              }
+              return response.json()
+            })
+            .then((data) => data.communityComponent)
+        )
+      )
+        .then((results) => {
+          setIsThinking(false)
+          const communities = results
+            .filter((result) => result.status === 'fulfilled' && result.value)
+            .map((result) => result.value)
+
+          console.log('Fetched communities:', communities)
+
+          if (communities.length > 0) {
+            const newBotMessage = {
+              id: Date.now(),
+              text: 'Here are some communities that you might like:',
+              type: 'products',
+              products: communities
+            }
+
+            setMessages([...messages, newBotMessage])
+          } else {
+            console.error('No communities were successfully fetched')
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching routes:', error)
+        })
+    }, 5000)
+  }, [])
+
+  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
@@ -252,6 +304,16 @@ export const Chatbot = ({
                       key={msg.id}
                       options={msg.options}
                       onOptionSelect={handleOptionSelect}
+                    />
+                  )
+                } else if (msg.type === 'products') {
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={
+                        <ProductsList key={msg.id} products={msg.products} />
+                      }
                     />
                   )
                 }

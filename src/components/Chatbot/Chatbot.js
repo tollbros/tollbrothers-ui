@@ -66,6 +66,7 @@ const TEST_DATA = [
 
 export const Chatbot = ({
   tollRouteApi,
+  utils = {},
   endPoint,
   chatRegion,
   trackChatEvent = () => null,
@@ -186,10 +187,13 @@ export const Chatbot = ({
 
     setTimeout(() => {
       const routes = [
+        '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',
         '/luxury-homes-for-sale/Florida/Bartram-Ranch/Barnwell',
+        '/luxury-homes-for-sale/Florida/Bartram-Ranch/Abigail',
         '/luxury-homes-for-sale/Florida/Crosswinds-at-Nocatee/Quick-Move-In/281046',
         '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main/Myra',
         '/luxury-homes-for-sale/Florida/Bartram-Ranch/Quick-Move-In/283408',
+        '/luxury-homes-for-sale/Oregon/Toll-Brothers-at-Hosford-Farms-Terra-Collection/Quick-Move-In/280118',
         '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
         '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
         '/luxury-homes-for-sale/California/The-Station/Outlook',
@@ -322,7 +326,11 @@ export const Chatbot = ({
                       key={msg.id}
                       message={msg.text}
                       component={
-                        <ProductsList key={msg.id} products={msg.products} />
+                        <ProductsList
+                          key={msg.id}
+                          products={msg.products}
+                          utils={utils}
+                        />
                       }
                     />
                   )

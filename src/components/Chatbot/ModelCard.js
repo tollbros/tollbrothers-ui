@@ -3,33 +3,14 @@ import styles from './ModelCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { displayPricing } from './utils/pricing'
 
-const isMoveInReady = (date) => {
-  const today = new Date()
-  const moveDate = new Date(`${date} 00:00:00`)
-  return today > moveDate
-}
-
-const getFormattedDate = (date) => {
-  const dateTemp = date.split('-')
-
-  if (dateTemp.length > 0) {
-    const month = dateTemp[1].replace(/^0+(?!\.|$)/, '')
-    date = `${month}/${dateTemp[0]}`
-
-    return date
-  }
-
-  return ''
-}
-
-const getQmiDateLabelText = ({ date, isComingSoon }) => {
+const getQmiDateLabelText = ({ date, isComingSoon, utils }) => {
   let text = ''
-  if (isMoveInReady(date)) {
+  if (utils?.isMoveInReady?.(date)) {
     text = 'Move-In Ready'
   } else if (isComingSoon) {
     text = 'Coming Soon Quick Move-In'
   } else {
-    text = `Quick Move-In ${getFormattedDate(date)}`
+    text = `Quick Move-In ${utils?.getFormattedDate?.(date, utils)}`
   }
 
   return text
@@ -41,9 +22,11 @@ const getPriceLabelText = (isQMI) => {
   return label
 }
 
-export const ModelCard = ({ model }) => {
+export const ModelCard = ({ model, utils = {} }) => {
   const headShotImage = model.headShot?.media?.url
   const desc = model?.description
+
+  const { rangeBed, rangeBath, rangeSqft } = utils.getModelRanges?.(model)
 
   return (
     <div className={styles.root}>
@@ -54,53 +37,51 @@ export const ModelCard = ({ model }) => {
         <div className={styles.headerContent}>
           {model.name && <h3 className={styles.name}>{model.name}</h3>}
 
-          {(model.minBed || model.minBath || model.minSqft) && (
-            <div className={styles.stats}>
-              {model.minBed && (
-                <div className={styles.stat}>
-                  <div className={styles.statValue}>{model.minBed}</div>
-                  <div className={styles.statLabel}>Beds</div>
-                </div>
-              )}
-              {model.minBath && (
-                <div className={styles.stat}>
-                  <div className={styles.statValue}>{model.minBath}</div>
-                  <div className={styles.statLabel}>Baths</div>
-                </div>
-              )}
-              {model.minSqft && (
-                <div className={styles.stat}>
-                  <div className={styles.statValue}>{model.minSqft}</div>
-                  <div className={styles.statLabel}>Sq Ft</div>
-                </div>
-              )}
+          <div className={styles.stats}>
+            <div className={styles.stat}>
+              <div className={styles.statValue}>{rangeBed || 0}</div>
+              <div className={styles.statLabel}>Beds</div>
             </div>
-          )}
+
+            <div className={styles.stat}>
+              <div className={styles.statValue}>{rangeBath || 0}</div>
+              <div className={styles.statLabel}>Baths</div>
+            </div>
+
+            <div className={styles.stat}>
+              <div className={styles.statValue}>
+                {rangeSqft}
+                {utils.getModelSqftPlusSign?.(model, false)}
+              </div>
+              <div className={styles.statLabel}>Sq Ft</div>
+            </div>
+          </div>
         </div>
       </div>
       <div className={styles.content}>
         <div className={styles.info}>
-          {model.pricedFrom && (
-            <p className={styles.price}>
-              {model.isQMI && (
-                <>
-                  {getQmiDateLabelText({
-                    date: model.moveInDate,
-                    isComingSoon: model.isComingSoon
-                  })}{' '}
-                  &bull;{' '}
-                </>
-              )}
+          <p className={styles.price}>
+            {model.isQMI && (
+              <>
+                {getQmiDateLabelText({
+                  date: model.moveInDate,
+                  isComingSoon: model.isComingSoon,
+                  utils: utils
+                })}{' '}
+                &bull;{' '}
+              </>
+            )}
 
-              {model.homeType &&
-                !model.options?.some((option) => option.id === '112') && (
-                  <>{model.homeType} </>
-                )}
-              {`${getPriceLabelText(model.isQMI)} ${displayPricing(
+            {model.homeType &&
+              !model.options?.some((option) => option.id === '112') && (
+                <>{model.homeType} </>
+              )}
+            {model.pricedFrom &&
+              `${getPriceLabelText(model.isQMI)} ${displayPricing(
                 model.pricedFrom
               )}`}
-            </p>
-          )}
+          </p>
+
           {desc && <p className={styles.description}>{desc}</p>}
         </div>
 

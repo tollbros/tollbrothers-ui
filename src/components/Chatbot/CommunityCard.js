@@ -3,13 +3,7 @@ import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { displayPricing } from './utils/pricing'
 
-const getPriceLabelText = (isFuture) => {
-  const label = isFuture ? 'anticipated from' : 'starting at'
-
-  return label
-}
-
-export const CommunityCard = ({ community }) => {
+export const CommunityCard = ({ community, utils = {} }) => {
   const headShotImage = community.headShot?.media?.url
   const desc =
     community.overview?.shortDescription || community.overview?.description
@@ -67,9 +61,10 @@ export const CommunityCard = ({ community }) => {
                       .join(', ')}{' '}
                   </>
                 )}
-              {`${getPriceLabelText(community.isFuture)} ${displayPricing(
-                community.pricedFrom
-              )}`}
+              {`${utils.getPriceLabelText?.(
+                community.isFuture,
+                true
+              )} ${displayPricing(community.pricedFrom)}`}
             </p>
           )}
           {desc && <p className={styles.communityDescription}>{desc}</p>}

@@ -61,10 +61,9 @@ export const CommunityCard = ({ community, utils = {} }) => {
                       .join(', ')}{' '}
                   </>
                 )}
-              {`${utils.getPriceLabelText?.(
-                community.isFuture,
-                true
-              )} ${displayPricing(community.pricedFrom)}`}
+              {`${
+                utils.getPriceLabelText?.(community.isFuture, true) || ''
+              } ${displayPricing(community.pricedFrom)}`}
             </p>
           )}
           {desc && <p className={styles.communityDescription}>{desc}</p>}

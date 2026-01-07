@@ -10,7 +10,7 @@ const getQmiDateLabelText = ({ date, isComingSoon, utils }) => {
   } else if (isComingSoon) {
     text = 'Coming Soon Quick Move-In'
   } else {
-    text = `Quick Move-In ${utils?.getFormattedDate?.(date, utils)}`
+    text = `Quick Move-In ${utils?.getFormattedDate?.(date, utils) || ''}`
   }
 
   return text
@@ -26,7 +26,7 @@ export const ModelCard = ({ model, utils = {} }) => {
   const headShotImage = model.headShot?.media?.url
   const desc = model?.description
 
-  const { rangeBed, rangeBath, rangeSqft } = utils.getModelRanges?.(model)
+  const { rangeBed, rangeBath, rangeSqft } = utils.getModelRanges?.(model) || {}
 
   return (
     <div className={styles.root}>
@@ -50,7 +50,7 @@ export const ModelCard = ({ model, utils = {} }) => {
 
             <div className={styles.stat}>
               <div className={styles.statValue}>
-                {rangeSqft}
+                {rangeSqft || <>&nbsp;</>}
                 {utils.getModelSqftPlusSign?.(model, false)}
               </div>
               <div className={styles.statLabel}>Sq Ft</div>

@@ -3,6 +3,38 @@ import styles from './ModelCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { displayPricing } from './utils/pricing'
 
+const isMoveInReady = (date) => {
+  const today = new Date()
+  const moveDate = new Date(`${date} 00:00:00`)
+  return today > moveDate
+}
+
+const getFormattedDate = (date) => {
+  const dateTemp = date.split('-')
+
+  if (dateTemp.length > 0) {
+    const month = dateTemp[1].replace(/^0+(?!\.|$)/, '')
+    date = `${month}/${dateTemp[0]}`
+
+    return date
+  }
+
+  return ''
+}
+
+const getQmiDateLabelText = ({ date, isComingSoon }) => {
+  let text = ''
+  if (isMoveInReady(date)) {
+    text = 'Move-In Ready'
+  } else if (isComingSoon) {
+    text = 'Coming Soon Quick Move-In'
+  } else {
+    text = `Quick Move-In ${getFormattedDate(date)}`
+  }
+
+  return text
+}
+
 const getPriceLabelText = (isQMI) => {
   const label = isQMI ? 'priced at' : 'starting at'
 
@@ -50,6 +82,16 @@ export const ModelCard = ({ model }) => {
         <div className={styles.info}>
           {model.pricedFrom && (
             <p className={styles.price}>
+              {model.isQMI && (
+                <>
+                  {getQmiDateLabelText({
+                    date: model.moveInDate,
+                    isComingSoon: model.isComingSoon
+                  })}{' '}
+                  &bull;{' '}
+                </>
+              )}
+
               {model.homeType &&
                 !model.options?.some((option) => option.id === '112') && (
                   <>{model.homeType} </>

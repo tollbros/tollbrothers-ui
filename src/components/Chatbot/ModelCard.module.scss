@@ -54,33 +54,6 @@
   flex: 1;
 }
 
-.stats {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  align-items: center;
-  width: 100%;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  font-size: .75em;
-  color: black;
-  white-space: nowrap;
-}
-
-.statValue {
-  font-family: $alt_font_family;
-  font-weight: $font_weight_bold;
-  line-height: 20px;
-}
-
-.statLabel {
-  font-family: $alt_font_family;
-  line-height: 20px;
-}
-
 .content {
   display: flex;
   flex-direction: column;
@@ -100,19 +73,6 @@
   flex-direction: column;
   width: 100%;
   gap: 4px;
-}
-
-.price {
-  margin: 0 0 4px 0;
-  font-family: $special_font_family;
-  font-weight: $font_weight_bold;
-  font-size: .75em;
-  line-height: 18px;
-  color: black;
-
-   &::first-letter {
-    text-transform: uppercase;
-  }
 }
 
 .description {

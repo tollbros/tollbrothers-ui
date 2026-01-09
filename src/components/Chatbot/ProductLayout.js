@@ -1,13 +1,19 @@
 import React from 'react'
 import styles from './ProductLayout.module.scss'
+import { ModelStats } from './ModelStats'
+import { ModelPrice } from './ModelPrice'
+import { QMICallout } from './QMICallout'
 
-export const ProductLayout = ({ product }) => {
+export const ProductLayout = ({ product, utils }) => {
   const headShotImage = product?.headShot?.media?.url
   const desc =
     product.overview?.shortDescription ||
     product.overview?.description ||
     product.description
   const bullets = product?.overview?.bulletPoints || product?.modelBullets
+  const isModel = Boolean(product?.commPlanID)
+  const isDesignReady =
+    isModel && Boolean(product?.designReadyOptions?.length > 0)
   // const summaryBullets = product?.summary?.bullets || []
 
   return (
@@ -26,6 +32,20 @@ export const ProductLayout = ({ product }) => {
         )}
       </div>
       <div className={styles.content}>
+        {isModel && <QMICallout model={product} utils={utils} />}
+        {isModel && <ModelPrice model={product} utils={utils} />}
+        {isModel && <ModelStats model={product} utils={utils} />}
+        {isDesignReady && utils.DesignReadyTimeline && (
+          <div
+            className={styles.designReadyWrapper}
+            id='design-ready-timeline-panel'
+          >
+            {React.createElement(utils.DesignReadyTimeline, {
+              moveInDate: product.moveInDate,
+              dates: product.designReadyOptions
+            })}
+          </div>
+        )}
         {desc && <p className={styles.description}>{desc}</p>}
 
         {bullets?.length > 0 && (

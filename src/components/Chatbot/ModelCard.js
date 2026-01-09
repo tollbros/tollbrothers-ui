@@ -22,7 +22,7 @@ const getPriceLabelText = (isQMI) => {
   return label
 }
 
-export const ModelCard = ({ model, utils = {} }) => {
+export const ModelCard = ({ model, onClick = () => null, utils = {} }) => {
   const headShotImage = model.headShot?.media?.url
   const desc = model?.description
 
@@ -87,7 +87,9 @@ export const ModelCard = ({ model, utils = {} }) => {
 
         {model.url && (
           <div className={styles.actionButtonWrapper}>
-            <ActionButton onClick={() => null}>Tell Me More</ActionButton>
+            <ActionButton onClick={() => onClick(model)}>
+              Tell Me More
+            </ActionButton>
           </div>
         )}
       </div>

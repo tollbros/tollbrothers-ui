@@ -4,7 +4,11 @@ import { CommunityCard } from './CommunityCard'
 import { ModelCard } from './ModelCard'
 import { HorizontalScroller } from '../HorizontalScroller'
 
-export const ProductsList = ({ products, utils }) => {
+export const ProductsList = ({
+  products,
+  handleProductSelect = () => null,
+  utils
+}) => {
   if (!products || products.length === 0) {
     return null
   }
@@ -27,12 +31,14 @@ export const ProductsList = ({ products, utils }) => {
             <ModelCard
               key={product.commPlanID || index}
               model={product}
+              onClick={handleProductSelect}
               utils={utils}
             />
           ) : (
             <CommunityCard
               key={product.communityId || product.masterCommunityId || index}
               community={product}
+              onClick={handleProductSelect}
               utils={utils}
             />
           )

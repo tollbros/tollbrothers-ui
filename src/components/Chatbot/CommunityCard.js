@@ -3,7 +3,11 @@ import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { displayPricing } from './utils/pricing'
 
-export const CommunityCard = ({ community, utils = {} }) => {
+export const CommunityCard = ({
+  community,
+  onClick = () => null,
+  utils = {}
+}) => {
   const headShotImage = community.headShot?.media?.url
   const desc =
     community.overview?.shortDescription || community.overview?.description
@@ -71,7 +75,9 @@ export const CommunityCard = ({ community, utils = {} }) => {
 
         {community.url && (
           <div className={styles.actionButtonWrapper}>
-            <ActionButton onClick={() => null}>Tell Me More</ActionButton>
+            <ActionButton onClick={() => onClick(community)}>
+              Tell Me More
+            </ActionButton>
           </div>
         )}
       </div>

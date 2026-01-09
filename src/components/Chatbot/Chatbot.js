@@ -8,6 +8,7 @@ import { ThinkingIndicator } from './ThinkingIndicator'
 import { OptionsList } from './OptionsList'
 import { ProductsList } from './ProductsList'
 import { ActionButton } from './ActionButton'
+import { ProductLayout } from './ProductLayout'
 
 const TEST_DATA = [
   {
@@ -80,6 +81,7 @@ export const Chatbot = ({
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
+  const messageContainerRef = useRef(null)
   const closeButtonRef = useRef(null)
   const [unreadMessagesCount, setUnreadMessagesCount] = useState({
     count: 0,
@@ -174,6 +176,19 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
+  const handleProductSelect = (product) => {
+    console.log('Product selected:', product)
+
+    const newBotMessage = {
+      id: Date.now(),
+      // text: 'Here are some communities that you might like:',
+      type: 'product',
+      product: product
+    }
+
+    setMessages([...messages, newBotMessage])
+  }
+
   useEffect(() => {
     window.addEventListener('visibilitychange', reestablishConnection)
 
@@ -187,6 +202,7 @@ export const Chatbot = ({
 
     setTimeout(() => {
       const routes = [
+        '/luxury-homes-for-sale/Virginia/Parkside-Village/The-Sequoia-Collection/Quick-Move-In/MLS-VALO2103266',
         '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',
         '/luxury-homes-for-sale/Florida/Bartram-Ranch/Barnwell',
         '/luxury-homes-for-sale/Florida/Bartram-Ranch/Abigail',
@@ -247,8 +263,17 @@ export const Chatbot = ({
   }, [])
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    if (
+      chatContainerRef.current &&
+      messageContainerRef.current?.lastElementChild
+    ) {
+      const lastElement = messageContainerRef.current.lastElementChild
+      const elementTop = lastElement.offsetTop
+      const offset = 80
+      chatContainerRef.current.scrollTo({
+        top: elementTop - offset,
+        behavior: 'smooth'
+      })
     }
   }, [messages, isChatOpen, isThinking])
 
@@ -300,7 +325,7 @@ export const Chatbot = ({
               search using the prompts below or direct you to one of our human
               experts for additional help.
             </p>
-            <div className={styles.messages}>
+            <div className={styles.messages} ref={messageContainerRef}>
               {messages.map((msg) => {
                 if (msg.type === 'user') {
                   return <UserMessage key={msg.id} message={msg.text} />
@@ -329,6 +354,21 @@ export const Chatbot = ({
                         <ProductsList
                           key={msg.id}
                           products={msg.products}
+                          handleProductSelect={handleProductSelect}
+                          utils={utils}
+                        />
+                      }
+                    />
+                  )
+                } else if (msg.type === 'product') {
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={
+                        <ProductLayout
+                          key={msg.id}
+                          product={msg.product}
                           utils={utils}
                         />
                       }

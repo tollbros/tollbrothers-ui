@@ -10,8 +10,6 @@ export const ModelStats = ({ model, isCompact, utils = {} }) => {
     utils.OPTIONS?.PARKING_SPACES
   )
 
-  // parseInt(modelData.stories)
-
   return (
     <div className={`${styles.stats} ${isCompact ? styles.compact : ''}`}>
       <div className={styles.stat}>

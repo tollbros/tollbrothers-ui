@@ -1,7 +1,8 @@
 import React from 'react'
 import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
-import { displayPricing } from './utils/pricing'
+import { CommunityStats } from './CommunityStats'
+import { CommunityPrice } from './CommunityPrice'
 
 export const CommunityCard = ({
   community,
@@ -25,61 +26,17 @@ export const CommunityCard = ({
             <h3 className={styles.communityName}>{community.name}</h3>
           )}
         </div>
-
-        {(community.rangeBed || community.rangeBath || community.sqft) && (
-          <div className={styles.communityStats}>
-            {community.rangeBed && (
-              <div className={styles.stat}>
-                <div className={styles.statValue}>{community.rangeBed}</div>
-                <div className={styles.statLabel}>Beds</div>
-              </div>
-            )}
-            {community.rangeBath && (
-              <div className={styles.stat}>
-                <div className={styles.statValue}>{community.rangeBath}</div>
-                <div className={styles.statLabel}>Baths</div>
-              </div>
-            )}
-            {community.rangeSqft && (
-              <div className={styles.stat}>
-                <div className={styles.statValue}>{community.rangeSqft}</div>
-                <div className={styles.statLabel}>Square Feet</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className={styles.communityInfo}>
-          {community.pricedFrom && (
-            <p className={styles.communityPrice}>
-              {community.homeTypes &&
-                community.homeTypes.length > 0 &&
-                !community.options?.some((option) => option.id === '112') && (
-                  <>
-                    {community.homeTypes
-                      .map((type) =>
-                        type.toLowerCase() === 'single family'
-                          ? `Single-Family Homes`
-                          : `${type}s`
-                      )
-                      .join(', ')}{' '}
-                  </>
-                )}
-              {`${
-                utils.getPriceLabelText?.(community.isFuture, true) || ''
-              } ${displayPricing(community.pricedFrom)}`}
-            </p>
-          )}
+        <CommunityStats community={community} />
+        <div className={styles.info}>
+          <CommunityPrice community={community} utils={utils} />
           {desc && <p className={styles.communityDescription}>{desc}</p>}
         </div>
 
-        {community.url && (
-          <div className={styles.actionButtonWrapper}>
-            <ActionButton onClick={() => onClick(community)}>
-              Tell Me More
-            </ActionButton>
-          </div>
-        )}
+        <div className={styles.actionButtonWrapper}>
+          <ActionButton onClick={() => onClick(community)}>
+            Tell Me More
+          </ActionButton>
+        </div>
       </div>
     </div>
   )

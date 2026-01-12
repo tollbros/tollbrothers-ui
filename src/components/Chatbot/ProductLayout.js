@@ -3,6 +3,7 @@ import styles from './ProductLayout.module.scss'
 import { ModelStats } from './ModelStats'
 import { ModelPrice } from './ModelPrice'
 import { QMICallout } from './QMICallout'
+import { CollectionCard } from './CollectionCard'
 
 export const ProductLayout = ({ product, utils }) => {
   const headShotImage = product?.headShot?.media?.url
@@ -58,6 +59,17 @@ export const ProductLayout = ({ product, utils }) => {
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+        {product.communities?.length > 0 && (
+          <div className={styles.collectionsContainer}>
+            {product.communities.map((community, index) => (
+              <CollectionCard
+                key={community.communityId || index}
+                collection={community}
+                utils={utils}
+              />
+            ))}
           </div>
         )}
       </div>

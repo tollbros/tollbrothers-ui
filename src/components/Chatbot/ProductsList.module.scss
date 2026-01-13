@@ -16,6 +16,8 @@
   }
 
   .scrollItem {
+    flex-shrink: 0;
+    width: calc(100% - 26px);
     height: auto  !important;
 
     &:last-child {

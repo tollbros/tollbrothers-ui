@@ -5,7 +5,11 @@ import { ModelPrice } from './ModelPrice'
 import { QMICallout } from './QMICallout'
 import { CollectionCard } from './CollectionCard'
 
-export const ProductLayout = ({ product, utils }) => {
+export const ProductLayout = ({
+  product,
+  handleProductSelect = () => null,
+  utils
+}) => {
   const headShotImage = product?.headShot?.media?.url
   const desc =
     product.overview?.shortDescription ||
@@ -68,6 +72,7 @@ export const ProductLayout = ({ product, utils }) => {
                 key={community.communityId || index}
                 collection={community}
                 utils={utils}
+                handleProductSelect={handleProductSelect}
               />
             ))}
           </div>

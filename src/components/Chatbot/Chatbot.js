@@ -353,7 +353,6 @@ export const Chatbot = ({
                       message={msg.text}
                       component={
                         <ProductsList
-                          key={msg.id}
                           products={msg.products}
                           handleProductSelect={handleProductSelect}
                           utils={utils}
@@ -371,6 +370,7 @@ export const Chatbot = ({
                           key={msg.id}
                           product={msg.product}
                           utils={utils}
+                          handleProductSelect={handleProductSelect}
                         />
                       }
                     />

@@ -1,8 +1,8 @@
 import React from 'react'
-import styles from './CommunityPrice.module.scss'
+import styles from './CommunityDetails.module.scss'
 import { displayPricing } from './utils/pricing'
 
-export const CommunityPrice = ({ community, utils = {} }) => {
+export const CommunityDetails = ({ community, hideLocation, utils = {} }) => {
   return (
     <p className={styles.root}>
       {community.homeTypes &&
@@ -21,6 +21,11 @@ export const CommunityPrice = ({ community, utils = {} }) => {
       {`${
         utils.getPriceLabelText?.(community.isFuture, true) || ''
       } ${displayPricing(community.pricedFrom)}`}
+      {!hideLocation && (
+        <>
+          {' in '} {community.city}, {community.state}
+        </>
+      )}
     </p>
   )
 }

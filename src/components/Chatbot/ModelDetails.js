@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './ModelPrice.module.scss'
+import styles from './ModelDetails.module.scss'
 import { displayPricing } from './utils/pricing'
 import { getQmiDateLabelText } from './utils/qmi'
 
@@ -9,7 +9,12 @@ const getPriceLabelText = (isQMI) => {
   return label
 }
 
-export const ModelPrice = ({ model, includeQmiLabel, utils = {} }) => {
+export const ModelDetails = ({
+  model,
+  hideLocation,
+  includeQmiLabel,
+  utils = {}
+}) => {
   return (
     <p className={styles.root}>
       {model.isQMI && includeQmiLabel && (
@@ -29,6 +34,11 @@ export const ModelPrice = ({ model, includeQmiLabel, utils = {} }) => {
         )}
       {model.pricedFrom &&
         `${getPriceLabelText(model.isQMI)} ${displayPricing(model.pricedFrom)}`}
+      {!hideLocation && (
+        <>
+          {' in '} {model.city}, {model.state}
+        </>
+      )}
     </p>
   )
 }

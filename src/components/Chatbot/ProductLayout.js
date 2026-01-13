@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './ProductLayout.module.scss'
 import { ModelStats } from './ModelStats'
-import { ModelPrice } from './ModelPrice'
+import { ModelDetails } from './ModelDetails'
 import { QMICallout } from './QMICallout'
 import { CollectionCard } from './CollectionCard'
 import { CommunityModels } from './CommunityModels'
@@ -33,7 +33,20 @@ export const ProductLayout = ({
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        {product?.name && <h2 className={styles.title}>{product.name}</h2>}
+        {product?.name && (
+          <h2 className={styles.title}>
+            {product.name}
+
+            <span className={styles.location}>
+              {isModel && product.communityName}
+              {!isModel && (
+                <>
+                  {product.city}, {product.state}
+                </>
+              )}
+            </span>
+          </h2>
+        )}
 
         {headShotImage && (
           <div className={styles.imageWrapper}>
@@ -47,7 +60,7 @@ export const ProductLayout = ({
       </div>
       <div className={styles.content}>
         {isModel && <QMICallout model={product} utils={utils} />}
-        {isModel && <ModelPrice model={product} utils={utils} />}
+        {isModel && <ModelDetails model={product} utils={utils} />}
         {isModel && <ModelStats model={product} utils={utils} />}
         {isDesignReady && utils.DesignReadyTimeline && (
           <div

@@ -21,6 +21,7 @@ export const CommunityModels = ({
               products={products}
               handleProductSelect={handleProductSelect}
               utils={utils}
+              hideModelLocation
             />
           </div>
         )

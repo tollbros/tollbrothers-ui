@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { CommunityStats } from './CommunityStats'
-import { CommunityPrice } from './CommunityPrice'
+import { CommunityDetails } from './CommunityDetails'
 
 export const CommunityCard = ({
   community,
@@ -28,7 +28,7 @@ export const CommunityCard = ({
         </div>
         <CommunityStats community={community} />
         <div className={styles.info}>
-          <CommunityPrice community={community} utils={utils} />
+          <CommunityDetails community={community} utils={utils} />
           {desc && <p className={styles.communityDescription}>{desc}</p>}
         </div>
 

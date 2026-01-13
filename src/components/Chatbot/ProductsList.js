@@ -7,6 +7,7 @@ import { HorizontalScroller } from '../HorizontalScroller'
 export const ProductsList = ({
   products,
   handleProductSelect = () => null,
+  hideModelLocation,
   utils
 }) => {
   if (!products || products.length === 0) {
@@ -33,6 +34,7 @@ export const ProductsList = ({
               model={product}
               onClick={handleProductSelect}
               utils={utils}
+              hideLocation={hideModelLocation}
             />
           ) : (
             <CommunityCard

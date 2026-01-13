@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './CollectionCard.module.scss'
 import { CommunityStats } from './CommunityStats'
-import { CommunityPrice } from './CommunityPrice'
+import { CommunityDetails } from './CommunityDetails'
 import { CommunityModels } from './CommunityModels'
 
 export const CollectionCard = ({
@@ -23,7 +23,7 @@ export const CollectionCard = ({
   return (
     <div className={styles.root}>
       {collection.cleanName && <h3 className={styles.name}>{name}</h3>}
-      <CommunityPrice community={collection} utils={utils} />
+      <CommunityDetails community={collection} utils={utils} hideLocation />
       <CommunityStats community={collection} />
 
       {desc && <p className={styles.desc}>{desc}</p>}

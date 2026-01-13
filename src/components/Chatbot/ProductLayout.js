@@ -4,6 +4,7 @@ import { ModelStats } from './ModelStats'
 import { ModelPrice } from './ModelPrice'
 import { QMICallout } from './QMICallout'
 import { CollectionCard } from './CollectionCard'
+import { CommunityModels } from './CommunityModels'
 
 export const ProductLayout = ({
   product,
@@ -16,10 +17,18 @@ export const ProductLayout = ({
     product.overview?.description ||
     product.description
   const bullets = product?.overview?.bulletPoints || product?.modelBullets
+
+  const isMasterCommunity =
+    Boolean(product?.communities?.length > 0) && product.isMaster
+  const isCommunity = !isMasterCommunity && !product?.commPlanID
   const isModel = Boolean(product?.commPlanID)
   const isDesignReady =
     isModel && Boolean(product?.designReadyOptions?.length > 0)
-  // const summaryBullets = product?.summary?.bullets || []
+
+  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(
+    product?.homes,
+    product.options
+  )
 
   return (
     <div className={styles.root}>
@@ -65,9 +74,9 @@ export const ProductLayout = ({
             </ul>
           </div>
         )}
-        {product.communities?.length > 0 && (
+        {isMasterCommunity && (
           <div className={styles.collectionsContainer}>
-            {product.communities.map((community, index) => (
+            {product.communities?.map((community, index) => (
               <CollectionCard
                 key={community.communityId || index}
                 collection={community}
@@ -76,6 +85,14 @@ export const ProductLayout = ({
               />
             ))}
           </div>
+        )}
+        {isCommunity && (
+          <CommunityModels
+            communityQMIs={communityQMIs}
+            communityModels={communityModels}
+            handleProductSelect={handleProductSelect}
+            utils={utils}
+          />
         )}
       </div>
     </div>

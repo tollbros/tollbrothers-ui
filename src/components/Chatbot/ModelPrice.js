@@ -11,7 +11,7 @@ const getPriceLabelText = (isQMI) => {
 
 export const ModelPrice = ({ model, includeQmiLabel, utils = {} }) => {
   return (
-    <p className={styles.price}>
+    <p className={styles.root}>
       {model.isQMI && includeQmiLabel && (
         <>
           {getQmiDateLabelText({

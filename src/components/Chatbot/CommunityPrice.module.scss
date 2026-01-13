@@ -1,5 +1,6 @@
 @import "styles/modules/all";
 
+
 .root {
   margin: 0 0 4px 0;
   font-family: $special_font_family;
@@ -8,7 +9,8 @@
   line-height: 18px;
   color: black;
 
-  &::first-letter {
+   &::first-letter {
     text-transform: uppercase;
   }
 }
+

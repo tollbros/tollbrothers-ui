@@ -202,6 +202,7 @@ export const Chatbot = ({
 
     setTimeout(() => {
       const routes = [
+        '/luxury-homes-for-sale/Florida/Mill-Creek-Forest',
         '/luxury-homes-for-sale/Virginia/Parkside-Village/The-Sequoia-Collection/Quick-Move-In/MLS-VALO2103266',
         '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',
         '/luxury-homes-for-sale/Florida/Bartram-Ranch/Barnwell',

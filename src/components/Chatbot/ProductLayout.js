@@ -5,6 +5,7 @@ import { ModelDetails } from './ModelDetails'
 import { QMICallout } from './QMICallout'
 import { CollectionCard } from './CollectionCard'
 import { CommunityModels } from './CommunityModels'
+import { AmenitiesList } from './AmenitiesList'
 
 export const ProductLayout = ({
   product,
@@ -29,6 +30,10 @@ export const ProductLayout = ({
     product?.homes,
     product.options
   )
+
+  const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
+
+  console.log(amenities)
 
   return (
     <div className={styles.root}>
@@ -107,6 +112,8 @@ export const ProductLayout = ({
             utils={utils}
           />
         )}
+
+        {amenities && <AmenitiesList amenities={amenities} />}
       </div>
     </div>
   )

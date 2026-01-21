@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
 import styles from './FloorPlanViewer.module.scss'
+import { ThinkingIndicator } from './ThinkingIndicator'
 
 export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
   const [activeTab, setActiveTab] = useState(0)
@@ -27,23 +28,27 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
     <div className={styles.floorPlanViewer}>
       <h3 className={styles.title}>Floor Plans</h3>
       <div className={styles.svgContainer}>
-        <TransformWrapper
-          key={activeTab}
-          centerOnInit
-          panning={{ disabled: true }}
-          onZoom={(ref) => {
-            ref.instance.setup.panning.disabled = ref.state.scale <= 1
-          }}
-        >
-          <TransformComponent>
-            <div
-              className={styles.floorPlanImage}
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-              role='img'
-              aria-label={activeFloorPlan.title || 'Floor Plan'}
-            />
-          </TransformComponent>
-        </TransformWrapper>
+        {isLoading ? (
+          <ThinkingIndicator />
+        ) : (
+          <TransformWrapper
+            key={activeTab}
+            centerOnInit
+            panning={{ disabled: true }}
+            onZoom={(ref) => {
+              ref.instance.setup.panning.disabled = ref.state.scale <= 1
+            }}
+          >
+            <TransformComponent wrapperClass={styles.transformWrapper}>
+              <div
+                className={styles.floorPlanImage}
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+                role='img'
+                aria-label={activeFloorPlan.title || 'Floor Plan'}
+              />
+            </TransformComponent>
+          </TransformWrapper>
+        )}
       </div>
       {floorPlans.length > 1 && (
         <div className={styles.tabsContainer}>

@@ -6,6 +6,7 @@ import { QMICallout } from './QMICallout'
 import { CollectionCard } from './CollectionCard'
 import { CommunityModels } from './CommunityModels'
 import { AmenitiesList } from './AmenitiesList'
+import { FloorPlanViewer } from './FloorPlanViewer'
 
 export const ProductLayout = ({
   product,
@@ -31,9 +32,10 @@ export const ProductLayout = ({
     product.options
   )
 
+  const floorPlans = isModel ? product.floorplans || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
-  console.log(amenities)
+  console.log(floorPlans)
 
   return (
     <div className={styles.root}>
@@ -111,6 +113,10 @@ export const ProductLayout = ({
             handleProductSelect={handleProductSelect}
             utils={utils}
           />
+        )}
+
+        {isModel && floorPlans?.length > 0 && (
+          <FloorPlanViewer floorPlans={floorPlans} utils={utils} />
         )}
 
         {amenities && <AmenitiesList amenities={amenities} />}

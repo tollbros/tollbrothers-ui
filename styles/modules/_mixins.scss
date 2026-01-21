@@ -69,3 +69,9 @@
   scrollbar-width: thin;
   scrollbar-color: lightgrey white;
 }
+
+@mixin svgStroke {
+  path, rect, polyline, polygon, circle, line {
+    stroke-width: 1px !important;
+  }
+}

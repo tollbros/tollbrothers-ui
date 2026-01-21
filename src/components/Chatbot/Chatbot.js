@@ -202,6 +202,9 @@ export const Chatbot = ({
 
     setTimeout(() => {
       const routes = [
+        '/luxury-homes-for-sale/California/3131-Camino/Lila',
+        '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park/Bolton',
+        '/luxury-homes-for-sale/Massachusetts/Lakemont-by-Toll-Brothers/Quick-Move-In/MLS-73340095',
         '/luxury-homes-for-sale/Florida/Mill-Creek-Forest',
         '/luxury-homes-for-sale/Virginia/Parkside-Village/The-Sequoia-Collection/Quick-Move-In/MLS-VALO2103266',
         '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',

@@ -39,7 +39,14 @@ export const ProductLayout = ({
   const elevations = isModel ? product.elevations || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
-  console.log(dafs)
+  // in case we decide to show community gallery some day
+  // const communityGallery = !isModel
+  //   ? (product?.gallery?.mediaGroups?.[0]?.media || []).filter(
+  //       (item) => item.type === 'image'
+  //     )
+  //   : []
+
+  // console.log(communityGallery)
 
   return (
     <div className={styles.root}>
@@ -118,6 +125,14 @@ export const ProductLayout = ({
             utils={utils}
           />
         )}
+
+        {/* {!isModel && communityGallery?.length > 0 && (
+          <ImageCarousel
+            images={communityGallery}
+            utils={utils}
+            title='Gallery'
+          />
+        )} */}
 
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel

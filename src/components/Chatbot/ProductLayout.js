@@ -7,6 +7,7 @@ import { CollectionCard } from './CollectionCard'
 import { CommunityModels } from './CommunityModels'
 import { AmenitiesList } from './AmenitiesList'
 import { FloorPlanViewer } from './FloorPlanViewer'
+import { ImageCarousel } from './ImageCarousel'
 
 export const ProductLayout = ({
   product,
@@ -24,6 +25,7 @@ export const ProductLayout = ({
     Boolean(product?.communities?.length > 0) && product.isMaster
   const isCommunity = !isMasterCommunity && !product?.commPlanID
   const isModel = Boolean(product?.commPlanID)
+  const isQMI = isModel && product?.isQMI
   const isDesignReady =
     isModel && Boolean(product?.designReadyOptions?.length > 0)
 
@@ -32,10 +34,19 @@ export const ProductLayout = ({
     product.options
   )
 
+  const dafs = isQMI ? (product.designerAppointed || []).slice(1) : []
   const floorPlans = isModel ? product.floorplans || [] : []
+  const elevations = isModel ? product.elevations || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
-  console.log(floorPlans)
+  // in case we decide to show community gallery some day
+  // const communityGallery = !isModel
+  //   ? (product?.gallery?.mediaGroups?.[0]?.media || []).filter(
+  //       (item) => item.type === 'image'
+  //     )
+  //   : []
+
+  // console.log(communityGallery)
 
   return (
     <div className={styles.root}>
@@ -115,11 +126,31 @@ export const ProductLayout = ({
           />
         )}
 
+        {/* {!isModel && communityGallery?.length > 0 && (
+          <ImageCarousel
+            images={communityGallery}
+            utils={utils}
+            title='Gallery'
+          />
+        )} */}
+
+        {isQMI && dafs?.length > 0 && (
+          <ImageCarousel
+            images={dafs}
+            utils={utils}
+            title='Designer Appointed Features'
+          />
+        )}
+
         {isModel && floorPlans?.length > 0 && (
           <FloorPlanViewer floorPlans={floorPlans} utils={utils} />
         )}
 
-        {amenities && <AmenitiesList amenities={amenities} />}
+        {isModel && !isQMI && elevations?.length > 0 && (
+          <ImageCarousel images={elevations} utils={utils} title='Elevations' />
+        )}
+
+        {!isModel && amenities && <AmenitiesList amenities={amenities} />}
       </div>
     </div>
   )

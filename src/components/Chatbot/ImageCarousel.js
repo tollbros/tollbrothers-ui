@@ -47,6 +47,17 @@ export const ImageCarousel = ({ images = [], title }) => {
                 key={image.id || index}
                 className={styles.imageItem}
                 onClick={() => handleImageClick(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleImageClick(index)
+                  }
+                }}
+                role='button'
+                tabIndex={0}
+                aria-label={`View ${
+                  caption || `image ${index + 1}`
+                } in full screen`}
               >
                 <img
                   src={image.url || image.src}

@@ -1,0 +1,83 @@
+@import "styles/modules/all";
+
+.amenitiesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.amenitiesTitle {
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  font-size: 1.125em;
+  margin: 0;
+}
+
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $alt_font_family;
+  font-size: 0.8125em;
+  padding: 20px 0px 20px 20px;
+  border-right: 1px solid $light_gray;
+  border-bottom: 1px solid $light_gray;
+
+  &:nth-child(2n) {
+    border-right: none;
+  }
+
+  img {
+    width: 100%;
+    max-width: 28px;
+    height: auto;
+  }
+
+  span {
+    font-weight: $font_weight_bold;
+    font-size: 0.8125em;
+    max-width: 50%;
+    line-height: 1.3;
+  }
+}
+
+.amenitiesGrid.oddCount {
+  .amenityItem {
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.amenitiesGrid.evenCount {
+  .amenityItem {
+    &:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+  }
+}
+
+.showMoreButton {
+  font-family: $special_font_family;
+  font-size: 0.75em;
+  background: none;
+  border: none;
+  color: $medium_blue3;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

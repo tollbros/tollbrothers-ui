@@ -8,6 +8,7 @@ export { DragSlider } from './components/DragSlider'
 export { MortgageCalculator } from './components/MortgageCalculator'
 export { HorizontalScroller } from './components/HorizontalScroller'
 export { TollChat } from './components/TollChat/TollChat'
+export { Chatbot } from './components/Chatbot/Chatbot'
 export { PrintButton } from './components/PrintButton'
 export { FavoritesSignIn } from './components/FavoritesSignIn'
 export { Slider }

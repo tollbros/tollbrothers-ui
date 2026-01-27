@@ -1,0 +1,47 @@
+@import "styles/modules/all";
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: white;
+  border: 1px solid $medium_gray;
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+}
+
+.name {
+  margin: 0 0 4px 0;
+  font-family: $domaine_font_family;
+  font-weight: $font_weight_light;
+  font-size: 1em;
+  line-height: 24px;
+  color: black;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  flex: 1;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+}
+
+.desc {
+  margin: 0;
+  font-family: $alt_font_family;
+  font-weight: 300;
+  font-size: .8125em;
+  line-height: 20px;
+  color: black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+

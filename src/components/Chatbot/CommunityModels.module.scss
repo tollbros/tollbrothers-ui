@@ -1,0 +1,13 @@
+@import "styles/modules/all";
+
+.homesContainer {
+  margin-top: 12px;
+}
+
+.actionButtonsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 8px;
+  gap: 8px;
+}

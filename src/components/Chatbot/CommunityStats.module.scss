@@ -1,0 +1,28 @@
+@import "styles/modules/all";
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  font-size: .8125em;
+  color: black;
+  white-space: nowrap;
+}
+
+.statValue {
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  line-height: 20px;
+}
+
+.statLabel {
+  font-family: $alt_font_family;
+  line-height: 20px;
+}

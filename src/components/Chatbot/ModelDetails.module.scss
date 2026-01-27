@@ -1,0 +1,14 @@
+@import "styles/modules/all";
+
+.root {
+  margin: 0 0 4px 0;
+  font-family: $special_font_family;
+  font-weight: $font_weight_bold;
+  font-size: .75em;
+  line-height: 18px;
+  color: black;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}

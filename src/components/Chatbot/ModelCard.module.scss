@@ -1,0 +1,95 @@
+@import "styles/modules/all";
+
+.root {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid $medium_gray;
+  width: 100%;
+  min-width: 200px;
+  height: 100%;
+  text-align: left;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  padding: 12px;
+  gap: 12px;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.imageContainer {
+  width: 88px;
+  height: 80px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+}
+
+
+.name {
+  margin: 0;
+  font-family: $alt_font_family;
+  font-weight: $font_weight_bold;
+  font-size: .9em;
+  line-height: 20px;
+  color: black;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  flex: 1;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  align-items: flex-end;
+  flex-grow: 1;
+}
+
+// .communityHeader {
+//   display: flex;
+//   width: 100%;
+// }
+
+.info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+}
+
+.description {
+  margin: 0;
+  font-family: $alt_font_family;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 20px;
+  color: black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.actionButtonWrapper {
+  margin-top: auto;
+}

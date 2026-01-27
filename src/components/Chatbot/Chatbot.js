@@ -91,6 +91,7 @@ export const Chatbot = ({
   })
   const [isThinking, setIsThinking] = useState(false)
   const [pendingUserMessages, setPendingUserMessages] = useState(0)
+  const [sessionId, setSessionId] = useState(null)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -125,29 +126,46 @@ export const Chatbot = ({
       type: 'user'
     }
 
+    setError(null)
     setMessages([...messages, newUserMessage])
     setInputMessage('')
     setIsThinking(true)
 
-    sendMessage(userMessageText, {
+    const promp = {
+      prompt: userMessageText,
+      session_id: sessionId || ''
+    }
+
+    sendMessage(promp, {
       baseUrl: 'https://c5wmooifc5.execute-api.us-east-1.amazonaws.com/prod',
       apiKey: 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC',
       onChunk: (response) => {
         console.log('chunk:', response)
+        setSessionId(response.session_id)
 
         if (response.communities && response.communities.length > 0) {
           setIsThinking(true)
           getProductData(response.communities, tollRouteApi)
             .then((products) => {
               setIsThinking(false)
+              console.log('getProductData products:', products)
               if (products.length > 0) {
-                const newBotMessage = {
+                const botResponse = {
                   id: Date.now() + 2,
                   text: response.message,
                   type: 'products',
                   products: products
                 }
-                setMessages((prev) => [...prev, newBotMessage])
+                setMessages((prev) => [...prev, botResponse])
+              } else {
+                // TODO: might want to modify this message if no products found
+                const botResponse = {
+                  id: Date.now() + 1,
+                  text: response.message,
+                  type: 'bot'
+                }
+
+                setMessages((prev) => [...prev, botResponse])
               }
             })
             .catch((err) => {
@@ -171,6 +189,9 @@ export const Chatbot = ({
       onError: (err) => {
         setIsThinking(false)
         console.error('stream error:', err)
+        setError(
+          'An error occurred while sending the message. Pleaesse try again.'
+        )
       }
     })
   }
@@ -390,6 +411,7 @@ export const Chatbot = ({
               })}
 
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
+              {error && <div className={styles.errorMessage}>{error}</div>}
             </div>
           </div>
           <div className={styles.footer}>

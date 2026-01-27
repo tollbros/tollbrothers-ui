@@ -1,5 +1,5 @@
 export const sendMessage = async (
-  query,
+  prompt,
   { baseUrl, apiKey, onChunk, onDone, onError }
 ) => {
   const headers = {
@@ -14,7 +14,7 @@ export const sendMessage = async (
     const response = await fetch(`${baseUrl}/chat`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ prompt: query })
+      body: JSON.stringify(prompt)
     })
 
     if (!response.ok) {
@@ -40,7 +40,8 @@ export const sendMessage = async (
         if (!trimmed) continue
         try {
           const parsed = JSON.parse(trimmed)
-          if (onChunk && parsed.response) onChunk(parsed.response)
+          if (onChunk && parsed.response)
+            onChunk({ ...parsed.response, session_id: parsed.session_id })
         } catch {
           // skip non-JSON lines
         }

@@ -147,7 +147,11 @@ export const ProductLayout = ({
         )}
 
         {isModel && !isQMI && elevations?.length > 0 && (
-          <ImageCarousel images={elevations} utils={utils} title='Elevations' />
+          <ImageCarousel
+            images={elevations}
+            utils={utils}
+            title='Exterior Designs'
+          />
         )}
 
         {!isModel && amenities && <AmenitiesList amenities={amenities} />}

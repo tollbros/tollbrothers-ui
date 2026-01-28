@@ -142,19 +142,24 @@ export const Chatbot = ({
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
+        const products = [
+          ...(response.communities || []),
+          ...(response.qmis || []),
+          ...(response.homeDesigns || [])
+        ]
 
-        if (response.communities && response.communities.length > 0) {
+        if (products && Array.isArray(products) && products.length > 0) {
           setIsThinking(true)
-          getProductData(response.communities, tollRouteApi)
-            .then((products) => {
+          getProductData(products, tollRouteApi)
+            .then((productData) => {
               setIsThinking(false)
-              console.log('getProductData products:', products)
-              if (products.length > 0) {
+              console.log('getProductData products:', productData)
+              if (productData?.length > 0) {
                 const botResponse = {
                   id: Date.now() + 2,
                   text: response.message,
                   type: 'products',
-                  products: products
+                  products: productData
                 }
                 setMessages((prev) => [...prev, botResponse])
               } else {

@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import ChevronRight from '../../icons/ChevronRight'
-import { postMessage } from '../../../utils/chat/apis'
+import { postMessage } from '../../../../utils/chat/apis'
+import { UserInputField } from '../UserInputField'
 
 import styles from './ChatInput.module.scss'
 
@@ -14,14 +14,12 @@ export default function ChatInput({
   setError
 }) {
   const [message, setMessage] = useState('')
-  const [showArrow, setShowArrow] = useState(false)
 
   const sendMessage = async () => {
     if (!message.trim()) {
       setError('Message cannot be empty')
       return
     }
-    setShowArrow(false)
     setError(null)
 
     const payload = {
@@ -36,7 +34,6 @@ export default function ChatInput({
       await postMessage(payload)
       setMessage('')
     } catch (err) {
-      if (message) setShowArrow(true)
       setError(
         err?.message?.includes('PRECHAT_FORM_REQUIRED')
           ? 'Your conversation has ended. Please close this window if you wish to start a new chat.'
@@ -47,13 +44,6 @@ export default function ChatInput({
 
   const handleInputChange = (e) => {
     setMessage(e.target.value)
-
-    // Show the arrow if there's input
-    if (e.target.value.trim() !== '') {
-      setShowArrow(true)
-    } else {
-      setShowArrow(false)
-    }
   }
 
   const onKeyDown = (e) => {
@@ -65,19 +55,13 @@ export default function ChatInput({
 
   return (
     <div className={styles.root}>
-      <textarea
-        rows={2}
-        cols={50}
-        onChange={handleInputChange}
-        placeholder='Type Here'
-        onKeyDown={onKeyDown}
+      <UserInputField
         value={message}
+        onChange={handleInputChange}
+        onKeyDown={onKeyDown}
+        onSend={sendMessage}
+        placeholder='Type Here'
       />
-      {showArrow && (
-        <button onClick={sendMessage}>
-          <ChevronRight fill='#fff' />
-        </button>
-      )}
     </div>
   )
 }

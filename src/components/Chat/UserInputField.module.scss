@@ -1,0 +1,66 @@
+@import "styles/modules/all";
+
+.inputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: $light_gray;
+    border: 1px solid $medium_gray;
+    border-radius: 100px;
+    gap: 3px;
+}
+
+.input {
+    height: 46px;
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: $alt_font_family;
+    font-size: .75em;
+    line-height: 1.125em;
+    color: #000;
+    outline: none;
+    padding: 16px 12px 16px 12px;
+    resize: none;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &::placeholder {
+        color: #000;
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        border-radius: 100px;
+    }
+}
+
+.sendButton {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #0070cd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    transition: background-color 0.2s ease;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #005ba8;
+    }
+
+    &:active {
+        background-color: #004785;
+    }
+}

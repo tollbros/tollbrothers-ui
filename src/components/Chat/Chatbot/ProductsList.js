@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './ProductsList.module.scss'
 import { CommunityCard } from './CommunityCard'
 import { ModelCard } from './ModelCard'
-import { HorizontalScroller } from '../HorizontalScroller'
+import { HorizontalScroller } from '../../HorizontalScroller'
 
 export const ProductsList = ({
   products,

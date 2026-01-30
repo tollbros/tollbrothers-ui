@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { HorizontalScroller } from '../HorizontalScroller'
-import { FullScreenGallery } from '../FullScreenGallery'
+import { HorizontalScroller } from '../../HorizontalScroller'
+import { FullScreenGallery } from '../../FullScreenGallery'
 
 import styles from './ImageCarousel.module.scss'
 

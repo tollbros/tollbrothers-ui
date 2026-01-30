@@ -11,6 +11,7 @@ import { ActionButton } from './ActionButton'
 import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
+import { UserInputField } from '../UserInputField'
 
 const TEST_DATA = [
   {
@@ -420,28 +421,13 @@ export const Chatbot = ({
             </div>
           </div>
           <div className={styles.footer}>
-            <div className={styles.inputContainer}>
-              <input
-                autoComplete='off'
-                id='chatbot-input'
-                type='text'
-                className={styles.input}
-                placeholder='Ask TollBot your question here.'
-                value={inputMessage}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                aria-label='Ask TollBot your question here.'
-              />
-
-              <button
-                className={`${styles.sendButton} ${styles.buttonReset}`}
-                onClick={handleSendMessage}
-                aria-label='Send message'
-                type='button'
-              >
-                <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg' />
-              </button>
-            </div>
+            <UserInputField
+              value={inputMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onSend={handleSendMessage}
+              placeholder='Ask TollBot your question here.'
+            />
           </div>
         </div>
       )}

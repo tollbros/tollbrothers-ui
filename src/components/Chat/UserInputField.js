@@ -21,7 +21,7 @@ export const UserInputField = ({
         onChange={onChange}
         onKeyDown={onKeyDown}
         aria-label={placeholder}
-        rows={2}
+        rows={1}
         cols={50}
       />
 

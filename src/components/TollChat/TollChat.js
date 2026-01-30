@@ -25,6 +25,8 @@ import {
   popNextUUID
 } from '../../../utils/chat/libs'
 import ChatInput from './ChatInput'
+import { ChatForm } from '../ChatForm/ChatForm'
+import { validateChatForm } from '../ChatForm/validateChatForm'
 
 import Minus from '../../icons/Minus'
 import CloseX from '../../icons/CloseX'
@@ -106,12 +108,6 @@ export const TollChat = ({
     count: 0,
     lastMessageId: null
   })
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    e.target.setCustomValidity('')
-    setFormData({ ...formData, [name]: value })
-  }
 
   const initializeChat = async (
     firstName,
@@ -353,33 +349,8 @@ export const TollChat = ({
     setShowActiveTyping(false)
 
     const form = e.target
-    const [firstName, ...lastNameParts] = form.name?.value?.trim().split(' ')
-    const lastName = lastNameParts?.join(' ')
-
-    if (
-      !firstName ||
-      !lastName ||
-      firstName?.length < 2 ||
-      lastName?.length < 2
-    ) {
-      form.name.setCustomValidity(
-        'First and last name must both be at least 2 characters long.'
-      )
-      form.reportValidity()
-      return false
-    } else if (firstName && firstName.trim().length > 40) {
-      form.name.setCustomValidity(
-        'First name cannot be longer than 40 characters.'
-      )
-      form.reportValidity()
-      return false
-    } else if (lastName && lastName.trim().length > 80) {
-      form.name.setCustomValidity(
-        'Last name cannot be longer than 80 characters.'
-      )
-      form.reportValidity()
-      return false
-    }
+    const { valid, firstName, lastName } = validateChatForm(form)
+    if (!valid) return false
 
     setShowWaitMessage(true)
     setShowForm(false)
@@ -942,75 +913,12 @@ export const TollChat = ({
         </div>
       )}
       {showForm && !isMinimized && (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type='text'
-            id='name'
-            name='name'
-            value={formData.name}
-            onChange={handleChange}
-            required
-            pattern='[A-Za-z\s]+'
-            title='Name can only contain letters and spaces'
-            placeholder='Full Name*'
-            maxLength={123}
-            aria-label='full name'
-          />
-          <input
-            type='email'
-            id='email'
-            name='email'
-            value={formData.email}
-            onChange={handleChange}
-            pattern='\S+@\S+\.\S+'
-            required
-            placeholder='Email*'
-            maxLength={80}
-            aria-label='email address'
-          />
-
-          <div className={styles.agent}>
-            <span className={styles.radioLabel}>
-              Are you a Real Estate Agent?
-            </span>
-            <div className={styles.radioGroup}>
-              <label>
-                <input
-                  type='radio'
-                  id='chat-is-agent-yes'
-                  name='isAgent'
-                  value='1'
-                />
-                Yes
-              </label>
-              <label>
-                <input
-                  type='radio'
-                  id='chat-is-agent-no'
-                  name='isAgent'
-                  value='0'
-                  defaultChecked
-                />
-                No
-              </label>
-            </div>
-          </div>
-
-          <br />
-          <p className={styles.privacyPolicy}>
-            The information you provide will be used in accordance with our{' '}
-            <a
-              href='https://www.tollbrothers.com/privacy'
-              target='_blank'
-              rel='noreferrer'
-            >
-              Privacy Policy
-            </a>
-            .
-          </p>
-
-          <button type='submit'>Start Chat</button>
-        </form>
+        <ChatForm
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmit}
+          cta='Start Chat'
+        />
       )}
 
       {systemMessage && !isMinimized && (

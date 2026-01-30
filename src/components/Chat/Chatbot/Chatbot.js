@@ -12,6 +12,9 @@ import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
+import { fetchAvailability } from '../../../../utils/chat/apis'
+import { ChatForm } from '../ChatForm'
+import { validateChatForm } from '../utils/validateChatForm'
 
 const TEST_DATA = [
   {
@@ -73,6 +76,8 @@ export const Chatbot = ({
   utils = {},
   endPoint,
   chatRegion,
+  availabilityAPI,
+  setDisableLiveChat = () => null,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted'
@@ -86,13 +91,13 @@ export const Chatbot = ({
   const chatContainerRef = useRef(null)
   const messageContainerRef = useRef(null)
   const closeButtonRef = useRef(null)
-  const [unreadMessagesCount, setUnreadMessagesCount] = useState({
-    count: 0,
-    lastMessageId: null
-  })
   const [isThinking, setIsThinking] = useState(false)
-  const [pendingUserMessages, setPendingUserMessages] = useState(0)
   const [sessionId, setSessionId] = useState(null)
+  const [isAgentAvailable, setIsAgentAvailable] = useState(true)
+  const [showChatForm, setShowChatForm] = useState(false)
+  const [formData, setFormData] = useState({ name: '', email: '' })
+
+  console.log('chatRegion:', chatRegion)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -226,6 +231,39 @@ export const Chatbot = ({
     setMessages([...messages, newBotMessage])
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const form = e.target
+    const { valid, firstName, lastName } = validateChatForm(form)
+    if (!valid) return false
+
+    const email = form.email?.value?.trim()
+    const isAgent = form.isAgent?.value ?? '0'
+    console.log(
+      'Form submitted with data:',
+      firstName,
+      lastName,
+      email,
+      isAgent
+    )
+  }
+
+  useEffect(() => {
+    const checkLiveAgentAvailability = async () => {
+      const availability = await fetchAvailability(chatRegion, availabilityAPI)
+      if (availability?.data?.payload?.length > 0) {
+        setIsAgentAvailable(true)
+      }
+    }
+
+    if (chatRegion) {
+      checkLiveAgentAvailability()
+    } else {
+      // setIsAgentAvailable(false)
+    }
+  }, [chatRegion, availabilityAPI])
+
   useEffect(() => {
     window.addEventListener('visibilitychange', reestablishConnection)
 
@@ -314,7 +352,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isChatOpen, isThinking])
+  }, [messages, isChatOpen, isThinking, showChatForm])
 
   if (!showChatbot) {
     return null
@@ -418,6 +456,19 @@ export const Chatbot = ({
 
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
               {error && <div className={styles.errorMessage}>{error}</div>}
+              {showChatForm && (
+                <BotMessage
+                  message='I will connect you to a Sales Consultant. Please provide your contact information below:'
+                  component={
+                    <ChatForm
+                      formData={formData}
+                      setFormData={setFormData}
+                      onSubmit={handleSubmit}
+                      cta='Transfer to Sales Consultant'
+                    />
+                  }
+                />
+              )}
             </div>
           </div>
           <div className={styles.footer}>
@@ -428,6 +479,15 @@ export const Chatbot = ({
               onSend={handleSendMessage}
               placeholder='Ask TollBot your question here.'
             />
+            {isAgentAvailable && (
+              <button
+                className={styles.transferButton}
+                onClick={() => setShowChatForm(true)}
+                type='button'
+              >
+                I want to talk to a Sales Consultant.
+              </button>
+            )}
           </div>
         </div>
       )}

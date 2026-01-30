@@ -43,7 +43,7 @@
     max-width: 345px;
     min-height: 500px;
     max-height: 650px;
-    padding-bottom: 10px;
+    //padding-bottom: 10px;
     background-color: #fff;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
     border-top-left-radius: 8px;
@@ -108,10 +108,31 @@
 }
 
 .footer {
+    position: relative;
     flex-shrink: 0;
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 16px 42px 16px;
     background: white;
+}
+
+.transferButton {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: $special_font_family;
+    font-size: .75rem;
+    font-weight: $font_weight_bold;
+    line-height: 1;
+    color: $medium_blue3;
+    cursor: pointer;
+    background: transparent;
+    padding: 0;
+    white-space: nowrap;
+
+    &:focus, &:hover {
+        text-decoration: underline;
+    }
 }
 
 .error {

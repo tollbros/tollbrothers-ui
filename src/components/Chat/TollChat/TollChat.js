@@ -913,12 +913,14 @@ export const TollChat = ({
         </div>
       )}
       {showForm && !isMinimized && (
-        <ChatForm
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleSubmit}
-          cta='Start Chat'
-        />
+        <div className={styles.formContainer}>
+          <ChatForm
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleSubmit}
+            cta='Start Chat'
+          />
+        </div>
       )}
 
       {systemMessage && !isMinimized && (

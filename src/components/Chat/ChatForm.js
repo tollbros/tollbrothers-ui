@@ -66,7 +66,6 @@ export const ChatForm = ({
         </div>
       </div>
 
-      <br />
       <p className={styles.privacyPolicy}>
         The information you provide will be used in accordance with our{' '}
         <a

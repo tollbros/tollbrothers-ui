@@ -8,7 +8,7 @@ import {
   getLocalStorage,
   isExpired,
   setLocalStorage
-} from '../../lib/utils'
+} from '../../../lib/utils'
 import {
   handleChatInit,
   fetchAvailability,
@@ -17,19 +17,19 @@ import {
   getConversationHistory,
   postMessage,
   listenToConversation
-} from '../../../utils/chat/apis'
+} from '../../../../utils/chat/apis'
 import {
   convertTimeStamp,
   formatAgentImage,
   formatMessage,
   popNextUUID
-} from '../../../utils/chat/libs'
+} from '../../../../utils/chat/libs'
 import ChatInput from './ChatInput'
-import { ChatForm } from '../ChatForm/ChatForm'
-import { validateChatForm } from '../ChatForm/validateChatForm'
+import { ChatForm } from '../ChatForm'
+import { validateChatForm } from '../utils/validateChatForm'
 
-import Minus from '../../icons/Minus'
-import CloseX from '../../icons/CloseX'
+import Minus from '../../../icons/Minus'
+import CloseX from '../../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'

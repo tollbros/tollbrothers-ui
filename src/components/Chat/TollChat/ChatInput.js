@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import ChevronRight from '../../icons/ChevronRight'
-import { postMessage } from '../../../utils/chat/apis'
+import ChevronRight from '../../../icons/ChevronRight'
+import { postMessage } from '../../../../utils/chat/apis'
 
 import styles from './ChatInput.module.scss'
 

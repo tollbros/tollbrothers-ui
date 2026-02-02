@@ -137,6 +137,7 @@ export const ProductLayout = ({
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel
             images={dafs}
+            isUseHighRes
             utils={utils}
             title='Designer Appointed Features'
           />

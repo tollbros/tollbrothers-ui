@@ -8,6 +8,7 @@ import { CommunityModels } from './CommunityModels'
 import { AmenitiesList } from './AmenitiesList'
 import { FloorPlanViewer } from './FloorPlanViewer'
 import { ImageCarousel } from './ImageCarousel'
+import { ConditionalLink } from './ConditionalLink'
 
 export const ProductLayout = ({
   product,
@@ -52,9 +53,10 @@ export const ProductLayout = ({
     <div className={styles.root}>
       <div className={styles.header}>
         {product?.name && (
-          <h2 className={styles.title}>
-            {product.name}
-
+          <div>
+            <ConditionalLink href={product.url} utils={utils}>
+              <h2 className={styles.title}>{product.name}</h2>
+            </ConditionalLink>
             <span className={styles.location}>
               {isModel && product.communityName}
               {!isModel && (
@@ -63,7 +65,7 @@ export const ProductLayout = ({
                 </>
               )}
             </span>
-          </h2>
+          </div>
         )}
 
         {headShotImage && (
@@ -137,6 +139,7 @@ export const ProductLayout = ({
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel
             images={dafs}
+            isUseHighRes
             utils={utils}
             title='Designer Appointed Features'
           />

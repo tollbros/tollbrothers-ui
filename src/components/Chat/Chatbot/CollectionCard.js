@@ -3,6 +3,7 @@ import styles from './CollectionCard.module.scss'
 import { CommunityStats } from './CommunityStats'
 import { CommunityDetails } from './CommunityDetails'
 import { CommunityModels } from './CommunityModels'
+import { ConditionalLink } from './ConditionalLink'
 
 export const CollectionCard = ({
   collection,
@@ -22,7 +23,11 @@ export const CollectionCard = ({
 
   return (
     <div className={styles.root}>
-      {collection.cleanName && <h3 className={styles.name}>{name}</h3>}
+      {collection.cleanName && (
+        <ConditionalLink href={collection.url} utils={utils}>
+          <h3 className={styles.name}>{name}</h3>
+        </ConditionalLink>
+      )}
       <CommunityDetails community={collection} utils={utils} hideLocation />
       <CommunityStats community={collection} />
 

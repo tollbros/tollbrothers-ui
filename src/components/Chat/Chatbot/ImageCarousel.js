@@ -7,7 +7,12 @@ import styles from './ImageCarousel.module.scss'
 const getCaption = (image) =>
   image.title || image.alt || image.caption || image.description || ''
 
-export const ImageCarousel = ({ images = [], title }) => {
+export const ImageCarousel = ({
+  images = [],
+  title,
+  utils,
+  isUseHighRes = false
+}) => {
   const [showGallery, setShowGallery] = useState(false)
   const [initialSlide, setInitialSlide] = useState(1)
 
@@ -18,7 +23,11 @@ export const ImageCarousel = ({ images = [], title }) => {
     setShowGallery(true)
   }
 
-  const mediaList = images.map((image) => {
+  const imageList = isUseHighRes
+    ? utils?.setToOriginalImages?.(images) || images
+    : images
+
+  const mediaList = imageList.map((image) => {
     const caption = getCaption(image)
     return {
       url: image.url || image.src,

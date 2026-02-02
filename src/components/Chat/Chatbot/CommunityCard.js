@@ -3,6 +3,7 @@ import styles from './CommunityCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { CommunityStats } from './CommunityStats'
 import { CommunityDetails } from './CommunityDetails'
+import { ConditionalLink } from './ConditionalLink'
 
 export const CommunityCard = ({
   community,
@@ -23,7 +24,9 @@ export const CommunityCard = ({
       <div className={styles.communityContent}>
         <div className={styles.communityHeader}>
           {community.name && (
-            <h3 className={styles.communityName}>{community.name}</h3>
+            <ConditionalLink href={community.url} utils={utils}>
+              <h3 className={styles.communityName}>{community.name}</h3>
+            </ConditionalLink>
           )}
         </div>
         <CommunityStats community={community} />
@@ -34,7 +37,7 @@ export const CommunityCard = ({
 
         <div className={styles.actionButtonWrapper}>
           <ActionButton onClick={() => onClick(community)}>
-            Tell Me More
+            Learn More
           </ActionButton>
         </div>
       </div>

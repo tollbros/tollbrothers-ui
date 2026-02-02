@@ -12,8 +12,7 @@
 }
 
 .title {
-  display: flex;
-  flex-direction: column;
+  display: inline;
   font-family: $domaine_font_family;
   font-size: 1.125em;
   margin: 0;
@@ -21,8 +20,10 @@
 }
 
 .location {
+  display: block;
   font-family: $alt_font_family;
   font-size: 0.75em;
+  margin-top: -2px;
 }
 
 .imageWrapper {

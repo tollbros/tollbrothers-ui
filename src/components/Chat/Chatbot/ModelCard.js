@@ -3,6 +3,7 @@ import styles from './ModelCard.module.scss'
 import { ActionButton } from './ActionButton'
 import { ModelStats } from './ModelStats'
 import { ModelDetails } from './ModelDetails'
+import { ConditionalLink } from './ConditionalLink'
 
 export const ModelCard = ({
   model,
@@ -20,7 +21,11 @@ export const ModelCard = ({
           <img src={headShotImage} alt={model.name || 'Community'} />
         </div>
         <div className={styles.headerContent}>
-          {model.name && <h3 className={styles.name}>{model.name}</h3>}
+          {model.name && (
+            <ConditionalLink href={model.url} utils={utils}>
+              <h3 className={styles.name}>{model.name}</h3>
+            </ConditionalLink>
+          )}
 
           <ModelStats model={model} utils={utils} isCompact />
         </div>
@@ -40,7 +45,7 @@ export const ModelCard = ({
         {model.url && (
           <div className={styles.actionButtonWrapper}>
             <ActionButton onClick={() => onClick(model)}>
-              Tell Me More
+              Learn More
             </ActionButton>
           </div>
         )}

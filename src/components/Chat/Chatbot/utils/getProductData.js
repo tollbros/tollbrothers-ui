@@ -1,15 +1,15 @@
 const toPath = (route) => {
   try {
-    return new URL(route).pathname
+    return new URL(route).pathname.replace(/^\/+/, '')
   } catch {
-    return route
+    return route.replace(/^\/+/, '')
   }
 }
 
 export const getProductData = async (routes, baseUrl) => {
   const results = await Promise.allSettled(
     routes.map((route) =>
-      fetch(`${baseUrl}${toPath(route)}`)
+      fetch(`${baseUrl}/${toPath(route)}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)

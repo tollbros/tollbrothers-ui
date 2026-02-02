@@ -45,7 +45,7 @@ export const ModelCard = ({
         {model.url && (
           <div className={styles.actionButtonWrapper}>
             <ActionButton onClick={() => onClick(model)}>
-              Tell Me More
+              Learn More
             </ActionButton>
           </div>
         )}

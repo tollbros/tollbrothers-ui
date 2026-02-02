@@ -4,8 +4,6 @@ import { FullScreenGallery } from '../../FullScreenGallery'
 
 import styles from './ImageCarousel.module.scss'
 
-// const overviewGalleryArray = setToOriginalImages(designerAppointed);
-
 const getCaption = (image) =>
   image.title || image.alt || image.caption || image.description || ''
 
@@ -25,7 +23,9 @@ export const ImageCarousel = ({
     setShowGallery(true)
   }
 
-  const imageList = isUseHighRes ? utils?.setToOriginalImages?.(images) : images
+  const imageList = isUseHighRes
+    ? utils?.setToOriginalImages?.(images) || images
+    : images
 
   const mediaList = imageList.map((image) => {
     const caption = getCaption(image)

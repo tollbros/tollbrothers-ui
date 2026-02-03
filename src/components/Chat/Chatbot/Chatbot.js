@@ -217,17 +217,36 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
-  const handleProductSelect = (product) => {
+  const handleProductSelect = (
+    product,
+    { fromProductsList = false, fromModelList = false } = {}
+  ) => {
     console.log('Product selected:', product)
 
     const newBotMessage = {
       id: Date.now(),
       // text: 'Here are some communities that you might like:',
       type: 'product',
-      product: product
+      product: product,
+      productType: product?.commPlanID ? 'model' : 'community'
     }
 
-    setMessages([...messages, newBotMessage])
+    if (fromProductsList) {
+      // Remove all existing product type messages before adding the new one
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.type !== 'product'),
+        newBotMessage
+      ])
+    } else if (fromModelList) {
+      setMessages((prev) => [
+        ...prev.filter(
+          (msg) => msg.type !== 'product' || msg.productType !== 'model'
+        ),
+        newBotMessage
+      ])
+    } else {
+      setMessages((prev) => [...prev, newBotMessage])
+    }
   }
 
   const handleSubmit = (e) => {
@@ -429,7 +448,11 @@ export const Chatbot = ({
                       component={
                         <ProductsList
                           products={msg.products}
-                          handleProductSelect={handleProductSelect}
+                          handleProductSelect={(product) =>
+                            handleProductSelect(product, {
+                              fromProductsList: true
+                            })
+                          }
                           utils={utils}
                         />
                       }

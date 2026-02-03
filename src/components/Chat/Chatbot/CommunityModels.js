@@ -19,7 +19,11 @@ export const CommunityModels = ({
           <div key={homeType} className={styles.homesContainer}>
             <ProductsList
               products={products}
-              handleProductSelect={handleProductSelect}
+              handleProductSelect={(product) =>
+                handleProductSelect(product, {
+                  fromModelList: true
+                })
+              }
               utils={utils}
               hideModelLocation
             />

@@ -11,12 +11,12 @@ React library for Tollbrothers
 # Install yalc
 Run `npm i yalc -g` (you only have to ever do this once on your computer)
 
-# Step 1.
+# Step 1
 Run `yalc push --sig` in the tollbrothers-ui project
 Run `npm run start` in the tollbrothers-ui project
 Run `npm run watch` in the tollbrothers-ui project in another terminal window
 
-# Step 2.
+# Step 2
 Run `yalc link @tollbrothers/tollbrothers-ui` in the parent project.
 
 # Clean up

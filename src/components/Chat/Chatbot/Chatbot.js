@@ -73,8 +73,8 @@ const TEST_DATA = [
 export const Chatbot = ({
   tollRouteApi,
   utils = {},
-  endPoint,
   chatRegion,
+  productCode,
   availabilityAPI,
   setDisableLiveChat = () => null,
   trackChatEvent = () => null,
@@ -97,6 +97,7 @@ export const Chatbot = ({
   const [formData, setFormData] = useState({ name: '', email: '' })
 
   console.log('chatRegion:', chatRegion)
+  console.log('productCode:', productCode)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -112,6 +113,34 @@ export const Chatbot = ({
     }
 
     const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
+  }
+
+  const checkLiveAgentAvailability = async () => {
+    const availability = await fetchAvailability(chatRegion, availabilityAPI)
+    if (availability?.data?.payload?.length > 0) {
+      setIsAgentAvailable(true)
+      return true
+    }
+
+    return false
+  }
+
+  const handleShowChatForm = async () => {
+    if (!chatRegion) {
+      setIsAgentAvailable(false)
+      setShowChatForm(true)
+      return
+    }
+
+    const isAvailable = await checkLiveAgentAvailability()
+    setShowChatForm(true)
+    if (isAvailable) {
+      // setShowChatForm(true)
+      setIsAgentAvailable(true)
+    } else {
+      // setDisableLiveChat(true)
+      setIsAgentAvailable(false)
+    }
   }
 
   const handleInputChange = (e) => {
@@ -268,12 +297,12 @@ export const Chatbot = ({
   }
 
   useEffect(() => {
-    const checkLiveAgentAvailability = async () => {
-      const availability = await fetchAvailability(chatRegion, availabilityAPI)
-      if (availability?.data?.payload?.length > 0) {
-        setIsAgentAvailable(true)
-      }
-    }
+    // const checkLiveAgentAvailability = async () => {
+    //   const availability = await fetchAvailability(chatRegion, availabilityAPI)
+    //   if (availability?.data?.payload?.length > 0) {
+    //     setIsAgentAvailable(true)
+    //   }
+    // }
 
     if (chatRegion) {
       checkLiveAgentAvailability()
@@ -371,6 +400,16 @@ export const Chatbot = ({
       })
     }
   }, [messages, isChatOpen, isThinking, showChatForm])
+
+  let chatFormMessage =
+    'I will connect you to a local expert. Please provide your contact information below:'
+  if (!chatRegion) {
+    chatFormMessage =
+      'Please provide your contact information below to connect with one of our local experts.'
+  } else if (!isAgentAvailable) {
+    chatFormMessage =
+      'Our local experts are currently offline. Please provide your contact information below and they will get back to you.'
+  }
 
   if (!showChatbot) {
     return null
@@ -480,7 +519,7 @@ export const Chatbot = ({
               {error && <div className={styles.errorMessage}>{error}</div>}
               {showChatForm && (
                 <BotMessage
-                  message='I will connect you to a Sales Consultant. Please provide your contact information below:'
+                  message={chatFormMessage}
                   component={
                     <ChatForm
                       formData={formData}
@@ -504,7 +543,7 @@ export const Chatbot = ({
             {isAgentAvailable && (
               <button
                 className={styles.transferButton}
-                onClick={() => setShowChatForm(true)}
+                onClick={handleShowChatForm}
                 type='button'
               >
                 I want to talk to a Sales Consultant.

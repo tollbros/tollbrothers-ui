@@ -52,26 +52,26 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #0070cd;
+    background-color: $accent_blue;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 6px;
-    transition: background-color 0.2s ease;
+    //transition: background-color 0.2s ease;
     border: none;
     padding: 0;
     cursor: pointer;
 
     &:hover {
-        background-color: #005ba8;
+        background-color: $medium_blue4;
     }
 
     &:active {
-        background-color: #004785;
+        background-color: $medium_blue4;
     }
 
     &:focus-visible {
         outline: none !important;
-        background-color: #004785;
+        background-color: $medium_blue4;
     }
 }

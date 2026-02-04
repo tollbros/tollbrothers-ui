@@ -14,6 +14,7 @@ import { UserInputField } from '../UserInputField'
 import { fetchAvailability } from '../../../../utils/chat/apis'
 import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
+import { RegionPrompt } from './RegionPrompt'
 
 const TEST_DATA = [
   {
@@ -71,6 +72,7 @@ const TEST_DATA = [
 ]
 
 export const Chatbot = ({
+  tollRegionsEndpoint,
   tollRouteApi,
   utils = {},
   chatRegion,
@@ -92,9 +94,10 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
-  const [isAgentAvailable, setIsAgentAvailable] = useState(true)
+  const [isAgentAvailable, setIsAgentAvailable] = useState(false)
   const [showChatForm, setShowChatForm] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '' })
+  const [selectedRegion, setSelectedRegion] = useState(null)
 
   console.log('chatRegion:', chatRegion)
   console.log('productCode:', productCode)
@@ -107,16 +110,8 @@ export const Chatbot = ({
     setIsChatOpen(false)
   }
 
-  const reestablishConnection = (event) => {
-    if (event && event.type === 'visibilitychange' && document.hidden) {
-      return
-    }
-
-    const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
-  }
-
-  const checkLiveAgentAvailability = async () => {
-    const availability = await fetchAvailability(chatRegion, availabilityAPI)
+  const checkLiveAgentAvailability = async (region) => {
+    const availability = await fetchAvailability(region, availabilityAPI)
     if (availability?.data?.payload?.length > 0) {
       setIsAgentAvailable(true)
       return true
@@ -125,20 +120,31 @@ export const Chatbot = ({
     return false
   }
 
-  const handleShowChatForm = async () => {
-    if (!chatRegion) {
+  const handleShowChatForm = async (region) => {
+    console.log('handleShowChatForm region:', region)
+    setShowChatForm(false)
+    if (!region) {
       setIsAgentAvailable(false)
-      setShowChatForm(true)
+
+      const newBotMessage = {
+        id: Date.now(),
+        text: 'In order to connect you with a local expert, please select your area of interest:',
+        type: 'regionPrompt'
+      }
+
+      setMessages([...messages, newBotMessage])
+
       return
     }
 
-    const isAvailable = await checkLiveAgentAvailability()
+    setIsThinking(true)
+    const isAvailable = await checkLiveAgentAvailability(region)
     setShowChatForm(true)
+    setIsThinking(false)
+
     if (isAvailable) {
-      // setShowChatForm(true)
       setIsAgentAvailable(true)
     } else {
-      // setDisableLiveChat(true)
       setIsAgentAvailable(false)
     }
   }
@@ -246,6 +252,12 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
+  const handleRegionSelect = (region) => {
+    setShowChatForm(false)
+    setSelectedRegion(region?.chatRegion)
+    handleShowChatForm(region?.chatRegion)
+  }
+
   const handleProductSelect = (
     product,
     { fromProductsList = false, fromModelList = false } = {}
@@ -295,29 +307,6 @@ export const Chatbot = ({
       isAgent
     )
   }
-
-  useEffect(() => {
-    // const checkLiveAgentAvailability = async () => {
-    //   const availability = await fetchAvailability(chatRegion, availabilityAPI)
-    //   if (availability?.data?.payload?.length > 0) {
-    //     setIsAgentAvailable(true)
-    //   }
-    // }
-
-    if (chatRegion) {
-      checkLiveAgentAvailability()
-    } else {
-      // setIsAgentAvailable(false)
-    }
-  }, [chatRegion, availabilityAPI])
-
-  useEffect(() => {
-    window.addEventListener('visibilitychange', reestablishConnection)
-
-    return () => {
-      window.removeEventListener('visibilitychange', reestablishConnection)
-    }
-  }, [])
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -403,12 +392,12 @@ export const Chatbot = ({
 
   let chatFormMessage =
     'I will connect you to a local expert. Please provide your contact information below:'
-  if (!chatRegion) {
-    chatFormMessage =
-      'Please provide your contact information below to connect with one of our local experts.'
-  } else if (!isAgentAvailable) {
-    chatFormMessage =
-      'Our local experts are currently offline. Please provide your contact information below and they will get back to you.'
+  let chatFormButtonText = 'Chat with Local Expert'
+  if (!isAgentAvailable) {
+    chatFormMessage = `Our local experts are currently offline${
+      selectedRegion ? ' for your selected region' : ''
+    }. Please provide your contact information below and they will get back to you.`
+    chatFormButtonText = 'Contact Me'
   }
 
   if (!showChatbot) {
@@ -512,6 +501,19 @@ export const Chatbot = ({
                       }
                     />
                   )
+                } else if (msg.type === 'regionPrompt') {
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      message={msg.text}
+                      component={
+                        <RegionPrompt
+                          onRegionSelect={handleRegionSelect}
+                          tollRegionsEndpoint={tollRegionsEndpoint}
+                        />
+                      }
+                    />
+                  )
                 }
               })}
 
@@ -525,7 +527,7 @@ export const Chatbot = ({
                       formData={formData}
                       setFormData={setFormData}
                       onSubmit={handleSubmit}
-                      cta='Transfer to Sales Consultant'
+                      cta={chatFormButtonText}
                     />
                   }
                 />
@@ -540,15 +542,13 @@ export const Chatbot = ({
               onSend={handleSendMessage}
               placeholder='Ask TollBot your question here.'
             />
-            {isAgentAvailable && (
-              <button
-                className={styles.transferButton}
-                onClick={handleShowChatForm}
-                type='button'
-              >
-                I want to talk to a Sales Consultant.
-              </button>
-            )}
+            <button
+              className={styles.transferButton}
+              onClick={() => handleShowChatForm(selectedRegion || chatRegion)}
+              type='button'
+            >
+              I want to talk to a Sales Consultant.
+            </button>
           </div>
         </div>
       )}

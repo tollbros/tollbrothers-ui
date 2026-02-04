@@ -32,7 +32,7 @@
     }
 
     button[type=submit] {
-        background-color: #1463c2;
+        background-color: $accent_blue;
         padding: 12px 18px;
         color: #fff;
         width: 100%;
@@ -42,6 +42,10 @@
         border: none;
         text-align: center;
         border-radius: 4px;
+
+        &:hover:not(:disabled) {
+            background-color: $medium_blue4;
+        }
     }
 
     .privacyPolicy {

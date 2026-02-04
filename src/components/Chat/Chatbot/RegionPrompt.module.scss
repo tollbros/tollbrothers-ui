@@ -1,0 +1,35 @@
+@import "styles/modules/all";
+
+.error {
+  color: #dc3545;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.regionPrompt {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.submitButton {
+  padding: 12px;
+  color: #fff;
+  background-color: #1463c2;
+  border: none;
+  border-radius: 4px;
+  font-size: .75em;
+  font-weight: $font_weight_bold;
+  cursor: pointer;
+  width: fit-content;
+
+  &:hover:not(:disabled) {
+      background-color: $medium_blue4;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}

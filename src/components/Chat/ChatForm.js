@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './ChatForm.module.scss'
 
 export const ChatForm = ({
@@ -12,6 +12,27 @@ export const ChatForm = ({
     e.target.setCustomValidity('')
     setFormData({ ...formData, [name]: value })
   }
+
+  useEffect(() => {
+    const storedUser = localStorage?.getItem('formResponse')
+    if (storedUser) {
+      const storedUserData = JSON.parse(storedUser)
+
+      let fullName = ''
+      if (storedUserData?.firstname && storedUserData?.lastname) {
+        fullName += storedUserData?.firstname + ` ${storedUserData?.lastname}`
+      } else if (storedUserData?.firstname) {
+        fullName += `${storedUserData?.firstname}`
+      } else if (storedUserData?.lastname) {
+        fullName += `${storedUserData?.lastname}`
+      }
+
+      setFormData({
+        name: fullName,
+        email: storedUserData?.email ?? ''
+      })
+    }
+  }, [])
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>

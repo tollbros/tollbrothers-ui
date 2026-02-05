@@ -54,7 +54,7 @@ export const ChatBotForm = ({
       email,
       isAgent,
       productCode,
-      selectedRegion ?? chatRegion
+      selectedRegion?.chatRegion ?? chatRegion
     )
   }
 

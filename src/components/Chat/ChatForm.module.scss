@@ -13,20 +13,19 @@
 
     input {
         border: 1px solid #d0d7db;
-        padding: 16px;
+        padding: 12px 14px;
         width: 100%;
         color: #000;
-        font-size: 1em;
+        font-size: .8125em;
         font-family: $alt_font_family;
-        font-weight: $font_weight_medium;
-        margin-bottom: 15px;
-        margin: 0 0 15px;
+        font-weight: $font_weight_light;
+       
+        margin: 0 0 14px 0;
         border-radius: 4px !important;
 
         &::placeholder {
-            color: rgba(0,0,0,.8);
-            font-family: $special_font_family;
-            font-size: 14px;
+            color: #000;
+            font-size: 1em;
         }
 
     }
@@ -63,7 +62,7 @@
     .agent {
 
         label, .radioLabel {
-            font-size: .875em;
+            font-size: .8em;
             font-family: $special_font_family;
             color: #000;
         }
@@ -76,7 +75,7 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 4px;
-                font-size: .875em;
+                font-size: .8em;
                 color: #000;
 
                 input {

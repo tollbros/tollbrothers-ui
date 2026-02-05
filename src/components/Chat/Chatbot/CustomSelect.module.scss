@@ -2,7 +2,7 @@
 
 .select {
   width: 100%;
-  padding: 16px 36px 16px 16px;
+  padding: 12px 36px 12px 14px;
   font-size: .8125em !important;
   font-family: $alt_font_family !important;
   font-weight: $font_weight_medium;
@@ -11,6 +11,7 @@
   color: #000;
   background-color: #fff;
   cursor: pointer;
+  line-height: normal;
 
   // Reset native appearance
   appearance: none;
@@ -32,4 +33,5 @@
     color: #999;
     cursor: not-allowed;
   }
+
 }

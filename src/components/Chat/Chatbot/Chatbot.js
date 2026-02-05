@@ -94,10 +94,6 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
-  const [isAgentAvailable, setIsAgentAvailable] = useState(false)
-  const [showChatForm, setShowChatForm] = useState(false)
-  const [formData, setFormData] = useState({ name: '', email: '' })
-  const [selectedRegion, setSelectedRegion] = useState(null)
 
   console.log('chatRegion:', chatRegion)
   console.log('productCode:', productCode)
@@ -110,43 +106,17 @@ export const Chatbot = ({
     setIsChatOpen(false)
   }
 
-  const checkLiveAgentAvailability = async (region) => {
-    const availability = await fetchAvailability(region, availabilityAPI)
-    if (availability?.data?.payload?.length > 0) {
-      setIsAgentAvailable(true)
-      return true
+  const handleShowChatForm = () => {
+    const newBotMessage = {
+      id: Date.now(),
+      text: 'In order to connect you with a local expert, please select your area of interest:',
+      type: 'form'
     }
 
-    return false
-  }
-
-  const handleShowChatForm = async (region) => {
-    console.log('handleShowChatForm region:', region)
-    setShowChatForm(false)
-    if (!region) {
-      setIsAgentAvailable(false)
-
-      const newBotMessage = {
-        id: Date.now(),
-        text: 'In order to connect you with a local expert, please select your area of interest:',
-        type: 'regionPrompt'
-      }
-
-      setMessages([...messages, newBotMessage])
-
-      return
-    }
-
-    setIsThinking(true)
-    const isAvailable = await checkLiveAgentAvailability(region)
-    setShowChatForm(true)
-    setIsThinking(false)
-
-    if (isAvailable) {
-      setIsAgentAvailable(true)
-    } else {
-      setIsAgentAvailable(false)
-    }
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.type !== 'form'),
+      newBotMessage
+    ])
   }
 
   const handleInputChange = (e) => {
@@ -252,12 +222,6 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
-  const handleRegionSelect = (region) => {
-    setShowChatForm(false)
-    setSelectedRegion(region?.chatRegion)
-    handleShowChatForm(region?.chatRegion)
-  }
-
   const handleProductSelect = (
     product,
     { fromProductsList = false, fromModelList = false } = {}
@@ -288,24 +252,6 @@ export const Chatbot = ({
     } else {
       setMessages((prev) => [...prev, newBotMessage])
     }
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    const form = e.target
-    const { valid, firstName, lastName } = validateChatForm(form)
-    if (!valid) return false
-
-    const email = form.email?.value?.trim()
-    const isAgent = form.isAgent?.value ?? '0'
-    console.log(
-      'Form submitted with data:',
-      firstName,
-      lastName,
-      email,
-      isAgent
-    )
   }
 
   // useEffect(() => {
@@ -388,17 +334,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isChatOpen, isThinking, showChatForm])
-
-  let chatFormMessage =
-    'I will connect you to a local expert. Please provide your contact information below:'
-  let chatFormButtonText = 'Chat with Local Expert'
-  if (!isAgentAvailable) {
-    chatFormMessage = `Our local experts are currently offline${
-      selectedRegion ? ' for your selected region' : ''
-    }. Please provide your contact information below and they will get back to you.`
-    chatFormButtonText = 'Contact Me'
-  }
+  }, [messages, isChatOpen, isThinking])
 
   if (!showChatbot) {
     return null
@@ -501,15 +437,16 @@ export const Chatbot = ({
                       }
                     />
                   )
-                } else if (msg.type === 'regionPrompt') {
+                } else if (msg.type === 'form') {
                   return (
                     <BotMessage
                       key={msg.id}
-                      message={msg.text}
                       component={
                         <RegionPrompt
-                          onRegionSelect={handleRegionSelect}
+                          chatRegion={chatRegion}
+                          productCode={productCode}
                           tollRegionsEndpoint={tollRegionsEndpoint}
+                          availabilityAPI={availabilityAPI}
                         />
                       }
                     />
@@ -519,19 +456,6 @@ export const Chatbot = ({
 
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
               {error && <div className={styles.errorMessage}>{error}</div>}
-              {showChatForm && (
-                <BotMessage
-                  message={chatFormMessage}
-                  component={
-                    <ChatForm
-                      formData={formData}
-                      setFormData={setFormData}
-                      onSubmit={handleSubmit}
-                      cta={chatFormButtonText}
-                    />
-                  }
-                />
-              )}
             </div>
           </div>
           <div className={styles.footer}>
@@ -544,7 +468,7 @@ export const Chatbot = ({
             />
             <button
               className={styles.transferButton}
-              onClick={() => handleShowChatForm(selectedRegion || chatRegion)}
+              onClick={handleShowChatForm}
               type='button'
             >
               I want to talk to a Sales Consultant.

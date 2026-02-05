@@ -16,27 +16,6 @@
   padding-top: 16px;
 }
 
-.closeButton {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: none;
-  border: none;
-  color: $dark_gray;
-  cursor: pointer;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:focus-visible {
-    outline-offset: 0 !important;
-  }
-}
-
 .regionPrompt {
   display: flex;
   flex-direction: column;

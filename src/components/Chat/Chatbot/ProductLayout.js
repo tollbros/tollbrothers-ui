@@ -9,11 +9,13 @@ import { AmenitiesList } from './AmenitiesList'
 import { FloorPlanViewer } from './FloorPlanViewer'
 import { ImageCarousel } from './ImageCarousel'
 import { ConditionalLink } from './ConditionalLink'
+import { CloseButton } from './CloseButton'
 
 export const ProductLayout = ({
   product,
   handleProductSelect = () => null,
-  utils
+  utils,
+  onClose
 }) => {
   const headShotImage = product?.headShot?.media?.url
   const desc =
@@ -51,6 +53,11 @@ export const ProductLayout = ({
 
   return (
     <div className={styles.root}>
+      <CloseButton
+        className={styles.closeButton}
+        onClick={onClose}
+        ariaLabel='Close product details'
+      />
       <div className={styles.header}>
         {product?.name && (
           <div>

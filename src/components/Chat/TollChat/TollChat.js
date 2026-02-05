@@ -76,7 +76,8 @@ export const TollChat = ({
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted',
-  productCode // ie JDE number of community/model/qmi
+  productCode, // ie JDE number of community/model/qmi
+  utils = {}
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
@@ -362,17 +363,19 @@ export const TollChat = ({
         const email = form.email?.value?.trim()
         const isAgent = form.isAgent?.value ?? '0'
 
-        const gaClientIds = getGaClientId()
+        const { clientId, email_sha256, gaTrackId } =
+          (await utils?.getGaTrackingIds?.(email)) || {}
+
         setCallbackUrl(
           `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
             email
           )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
             lastName
           )}&gaClientId=${encodeURIComponent(
-            gaClientIds.gaClientId
+            clientId ?? ''
           )}&gaUserId=${encodeURIComponent(
-            gaClientIds.gaUserId
-          )}&gaTrackId=${encodeURIComponent(gaClientIds.gaTrackId)}`
+            email_sha256 ?? ''
+          )}&gaTrackId=${encodeURIComponent(gaTrackId ?? '')}`
         )
 
         await initializeChat(

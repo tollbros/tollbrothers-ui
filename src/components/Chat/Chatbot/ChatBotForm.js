@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import styles from './RegionPrompt.module.scss'
+import styles from './ChatBotForm.module.scss'
 import { CustomSelect } from './CustomSelect'
 import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
@@ -15,7 +15,7 @@ const checkLiveAgentAvailability = async (region, availabilityAPI) => {
   return false
 }
 
-export const RegionPrompt = ({
+export const ChatBotForm = ({
   tollRegionsEndpoint,
   availabilityAPI,
   chatRegion,

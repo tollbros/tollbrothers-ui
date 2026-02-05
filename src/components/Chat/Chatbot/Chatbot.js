@@ -11,10 +11,7 @@ import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
-import { fetchAvailability } from '../../../../utils/chat/apis'
-import { ChatForm } from '../ChatForm'
-import { validateChatForm } from '../utils/validateChatForm'
-import { RegionPrompt } from './RegionPrompt'
+import { ChatBotForm } from './ChatBotForm'
 
 const TEST_DATA = [
   {
@@ -95,8 +92,8 @@ export const Chatbot = ({
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
 
-  console.log('chatRegion:', chatRegion)
-  console.log('productCode:', productCode)
+  console.log('chatRegion :', chatRegion)
+  console.log('productCode :', productCode)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -442,7 +439,7 @@ export const Chatbot = ({
                     <BotMessage
                       key={msg.id}
                       component={
-                        <RegionPrompt
+                        <ChatBotForm
                           chatRegion={chatRegion}
                           productCode={productCode}
                           tollRegionsEndpoint={tollRegionsEndpoint}

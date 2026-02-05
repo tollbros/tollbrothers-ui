@@ -430,6 +430,11 @@ export const Chatbot = ({
                           product={msg.product}
                           utils={utils}
                           handleProductSelect={handleProductSelect}
+                          onClose={() =>
+                            setMessages((prev) =>
+                              prev.filter((m) => m.id !== msg.id)
+                            )
+                          }
                         />
                       }
                     />

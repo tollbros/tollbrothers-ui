@@ -5,7 +5,8 @@ export const ChatForm = ({
   formData,
   setFormData,
   onSubmit,
-  cta = 'Start Chat'
+  cta = 'Start Chat',
+  disabled = false
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -48,6 +49,7 @@ export const ChatForm = ({
         placeholder='Full Name*'
         maxLength={123}
         aria-label='full name'
+        disabled={disabled}
       />
       <input
         type='email'
@@ -60,6 +62,7 @@ export const ChatForm = ({
         placeholder='Email*'
         maxLength={80}
         aria-label='email address'
+        disabled={disabled}
       />
 
       <div className={styles.agent}>
@@ -71,6 +74,7 @@ export const ChatForm = ({
               id='chat-is-agent-yes'
               name='isAgent'
               value='1'
+              disabled={disabled}
             />
             Yes
           </label>
@@ -81,6 +85,7 @@ export const ChatForm = ({
               name='isAgent'
               value='0'
               defaultChecked
+              disabled={disabled}
             />
             No
           </label>
@@ -93,13 +98,16 @@ export const ChatForm = ({
           href='https://www.tollbrothers.com/privacy'
           target='_blank'
           rel='noreferrer'
+          tabIndex={disabled ? -1 : undefined}
         >
           Privacy Policy
         </a>
         .
       </p>
 
-      <button type='submit'>{cta}</button>
+      <button type='submit' disabled={disabled}>
+        {cta}
+      </button>
     </form>
   )
 }

@@ -5,6 +5,7 @@ import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
 import { fetchAvailability } from '../../../../utils/chat/apis'
 import { ThinkingIndicator } from './ThinkingIndicator'
+import { CloseButton } from './CloseButton'
 
 const checkLiveAgentAvailability = async (region, availabilityAPI) => {
   const availability = await fetchAvailability(region, availabilityAPI)
@@ -171,27 +172,7 @@ export const ChatBotForm = ({
 
   return (
     <div className={styles.root}>
-      <button
-        className={styles.closeButton}
-        onClick={onClose}
-        type='button'
-        aria-label='Close form'
-      >
-        <svg
-          width='10'
-          height='10'
-          viewBox='0 0 12 12'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path
-            d='M1 1L11 11M1 11L11 1'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-          />
-        </svg>
-      </button>
+      <CloseButton onClick={onClose} ariaLabel='Close form' />
       {!chatRegion && (
         <div className={styles.regionPrompt}>
           <p className={styles.text}>
@@ -236,6 +217,7 @@ export const ChatBotForm = ({
           setFormData={setFormData}
           onSubmit={handleSubmit}
           cta={chatFormButtonText}
+          disabled={(!chatRegion && !selectedRegion) || isThinking}
         />
       </div>
     </div>

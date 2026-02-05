@@ -3,12 +3,18 @@
 .root {
   width: 100%;
   text-align: left;
+  padding-top: 14px;
 }
 
 .header {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.closeButton {
+  top: 2px !important;
+  right: 2px !important;
 }
 
 .title {

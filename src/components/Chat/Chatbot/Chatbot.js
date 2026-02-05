@@ -444,6 +444,11 @@ export const Chatbot = ({
                           productCode={productCode}
                           tollRegionsEndpoint={tollRegionsEndpoint}
                           availabilityAPI={availabilityAPI}
+                          onClose={() =>
+                            setMessages((prev) =>
+                              prev.filter((m) => m.type !== 'form')
+                            )
+                          }
                         />
                       }
                     />

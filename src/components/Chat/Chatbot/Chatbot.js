@@ -11,9 +11,7 @@ import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
-import { fetchAvailability } from '../../../../utils/chat/apis'
-import { ChatForm } from '../ChatForm'
-import { validateChatForm } from '../utils/validateChatForm'
+import { ChatBotForm } from './ChatBotForm'
 
 const TEST_DATA = [
   {
@@ -71,10 +69,11 @@ const TEST_DATA = [
 ]
 
 export const Chatbot = ({
+  tollRegionsEndpoint,
   tollRouteApi,
   utils = {},
-  endPoint,
   chatRegion,
+  productCode,
   availabilityAPI,
   setDisableLiveChat = () => null,
   trackChatEvent = () => null,
@@ -92,11 +91,9 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
-  const [isAgentAvailable, setIsAgentAvailable] = useState(true)
-  const [showChatForm, setShowChatForm] = useState(false)
-  const [formData, setFormData] = useState({ name: '', email: '' })
 
-  console.log('chatRegion:', chatRegion)
+  console.log('chatRegion :', chatRegion)
+  console.log('productCode :', productCode)
 
   const onChatButtonClick = () => {
     setIsChatOpen(true)
@@ -106,12 +103,17 @@ export const Chatbot = ({
     setIsChatOpen(false)
   }
 
-  const reestablishConnection = (event) => {
-    if (event && event.type === 'visibilitychange' && document.hidden) {
-      return
+  const handleShowChatForm = () => {
+    const newBotMessage = {
+      id: Date.now(),
+      text: 'In order to connect you with a local expert, please select your area of interest:',
+      type: 'form'
     }
 
-    const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.type !== 'form'),
+      newBotMessage
+    ])
   }
 
   const handleInputChange = (e) => {
@@ -249,47 +251,6 @@ export const Chatbot = ({
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    const form = e.target
-    const { valid, firstName, lastName } = validateChatForm(form)
-    if (!valid) return false
-
-    const email = form.email?.value?.trim()
-    const isAgent = form.isAgent?.value ?? '0'
-    console.log(
-      'Form submitted with data:',
-      firstName,
-      lastName,
-      email,
-      isAgent
-    )
-  }
-
-  useEffect(() => {
-    const checkLiveAgentAvailability = async () => {
-      const availability = await fetchAvailability(chatRegion, availabilityAPI)
-      if (availability?.data?.payload?.length > 0) {
-        setIsAgentAvailable(true)
-      }
-    }
-
-    if (chatRegion) {
-      checkLiveAgentAvailability()
-    } else {
-      // setIsAgentAvailable(false)
-    }
-  }, [chatRegion, availabilityAPI])
-
-  useEffect(() => {
-    window.addEventListener('visibilitychange', reestablishConnection)
-
-    return () => {
-      window.removeEventListener('visibilitychange', reestablishConnection)
-    }
-  }, [])
-
   // useEffect(() => {
   //   setTimeout(() => {
   //     const routes = [
@@ -370,7 +331,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isChatOpen, isThinking, showChatForm])
+  }, [messages, isChatOpen, isThinking])
 
   if (!showChatbot) {
     return null
@@ -473,24 +434,30 @@ export const Chatbot = ({
                       }
                     />
                   )
+                } else if (msg.type === 'form') {
+                  return (
+                    <BotMessage
+                      key={msg.id}
+                      component={
+                        <ChatBotForm
+                          chatRegion={chatRegion}
+                          productCode={productCode}
+                          tollRegionsEndpoint={tollRegionsEndpoint}
+                          availabilityAPI={availabilityAPI}
+                          onClose={() =>
+                            setMessages((prev) =>
+                              prev.filter((m) => m.type !== 'form')
+                            )
+                          }
+                        />
+                      }
+                    />
+                  )
                 }
               })}
 
               {isThinking && <BotMessage component={<ThinkingIndicator />} />}
               {error && <div className={styles.errorMessage}>{error}</div>}
-              {showChatForm && (
-                <BotMessage
-                  message='I will connect you to a Sales Consultant. Please provide your contact information below:'
-                  component={
-                    <ChatForm
-                      formData={formData}
-                      setFormData={setFormData}
-                      onSubmit={handleSubmit}
-                      cta='Transfer to Sales Consultant'
-                    />
-                  }
-                />
-              )}
             </div>
           </div>
           <div className={styles.footer}>
@@ -501,15 +468,13 @@ export const Chatbot = ({
               onSend={handleSendMessage}
               placeholder='Ask TollBot your question here.'
             />
-            {isAgentAvailable && (
-              <button
-                className={styles.transferButton}
-                onClick={() => setShowChatForm(true)}
-                type='button'
-              >
-                I want to talk to a Sales Consultant.
-              </button>
-            )}
+            <button
+              className={styles.transferButton}
+              onClick={handleShowChatForm}
+              type='button'
+            >
+              I want to talk to a Sales Consultant.
+            </button>
           </div>
         </div>
       )}

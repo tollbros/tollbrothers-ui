@@ -3,6 +3,14 @@ import styles from './CommunityDetails.module.scss'
 import { displayPricing } from './utils/pricing'
 
 export const CommunityDetails = ({ community, hideLocation, utils = {} }) => {
+  const price = displayPricing(community.pricedFrom)
+  let priceLanguage = ''
+  if (price) {
+    priceLanguage = `${
+      utils.getPriceLabelText?.(community.isFuture, true) || ''
+    } ${price}`
+  }
+
   return (
     <p className={styles.root}>
       {community.homeTypes &&
@@ -18,9 +26,7 @@ export const CommunityDetails = ({ community, hideLocation, utils = {} }) => {
               .join(', ')}{' '}
           </>
         )}
-      {`${
-        utils.getPriceLabelText?.(community.isFuture, true) || ''
-      } ${displayPricing(community.pricedFrom)}`}
+      {priceLanguage}
       {!hideLocation && (
         <>
           {' in '} {community.city}, {community.state}

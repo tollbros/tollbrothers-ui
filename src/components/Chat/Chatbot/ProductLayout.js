@@ -10,6 +10,7 @@ import { FloorPlanViewer } from './FloorPlanViewer'
 import { ImageCarousel } from './ImageCarousel'
 import { ConditionalLink } from './ConditionalLink'
 import { CloseButton } from './CloseButton'
+import { OptionButton } from './OptionButton'
 
 export const ProductLayout = ({
   product,
@@ -23,6 +24,8 @@ export const ProductLayout = ({
     product.overview?.description ||
     product.description
   const bullets = product?.overview?.bulletPoints || product?.modelBullets
+
+  // console.log(product)
 
   const isMasterCommunity =
     Boolean(product?.communities?.length > 0) && product.isMaster
@@ -42,6 +45,67 @@ export const ProductLayout = ({
   const elevations = isModel ? product.elevations || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
+  const { options, everyOptionSharedByEachCollection } =
+    utils?.getAllCommunityOptions?.(product) || {}
+
+  const vipSalesOnly = utils?.hasOption?.(
+    everyOptionSharedByEachCollection,
+    utils?.OPTIONS?.VIP_SALES_ONLY
+  )
+  const isFuture =
+    product.isFuture || product.communityTypes?.includes('Future')
+  const hideTour = product.salesOffice?.hideTour
+  const hasSelfGuidedTour = product.tour
+  const dcaDisclaimer = product?.dcaDisclaimer
+  const hideDirections = product.salesOffice?.hideDirections
+  const canShowDirections = !isFuture && !hideDirections
+  const canShowCTAs = Boolean(product.salesOffice)
+
+  const showGeoLocation = utils?.hasOption?.(
+    options,
+    utils?.OPTIONS?.GEO_LOCATION_ENABLED
+  )
+  const salesOfficeLat = product.salesOffice?.lat
+  const salesOfficeLon = product.salesOffice?.lon
+  const showHours = product.salesOffice?.showHours
+
+  const state = product.salesOffice?.state
+  const street = product.salesOffice?.street
+  const buildingStreet = product.street
+  const city = product.salesOffice?.city
+  const zip = product.salesOffice?.zip
+
+  const mapLink = utils?.useMapLink?.({
+    lat: salesOfficeLat,
+    lon: salesOfficeLon,
+    salesOffice: { state, street, city, zip },
+    showGeoLocation
+  })
+
+  // TODO figure out what to do with NYC communities and online sales (since they no longer have that)
+  // this is only relevant if we decide to go with showing OSC phone numbers in this component
+
+  let label = `I want to `
+  let hash = '#appointment'
+  let isVip = false
+  if (dcaDisclaimer) {
+    label += 'contact the community'
+    hash = '#contact'
+  } else if (hideTour) {
+    label += 'talk to an expert'
+    hash = '#contact-email'
+  } else if (isFuture) {
+    label += vipSalesOnly ? 'talk to an expert' : 'become a VIP'
+    hash = '#join-vip'
+    isVip = true
+  } else if (hasSelfGuidedTour) {
+    label += 'schedule a self-guided tour'
+  } else {
+    label += 'schedule a tour'
+  }
+
+  // console.log(label, hash)
+
   // in case we decide to show community gallery some day
   // const communityGallery = !isModel
   //   ? (product?.gallery?.mediaGroups?.[0]?.media || []).filter(
@@ -50,6 +114,17 @@ export const ProductLayout = ({
   //   : []
 
   // console.log(communityGallery)
+
+  const preventIfCurrentPage = (url, e) => {
+    const pathname = new URL(url, window.location.origin).pathname
+    if (window.location.pathname === pathname) {
+      e.preventDefault()
+      e.stopPropagation()
+      return true
+    }
+
+    return false
+  }
 
   return (
     <div className={styles.root}>
@@ -101,7 +176,6 @@ export const ProductLayout = ({
           </div>
         )}
         {desc && <p className={styles.description}>{desc}</p>}
-
         {bullets?.length > 0 && (
           <div className={styles.summarySection}>
             <h3 className={styles.summaryTitle}>Summary</h3>
@@ -134,7 +208,6 @@ export const ProductLayout = ({
             utils={utils}
           />
         )}
-
         {/* {!isModel && communityGallery?.length > 0 && (
           <ImageCarousel
             images={communityGallery}
@@ -142,7 +215,6 @@ export const ProductLayout = ({
             title='Gallery'
           />
         )} */}
-
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel
             images={dafs}
@@ -151,11 +223,9 @@ export const ProductLayout = ({
             title='Designer Appointed Features'
           />
         )}
-
         {isModel && floorPlans?.length > 0 && (
           <FloorPlanViewer floorPlans={floorPlans} utils={utils} />
         )}
-
         {isModel && !isQMI && elevations?.length > 0 && (
           <ImageCarousel
             images={elevations}
@@ -163,8 +233,82 @@ export const ProductLayout = ({
             title='Exterior Designs'
           />
         )}
-
         {!isModel && amenities && <AmenitiesList amenities={amenities} />}
+
+        {canShowCTAs && (
+          <div className={styles.footer}>
+            <div className={styles.optionsWrapper}>
+              <OptionButton
+                text={label}
+                href={product.url + hash}
+                isLink
+                utils={utils}
+                onClick={(e) => {
+                  const isCurrentPage = preventIfCurrentPage(product.url, e)
+                  if (isCurrentPage && utils) {
+                    if (isVip) {
+                      utils.openVIPPanel()
+                    } else if (hideTour) {
+                      utils.openEmailPanel()
+                    } else {
+                      utils.openTourPanel()
+                    }
+                    // utils.closeEmailPanel()
+                    utils.closeSalesPanel()
+                  }
+                }}
+              />
+              {!dcaDisclaimer && !isFuture && (
+                <OptionButton
+                  text='I want to contact the community'
+                  href={product.url + '#contact'}
+                  isLink
+                  utils={utils}
+                  onClick={(e) => {
+                    const isCurrentPage = preventIfCurrentPage(product.url, e)
+                    if (isCurrentPage && utils) {
+                      utils.closeSalesPanel()
+                      utils.closeEmailPanel()
+                      utils.closeVIPPanel()
+                      utils.closeTourPanel()
+                      setTimeout(() => {
+                        utils.openSalesPanel()
+                      }, 350)
+                    }
+                  }}
+                />
+              )}
+              {showHours && !isFuture && !hideDirections && (
+                <OptionButton
+                  text='I want to see the sales hours'
+                  href={product.url + '#sales-hours'}
+                  isLink
+                  utils={utils}
+                  onClick={(e) => {
+                    const isCurrentPage = preventIfCurrentPage(product.url, e)
+                    if (isCurrentPage && utils) {
+                      utils.openSalesPanel()
+                      utils.closeEmailPanel()
+                      utils.closeVIPPanel()
+                      utils.closeTourPanel()
+                      setTimeout(() => {
+                        utils.jumpToHours()
+                      }, 300)
+                    }
+                  }}
+                />
+              )}
+              {canShowDirections && mapLink && (
+                <OptionButton
+                  text='I want to get directions'
+                  href={mapLink}
+                  isLink
+                  target='_blank'
+                />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

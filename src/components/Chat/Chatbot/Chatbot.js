@@ -219,18 +219,24 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
-  const handleProductSelect = (
+  const handleProductSelect = async (
     product,
     { fromProductsList = false, fromModelList = false } = {}
   ) => {
-    console.log('Product selected:', product)
+    const isModel = Boolean(product.commPlanID)
+    let modelData = null
 
+    if (isModel && !fromProductsList) {
+      setIsThinking(true)
+      modelData = await getProductData([product.url], tollRouteApi)
+    }
+
+    setIsThinking(false)
     const newBotMessage = {
       id: Date.now(),
-      // text: 'Here are some communities that you might like:',
       type: 'product',
-      product: product,
-      productType: product?.commPlanID ? 'model' : 'community'
+      product: isModel ? modelData?.[0] || product : product,
+      productType: isModel ? 'model' : 'community'
     }
 
     if (fromProductsList) {
@@ -254,23 +260,15 @@ export const Chatbot = ({
   // useEffect(() => {
   //   setTimeout(() => {
   //     const routes = [
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Quick-Move-In/283408',
-  //       '/luxury-homes-for-sale/California/3131-Camino/Lila',
-  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park/Bolton',
-  //       '/luxury-homes-for-sale/Massachusetts/Lakemont-by-Toll-Brothers/Quick-Move-In/MLS-73340095',
-  //       '/luxury-homes-for-sale/Florida/Mill-Creek-Forest',
-  //       '/luxury-homes-for-sale/Virginia/Parkside-Village/The-Sequoia-Collection/Quick-Move-In/MLS-VALO2103266',
-  //       '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Barnwell',
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Abigail',
-  //       '/luxury-homes-for-sale/Florida/Crosswinds-at-Nocatee/Quick-Move-In/281046',
-  //       '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main/Myra',
-  //       '/luxury-homes-for-sale/Oregon/Toll-Brothers-at-Hosford-Farms-Terra-Collection/Quick-Move-In/280118',
-  //       '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
-  //       '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
-  //       '/luxury-homes-for-sale/California/The-Station/Outlook',
-  //       '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main',
-  //       '/luxury-homes-for-sale/Florida/Regency-at-EverRange'
+  //       '/luxury-homes-for-sale/California/Metro-Heights', // mix of future and non-future collections
+  //       '/luxury-homes-for-sale/California/Metro-Heights/Ironridge', // future
+  //       '/luxury-homes-for-sale/Florida/Alora', // Vip only
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River', // hide tour
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River/Maycomb',
+  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park', // schedule a tour
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Kensico-Ridge', // DCA disclaimer "contact us" only cta
+  //       '/luxury-homes-for-sale/Florida/Shores-at-RiverTown/Riverview-Collection/Quick-Move-In/MLS-2024039', // model with self guided tour
+  //       '/luxury-homes-for-sale/Florida/Seabrook-Village' // community with self guided tour
   //     ]
 
   //     Promise.allSettled(

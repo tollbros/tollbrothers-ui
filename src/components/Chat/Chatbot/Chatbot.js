@@ -227,6 +227,9 @@ export const Chatbot = ({
     let modelData = null
 
     if (isModel && !fromProductsList) {
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.productType !== 'model')
+      ])
       setIsThinking(true)
       modelData = await getProductData([product.url], tollRouteApi)
     }
@@ -243,13 +246,6 @@ export const Chatbot = ({
       // Remove all existing product type messages before adding the new one
       setMessages((prev) => [
         ...prev.filter((msg) => msg.type !== 'product'),
-        newBotMessage
-      ])
-    } else if (fromModelList) {
-      setMessages((prev) => [
-        ...prev.filter(
-          (msg) => msg.type !== 'product' || msg.productType !== 'model'
-        ),
         newBotMessage
       ])
     } else {

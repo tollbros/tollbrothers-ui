@@ -16,7 +16,8 @@ export const ProductLayout = ({
   product,
   handleProductSelect = () => null,
   utils,
-  onClose
+  onClose,
+  onCloseChat = () => null
 }) => {
   const headShotImage = product?.headShot?.media?.url
   const desc =
@@ -124,6 +125,12 @@ export const ProductLayout = ({
     }
 
     return false
+  }
+
+  const closeChatOnMobile = () => {
+    if (window.innerWidth < 992) {
+      onCloseChat()
+    }
   }
 
   return (
@@ -244,6 +251,7 @@ export const ProductLayout = ({
                 isLink
                 utils={utils}
                 onClick={(e) => {
+                  closeChatOnMobile()
                   const isCurrentPage = preventIfCurrentPage(product.url, e)
                   if (isCurrentPage && utils) {
                     if (isVip) {
@@ -265,6 +273,7 @@ export const ProductLayout = ({
                   isLink
                   utils={utils}
                   onClick={(e) => {
+                    closeChatOnMobile()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {
                       utils.closeSalesPanel()
@@ -285,6 +294,7 @@ export const ProductLayout = ({
                   isLink
                   utils={utils}
                   onClick={(e) => {
+                    closeChatOnMobile()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {
                       utils.openSalesPanel()

@@ -227,6 +227,9 @@ export const Chatbot = ({
     let modelData = null
 
     if (isModel && !fromProductsList) {
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.productType !== 'model')
+      ])
       setIsThinking(true)
       modelData = await getProductData([product.url], tollRouteApi)
     }
@@ -243,13 +246,6 @@ export const Chatbot = ({
       // Remove all existing product type messages before adding the new one
       setMessages((prev) => [
         ...prev.filter((msg) => msg.type !== 'product'),
-        newBotMessage
-      ])
-    } else if (fromModelList) {
-      setMessages((prev) => [
-        ...prev.filter(
-          (msg) => msg.type !== 'product' || msg.productType !== 'model'
-        ),
         newBotMessage
       ])
     } else {
@@ -329,7 +325,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isChatOpen, isThinking])
+  }, [messages, isThinking])
 
   if (!showChatbot) {
     return null
@@ -349,138 +345,137 @@ export const Chatbot = ({
         <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-button.svg' />
       </button>
 
-      {isChatOpen && (
-        <div
-          id='chatbot-interface'
-          className={`${styles.interface}`}
-          ref={chatInterfaceRef}
-        >
-          <div className={styles.header}>
-            <div className={styles.title}>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-              <span>Hi, I'm TollBot</span>
-            </div>
-            <button
-              ref={closeButtonRef}
-              className={`${styles.closeButton} ${styles.buttonReset}`}
-              aria-label="Close Toll Brothers' AI Assistant"
-              onClick={onCloseChat}
-              type='button'
-            >
-              <img
-                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
-                alt=''
-              />
-            </button>
+      <div
+        id='chatbot-interface'
+        className={`${styles.interface} ${!isChatOpen ? styles.hidden : ''}`}
+        ref={chatInterfaceRef}
+      >
+        <div className={styles.header}>
+          <div className={styles.title}>
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
+            <span>Hi, I'm TollBot</span>
           </div>
-          <div className={styles.body} ref={chatContainerRef}>
-            <p>
-              I am the Toll Brothers AI assistant. I can assist with your home
-              search using the prompts below or direct you to one of our human
-              experts for additional help.
-            </p>
-            <div className={styles.messages} ref={messageContainerRef}>
-              {messages.map((msg) => {
-                if (msg.type === 'user') {
-                  return <UserMessage key={msg.id} message={msg.text} />
-                } else if (msg.type === 'bot') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={msg.component}
-                    />
-                  )
-                } else if (msg.type === 'prompt') {
-                  return (
-                    <OptionsList
-                      key={msg.id}
-                      options={msg.options}
-                      onOptionSelect={handleOptionSelect}
-                    />
-                  )
-                } else if (msg.type === 'products') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={
-                        <ProductsList
-                          products={msg.products}
-                          handleProductSelect={(product) =>
-                            handleProductSelect(product, {
-                              fromProductsList: true
-                            })
-                          }
-                          utils={utils}
-                        />
-                      }
-                    />
-                  )
-                } else if (msg.type === 'product') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={
-                        <ProductLayout
-                          key={msg.id}
-                          product={msg.product}
-                          utils={utils}
-                          handleProductSelect={handleProductSelect}
-                          onClose={() =>
-                            setMessages((prev) =>
-                              prev.filter((m) => m.id !== msg.id)
-                            )
-                          }
-                        />
-                      }
-                    />
-                  )
-                } else if (msg.type === 'form') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      component={
-                        <ChatBotForm
-                          chatRegion={chatRegion}
-                          productCode={productCode}
-                          tollRegionsEndpoint={tollRegionsEndpoint}
-                          availabilityAPI={availabilityAPI}
-                          onClose={() =>
-                            setMessages((prev) =>
-                              prev.filter((m) => m.type !== 'form')
-                            )
-                          }
-                        />
-                      }
-                    />
-                  )
-                }
-              })}
-
-              {isThinking && <BotMessage component={<ThinkingIndicator />} />}
-              {error && <div className={styles.errorMessage}>{error}</div>}
-            </div>
-          </div>
-          <div className={styles.footer}>
-            <UserInputField
-              value={inputMessage}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onSend={handleSendMessage}
-              placeholder='Ask TollBot your question here.'
+          <button
+            ref={closeButtonRef}
+            className={`${styles.closeButton} ${styles.buttonReset}`}
+            aria-label="Close Toll Brothers' AI Assistant"
+            onClick={onCloseChat}
+            type='button'
+          >
+            <img
+              src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
+              alt=''
             />
-            <button
-              className={styles.transferButton}
-              onClick={handleShowChatForm}
-              type='button'
-            >
-              I want to talk to a Sales Consultant.
-            </button>
+          </button>
+        </div>
+        <div className={styles.body} ref={chatContainerRef}>
+          <p>
+            I am the Toll Brothers AI assistant. I can assist with your home
+            search using the prompts below or direct you to one of our human
+            experts for additional help.
+          </p>
+          <div className={styles.messages} ref={messageContainerRef}>
+            {messages.map((msg) => {
+              if (msg.type === 'user') {
+                return <UserMessage key={msg.id} message={msg.text} />
+              } else if (msg.type === 'bot') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={msg.component}
+                  />
+                )
+              } else if (msg.type === 'prompt') {
+                return (
+                  <OptionsList
+                    key={msg.id}
+                    options={msg.options}
+                    onOptionSelect={handleOptionSelect}
+                  />
+                )
+              } else if (msg.type === 'products') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={
+                      <ProductsList
+                        products={msg.products}
+                        handleProductSelect={(product) =>
+                          handleProductSelect(product, {
+                            fromProductsList: true
+                          })
+                        }
+                        utils={utils}
+                      />
+                    }
+                  />
+                )
+              } else if (msg.type === 'product') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={
+                      <ProductLayout
+                        key={msg.id}
+                        product={msg.product}
+                        utils={utils}
+                        handleProductSelect={handleProductSelect}
+                        onClose={() =>
+                          setMessages((prev) =>
+                            prev.filter((m) => m.id !== msg.id)
+                          )
+                        }
+                        onCloseChat={() => setIsChatOpen(false)}
+                      />
+                    }
+                  />
+                )
+              } else if (msg.type === 'form') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    component={
+                      <ChatBotForm
+                        chatRegion={chatRegion}
+                        productCode={productCode}
+                        tollRegionsEndpoint={tollRegionsEndpoint}
+                        availabilityAPI={availabilityAPI}
+                        onClose={() =>
+                          setMessages((prev) =>
+                            prev.filter((m) => m.type !== 'form')
+                          )
+                        }
+                      />
+                    }
+                  />
+                )
+              }
+            })}
+
+            {isThinking && <BotMessage component={<ThinkingIndicator />} />}
+            {error && <div className={styles.errorMessage}>{error}</div>}
           </div>
         </div>
-      )}
+        <div className={styles.footer}>
+          <UserInputField
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onSend={handleSendMessage}
+            placeholder='Ask TollBot your question here.'
+          />
+          <button
+            className={styles.transferButton}
+            onClick={handleShowChatForm}
+            type='button'
+          >
+            I want to talk to a Sales Consultant.
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

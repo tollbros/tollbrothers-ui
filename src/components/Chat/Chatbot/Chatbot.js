@@ -12,6 +12,7 @@ import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
+import { useHorizontalResize } from './hooks/useHorizontalResize'
 
 const TEST_DATA = [
   {
@@ -81,6 +82,8 @@ export const Chatbot = ({
   chatStartedEventString = 'chatStarted'
 }) => {
   const chatInterfaceRef = useRef(null)
+  const { width, height, isResizing, handleStart } =
+    useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [messages, setMessages] = useState([])
@@ -349,7 +352,31 @@ export const Chatbot = ({
         id='chatbot-interface'
         className={`${styles.interface} ${!isChatOpen ? styles.hidden : ''}`}
         ref={chatInterfaceRef}
+        style={{ width: `${width}px`, height: `${height}px` }}
       >
+        <div
+          className={`${styles.resizeHandle} ${
+            isResizing ? styles.resizing : ''
+          }`}
+          onMouseDown={handleStart}
+          onTouchStart={handleStart}
+          role='separator'
+          aria-label='Resize chat'
+        >
+          <svg
+            width='10'
+            height='10'
+            viewBox='0 0 10 10'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M0 10L10 0M0 5L5 0'
+              stroke='currentColor'
+              strokeWidth='1'
+            />
+          </svg>
+        </div>
         <div className={styles.header}>
           <div className={styles.title}>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />

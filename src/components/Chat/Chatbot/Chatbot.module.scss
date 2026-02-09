@@ -39,10 +39,8 @@
     bottom: 0;
     z-index: 9999;
     color: black;
-    width: 100%;
-    max-width: 345px;
-    min-height: 500px;
-    max-height: 650px;
+    width: 345px;
+    height: 650px;
     //padding-bottom: 10px;
     background-color: #fff;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
@@ -54,6 +52,24 @@
         line-height: 1.5 !important;
     }
 
+}
+
+.resizeHandle {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 18px;
+    height: 18px;
+    cursor: nwse-resize;
+    z-index: 11;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.45);
+
+    @media (min-width: $screen-sm) {
+        display: flex;
+    }
 }
 
 .header {

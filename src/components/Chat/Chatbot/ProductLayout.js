@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styles from './ProductLayout.module.scss'
 import { ModelStats } from './ModelStats'
 import { ModelDetails } from './ModelDetails'
@@ -19,6 +19,7 @@ export const ProductLayout = ({
   onClose,
   onCloseChat = () => null
 }) => {
+  const rootRef = useRef(null)
   const headShotImage = product?.headShot?.media?.url
   const desc =
     product.overview?.shortDescription ||
@@ -127,14 +128,17 @@ export const ProductLayout = ({
     return false
   }
 
-  const closeChatOnMobile = () => {
-    if (window.innerWidth < 992) {
+  const closeChatIfNoSpace = () => {
+    if (!rootRef.current) return
+    const layoutWidth = rootRef.current.offsetWidth
+    const availableSpace = window.innerWidth - 680
+    if (layoutWidth > availableSpace) {
       onCloseChat()
     }
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} ref={rootRef}>
       <CloseButton
         className={styles.closeButton}
         onClick={onClose}
@@ -251,7 +255,7 @@ export const ProductLayout = ({
                 isLink
                 utils={utils}
                 onClick={(e) => {
-                  closeChatOnMobile()
+                  closeChatIfNoSpace()
                   const isCurrentPage = preventIfCurrentPage(product.url, e)
                   if (isCurrentPage && utils) {
                     if (isVip) {
@@ -273,7 +277,7 @@ export const ProductLayout = ({
                   isLink
                   utils={utils}
                   onClick={(e) => {
-                    closeChatOnMobile()
+                    closeChatIfNoSpace()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {
                       utils.closeSalesPanel()
@@ -294,7 +298,7 @@ export const ProductLayout = ({
                   isLink
                   utils={utils}
                   onClick={(e) => {
-                    closeChatOnMobile()
+                    closeChatIfNoSpace()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {
                       utils.openSalesPanel()

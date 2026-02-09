@@ -62,10 +62,14 @@
     height: 18px;
     cursor: nwse-resize;
     z-index: 11;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     color: rgba(0, 0, 0, 0.45);
+
+    @media (min-width: $screen-sm) {
+        display: flex;
+    }
 }
 
 .header {

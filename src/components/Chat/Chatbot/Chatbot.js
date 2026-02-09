@@ -82,7 +82,7 @@ export const Chatbot = ({
   chatStartedEventString = 'chatStarted'
 }) => {
   const chatInterfaceRef = useRef(null)
-  const { width, height, isResizing, handleMouseDown } =
+  const { width, height, isResizing, handleStart } =
     useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -358,7 +358,8 @@ export const Chatbot = ({
           className={`${styles.resizeHandle} ${
             isResizing ? styles.resizing : ''
           }`}
-          onMouseDown={handleMouseDown}
+          onMouseDown={handleStart}
+          onTouchStart={handleStart}
           role='separator'
           aria-label='Resize chat'
         >

@@ -18,23 +18,32 @@ export function useHorizontalResize(elementRef) {
     return Math.floor(window.innerHeight * MAX_HEIGHT_PERCENT)
   }, [])
 
-  const handleMouseDown = useCallback((e) => {
+  const handleStart = useCallback((e) => {
     e.preventDefault()
     setIsResizing(true)
   }, [])
 
-  const handleMouseMove = useCallback(
+  const handleMove = useCallback(
     (e) => {
       if (!isResizing || !elementRef.current) return
 
+      // Prevent page scrolling during touch drag
+      if (e.touches) {
+        e.preventDefault()
+      }
+
       const rect = elementRef.current.getBoundingClientRect()
 
-      const newWidth = rect.right - e.clientX
+      // Get coordinates from mouse or touch event
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY
+
+      const newWidth = rect.right - clientX
       const maxWidth = getMaxWidth()
       const clampedWidth = Math.min(Math.max(newWidth, MIN_WIDTH), maxWidth)
       setWidth(clampedWidth)
 
-      const newHeight = rect.bottom - e.clientY
+      const newHeight = rect.bottom - clientY
       const maxHeight = getMaxHeight()
       const clampedHeight = Math.min(Math.max(newHeight, MIN_HEIGHT), maxHeight)
       setHeight(clampedHeight)
@@ -42,25 +51,34 @@ export function useHorizontalResize(elementRef) {
     [isResizing, elementRef, getMaxWidth, getMaxHeight]
   )
 
-  const handleMouseUp = useCallback(() => {
+  const handleEnd = useCallback(() => {
     setIsResizing(false)
   }, [])
 
   useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
+      // Mouse events
+      document.addEventListener('mousemove', handleMove)
+      document.addEventListener('mouseup', handleEnd)
+      // Touch events
+      document.addEventListener('touchmove', handleMove, { passive: false })
+      document.addEventListener('touchend', handleEnd)
+      document.addEventListener('touchcancel', handleEnd)
+
       document.body.style.cursor = 'nesw-resize'
       document.body.style.userSelect = 'none'
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+      document.removeEventListener('touchcancel', handleEnd)
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
     }
-  }, [isResizing, handleMouseMove, handleMouseUp])
+  }, [isResizing, handleMove, handleEnd])
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -82,6 +100,6 @@ export function useHorizontalResize(elementRef) {
     width,
     height,
     isResizing,
-    handleMouseDown
+    handleStart
   }
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 
 const MIN_WIDTH = 345
-const MIN_HEIGHT = 500
-const MAX_WIDTH_PERCENT = 0.8
-const MAX_HEIGHT_PERCENT = 0.8
+const MAX_WIDTH = 780
+const MIN_HEIGHT = 650
+const MAX_HEIGHT_PERCENT = 0.96
 
 export function useHorizontalResize(elementRef) {
   const [width, setWidth] = useState(MIN_WIDTH)
@@ -11,7 +11,7 @@ export function useHorizontalResize(elementRef) {
   const [isResizing, setIsResizing] = useState(false)
 
   const getMaxWidth = useCallback(() => {
-    return Math.floor(window.innerWidth * MAX_WIDTH_PERCENT)
+    return MAX_WIDTH
   }, [])
 
   const getMaxHeight = useCallback(() => {

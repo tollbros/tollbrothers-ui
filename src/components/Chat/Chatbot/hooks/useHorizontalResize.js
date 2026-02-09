@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 const MIN_WIDTH = 345
-const MAX_WIDTH = 780
+const MAX_WIDTH = 750
 const MIN_HEIGHT = 650
 const MAX_HEIGHT_PERCENT = 0.96
 

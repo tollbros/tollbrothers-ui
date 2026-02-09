@@ -12,6 +12,7 @@ import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
+import { useHorizontalResize } from './hooks/useHorizontalResize'
 
 const TEST_DATA = [
   {
@@ -81,6 +82,8 @@ export const Chatbot = ({
   chatStartedEventString = 'chatStarted'
 }) => {
   const chatInterfaceRef = useRef(null)
+  const { width, height, isResizing, handleMouseDown } =
+    useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [messages, setMessages] = useState([])
@@ -253,64 +256,64 @@ export const Chatbot = ({
     }
   }
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const routes = [
-  //       '/luxury-homes-for-sale/California/Metro-Heights', // mix of future and non-future collections
-  //       '/luxury-homes-for-sale/California/Metro-Heights/Ironridge', // future
-  //       '/luxury-homes-for-sale/Florida/Alora', // Vip only
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River', // hide tour
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River/Maycomb',
-  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park', // schedule a tour
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Kensico-Ridge', // DCA disclaimer "contact us" only cta
-  //       '/luxury-homes-for-sale/Florida/Shores-at-RiverTown/Riverview-Collection/Quick-Move-In/MLS-2024039', // model with self guided tour
-  //       '/luxury-homes-for-sale/Florida/Seabrook-Village' // community with self guided tour
-  //     ]
+  useEffect(() => {
+    setTimeout(() => {
+      const routes = [
+        '/luxury-homes-for-sale/California/Metro-Heights', // mix of future and non-future collections
+        '/luxury-homes-for-sale/California/Metro-Heights/Ironridge', // future
+        '/luxury-homes-for-sale/Florida/Alora', // Vip only
+        '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River', // hide tour
+        '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River/Maycomb',
+        '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park', // schedule a tour
+        '/luxury-homes-for-sale/New-York/Regency-at-Kensico-Ridge', // DCA disclaimer "contact us" only cta
+        '/luxury-homes-for-sale/Florida/Shores-at-RiverTown/Riverview-Collection/Quick-Move-In/MLS-2024039', // model with self guided tour
+        '/luxury-homes-for-sale/Florida/Seabrook-Village' // community with self guided tour
+      ]
 
-  //     Promise.allSettled(
-  //       routes.map((route) =>
-  //         fetch(`${tollRouteApi}${route}`)
-  //           .then((response) => {
-  //             // console.log('Fetch response for', route, ':', response)
-  //             if (!response.ok) {
-  //               throw new Error(`HTTP error! status: ${response.status}`)
-  //             }
-  //             return response.json()
-  //           })
-  //           .then(
-  //             (data) =>
-  //               data.communityComponent ??
-  //               data.masterCommunityComponent ??
-  //               data.modelComponent
-  //           )
-  //       )
-  //     )
-  //       .then((results) => {
-  //         setIsThinking(false)
-  //         const communities = results
-  //           .filter((result) => result.status === 'fulfilled' && result.value)
-  //           .map((result) => result.value)
+      Promise.allSettled(
+        routes.map((route) =>
+          fetch(`${tollRouteApi}${route}`)
+            .then((response) => {
+              // console.log('Fetch response for', route, ':', response)
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+              }
+              return response.json()
+            })
+            .then(
+              (data) =>
+                data.communityComponent ??
+                data.masterCommunityComponent ??
+                data.modelComponent
+            )
+        )
+      )
+        .then((results) => {
+          setIsThinking(false)
+          const communities = results
+            .filter((result) => result.status === 'fulfilled' && result.value)
+            .map((result) => result.value)
 
-  //         console.log('Fetched communities:', communities)
+          console.log('Fetched communities:', communities)
 
-  //         if (communities.length > 0) {
-  //           const newBotMessage = {
-  //             id: Date.now(),
-  //             text: 'Here are some communities that you might like:',
-  //             type: 'products',
-  //             products: communities
-  //           }
+          if (communities.length > 0) {
+            const newBotMessage = {
+              id: Date.now(),
+              text: 'Here are some communities that you might like:',
+              type: 'products',
+              products: communities
+            }
 
-  //           setMessages([...messages, newBotMessage])
-  //         } else {
-  //           console.error('No communities were successfully fetched')
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error fetching routes:', error)
-  //       })
-  //   }, 2000)
-  // }, [])
+            setMessages([...messages, newBotMessage])
+          } else {
+            console.error('No communities were successfully fetched')
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching routes:', error)
+        })
+    }, 2000)
+  }, [])
 
   useEffect(() => {
     if (
@@ -349,7 +352,30 @@ export const Chatbot = ({
         id='chatbot-interface'
         className={`${styles.interface} ${!isChatOpen ? styles.hidden : ''}`}
         ref={chatInterfaceRef}
+        style={{ width: `${width}px`, height: `${height}px` }}
       >
+        <div
+          className={`${styles.resizeHandle} ${
+            isResizing ? styles.resizing : ''
+          }`}
+          onMouseDown={handleMouseDown}
+          role='separator'
+          aria-label='Resize chat'
+        >
+          <svg
+            width='10'
+            height='10'
+            viewBox='0 0 10 10'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M0 10L10 0M0 5L5 0'
+              stroke='currentColor'
+              strokeWidth='1'
+            />
+          </svg>
+        </div>
         <div className={styles.header}>
           <div className={styles.title}>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />

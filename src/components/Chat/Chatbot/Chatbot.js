@@ -76,7 +76,9 @@ export const Chatbot = ({
   chatRegion,
   productCode,
   availabilityAPI,
-  setDisableLiveChat = () => null,
+  setIsChatBotOpenExternal = () => null,
+  isChatBotOpenExternal, // this is to open chat from a button in the parent app
+  setChatBotTransferData = () => null,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted'
@@ -85,7 +87,7 @@ export const Chatbot = ({
   const { width, height, isResizing, handleStart } =
     useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isChatBotOpen, setIsChatBotOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
@@ -99,11 +101,12 @@ export const Chatbot = ({
   console.log('productCode :', productCode)
 
   const onChatButtonClick = () => {
-    setIsChatOpen(true)
+    setIsChatBotOpen(true)
   }
 
   const onCloseChat = () => {
-    setIsChatOpen(false)
+    setIsChatBotOpen(false)
+    setIsChatBotOpenExternal(false)
   }
 
   const handleShowChatForm = () => {
@@ -330,6 +333,25 @@ export const Chatbot = ({
     }
   }, [messages, isThinking])
 
+  useEffect(() => {
+    if (isChatBotOpenExternal) {
+      setIsChatBotOpen(true)
+    }
+  }, [isChatBotOpenExternal])
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setChatBotTransferData({
+  //       accessToken:
+  //         'eyJvcmdKd3QuaW5jbCI6ZmFsc2UsImtpZCI6IjQ2NDkzYjJhMTI4NTgyN2YxMWRkZWVlMTZmNTg2ZTFmNTk0NDY4YzY4YTM5ZDczMjZmYTZlYjVjNWZjMjAwMDgiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2Mi9pYW1lc3NhZ2UvVU5BVVRIL05BL3VpZDowMjg4MTQzMS0wNjFlLTQyYWMtYTIwZi1iMDAzOTI5MjEwNmUiLCJjbGllbnRJZCI6InYxL09TQ19XZWJfQVBJLzk3MmI1MGViLTAwZmEtNDhhMy05NWQ0LTkxMWI0MDgwNTY4NSIsImZhbGNvbkNlbGwiOiJzY3J0MDEiLCJjaGFubmVsQWRkSWQiOiIxZTFlM2M2NS1jODEyLTRhYzItYjQyNy1lMGEyNjQ4NjE5NGEiLCJpc3MiOiJpYW1lc3NhZ2UiLCJmYWxjb25GRCI6InVlbmdhZ2UxIiwiZGV2aWNlSWQiOiIrSDYxcXpvb2M1bFBaeXlVd0RnNkpZclkrT0JHalBCU2E5VmY4NEhIUHgvOXhEd0F5dHFHbEhPVG5lZnhGUUdWbS83cE5YMCtJLzNFbCt1bGpmVm5kUT09IiwiY2FwYWJpbGl0aWVzVmVyc2lvbiI6IjI0OCIsIm9yZ0lkIjoiMDBETzgwMDAwME5RT1BkIiwiZGV2aWNlSW5mbyI6Int9IiwicGxhdGZvcm0iOiJXZWIiLCJmYWxjb25GSUhhc2giOiJseXdmcGQiLCJqd3RJZCI6IjU4OXBmZlFDZjNXSXFHdGJxQXNnY1YiLCJjbGllbnRTZXNzaW9uSWQiOiJhNGE4ZGY5OC03YmFkLTRhNWMtODIyOS00NWM1MDUwZDk2YzEiLCJhdWQiOiJVU0VSIiwiZXZ0S2V5Ijoic2NydC5wcm9kLmV2ZW50cm91dGVyX19hd3MuYXdzLXByb2Q1LXVzd2VzdDIudWVuZ2FnZTEuYWpuYWxvY2FsMV9fcHVibGljLmV2ZW50cy5zY3J0MDE6NjEiLCJvcmdNaWdyYXRpb25CZWhhdmlvciI6dHJ1ZSwiYXBpVmVyc2lvbiI6InYyIiwic2NvcGUiOiJwdWJsaWMiLCJqd2tzX3VyaSI6Imh0dHBzOi8vc2NydDAxLnVlbmdhZ2UxLnNmZGMtbHl3ZnBkLnN2Yy5zZmRjZmMubmV0L2lhbWVzc2FnZS92MS8ud2VsbC1rbm93bi9qd2tzLmpzb24_a2V5SWQ9NDY0OTNiMmExMjg1ODI3ZjExZGRlZWUxNmY1ODZlMWY1OTQ0NjhjNjhhMzlkNzMyNmZhNmViNWM1ZmMyMDAwOCIsImVzRGVwbG95bWVudFR5cGUiOiJBUEkiLCJleHAiOjE3NzA2OTkwMjUsImlhdCI6MTc3MDY3NzM2NX0.U0cy2-59nAqc5HZDoRQMnjxkc4IHF8yj4fxHJoZEo-vco_5W0F7XnaSxDKFob5exXu2c69LWWv3zdaH8rVniBjyqYVkrbpuLANpVqHznX1VHLTPJj5oMXFcHryikPxCEV9RfFJ2I5BsVnsGJJdFUy3Y1vw3yMgId2yqp4oFuNqQ1zQ2bEzYiT7MaopQtqzJJjgViqjbdex_9w1AMizVCJ6Q6uOntoXEsSanFrVnMVij4njKyLYoqFoDK9LnSXdZqij0pAjR62SvV7ho1o60gDaQhTehxbPrSzvo3Q6z7IHihMKGeKVOVsS8-MW3eGn2S8KDACG1BQOj6_ZmHGoyDGw',
+  //       conversationId: '1284d46f-3785-4fd6-a77f-3df284c82530',
+  //       firstName: 'Michael',
+  //       lastName: 'Duarte',
+  //     })
+  //     onCloseChat()
+  //   }, 5000)
+  // }, [])
+
   if (!showChatbot) {
     return null
   }
@@ -338,19 +360,19 @@ export const Chatbot = ({
     <div className={`${styles.root}`}>
       <button
         className={`${styles.launchButton} ${styles.buttonReset} ${
-          isChatOpen ? styles.hidden : ''
+          isChatBotOpen ? styles.hidden : ''
         }`}
         onClick={onChatButtonClick}
         aria-label="Open Toll Brothers' AI Assistant"
         aria-controls='chatbot-interface'
-        aria-expanded={isChatOpen}
+        aria-expanded={isChatBotOpen}
       >
         <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-button.svg' />
       </button>
 
       <div
         id='chatbot-interface'
-        className={`${styles.interface} ${!isChatOpen ? styles.hidden : ''}`}
+        className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}
         ref={chatInterfaceRef}
         style={{ width: `${width}px`, height: `${height}px` }}
       >
@@ -455,7 +477,7 @@ export const Chatbot = ({
                             prev.filter((m) => m.id !== msg.id)
                           )
                         }
-                        onCloseChat={() => setIsChatOpen(false)}
+                        onCloseChat={onCloseChat}
                       />
                     }
                   />

@@ -24,30 +24,6 @@ import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
 
-const getGaClientId = () => {
-  const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
-  if (typeof window.ga !== 'undefined' && typeof window.ga.getAll === 'function') {
-    const gaTracker = window.ga.getAll()[0]
-    const gaClientId = gaTracker.get('clientId')
-    const gaUserId = gaTracker.get('userId')
-    const gaTrackId = gaTracker.get('trackingId')
-
-    if (typeof gaClientId !== 'undefined' && gaClientId !== '') {
-      gaIds.gaClientId = gaClientId
-    }
-
-    if (typeof gaUserId !== 'undefined' && gaUserId !== '') {
-      gaIds.gaUserId = gaUserId
-    }
-
-    if (typeof gaTrackId !== 'undefined' && gaTrackId !== '') {
-      gaIds.gaTrackId = gaTrackId
-    }
-  }
-
-  return gaIds
-}
-
 export const TollChat = ({
   availabilityAPI,
   endPoint,

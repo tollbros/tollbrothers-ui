@@ -477,7 +477,7 @@ export const Chatbot = ({
                             prev.filter((m) => m.id !== msg.id)
                           )
                         }
-                        onCloseChat={() => setIsChatBotOpen(false)}
+                        onCloseChat={onCloseChat}
                       />
                     }
                   />

@@ -76,7 +76,7 @@ export const Chatbot = ({
   chatRegion,
   productCode,
   availabilityAPI,
-  setIsChatOpenExternal = () => null,
+  setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   setChatBotTransferData = () => null,
   trackChatEvent = () => null,
@@ -106,7 +106,7 @@ export const Chatbot = ({
 
   const onCloseChat = () => {
     setIsChatBotOpen(false)
-    setIsChatOpenExternal(false)
+    setIsChatBotOpenExternal(false)
   }
 
   const handleShowChatForm = () => {

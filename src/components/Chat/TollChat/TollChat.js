@@ -79,7 +79,7 @@ export const TollChat = ({
   productCode, // ie JDE number of community/model/qmi
   chatBotTransferData = null,
   setChatBotTransferData = () => null,
-  setIsChatOpenExternal = () => null
+  setIsChatBotOpenExternal = () => null
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
@@ -608,7 +608,7 @@ export const TollChat = ({
 
     if (!tbChat || isExpired(tbChat.expiry)) {
       clearLocalStorage('tbChat')
-      setIsChatOpenExternal(false)
+      setIsChatBotOpenExternal(false)
       setChatBotTransferData(null)
       return
     }
@@ -726,7 +726,7 @@ export const TollChat = ({
     setSystemMessage(null)
     setUnreadMessagesCount({ count: 0, lastMessageId: null })
     setChatBotTransferData(null)
-    setIsChatOpenExternal(false)
+    setIsChatBotOpenExternal(false)
     isTransfering.current = false
     isInConference.current = false
     if (abortController) {

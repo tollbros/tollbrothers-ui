@@ -41,6 +41,7 @@
 .scrollItem {
   flex-shrink: 0;
   width: calc(100% - 26px);
+  max-width: 266px;
   height: auto  !important;
 }
 
@@ -59,7 +60,7 @@
 .image {
   width: 100%;
   height: auto;
-  max-height: 250px;
+  //max-height: 250px;
   object-fit: cover;
   border: 1px solid $light_gray;
 }

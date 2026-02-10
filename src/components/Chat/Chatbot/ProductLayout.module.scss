@@ -86,3 +86,28 @@
   gap: 24px;
   width: 100%;
 }
+
+.footer {
+  position: relative;
+  margin-top: 4px;
+  padding-top: 30px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 1px;
+    background-color: $light_gray;
+  }
+}
+
+.optionsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: flex-end;
+}

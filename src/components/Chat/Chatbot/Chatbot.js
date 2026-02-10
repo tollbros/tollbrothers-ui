@@ -12,6 +12,7 @@ import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
+import { useHorizontalResize } from './hooks/useHorizontalResize'
 
 const TEST_DATA = [
   {
@@ -75,14 +76,18 @@ export const Chatbot = ({
   chatRegion,
   productCode,
   availabilityAPI,
-  setDisableLiveChat = () => null,
+  setIsChatBotOpenExternal = () => null,
+  isChatBotOpenExternal, // this is to open chat from a button in the parent app
+  setChatBotTransferData = () => null,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted'
 }) => {
   const chatInterfaceRef = useRef(null)
+  const { width, height, isResizing, handleStart } =
+    useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isChatBotOpen, setIsChatBotOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
@@ -96,11 +101,12 @@ export const Chatbot = ({
   console.log('productCode :', productCode)
 
   const onChatButtonClick = () => {
-    setIsChatOpen(true)
+    setIsChatBotOpen(true)
   }
 
   const onCloseChat = () => {
-    setIsChatOpen(false)
+    setIsChatBotOpen(false)
+    setIsChatBotOpenExternal(false)
   }
 
   const handleShowChatForm = () => {
@@ -219,31 +225,33 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
-  const handleProductSelect = (
+  const handleProductSelect = async (
     product,
     { fromProductsList = false, fromModelList = false } = {}
   ) => {
-    console.log('Product selected:', product)
+    const isModel = Boolean(product.commPlanID)
+    let modelData = null
 
+    if (isModel && !fromProductsList) {
+      setMessages((prev) => [
+        ...prev.filter((msg) => msg.productType !== 'model')
+      ])
+      setIsThinking(true)
+      modelData = await getProductData([product.url], tollRouteApi)
+    }
+
+    setIsThinking(false)
     const newBotMessage = {
       id: Date.now(),
-      // text: 'Here are some communities that you might like:',
       type: 'product',
-      product: product,
-      productType: product?.commPlanID ? 'model' : 'community'
+      product: isModel ? modelData?.[0] || product : product,
+      productType: isModel ? 'model' : 'community'
     }
 
     if (fromProductsList) {
       // Remove all existing product type messages before adding the new one
       setMessages((prev) => [
         ...prev.filter((msg) => msg.type !== 'product'),
-        newBotMessage
-      ])
-    } else if (fromModelList) {
-      setMessages((prev) => [
-        ...prev.filter(
-          (msg) => msg.type !== 'product' || msg.productType !== 'model'
-        ),
         newBotMessage
       ])
     } else {
@@ -254,23 +262,15 @@ export const Chatbot = ({
   // useEffect(() => {
   //   setTimeout(() => {
   //     const routes = [
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Quick-Move-In/283408',
-  //       '/luxury-homes-for-sale/California/3131-Camino/Lila',
-  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park/Bolton',
-  //       '/luxury-homes-for-sale/Massachusetts/Lakemont-by-Toll-Brothers/Quick-Move-In/MLS-73340095',
-  //       '/luxury-homes-for-sale/Florida/Mill-Creek-Forest',
-  //       '/luxury-homes-for-sale/Virginia/Parkside-Village/The-Sequoia-Collection/Quick-Move-In/MLS-VALO2103266',
-  //       '/luxury-homes-for-sale/Florida/The-Isles-at-Lakewood-Ranch/Captiva-Collection/Aragon',
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Barnwell',
-  //       '/luxury-homes-for-sale/Florida/Bartram-Ranch/Abigail',
-  //       '/luxury-homes-for-sale/Florida/Crosswinds-at-Nocatee/Quick-Move-In/281046',
-  //       '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main/Myra',
-  //       '/luxury-homes-for-sale/Oregon/Toll-Brothers-at-Hosford-Farms-Terra-Collection/Quick-Move-In/280118',
-  //       '/luxury-homes-for-sale/Texas/Toll-Brothers-at-Woodland-Estates',
-  //       '/luxury-homes-for-sale/Colorado/Toll-Brothers-at-Macanta',
-  //       '/luxury-homes-for-sale/California/The-Station/Outlook',
-  //       '/luxury-homes-for-sale/California/Toll-Brothers-at-South-Main',
-  //       '/luxury-homes-for-sale/Florida/Regency-at-EverRange'
+  //       '/luxury-homes-for-sale/California/Metro-Heights', // mix of future and non-future collections
+  //       '/luxury-homes-for-sale/California/Metro-Heights/Ironridge', // future
+  //       '/luxury-homes-for-sale/Florida/Alora', // Vip only
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River', // hide tour
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River/Maycomb',
+  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park', // schedule a tour
+  //       '/luxury-homes-for-sale/New-York/Regency-at-Kensico-Ridge', // DCA disclaimer "contact us" only cta
+  //       '/luxury-homes-for-sale/Florida/Shores-at-RiverTown/Riverview-Collection/Quick-Move-In/MLS-2024039', // model with self guided tour
+  //       '/luxury-homes-for-sale/Florida/Seabrook-Village' // community with self guided tour
   //     ]
 
   //     Promise.allSettled(
@@ -331,7 +331,26 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isChatOpen, isThinking])
+  }, [messages, isThinking])
+
+  useEffect(() => {
+    if (isChatBotOpenExternal) {
+      setIsChatBotOpen(true)
+    }
+  }, [isChatBotOpenExternal])
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setChatBotTransferData({
+  //       accessToken:
+  //         'eyJvcmdKd3QuaW5jbCI6ZmFsc2UsImtpZCI6IjQ2NDkzYjJhMTI4NTgyN2YxMWRkZWVlMTZmNTg2ZTFmNTk0NDY4YzY4YTM5ZDczMjZmYTZlYjVjNWZjMjAwMDgiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2Mi9pYW1lc3NhZ2UvVU5BVVRIL05BL3VpZDowMjg4MTQzMS0wNjFlLTQyYWMtYTIwZi1iMDAzOTI5MjEwNmUiLCJjbGllbnRJZCI6InYxL09TQ19XZWJfQVBJLzk3MmI1MGViLTAwZmEtNDhhMy05NWQ0LTkxMWI0MDgwNTY4NSIsImZhbGNvbkNlbGwiOiJzY3J0MDEiLCJjaGFubmVsQWRkSWQiOiIxZTFlM2M2NS1jODEyLTRhYzItYjQyNy1lMGEyNjQ4NjE5NGEiLCJpc3MiOiJpYW1lc3NhZ2UiLCJmYWxjb25GRCI6InVlbmdhZ2UxIiwiZGV2aWNlSWQiOiIrSDYxcXpvb2M1bFBaeXlVd0RnNkpZclkrT0JHalBCU2E5VmY4NEhIUHgvOXhEd0F5dHFHbEhPVG5lZnhGUUdWbS83cE5YMCtJLzNFbCt1bGpmVm5kUT09IiwiY2FwYWJpbGl0aWVzVmVyc2lvbiI6IjI0OCIsIm9yZ0lkIjoiMDBETzgwMDAwME5RT1BkIiwiZGV2aWNlSW5mbyI6Int9IiwicGxhdGZvcm0iOiJXZWIiLCJmYWxjb25GSUhhc2giOiJseXdmcGQiLCJqd3RJZCI6IjU4OXBmZlFDZjNXSXFHdGJxQXNnY1YiLCJjbGllbnRTZXNzaW9uSWQiOiJhNGE4ZGY5OC03YmFkLTRhNWMtODIyOS00NWM1MDUwZDk2YzEiLCJhdWQiOiJVU0VSIiwiZXZ0S2V5Ijoic2NydC5wcm9kLmV2ZW50cm91dGVyX19hd3MuYXdzLXByb2Q1LXVzd2VzdDIudWVuZ2FnZTEuYWpuYWxvY2FsMV9fcHVibGljLmV2ZW50cy5zY3J0MDE6NjEiLCJvcmdNaWdyYXRpb25CZWhhdmlvciI6dHJ1ZSwiYXBpVmVyc2lvbiI6InYyIiwic2NvcGUiOiJwdWJsaWMiLCJqd2tzX3VyaSI6Imh0dHBzOi8vc2NydDAxLnVlbmdhZ2UxLnNmZGMtbHl3ZnBkLnN2Yy5zZmRjZmMubmV0L2lhbWVzc2FnZS92MS8ud2VsbC1rbm93bi9qd2tzLmpzb24_a2V5SWQ9NDY0OTNiMmExMjg1ODI3ZjExZGRlZWUxNmY1ODZlMWY1OTQ0NjhjNjhhMzlkNzMyNmZhNmViNWM1ZmMyMDAwOCIsImVzRGVwbG95bWVudFR5cGUiOiJBUEkiLCJleHAiOjE3NzA2OTkwMjUsImlhdCI6MTc3MDY3NzM2NX0.U0cy2-59nAqc5HZDoRQMnjxkc4IHF8yj4fxHJoZEo-vco_5W0F7XnaSxDKFob5exXu2c69LWWv3zdaH8rVniBjyqYVkrbpuLANpVqHznX1VHLTPJj5oMXFcHryikPxCEV9RfFJ2I5BsVnsGJJdFUy3Y1vw3yMgId2yqp4oFuNqQ1zQ2bEzYiT7MaopQtqzJJjgViqjbdex_9w1AMizVCJ6Q6uOntoXEsSanFrVnMVij4njKyLYoqFoDK9LnSXdZqij0pAjR62SvV7ho1o60gDaQhTehxbPrSzvo3Q6z7IHihMKGeKVOVsS8-MW3eGn2S8KDACG1BQOj6_ZmHGoyDGw',
+  //       conversationId: '1284d46f-3785-4fd6-a77f-3df284c82530',
+  //       firstName: 'Michael',
+  //       lastName: 'Duarte',
+  //     })
+  //     onCloseChat()
+  //   }, 5000)
+  // }, [])
 
   if (!showChatbot) {
     return null
@@ -341,148 +360,171 @@ export const Chatbot = ({
     <div className={`${styles.root}`}>
       <button
         className={`${styles.launchButton} ${styles.buttonReset} ${
-          isChatOpen ? styles.hidden : ''
+          isChatBotOpen ? styles.hidden : ''
         }`}
         onClick={onChatButtonClick}
         aria-label="Open Toll Brothers' AI Assistant"
         aria-controls='chatbot-interface'
-        aria-expanded={isChatOpen}
+        aria-expanded={isChatBotOpen}
       >
         <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-button.svg' />
       </button>
 
-      {isChatOpen && (
+      <div
+        id='chatbot-interface'
+        className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}
+        ref={chatInterfaceRef}
+        style={{ width: `${width}px`, height: `${height}px` }}
+      >
         <div
-          id='chatbot-interface'
-          className={`${styles.interface}`}
-          ref={chatInterfaceRef}
+          className={`${styles.resizeHandle} ${
+            isResizing ? styles.resizing : ''
+          }`}
+          onMouseDown={handleStart}
+          onTouchStart={handleStart}
+          role='separator'
+          aria-label='Resize chat'
         >
-          <div className={styles.header}>
-            <div className={styles.title}>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-              <span>Hi, I'm TollBot</span>
-            </div>
-            <button
-              ref={closeButtonRef}
-              className={`${styles.closeButton} ${styles.buttonReset}`}
-              aria-label="Close Toll Brothers' AI Assistant"
-              onClick={onCloseChat}
-              type='button'
-            >
-              <img
-                src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
-                alt=''
-              />
-            </button>
-          </div>
-          <div className={styles.body} ref={chatContainerRef}>
-            <p>
-              I am the Toll Brothers AI assistant. I can assist with your home
-              search using the prompts below or direct you to one of our human
-              experts for additional help.
-            </p>
-            <div className={styles.messages} ref={messageContainerRef}>
-              {messages.map((msg) => {
-                if (msg.type === 'user') {
-                  return <UserMessage key={msg.id} message={msg.text} />
-                } else if (msg.type === 'bot') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={msg.component}
-                    />
-                  )
-                } else if (msg.type === 'prompt') {
-                  return (
-                    <OptionsList
-                      key={msg.id}
-                      options={msg.options}
-                      onOptionSelect={handleOptionSelect}
-                    />
-                  )
-                } else if (msg.type === 'products') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={
-                        <ProductsList
-                          products={msg.products}
-                          handleProductSelect={(product) =>
-                            handleProductSelect(product, {
-                              fromProductsList: true
-                            })
-                          }
-                          utils={utils}
-                        />
-                      }
-                    />
-                  )
-                } else if (msg.type === 'product') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      message={msg.text}
-                      component={
-                        <ProductLayout
-                          key={msg.id}
-                          product={msg.product}
-                          utils={utils}
-                          handleProductSelect={handleProductSelect}
-                          onClose={() =>
-                            setMessages((prev) =>
-                              prev.filter((m) => m.id !== msg.id)
-                            )
-                          }
-                        />
-                      }
-                    />
-                  )
-                } else if (msg.type === 'form') {
-                  return (
-                    <BotMessage
-                      key={msg.id}
-                      component={
-                        <ChatBotForm
-                          chatRegion={chatRegion}
-                          productCode={productCode}
-                          tollRegionsEndpoint={tollRegionsEndpoint}
-                          availabilityAPI={availabilityAPI}
-                          onClose={() =>
-                            setMessages((prev) =>
-                              prev.filter((m) => m.type !== 'form')
-                            )
-                          }
-                        />
-                      }
-                    />
-                  )
-                }
-              })}
-
-              {isThinking && <BotMessage component={<ThinkingIndicator />} />}
-              {error && <div className={styles.errorMessage}>{error}</div>}
-            </div>
-          </div>
-          <div className={styles.footer}>
-            <UserInputField
-              value={inputMessage}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onSend={handleSendMessage}
-              placeholder='Ask TollBot your question here.'
+          <svg
+            width='10'
+            height='10'
+            viewBox='0 0 10 10'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M0 10L10 0M0 5L5 0'
+              stroke='currentColor'
+              strokeWidth='1'
             />
-            <button
-              className={styles.transferButton}
-              onClick={handleShowChatForm}
-              type='button'
-            >
-              I want to talk to a Sales Consultant.
-            </button>
+          </svg>
+        </div>
+        <div className={styles.header}>
+          <div className={styles.title}>
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
+            <span>Hi, I'm TollBot</span>
+          </div>
+          <button
+            ref={closeButtonRef}
+            className={`${styles.closeButton} ${styles.buttonReset}`}
+            aria-label="Close Toll Brothers' AI Assistant"
+            onClick={onCloseChat}
+            type='button'
+          >
+            <img
+              src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
+              alt=''
+            />
+          </button>
+        </div>
+        <div className={styles.body} ref={chatContainerRef}>
+          <p>
+            I am the Toll Brothers AI assistant. I can assist with your home
+            search using the prompts below or direct you to one of our human
+            experts for additional help.
+          </p>
+          <div className={styles.messages} ref={messageContainerRef}>
+            {messages.map((msg) => {
+              if (msg.type === 'user') {
+                return <UserMessage key={msg.id} message={msg.text} />
+              } else if (msg.type === 'bot') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={msg.component}
+                  />
+                )
+              } else if (msg.type === 'prompt') {
+                return (
+                  <OptionsList
+                    key={msg.id}
+                    options={msg.options}
+                    onOptionSelect={handleOptionSelect}
+                  />
+                )
+              } else if (msg.type === 'products') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={
+                      <ProductsList
+                        products={msg.products}
+                        handleProductSelect={(product) =>
+                          handleProductSelect(product, {
+                            fromProductsList: true
+                          })
+                        }
+                        utils={utils}
+                      />
+                    }
+                  />
+                )
+              } else if (msg.type === 'product') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={
+                      <ProductLayout
+                        key={msg.id}
+                        product={msg.product}
+                        utils={utils}
+                        handleProductSelect={handleProductSelect}
+                        onClose={() =>
+                          setMessages((prev) =>
+                            prev.filter((m) => m.id !== msg.id)
+                          )
+                        }
+                        onCloseChat={onCloseChat}
+                      />
+                    }
+                  />
+                )
+              } else if (msg.type === 'form') {
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    component={
+                      <ChatBotForm
+                        chatRegion={chatRegion}
+                        productCode={productCode}
+                        tollRegionsEndpoint={tollRegionsEndpoint}
+                        availabilityAPI={availabilityAPI}
+                        onClose={() =>
+                          setMessages((prev) =>
+                            prev.filter((m) => m.type !== 'form')
+                          )
+                        }
+                      />
+                    }
+                  />
+                )
+              }
+            })}
+
+            {isThinking && <BotMessage component={<ThinkingIndicator />} />}
+            {error && <div className={styles.errorMessage}>{error}</div>}
           </div>
         </div>
-      )}
+        <div className={styles.footer}>
+          <UserInputField
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onSend={handleSendMessage}
+            placeholder='Ask TollBot your question here.'
+          />
+          <button
+            className={styles.transferButton}
+            onClick={handleShowChatForm}
+            type='button'
+          >
+            I want to talk to a Sales Consultant.
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

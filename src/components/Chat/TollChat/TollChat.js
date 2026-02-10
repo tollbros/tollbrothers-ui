@@ -76,7 +76,10 @@ export const TollChat = ({
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted',
-  productCode // ie JDE number of community/model/qmi
+  productCode, // ie JDE number of community/model/qmi
+  chatBotTransferData = null,
+  setChatBotTransferData = () => null,
+  setIsChatOpenExternal = () => null
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
@@ -601,14 +604,16 @@ export const TollChat = ({
 
     let initialize = false
     const isTabVisiblilityEvent = event && event.type === 'visibilitychange'
-    const tbChat = getLocalStorage('tbChat')
+    const tbChat = getLocalStorage('tbChat') ?? chatBotTransferData
 
     if (!tbChat || isExpired(tbChat.expiry)) {
       clearLocalStorage('tbChat')
+      setIsChatOpenExternal(false)
+      setChatBotTransferData(null)
       return
     }
 
-    const value = tbChat.value
+    const value = tbChat.value ?? tbChat
     if (!value?.conversationId || !value?.accessToken) {
       return
     }
@@ -638,6 +643,20 @@ export const TollChat = ({
         setShowWaitMessage(false)
         setShowTextChatOptions(false)
         getConversationList(value)
+
+        if (chatBotTransferData) {
+          setLocalStorage(
+            // storing chat data since there was a transfer from chatbot
+            'tbChat',
+            {
+              accessToken: value.accessToken,
+              conversationId: value.conversationId,
+              firstName: value.firstName,
+              lastName: value.lastName
+            },
+            1000 * 60 * 60 * 2 // expire in 2 hours
+          )
+        }
 
         // turned this off since it was sending a system message every time the tab was restored
         // can confuse agents
@@ -706,6 +725,8 @@ export const TollChat = ({
     setAgentName('Agent')
     setSystemMessage(null)
     setUnreadMessagesCount({ count: 0, lastMessageId: null })
+    setChatBotTransferData(null)
+    setIsChatOpenExternal(false)
     isTransfering.current = false
     isInConference.current = false
     if (abortController) {

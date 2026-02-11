@@ -31,7 +31,7 @@ const buildUserEventObject = (product) => {
     eventObject.communityId = product.communityId
     eventObject.type = 'community'
   } else {
-    // most likely a search results page
+    // most likely a static page or search page
     eventObject = product
   }
 

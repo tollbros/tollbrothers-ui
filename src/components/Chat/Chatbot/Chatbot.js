@@ -14,6 +14,30 @@ import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 
+// Build a user event object from product data
+const buildUserEventObject = (product) => {
+  let eventObject = {
+    name: product.name,
+    url: product.url
+  }
+
+  if (product.commPlanID) {
+    eventObject.commPlanID = product.commPlanID
+    eventObject.type = product.isQMI ? 'qmi' : 'homeDesign'
+  } else if (product.isMaster && product.masterCommunityId) {
+    eventObject.masterCommunityId = product.masterCommunityId
+    eventObject.type = 'masterCommunity'
+  } else if (product.communityId) {
+    eventObject.communityId = product.communityId
+    eventObject.type = 'community'
+  } else {
+    // most likely a static page or search page
+    eventObject = product
+  }
+
+  return eventObject
+}
+
 const TEST_DATA = [
   {
     id: 1,
@@ -75,6 +99,7 @@ export const Chatbot = ({
   utils = {},
   chatRegion,
   productCode,
+  pageSummaryData,
   availabilityAPI,
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
@@ -84,8 +109,7 @@ export const Chatbot = ({
   chatStartedEventString = 'chatStarted'
 }) => {
   const chatInterfaceRef = useRef(null)
-  const { width, height, isResizing, handleStart } =
-    useHorizontalResize(chatInterfaceRef)
+  const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
   const [messages, setMessages] = useState([])
@@ -96,9 +120,25 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
+  const [userEvents, setUserEvents] = useState([])
 
-  console.log('chatRegion :', chatRegion)
-  console.log('productCode :', productCode)
+  // Add to userEvents array, keeping only the last 10 items and removing duplicates
+  const addUserEvent = (newEvent) => {
+    setUserEvents((prev) => {
+      // Remove any existing event with the same name, type, and commPlanID (if exists)
+      const filtered = prev.filter((event) => {
+        const isSameName = event.name === newEvent.name
+        const isSameType = event.type === newEvent.type
+        const isSameCommPlanID = event.commPlanID === newEvent.commPlanID
+        return !(isSameName && isSameType && isSameCommPlanID)
+      })
+      const updated = [...filtered, newEvent]
+      return updated.slice(-10)
+    })
+  }
+
+  // console.log('chatRegion :', chatRegion)
+  // console.log('productCode :', productCode)
 
   const onChatButtonClick = () => {
     setIsChatBotOpen(true)
@@ -116,10 +156,7 @@ export const Chatbot = ({
       type: 'form'
     }
 
-    setMessages((prev) => [
-      ...prev.filter((msg) => msg.type !== 'form'),
-      newBotMessage
-    ])
+    setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
   }
 
   const handleInputChange = (e) => {
@@ -155,11 +192,7 @@ export const Chatbot = ({
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
-        const products = [
-          ...(response.communities || []),
-          ...(response.qmis || []),
-          ...(response.homeDesigns || [])
-        ]
+        const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (products && Array.isArray(products) && products.length > 0) {
           setIsThinking(true)
@@ -207,9 +240,7 @@ export const Chatbot = ({
       onError: (err) => {
         setIsThinking(false)
         console.error('stream error:', err)
-        setError(
-          'An error occurred while sending the message. Pleaesse try again.'
-        )
+        setError('An error occurred while sending the message. Pleaesse try again.')
       }
     })
   }
@@ -225,17 +256,12 @@ export const Chatbot = ({
     handleSendMessage(null, option.value)
   }
 
-  const handleProductSelect = async (
-    product,
-    { fromProductsList = false, fromModelList = false } = {}
-  ) => {
+  const handleProductSelect = async (product, { fromProductsList = false, fromModelList = false } = {}) => {
     const isModel = Boolean(product.commPlanID)
     let modelData = null
 
     if (isModel && !fromProductsList) {
-      setMessages((prev) => [
-        ...prev.filter((msg) => msg.productType !== 'model')
-      ])
+      setMessages((prev) => [...prev.filter((msg) => msg.productType !== 'model')])
       setIsThinking(true)
       modelData = await getProductData([product.url], tollRouteApi)
     }
@@ -250,14 +276,15 @@ export const Chatbot = ({
 
     if (fromProductsList) {
       // Remove all existing product type messages before adding the new one
-      setMessages((prev) => [
-        ...prev.filter((msg) => msg.type !== 'product'),
-        newBotMessage
-      ])
+      setMessages((prev) => [...prev.filter((msg) => msg.type !== 'product'), newBotMessage])
     } else {
       setMessages((prev) => [...prev, newBotMessage])
     }
+
+    addUserEvent(buildUserEventObject(product))
   }
+
+  console.log('userEvents :', userEvents)
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -283,12 +310,7 @@ export const Chatbot = ({
   //             }
   //             return response.json()
   //           })
-  //           .then(
-  //             (data) =>
-  //               data.communityComponent ??
-  //               data.masterCommunityComponent ??
-  //               data.modelComponent
-  //           )
+  //           .then((data) => data.communityComponent ?? data.masterCommunityComponent ?? data.modelComponent)
   //       )
   //     )
   //       .then((results) => {
@@ -297,7 +319,7 @@ export const Chatbot = ({
   //           .filter((result) => result.status === 'fulfilled' && result.value)
   //           .map((result) => result.value)
 
-  //         console.log('Fetched communities:', communities)
+  //         // console.log('Fetched communities:', communities)
 
   //         if (communities.length > 0) {
   //           const newBotMessage = {
@@ -319,10 +341,7 @@ export const Chatbot = ({
   // }, [])
 
   useEffect(() => {
-    if (
-      chatContainerRef.current &&
-      messageContainerRef.current?.lastElementChild
-    ) {
+    if (chatContainerRef.current && messageContainerRef.current?.lastElementChild) {
       const lastElement = messageContainerRef.current.lastElementChild
       const elementTop = lastElement.offsetTop
       const offset = 80
@@ -352,6 +371,12 @@ export const Chatbot = ({
   //   }, 5000)
   // }, [])
 
+  useEffect(() => {
+    if (pageSummaryData) {
+      addUserEvent(buildUserEventObject(pageSummaryData))
+    }
+  }, [pageSummaryData])
+
   if (!showChatbot) {
     return null
   }
@@ -359,9 +384,7 @@ export const Chatbot = ({
   return (
     <div className={`${styles.root}`}>
       <button
-        className={`${styles.launchButton} ${styles.buttonReset} ${
-          isChatBotOpen ? styles.hidden : ''
-        }`}
+        className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
         onClick={onChatButtonClick}
         aria-label="Open Toll Brothers' AI Assistant"
         aria-controls='chatbot-interface'
@@ -377,26 +400,14 @@ export const Chatbot = ({
         style={{ width: `${width}px`, height: `${height}px` }}
       >
         <div
-          className={`${styles.resizeHandle} ${
-            isResizing ? styles.resizing : ''
-          }`}
+          className={`${styles.resizeHandle} ${isResizing ? styles.resizing : ''}`}
           onMouseDown={handleStart}
           onTouchStart={handleStart}
           role='separator'
           aria-label='Resize chat'
         >
-          <svg
-            width='10'
-            height='10'
-            viewBox='0 0 10 10'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              d='M0 10L10 0M0 5L5 0'
-              stroke='currentColor'
-              strokeWidth='1'
-            />
+          <svg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path d='M0 10L10 0M0 5L5 0' stroke='currentColor' strokeWidth='1' />
           </svg>
         </div>
         <div className={styles.header}>
@@ -411,38 +422,22 @@ export const Chatbot = ({
             onClick={onCloseChat}
             type='button'
           >
-            <img
-              src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg'
-              alt=''
-            />
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg' alt='' />
           </button>
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>
-            I am the Toll Brothers AI assistant. I can assist with your home
-            search using the prompts below or direct you to one of our human
-            experts for additional help.
+            I am the Toll Brothers AI assistant. I can assist with your home search using the prompts below or direct
+            you to one of our human experts for additional help.
           </p>
           <div className={styles.messages} ref={messageContainerRef}>
             {messages.map((msg) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
               } else if (msg.type === 'bot') {
-                return (
-                  <BotMessage
-                    key={msg.id}
-                    message={msg.text}
-                    component={msg.component}
-                  />
-                )
+                return <BotMessage key={msg.id} message={msg.text} component={msg.component} />
               } else if (msg.type === 'prompt') {
-                return (
-                  <OptionsList
-                    key={msg.id}
-                    options={msg.options}
-                    onOptionSelect={handleOptionSelect}
-                  />
-                )
+                return <OptionsList key={msg.id} options={msg.options} onOptionSelect={handleOptionSelect} />
               } else if (msg.type === 'products') {
                 return (
                   <BotMessage
@@ -472,11 +467,7 @@ export const Chatbot = ({
                         product={msg.product}
                         utils={utils}
                         handleProductSelect={handleProductSelect}
-                        onClose={() =>
-                          setMessages((prev) =>
-                            prev.filter((m) => m.id !== msg.id)
-                          )
-                        }
+                        onClose={() => setMessages((prev) => prev.filter((m) => m.id !== msg.id))}
                         onCloseChat={onCloseChat}
                       />
                     }
@@ -492,11 +483,7 @@ export const Chatbot = ({
                         productCode={productCode}
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
-                        onClose={() =>
-                          setMessages((prev) =>
-                            prev.filter((m) => m.type !== 'form')
-                          )
-                        }
+                        onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
                       />
                     }
                   />
@@ -516,11 +503,7 @@ export const Chatbot = ({
             onSend={handleSendMessage}
             placeholder='Ask TollBot your question here.'
           />
-          <button
-            className={styles.transferButton}
-            onClick={handleShowChatForm}
-            type='button'
-          >
+          <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
             I want to talk to a Sales Consultant.
           </button>
         </div>

@@ -18,7 +18,10 @@ import { useHorizontalResize } from './hooks/useHorizontalResize'
 const buildUserEventObject = (product) => {
   let eventObject = {
     name: product.name,
-    url: product.url
+    url: product.url,
+    fromModelList: product.fromModelList || false,
+    fromProductsList: product.fromProductsList || false,
+    fromPageNavigation: product.fromPageNavigation || false
   }
 
   if (product.commPlanID) {
@@ -122,17 +125,31 @@ export const Chatbot = ({
   const [sessionId, setSessionId] = useState(null)
   const [userEvents, setUserEvents] = useState([])
 
-  // Add to userEvents array, keeping only the last 10 items and removing duplicates
-  const addUserEvent = (newEvent) => {
+  // Add to userEvents array, keeping only last page navigation and last card view
+  const addUserEvent = (newEvent, from = {}) => {
     setUserEvents((prev) => {
       // Remove any existing event with the same name, type, and commPlanID (if exists)
+      // Also remove previous events from product/model lists if new event is from those sources
       const filtered = prev.filter((event) => {
         const isSameName = event.name === newEvent.name
         const isSameType = event.type === newEvent.type
         const isSameCommPlanID = event.commPlanID === newEvent.commPlanID
-        return !(isSameName && isSameType && isSameCommPlanID)
+        const isSameFrom =
+          event.fromProductsList === from.fromProductsList &&
+          event.fromModelList === from.fromModelList &&
+          event.fromPageNavigation === from.fromPageNavigation
+        const isDuplicate = isSameName && isSameType && isSameCommPlanID && isSameFrom
+
+        const shouldRemoveFromList =
+          (from.fromProductsList && (event.fromProductsList || event.fromModelList)) ||
+          (from.fromModelList && event.fromModelList) ||
+          (from.fromPageNavigation && event.fromPageNavigation)
+
+        return !isDuplicate && !shouldRemoveFromList
       })
+
       const updated = [...filtered, newEvent]
+
       return updated.slice(-10)
     })
   }
@@ -159,6 +176,34 @@ export const Chatbot = ({
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
   }
 
+  const handleProductRemoval = (productId, product) => {
+    setMessages((prev) => prev.filter((m) => m.id !== productId))
+    if (product) {
+      const isModel = Boolean(product.commPlanID)
+      const isMaster = Boolean(product.isMaster)
+
+      setUserEvents((prev) =>
+        prev.filter((event) => {
+          if (event.fromPageNavigation) {
+            return true
+          } else if (isModel && event.commPlanID === product.commPlanID) {
+            return false
+          } else if (!isMaster && !isModel && product.communityId && event.communityId === product.communityId) {
+            return false
+          } else if (
+            isMaster &&
+            !isModel &&
+            product.masterCommunityId &&
+            event.masterCommunityId === product.masterCommunityId
+          ) {
+            return false
+          }
+          return true
+        })
+      )
+    }
+  }
+
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
@@ -166,6 +211,12 @@ export const Chatbot = ({
 
   const handleSendMessage = async (_event, systemMessage) => {
     if (!inputMessage.trim() && !systemMessage) return
+
+    // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
+    // const urlParams = location.search;
+    const urlParams = new URLSearchParams(window.location.search)
+    const endpointId = urlParams.get('endpointId') ?? 'c5wmooifc5'
+    const apiKey = urlParams.get('apiKey') ?? 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC'
 
     // console.log(systemMessage)
 
@@ -181,14 +232,16 @@ export const Chatbot = ({
     setInputMessage('')
     setIsThinking(true)
 
+    const lastEvent = userEvents[userEvents.length - 1]
     const promp = {
       prompt: userMessageText,
-      session_id: sessionId || ''
+      session_id: sessionId || '',
+      ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 
     sendMessage(promp, {
-      baseUrl: 'https://c5wmooifc5.execute-api.us-east-1.amazonaws.com/prod',
-      apiKey: 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC',
+      baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
+      apiKey: apiKey,
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
@@ -281,10 +334,13 @@ export const Chatbot = ({
       setMessages((prev) => [...prev, newBotMessage])
     }
 
-    addUserEvent(buildUserEventObject(product))
+    addUserEvent(buildUserEventObject({ ...product, fromProductsList, fromModelList }), {
+      fromModelList,
+      fromProductsList
+    })
   }
 
-  console.log('userEvents :', userEvents)
+  console.log('userEvent :', userEvents)
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -373,7 +429,7 @@ export const Chatbot = ({
 
   useEffect(() => {
     if (pageSummaryData) {
-      addUserEvent(buildUserEventObject(pageSummaryData))
+      addUserEvent(buildUserEventObject({ ...pageSummaryData, fromPageNavigation: true }), { fromPageNavigation: true })
     }
   }, [pageSummaryData])
 
@@ -467,7 +523,7 @@ export const Chatbot = ({
                         product={msg.product}
                         utils={utils}
                         handleProductSelect={handleProductSelect}
-                        onClose={() => setMessages((prev) => prev.filter((m) => m.id !== msg.id))}
+                        onClose={() => handleProductRemoval(msg.id, msg.product)}
                         onCloseChat={onCloseChat}
                       />
                     }

@@ -25,7 +25,7 @@ export const ProductsList = ({ products, handleProductSelect = () => null, hideM
         {products.map((product, index) =>
           product.commPlanID ? (
             <ModelCard
-              key={product.commPlanID || index}
+              key={`${product.commPlanID}-${index}` || index}
               model={product}
               onClick={handleProductSelect}
               utils={utils}

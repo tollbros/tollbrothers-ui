@@ -194,13 +194,7 @@ const getImage = (obj, size) => {
   if (size && obj[size]) {
     image = obj[size]
   } else if (!size || (size && !obj[size])) {
-    image =
-      obj.s1920x1080 ||
-      obj.s1800x815 ||
-      obj.s450x266 ||
-      obj.link ||
-      obj.src ||
-      obj.src_sm
+    image = obj.s1920x1080 || obj.s1800x815 || obj.s450x266 || obj.link || obj.src || obj.src_sm
   }
 
   if (
@@ -247,10 +241,7 @@ const getWalkthroughURL = (walkthrough) => {
   let src = ''
 
   if (walkthrough.type === 'walkthrough::matterport') {
-    src =
-      'https://my.matterport.com/show/?m=' +
-      walkthrough.link +
-      '&ts=2&lp=1&hl=1&qs=1&play=1&nt=0&search=0'
+    src = 'https://my.matterport.com/show/?m=' + walkthrough.link + '&ts=2&lp=1&hl=1&qs=1&play=1&nt=0&search=0'
   } else {
     src = walkthrough.link
     if (!walkthrough.link.includes('?')) {
@@ -296,9 +287,13 @@ const getVideoURL = (video) => {
 
 const setLocalStorage = (key, value, ttl) => {
   const item = {
-    value: value,
-    expiry: Date.now() + ttl
+    value: value
   }
+
+  if (ttl) {
+    item.expiry = Date.now() + ttl
+  }
+
   try {
     localStorage.setItem(key, JSON.stringify(item))
   } catch {}

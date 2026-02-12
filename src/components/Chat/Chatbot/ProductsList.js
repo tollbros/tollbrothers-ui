@@ -4,17 +4,12 @@ import { CommunityCard } from './CommunityCard'
 import { ModelCard } from './ModelCard'
 import { HorizontalScroller } from '../../HorizontalScroller'
 
-export const ProductsList = ({
-  products,
-  handleProductSelect = () => null,
-  hideModelLocation,
-  utils
-}) => {
+export const ProductsList = ({ products, handleProductSelect = () => null, hideModelLocation, utils }) => {
   if (!products || products.length === 0) {
     return null
   }
 
-  console.log(products)
+  // console.log(products)
 
   return (
     <div className={styles.productsContainer}>

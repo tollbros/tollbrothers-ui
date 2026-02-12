@@ -21,41 +21,31 @@ export const ProductLayout = ({
 }) => {
   const rootRef = useRef(null)
   const headShotImage = product?.headShot?.media?.url
-  const desc =
-    product.overview?.shortDescription ||
-    product.overview?.description ||
-    product.description
+  const desc = product.overview?.shortDescription || product.overview?.description || product.description
   const bullets = product?.overview?.bulletPoints || product?.modelBullets
 
   // console.log(product)
 
-  const isMasterCommunity =
-    Boolean(product?.communities?.length > 0) && product.isMaster
+  const isMasterCommunity = Boolean(product?.communities?.length > 0) && product.isMaster
   const isCommunity = !isMasterCommunity && !product?.commPlanID
   const isModel = Boolean(product?.commPlanID)
   const isQMI = isModel && product?.isQMI
-  const isDesignReady =
-    isModel && Boolean(product?.designReadyOptions?.length > 0)
+  const isDesignReady = isModel && Boolean(product?.designReadyOptions?.length > 0)
 
-  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(
-    product?.homes,
-    product.options
-  )
+  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(product?.homes, product.options)
+
+  // filter things out like BFOs, Home Sites
+  const filteredCommunityQMIs = communityQMIs.filter((qmi) => qmi.isQMI)
 
   const dafs = isQMI ? (product.designerAppointed || []).slice(1) : []
   const floorPlans = isModel ? product.floorplans || [] : []
   const elevations = isModel ? product.elevations || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
-  const { options, everyOptionSharedByEachCollection } =
-    utils?.getAllCommunityOptions?.(product) || {}
+  const { options, everyOptionSharedByEachCollection } = utils?.getAllCommunityOptions?.(product) || {}
 
-  const vipSalesOnly = utils?.hasOption?.(
-    everyOptionSharedByEachCollection,
-    utils?.OPTIONS?.VIP_SALES_ONLY
-  )
-  const isFuture =
-    product.isFuture || product.communityTypes?.includes('Future')
+  const vipSalesOnly = utils?.hasOption?.(everyOptionSharedByEachCollection, utils?.OPTIONS?.VIP_SALES_ONLY)
+  const isFuture = product.isFuture || product.communityTypes?.includes('Future')
   const hideTour = product.salesOffice?.hideTour
   const hasSelfGuidedTour = product.tour
   const dcaDisclaimer = product?.dcaDisclaimer
@@ -63,10 +53,7 @@ export const ProductLayout = ({
   const canShowDirections = !isFuture && !hideDirections
   const canShowCTAs = Boolean(product.salesOffice)
 
-  const showGeoLocation = utils?.hasOption?.(
-    options,
-    utils?.OPTIONS?.GEO_LOCATION_ENABLED
-  )
+  const showGeoLocation = utils?.hasOption?.(options, utils?.OPTIONS?.GEO_LOCATION_ENABLED)
   const salesOfficeLat = product.salesOffice?.lat
   const salesOfficeLon = product.salesOffice?.lon
   const showHours = product.salesOffice?.showHours
@@ -139,11 +126,7 @@ export const ProductLayout = ({
 
   return (
     <div className={styles.root} ref={rootRef}>
-      <CloseButton
-        className={styles.closeButton}
-        onClick={onClose}
-        ariaLabel='Close product details'
-      />
+      <CloseButton className={styles.closeButton} onClick={onClose} ariaLabel='Close product details' />
       <div className={styles.header}>
         {product?.name && (
           <div>
@@ -163,11 +146,7 @@ export const ProductLayout = ({
 
         {headShotImage && (
           <div className={styles.imageWrapper}>
-            <img
-              src={headShotImage}
-              alt={product.name || 'Community'}
-              className={styles.image}
-            />
+            <img src={headShotImage} alt={product.name || 'Community'} className={styles.image} />
           </div>
         )}
       </div>
@@ -176,10 +155,7 @@ export const ProductLayout = ({
         {isModel && <ModelDetails model={product} utils={utils} />}
         {isModel && <ModelStats model={product} utils={utils} />}
         {isDesignReady && utils.DesignReadyTimeline && (
-          <div
-            className={styles.designReadyWrapper}
-            id='design-ready-timeline-panel'
-          >
+          <div className={styles.designReadyWrapper} id='design-ready-timeline-panel'>
             {React.createElement(utils.DesignReadyTimeline, {
               moveInDate: product.moveInDate,
               dates: product.designReadyOptions
@@ -213,7 +189,7 @@ export const ProductLayout = ({
         )}
         {isCommunity && (
           <CommunityModels
-            communityQMIs={communityQMIs}
+            communityQMIs={filteredCommunityQMIs}
             communityModels={communityModels}
             handleProductSelect={handleProductSelect}
             utils={utils}
@@ -227,22 +203,11 @@ export const ProductLayout = ({
           />
         )} */}
         {isQMI && dafs?.length > 0 && (
-          <ImageCarousel
-            images={dafs}
-            isUseHighRes
-            utils={utils}
-            title='Designer Appointed Features'
-          />
+          <ImageCarousel images={dafs} isUseHighRes utils={utils} title='Designer Appointed Features' />
         )}
-        {isModel && floorPlans?.length > 0 && (
-          <FloorPlanViewer floorPlans={floorPlans} utils={utils} />
-        )}
+        {isModel && floorPlans?.length > 0 && <FloorPlanViewer floorPlans={floorPlans} utils={utils} />}
         {isModel && !isQMI && elevations?.length > 0 && (
-          <ImageCarousel
-            images={elevations}
-            utils={utils}
-            title='Exterior Designs'
-          />
+          <ImageCarousel images={elevations} utils={utils} title='Exterior Designs' />
         )}
         {!isModel && amenities && <AmenitiesList amenities={amenities} />}
 
@@ -313,12 +278,7 @@ export const ProductLayout = ({
                 />
               )}
               {canShowDirections && mapLink && (
-                <OptionButton
-                  text='I want to get directions'
-                  href={mapLink}
-                  isLink
-                  target='_blank'
-                />
+                <OptionButton text='I want to get directions' href={mapLink} isLink target='_blank' />
               )}
             </div>
           </div>

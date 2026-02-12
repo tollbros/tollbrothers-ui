@@ -10,6 +10,7 @@ import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
+import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
@@ -124,6 +125,7 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
+  const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
 
   // Add to userEvents array, keeping only last page navigation and last card view
@@ -246,6 +248,7 @@ export const Chatbot = ({
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
+        setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (products && Array.isArray(products) && products.length > 0) {
@@ -345,35 +348,35 @@ export const Chatbot = ({
   useEffect(() => {
     const stored = getLocalStorage('tbChatBot')
     console.log(stored)
-    if (stored && stored.expiry && !isExpired(stored.expiry)) {
-      const { messages: storedMessages, sessionId: storedSessionId, userEvents: storedUserEvents } = stored.value || {}
+    if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
+      const { messages: storedMessages, sessionId: storedSessionId, expiry: storedExpiry } = stored.value || {}
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
-      if (storedUserEvents) setUserEvents(storedUserEvents)
+      if (storedExpiry) setSessionTime(storedExpiry)
+      setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
     }
   }, [])
 
-  // Store chatbot state in localStorage with 1 hour expiration
+  // Store chatbot state in localStorage
   useEffect(() => {
-    if (sessionId) {
+    if (sessionId && sessionTime) {
       const messagesToStore = messages.filter((msg) => msg.type !== 'product').slice(-10)
-      // .map((msg) => {
-      //   if (msg.type === 'products' && msg.products) {
-      //     return { ...msg, products: msg.products.map((p) => ({ url: p.url })) }
-      //   }
-      //   return msg
-      // })
 
-      console.log(messagesToStore)
-      setLocalStorage(
-        'tbChatBot',
-        { messages: messagesToStore, sessionId, userEvents },
-        60 * 60 * 1000 // 1 hour TTL
-      )
+      messagesToStore.map((msg) => {
+        if (msg.products?.length > 0) {
+          msg.products = msg.products.map((p) => {
+            const productToStore = { ...p }
+            deleteExtraProductInfo(productToStore)
+            return productToStore
+          })
+        }
+      })
+
+      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime })
     }
-  }, [messages, sessionId, userEvents])
+  }, [messages, sessionId, sessionTime])
 
   // useEffect(() => {
   //   setTimeout(() => {

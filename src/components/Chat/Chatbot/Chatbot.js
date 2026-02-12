@@ -13,6 +13,7 @@ import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
+import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -284,7 +285,42 @@ export const Chatbot = ({
     addUserEvent(buildUserEventObject(product))
   }
 
-  console.log('userEvents :', userEvents)
+  // console.log('userEvents :', userEvents)
+  console.log('messages :', messages)
+
+  // Restore chatbot state from localStorage on mount
+  useEffect(() => {
+    const stored = getLocalStorage('tbChatBot')
+    console.log(stored)
+    if (stored && stored.expiry && !isExpired(stored.expiry)) {
+      const { messages: storedMessages, sessionId: storedSessionId, userEvents: storedUserEvents } = stored.value || {}
+      if (storedMessages) setMessages(storedMessages)
+      if (storedSessionId) setSessionId(storedSessionId)
+      if (storedUserEvents) setUserEvents(storedUserEvents)
+    } else if (stored) {
+      clearLocalStorage('tbChatBot')
+    }
+  }, [])
+
+  // Store chatbot state in localStorage with 1 hour expiration
+  useEffect(() => {
+    if (sessionId) {
+      const messagesToStore = messages.filter((msg) => msg.type !== 'product').slice(-10)
+      // .map((msg) => {
+      //   if (msg.type === 'products' && msg.products) {
+      //     return { ...msg, products: msg.products.map((p) => ({ url: p.url })) }
+      //   }
+      //   return msg
+      // })
+
+      console.log(messagesToStore)
+      setLocalStorage(
+        'tbChatBot',
+        { messages: messagesToStore, sessionId, userEvents },
+        60 * 60 * 1000 // 1 hour TTL
+      )
+    }
+  }, [messages, sessionId, userEvents])
 
   // useEffect(() => {
   //   setTimeout(() => {

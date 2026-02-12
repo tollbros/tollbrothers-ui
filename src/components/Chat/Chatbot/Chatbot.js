@@ -10,9 +10,11 @@ import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
+import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
+import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -123,6 +125,7 @@ export const Chatbot = ({
   const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
+  const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
 
   // Add to userEvents array, keeping only last page navigation and last card view
@@ -245,6 +248,7 @@ export const Chatbot = ({
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
+        setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (products && Array.isArray(products) && products.length > 0) {
@@ -340,7 +344,52 @@ export const Chatbot = ({
     })
   }
 
-  console.log('userEvent :', userEvents)
+  const restoreUiChatSession = (event) => {
+    if (event && event.type === 'visibilitychange' && document.hidden) {
+      return
+    }
+
+    const stored = getLocalStorage('tbChatBot')
+    console.log(stored)
+    if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
+      const { messages: storedMessages, sessionId: storedSessionId, expiry: storedExpiry } = stored.value || {}
+      if (storedMessages) setMessages(storedMessages)
+      if (storedSessionId) setSessionId(storedSessionId)
+      if (storedExpiry) setSessionTime(storedExpiry)
+      setIsChatBotOpen(true)
+    } else if (stored) {
+      clearLocalStorage('tbChatBot')
+    }
+  }
+
+  useEffect(() => {
+    restoreUiChatSession()
+
+    window.addEventListener('visibilitychange', restoreUiChatSession)
+
+    return () => {
+      window.removeEventListener('visibilitychange', restoreUiChatSession)
+    }
+  }, [])
+
+  // Store chatbot state in localStorage
+  useEffect(() => {
+    if (sessionId && sessionTime) {
+      const messagesToStore = messages.filter((msg) => msg.type !== 'product').slice(-10)
+
+      messagesToStore.map((msg) => {
+        if (msg.products?.length > 0) {
+          msg.products = msg.products.map((p) => {
+            const productToStore = { ...p }
+            deleteExtraProductInfo(productToStore)
+            return productToStore
+          })
+        }
+      })
+
+      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime })
+    }
+  }, [messages, sessionId, sessionTime])
 
   // useEffect(() => {
   //   setTimeout(() => {

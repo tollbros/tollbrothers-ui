@@ -212,6 +212,12 @@ export const Chatbot = ({
   const handleSendMessage = async (_event, systemMessage) => {
     if (!inputMessage.trim() && !systemMessage) return
 
+    // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
+    // const urlParams = location.search;
+    const urlParams = new URLSearchParams(window.location.search)
+    const endpointId = urlParams.get('endpointId') ?? 'c5wmooifc5'
+    const apiKey = urlParams.get('apiKey') ?? 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC'
+
     // console.log(systemMessage)
 
     const userMessageText = inputMessage || systemMessage
@@ -234,8 +240,8 @@ export const Chatbot = ({
     }
 
     sendMessage(promp, {
-      baseUrl: 'https://c5wmooifc5.execute-api.us-east-1.amazonaws.com/prod',
-      apiKey: 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC',
+      baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
+      apiKey: apiKey,
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)

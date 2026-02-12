@@ -344,8 +344,11 @@ export const Chatbot = ({
     })
   }
 
-  // Restore chatbot state from localStorage on mount
-  useEffect(() => {
+  const restoreUiChatSession = (event) => {
+    if (event && event.type === 'visibilitychange' && document.hidden) {
+      return
+    }
+
     const stored = getLocalStorage('tbChatBot')
     console.log(stored)
     if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
@@ -356,6 +359,16 @@ export const Chatbot = ({
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
+    }
+  }
+
+  useEffect(() => {
+    restoreUiChatSession()
+
+    window.addEventListener('visibilitychange', restoreUiChatSession)
+
+    return () => {
+      window.removeEventListener('visibilitychange', restoreUiChatSession)
     }
   }, [])
 

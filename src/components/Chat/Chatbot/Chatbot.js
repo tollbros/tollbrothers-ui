@@ -236,9 +236,11 @@ export const Chatbot = ({
     setIsThinking(true)
 
     const lastEvent = userEvents[userEvents.length - 1]
+
+    const isSessionValid = sessionId && sessionTime && !isExpired(sessionTime)
     const promp = {
       prompt: userMessageText,
-      session_id: sessionId || '',
+      session_id: isSessionValid ? sessionId : '',
       ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 
@@ -352,10 +354,16 @@ export const Chatbot = ({
     const stored = getLocalStorage('tbChatBot')
     console.log(stored)
     if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
-      const { messages: storedMessages, sessionId: storedSessionId, expiry: storedExpiry } = stored.value || {}
+      const {
+        messages: storedMessages,
+        sessionId: storedSessionId,
+        expiry: storedExpiry,
+        userEvents: storedUserEvents
+      } = stored.value || {}
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
+      if (storedUserEvents) setUserEvents(storedUserEvents)
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
@@ -375,7 +383,7 @@ export const Chatbot = ({
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
-      const messagesToStore = messages.filter((msg) => msg.type !== 'product').slice(-10)
+      const messagesToStore = messages.slice(-10)
 
       messagesToStore.map((msg) => {
         if (msg.products?.length > 0) {
@@ -384,12 +392,16 @@ export const Chatbot = ({
             deleteExtraProductInfo(productToStore)
             return productToStore
           })
+        } else if (msg.product) {
+          const productToStore = { ...msg.product }
+          deleteExtraProductInfo(productToStore)
+          return productToStore
         }
       })
 
-      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime })
+      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime, userEvents })
     }
-  }, [messages, sessionId, sessionTime])
+  }, [messages, sessionId, sessionTime, userEvents])
 
   // useEffect(() => {
   //   setTimeout(() => {

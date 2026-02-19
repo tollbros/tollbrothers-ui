@@ -244,6 +244,8 @@ export const Chatbot = ({
       ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 
+    let hasProducts = false
+
     sendMessage(promp, {
       baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
       apiKey: apiKey,
@@ -254,10 +256,13 @@ export const Chatbot = ({
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (products && Array.isArray(products) && products.length > 0) {
+          hasProducts = true
           setIsThinking(true)
+          // console.log('fetch products')
           getProductData(products, tollRouteApi)
             .then((productData) => {
               setIsThinking(false)
+              // console.log('producst were fetched')
               console.log('getProductData products:', productData)
               if (productData?.length > 0) {
                 const botResponse = {
@@ -282,6 +287,9 @@ export const Chatbot = ({
               console.error('getProductData error:', err)
               setIsThinking(false)
             })
+        } else if (response.error) {
+          setError('An error occurred while sending the message. Pleaesse try again.')
+          setIsThinking(false)
         } else {
           const botResponse = {
             id: Date.now() + 1,
@@ -293,7 +301,7 @@ export const Chatbot = ({
         }
       },
       onDone: () => {
-        setIsThinking(false)
+        if (!hasProducts) setIsThinking(false)
         console.log('stream done')
       },
       onError: (err) => {
@@ -621,7 +629,8 @@ export const Chatbot = ({
             placeholder='Ask TollBot your question here.'
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-            I want to talk to a Sales Consultant.
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+            <span>Speak to an expert</span>
           </button>
         </div>
       </div>

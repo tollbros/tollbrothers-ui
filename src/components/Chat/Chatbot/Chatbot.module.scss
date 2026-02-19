@@ -137,6 +137,9 @@
 }
 
 .transferButton {
+    display: flex;
+    gap: 6px;
+    align-items: center;
     position: absolute;
     bottom: 14px;
     left: 50%;

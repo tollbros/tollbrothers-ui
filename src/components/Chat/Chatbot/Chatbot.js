@@ -606,7 +606,7 @@ export const Chatbot = ({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onSend={handleSendMessage}
-            placeholder='Ask TollBot your question here.'
+            placeholder='Ask AI Concierge your question here.'
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
             I want to talk to a Sales Consultant.

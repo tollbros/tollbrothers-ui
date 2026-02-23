@@ -538,12 +538,12 @@ export const Chatbot = ({
         <div className={styles.header}>
           <div className={styles.title}>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-            <span>Hi, I'm TollBot</span>
+            <span>Hi, I'm AI Concierge</span>
           </div>
           <button
             ref={closeButtonRef}
             className={`${styles.closeButton} ${styles.buttonReset}`}
-            aria-label="Close Toll Brothers' AI Assistant"
+            aria-label='Close AI Concierge'
             onClick={onCloseChat}
             type='button'
           >
@@ -552,7 +552,7 @@ export const Chatbot = ({
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>
-            I am the Toll Brothers AI assistant. I can assist with your home search using the prompts below or direct
+            I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
             you to one of our human experts for additional help.
           </p>
           <div className={styles.messages} ref={messageContainerRef}>
@@ -626,7 +626,7 @@ export const Chatbot = ({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onSend={handleSendMessage}
-            placeholder='Ask TollBot your question here.'
+            placeholder='Ask AI Concierge your question here.'
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />

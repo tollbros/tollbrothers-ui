@@ -19,7 +19,7 @@ export const ChatForm = ({
     const storedUser = localStorage?.getItem('formResponse')
     if (storedUser) {
       const storedUserData = JSON.parse(storedUser)
-
+      console.log(storedUserData)
       let fullName = ''
       if (storedUserData?.firstname && storedUserData?.lastname) {
         fullName += storedUserData?.firstname + ` ${storedUserData?.lastname}`
@@ -31,7 +31,8 @@ export const ChatForm = ({
 
       setFormData({
         name: fullName,
-        email: storedUserData?.email ?? ''
+        email: storedUserData?.email ?? '',
+        phone: storedUserData?.homephone?.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') ?? ''
       })
     }
   }, [])
@@ -72,8 +73,8 @@ export const ChatForm = ({
           name='phone'
           value={formData.phone}
           onChange={handleChange}
-          pattern='[0-9]{3}(-|\.)?[0-9]{3}(-|\.)?[0-9]{4}'
-          title='Phone number should be in the format: 123-456-7890 or 123.456.7890 or 1234567890'
+          pattern='[0-9]{3}(-|)?[0-9]{3}(-|)?[0-9]{4}'
+          title='Phone number should be in the format: 123-456-7890 or 1234567890'
           placeholder='Phone Number'
           minLength={10}
           aria-label='phone number'

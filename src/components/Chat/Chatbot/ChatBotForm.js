@@ -137,7 +137,7 @@ export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, 
   }
 
   let chatFormMessage = ''
-  let chatFormButtonText = 'Chat with Local Expert'
+  let chatFormButtonText = 'Speak with Local Expert'
 
   if (!isAgentAvailable) {
     chatFormButtonText = 'Contact Me'

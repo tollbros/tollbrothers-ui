@@ -5,21 +5,13 @@ import { CommunityDetails } from './CommunityDetails'
 import { CommunityModels } from './CommunityModels'
 import { ConditionalLink } from './ConditionalLink'
 
-export const CollectionCard = ({
-  collection,
-  handleProductSelect = () => null,
-  utils = {}
-}) => {
+export const CollectionCard = ({ collection, handleProductSelect = () => null, utils = {} }) => {
   let name = collection?.cleanName
   if (name && !name.toLowerCase().includes(' collection')) {
     name = `${name} Collection`
   }
-  const desc =
-    collection.overview?.shortDescription || collection.overview?.description
-  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(
-    collection?.homes,
-    collection.options
-  )
+  const desc = collection.overview?.shortDescription || collection.overview?.description
+  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(collection?.homes, collection.options)
 
   return (
     <div className={styles.root}>
@@ -38,6 +30,7 @@ export const CollectionCard = ({
         communityModels={communityModels}
         handleProductSelect={handleProductSelect}
         utils={utils}
+        classes={{ controls: styles.scrollerControls }}
       />
     </div>
   )

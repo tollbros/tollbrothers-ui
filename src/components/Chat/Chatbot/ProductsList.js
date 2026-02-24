@@ -4,7 +4,13 @@ import { CommunityCard } from './CommunityCard'
 import { ModelCard } from './ModelCard'
 import { HorizontalScroller } from '../../HorizontalScroller'
 
-export const ProductsList = ({ products, handleProductSelect = () => null, hideModelLocation, utils }) => {
+export const ProductsList = ({
+  products,
+  handleProductSelect = () => null,
+  hideModelLocation,
+  utils,
+  classes = {}
+}) => {
   if (!products || products.length === 0) {
     return null
   }
@@ -19,7 +25,7 @@ export const ProductsList = ({ products, handleProductSelect = () => null, hideM
         classes={{
           scrollWrap: styles.scrollWrap,
           scrollItem: styles.scrollItem,
-          controls: styles.controls
+          controls: `${styles.controls} ${classes.controls || ''}`
         }}
       >
         {products.map((product, index) =>

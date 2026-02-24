@@ -630,7 +630,7 @@ export const Chatbot = ({
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
-            <span>Speak to an expert</span>
+            <span>I prefer to talk to a Sales Consultant.</span>
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@ export const ChatForm = ({
   setFormData,
   onSubmit,
   cta = 'Start Chat',
+  isShowPhoneInput = false,
   disabled = false
 }) => {
   const handleChange = (e) => {
@@ -64,29 +65,31 @@ export const ChatForm = ({
         aria-label='email address'
         disabled={disabled}
       />
+      {isShowPhoneInput && (
+        <input
+          type='tel'
+          id='phone'
+          name='phone'
+          value={formData.phone}
+          onChange={handleChange}
+          pattern='[0-9]{3}(-|\.)?[0-9]{3}(-|\.)?[0-9]{4}'
+          title='Phone number should be in the format: 123-456-7890 or 123.456.7890 or 1234567890'
+          placeholder='Phone Number'
+          minLength={10}
+          aria-label='phone number'
+          disabled={disabled}
+        />
+      )}
 
       <div className={styles.agent}>
         <span className={styles.radioLabel}>Are you a Real Estate Agent?</span>
         <div className={styles.radioGroup}>
           <label>
-            <input
-              type='radio'
-              id='chat-is-agent-yes'
-              name='isAgent'
-              value='1'
-              disabled={disabled}
-            />
+            <input type='radio' id='chat-is-agent-yes' name='isAgent' value='1' disabled={disabled} />
             Yes
           </label>
           <label>
-            <input
-              type='radio'
-              id='chat-is-agent-no'
-              name='isAgent'
-              value='0'
-              defaultChecked
-              disabled={disabled}
-            />
+            <input type='radio' id='chat-is-agent-no' name='isAgent' value='0' defaultChecked disabled={disabled} />
             No
           </label>
         </div>

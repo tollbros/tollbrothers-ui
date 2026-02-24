@@ -16,20 +16,14 @@ const checkLiveAgentAvailability = async (region, availabilityAPI) => {
   return false
 }
 
-export const ChatBotForm = ({
-  tollRegionsEndpoint,
-  availabilityAPI,
-  chatRegion,
-  productCode,
-  onClose
-}) => {
+export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, productCode, onClose }) => {
   const [selectedValue, setSelectedValue] = useState('')
   const [selectedRegion, setSelectedRegion] = useState(null)
   const [regions, setRegions] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isAgentAvailable, setIsAgentAvailable] = useState(false)
-  const [formData, setFormData] = useState({ name: '', email: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
   const [isThinking, setIsThinking] = useState(true)
 
   const handleChange = async (e) => {
@@ -47,12 +41,14 @@ export const ChatBotForm = ({
     if (!valid) return false
 
     const email = form.email?.value?.trim()
+    const phone = form.phone?.value?.trim()
     const isAgent = form.isAgent?.value ?? '0'
     console.log(
       'Form submitted with data:',
       firstName,
       lastName,
       email,
+      phone,
       isAgent,
       productCode,
       selectedRegion?.chatRegion ?? chatRegion
@@ -125,10 +121,7 @@ export const ChatBotForm = ({
         return
       }
 
-      const isAvailable = await checkLiveAgentAvailability(
-        chatRegion ?? selectedRegion?.chatRegion,
-        availabilityAPI
-      )
+      const isAvailable = await checkLiveAgentAvailability(chatRegion ?? selectedRegion?.chatRegion, availabilityAPI)
 
       setTimeout(() => {
         setIsAgentAvailable(isAvailable)
@@ -155,8 +148,7 @@ export const ChatBotForm = ({
     } else if (selectedRegion) {
       chatFormMessage += ` for ${selectedRegion.fullName}`
     }
-    chatFormMessage +=
-      '. Please provide your contact information below and someone will get back to you.'
+    chatFormMessage += '. Please provide your contact information below and someone will get back to you.'
   } else {
     chatFormMessage = 'Good news! A local expert is available'
 
@@ -166,8 +158,7 @@ export const ChatBotForm = ({
       chatFormMessage += ` for ${selectedRegion.fullName}`
     }
 
-    chatFormMessage +=
-      '. Please provide your contact information below so I can transfer you.'
+    chatFormMessage += '. Please provide your contact information below so I can transfer you.'
   }
 
   return (
@@ -176,16 +167,13 @@ export const ChatBotForm = ({
       {!chatRegion && (
         <div className={styles.regionPrompt}>
           <p className={styles.text}>
-            In order to connect you with a local expert, please select your area
-            of interest.
+            In order to connect you with a local expert, please select your area of interest.
           </p>
           <CustomSelect
             value={selectedValue}
             onChange={handleChange}
             options={regions}
-            placeholder={
-              isLoading ? 'Loading areas of interest...' : 'Select one'
-            }
+            placeholder={isLoading ? 'Loading areas of interest...' : 'Select one'}
             disabled={isLoading}
             ariaLabel='Select your region'
             valueKey='metroId'
@@ -195,10 +183,7 @@ export const ChatBotForm = ({
       )}
 
       {isThinking && (
-        <p className={styles.text}>
-          Please wait while I look for an available expert in your area of
-          interest.
-        </p>
+        <p className={styles.text}>Please wait while I look for an available expert in your area of interest.</p>
       )}
 
       <div className={styles.formContainer}>
@@ -217,6 +202,7 @@ export const ChatBotForm = ({
           setFormData={setFormData}
           onSubmit={handleSubmit}
           cta={chatFormButtonText}
+          isShowPhoneInput
           disabled={(!chatRegion && !selectedRegion) || isThinking}
         />
       </div>

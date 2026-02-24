@@ -74,23 +74,23 @@ export const ProductLayout = ({
   // TODO figure out what to do with NYC communities and online sales (since they no longer have that)
   // this is only relevant if we decide to go with showing OSC phone numbers in this component
 
-  let label = `I want to `
+  let label = ``
   let hash = '#appointment'
   let isVip = false
   if (dcaDisclaimer) {
-    label += 'contact the community'
+    label += 'Contact the community'
     hash = '#contact'
   } else if (hideTour) {
-    label += 'talk to an expert'
+    label += 'Talk to a local expert'
     hash = '#contact-email'
   } else if (isFuture) {
-    label += vipSalesOnly ? 'talk to an expert' : 'become a VIP'
+    label += vipSalesOnly ? 'Contact the community' : 'Become a VIP'
     hash = '#join-vip'
     isVip = true
   } else if (hasSelfGuidedTour) {
-    label += 'schedule a self-guided tour'
+    label += 'Schedule a self-guided tour'
   } else {
-    label += 'schedule a tour'
+    label += 'Schedule a tour'
   }
 
   // console.log(label, hash)
@@ -237,7 +237,7 @@ export const ProductLayout = ({
               />
               {!dcaDisclaimer && !isFuture && (
                 <OptionButton
-                  text='I want to contact the community'
+                  text='Contact the community'
                   href={product.url + '#contact'}
                   isLink
                   utils={utils}
@@ -258,7 +258,7 @@ export const ProductLayout = ({
               )}
               {showHours && !isFuture && !hideDirections && (
                 <OptionButton
-                  text='I want to see the sales hours'
+                  text='View Sales Center hours'
                   href={product.url + '#sales-hours'}
                   isLink
                   utils={utils}
@@ -278,7 +278,7 @@ export const ProductLayout = ({
                 />
               )}
               {canShowDirections && mapLink && (
-                <OptionButton text='I want to get directions' href={mapLink} isLink target='_blank' />
+                <OptionButton text='Get directions' href={mapLink} isLink target='_blank' />
               )}
             </div>
           </div>

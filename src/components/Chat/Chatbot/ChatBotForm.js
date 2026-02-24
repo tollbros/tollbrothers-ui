@@ -144,11 +144,11 @@ export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, 
     chatFormMessage = 'Our local experts are currently offline'
 
     if (chatRegion) {
-      chatFormMessage += ' for this area of interest'
+      chatFormMessage += ' in this area of interest'
     } else if (selectedRegion) {
-      chatFormMessage += ` for ${selectedRegion.fullName}`
+      chatFormMessage += ` in ${selectedRegion.fullName}`
     }
-    chatFormMessage += '. Please provide your contact information below and someone will get back to you.'
+    chatFormMessage += '. Share your contact information below and we will get back to you.'
   } else {
     chatFormMessage = 'Good news! A local expert is available'
 
@@ -158,7 +158,7 @@ export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, 
       chatFormMessage += ` for ${selectedRegion.fullName}`
     }
 
-    chatFormMessage += '. Please provide your contact information below so I can transfer you.'
+    chatFormMessage += '. Share your contact information below so I can transfer you.'
   }
 
   return (
@@ -167,7 +167,7 @@ export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, 
       {!chatRegion && (
         <div className={styles.regionPrompt}>
           <p className={styles.text}>
-            In order to connect you with a local expert, please select your area of interest.
+            I'll connect you with a local expert. Select your area of interest below to get started.
           </p>
           <CustomSelect
             value={selectedValue}

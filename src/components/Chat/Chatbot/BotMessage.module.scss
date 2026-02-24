@@ -37,13 +37,13 @@
   margin: 0;
   word-break: break-word;
 
-  p + p {
+  p:not(:first-child) {
     margin: 16px 0 8px 0!important;
   }
 
   //for markdown
   ul, ol {
-   margin-bottom: 10px;
+   margin: 10px 0;
 
     li {
       margin-left: 18px;

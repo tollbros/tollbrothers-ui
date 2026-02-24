@@ -41,7 +41,7 @@ export const ChatForm = ({
     <form onSubmit={onSubmit} className={styles.form}>
       <input
         type='text'
-        id='name'
+        id='chat-name'
         name='name'
         value={formData.name}
         onChange={handleChange}
@@ -55,7 +55,7 @@ export const ChatForm = ({
       />
       <input
         type='email'
-        id='email'
+        id='chat-email'
         name='email'
         value={formData.email}
         onChange={handleChange}
@@ -69,7 +69,7 @@ export const ChatForm = ({
       {isShowPhoneInput && (
         <input
           type='tel'
-          id='phone'
+          id='chat-phone'
           name='phone'
           value={formData.phone}
           onChange={handleChange}

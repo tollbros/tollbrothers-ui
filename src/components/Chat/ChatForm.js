@@ -19,7 +19,7 @@ export const ChatForm = ({
     const storedUser = localStorage?.getItem('formResponse')
     if (storedUser) {
       const storedUserData = JSON.parse(storedUser)
-      console.log(storedUserData)
+
       let fullName = ''
       if (storedUserData?.firstname && storedUserData?.lastname) {
         fullName += storedUserData?.firstname + ` ${storedUserData?.lastname}`

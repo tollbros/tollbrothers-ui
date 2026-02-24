@@ -1,12 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const MIN_WIDTH = 345
+const MIN_WIDTH = 410
+const MIN_WIDTH_MOBILE = 345
 const MAX_WIDTH = 750
 const MIN_HEIGHT = 650
 const MAX_HEIGHT_PERCENT = 0.96
 
+const isMobile = () => {
+  return typeof window !== 'undefined' && window.innerWidth < 768
+}
+
 export function useHorizontalResize(elementRef) {
-  const [width, setWidth] = useState(MIN_WIDTH)
+  const [width, setWidth] = useState(isMobile() ? MIN_WIDTH_MOBILE : MIN_WIDTH)
   const [height, setHeight] = useState(MIN_HEIGHT)
   const [isResizing, setIsResizing] = useState(false)
 
@@ -40,7 +45,8 @@ export function useHorizontalResize(elementRef) {
 
       const newWidth = rect.right - clientX
       const maxWidth = getMaxWidth()
-      const clampedWidth = Math.min(Math.max(newWidth, MIN_WIDTH), maxWidth)
+
+      const clampedWidth = Math.min(Math.max(newWidth, isMobile() ? MIN_WIDTH_MOBILE : MIN_WIDTH), maxWidth)
       setWidth(clampedWidth)
 
       const newHeight = rect.bottom - clientY

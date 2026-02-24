@@ -236,11 +236,15 @@ export const Chatbot = ({
     setIsThinking(true)
 
     const lastEvent = userEvents[userEvents.length - 1]
+
+    const isSessionValid = sessionId && sessionTime && !isExpired(sessionTime)
     const promp = {
       prompt: userMessageText,
-      session_id: sessionId || '',
+      session_id: isSessionValid ? sessionId : '',
       ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
+
+    let hasProducts = false
 
     sendMessage(promp, {
       baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
@@ -252,10 +256,13 @@ export const Chatbot = ({
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (products && Array.isArray(products) && products.length > 0) {
+          hasProducts = true
           setIsThinking(true)
+          // console.log('fetch products')
           getProductData(products, tollRouteApi)
             .then((productData) => {
               setIsThinking(false)
+              // console.log('producst were fetched')
               console.log('getProductData products:', productData)
               if (productData?.length > 0) {
                 const botResponse = {
@@ -280,6 +287,9 @@ export const Chatbot = ({
               console.error('getProductData error:', err)
               setIsThinking(false)
             })
+        } else if (response.error) {
+          setError('An error occurred while sending the message. Pleaesse try again.')
+          setIsThinking(false)
         } else {
           const botResponse = {
             id: Date.now() + 1,
@@ -291,7 +301,7 @@ export const Chatbot = ({
         }
       },
       onDone: () => {
-        setIsThinking(false)
+        if (!hasProducts) setIsThinking(false)
         console.log('stream done')
       },
       onError: (err) => {
@@ -352,10 +362,16 @@ export const Chatbot = ({
     const stored = getLocalStorage('tbChatBot')
     console.log(stored)
     if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
-      const { messages: storedMessages, sessionId: storedSessionId, expiry: storedExpiry } = stored.value || {}
+      const {
+        messages: storedMessages,
+        sessionId: storedSessionId,
+        expiry: storedExpiry,
+        userEvents: storedUserEvents
+      } = stored.value || {}
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
+      if (storedUserEvents) setUserEvents(storedUserEvents)
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
@@ -375,7 +391,7 @@ export const Chatbot = ({
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
-      const messagesToStore = messages.filter((msg) => msg.type !== 'product').slice(-10)
+      const messagesToStore = messages.slice(-10)
 
       messagesToStore.map((msg) => {
         if (msg.products?.length > 0) {
@@ -384,12 +400,16 @@ export const Chatbot = ({
             deleteExtraProductInfo(productToStore)
             return productToStore
           })
+        } else if (msg.product) {
+          const productToStore = { ...msg.product }
+          deleteExtraProductInfo(productToStore)
+          return productToStore
         }
       })
 
-      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime })
+      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime, userEvents })
     }
-  }, [messages, sessionId, sessionTime])
+  }, [messages, sessionId, sessionTime, userEvents])
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -609,7 +629,8 @@ export const Chatbot = ({
             placeholder='Ask AI Concierge your question here.'
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-            I want to talk to a Sales Consultant.
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+            <span>Speak to an expert</span>
           </button>
         </div>
       </div>

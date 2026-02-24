@@ -9,6 +9,7 @@
   width: 100%;
   padding: 8px;
   text-align: left;
+  overflow: hidden;
 }
 
 .name {
@@ -40,5 +41,11 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+.scrollerControls {
+  left: 8px !important;
+  margin-top: -6px !important;
+  width: calc(100% - 16px) !important;
 }
 

@@ -350,27 +350,27 @@
     display: flex;
     align-items: flex-end;
     position: absolute;
-    right: 15px;
-    top: 12px;
+    right: 8px;
+    top: 8px;
     gap: 10px;
 
-    button {
-        width: 40px;
-        height: 40px;
-        padding: 10px;
-        color: #000;
-        border: 1px solid #d0d7db;
-        border-radius: 100%;
-        cursor: pointer;
-        background-color: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    // button {
+    //     width: 40px;
+    //     height: 40px;
+    //     padding: 10px;
+    //     color: #000;
+    //     border: 1px solid #d0d7db;
+    //     border-radius: 100%;
+    //     cursor: pointer;
+    //     background-color: transparent;
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: center;
 
-        svg {
-            overflow: visible;
-        }
-    }
+    //     svg {
+    //         overflow: visible;
+    //     }
+    // }
 }
 
 .chatInputWrapper {

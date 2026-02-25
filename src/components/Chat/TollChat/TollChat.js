@@ -23,6 +23,7 @@ import CloseX from '../../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
+import { HeaderButtons } from '../HeaderButtons'
 
 const getGaClientId = () => {
   const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
@@ -804,14 +805,19 @@ export const TollChat = ({
         <div className={styles.header}>
           <h2>Chat</h2>
           <div className={styles.panelControls}>
-            {hasAgentEngaged && (
+            <HeaderButtons
+              onMinimize={handleMinimize}
+              onClose={handleConfirmationEnd}
+              isMinimizeHidden={!hasAgentEngaged}
+            />
+            {/* {hasAgentEngaged && (
               <button onClick={() => handleMinimize()} type='button'>
                 <Minus fill='#000' />
               </button>
             )}
             <button onClick={() => handleConfirmationEnd()} type='button'>
               <CloseX fill='#000' />
-            </button>
+            </button> */}
           </div>
         </div>
       )}

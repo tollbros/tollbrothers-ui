@@ -24,6 +24,7 @@ import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
 import { HeaderButtons } from '../HeaderButtons'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 const getGaClientId = () => {
   const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
@@ -810,14 +811,6 @@ export const TollChat = ({
               onClose={handleConfirmationEnd}
               isMinimizeHidden={!hasAgentEngaged}
             />
-            {/* {hasAgentEngaged && (
-              <button onClick={() => handleMinimize()} type='button'>
-                <Minus fill='#000' />
-              </button>
-            )}
-            <button onClick={() => handleConfirmationEnd()} type='button'>
-              <CloseX fill='#000' />
-            </button> */}
           </div>
         </div>
       )}
@@ -832,13 +825,7 @@ export const TollChat = ({
         </>
       )}
       {showConfirmationEndMessage && !isMinimized && (
-        <div className={styles.confirmationEndMessage}>
-          <p>Are you sure you want to leave this chat?</p>
-          <div className={styles.buttonWrapper}>
-            <button onClick={handleStay}>Stay</button>
-            <button onClick={() => handleEndChat(accessToken, conversationId)}>Leave</button>
-          </div>
-        </div>
+        <ConfirmationEndDialog onStay={handleStay} onLeave={() => handleEndChat(accessToken, conversationId)} />
       )}
       {showForm && !isMinimized && (
         <div className={styles.formContainer}>

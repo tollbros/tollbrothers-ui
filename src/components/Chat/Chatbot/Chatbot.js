@@ -16,6 +16,7 @@ import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -127,6 +128,7 @@ export const Chatbot = ({
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
 
   // Add to userEvents array, keeping only last page navigation and last card view
   const addUserEvent = (newEvent, from = {}) => {
@@ -172,10 +174,21 @@ export const Chatbot = ({
   const onCloseChat = () => {
     setIsChatBotOpen(false)
     setIsChatBotOpenExternal(false)
-    // setMessages([])
-    // setSessionId(null)
-    // setSessionTime(null)
-    // setUserEvents([])
+    setMessages([])
+    setSessionId(null)
+    setSessionTime(null)
+    setUserEvents([])
+    setShowConfirmationEndMessage(false)
+    setChatBotTransferData(null)
+    window.localStorage.removeItem('tbChatBot')
+  }
+
+  const handleConfirmationEnd = () => {
+    setShowConfirmationEndMessage(true)
+  }
+
+  const handleStay = () => {
+    setShowConfirmationEndMessage(false)
   }
 
   const handleShowChatForm = () => {
@@ -549,7 +562,7 @@ export const Chatbot = ({
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
             <span>Hi, I'm AI Concierge</span>
           </div>
-          <HeaderButtons className={styles.headerButtons} onClose={onCloseChat} onMinimize={onMinimizeChat} />
+          <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>
@@ -634,6 +647,7 @@ export const Chatbot = ({
             <span>Speak to an expert</span>
           </button>
         </div>
+        {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
       </div>
     </div>
   )

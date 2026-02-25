@@ -3,12 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 
 import styles from './TollChat.module.scss'
-import {
-  clearLocalStorage,
-  getLocalStorage,
-  isExpired,
-  setLocalStorage
-} from '../../../lib/utils'
+import { clearLocalStorage, getLocalStorage, isExpired, setLocalStorage } from '../../../lib/utils'
 import {
   handleChatInit,
   fetchAvailability,
@@ -18,12 +13,7 @@ import {
   postMessage,
   listenToConversation
 } from '../../../../utils/chat/apis'
-import {
-  convertTimeStamp,
-  formatAgentImage,
-  formatMessage,
-  popNextUUID
-} from '../../../../utils/chat/libs'
+import { convertTimeStamp, formatAgentImage, formatMessage, popNextUUID } from '../../../../utils/chat/libs'
 import ChatInput from './ChatInput'
 import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
@@ -33,13 +23,12 @@ import CloseX from '../../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
+import { HeaderButtons } from '../HeaderButtons'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 const getGaClientId = () => {
   const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
-  if (
-    typeof window.ga !== 'undefined' &&
-    typeof window.ga.getAll === 'function'
-  ) {
+  if (typeof window.ga !== 'undefined' && typeof window.ga.getAll === 'function') {
     const gaTracker = window.ga.getAll()[0]
     const gaClientId = gaTracker.get('clientId')
     const gaUserId = gaTracker.get('userId')
@@ -91,8 +80,7 @@ export const TollChat = ({
   const [showChatHeader, setShowChatHeader] = useState(false)
   const [showTextChatOptions, setShowTextChatOptions] = useState(false)
   const [showWaitMessage, setShowWaitMessage] = useState(false)
-  const [showConfirmationEndMessage, setShowConfirmationEndMessage] =
-    useState(false)
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
   const chatContainerRef = useRef(null)
   const [formData, setFormData] = useState({ name: '', email: '' })
   const [isCurrentlyChatting, setIsCurrentlyChatting] = useState(false) // if therer is an active chat
@@ -103,8 +91,7 @@ export const TollChat = ({
   const [agentName, setAgentName] = useState('Agent') // agent name
   const [error, setError] = useState(null)
   const [abortController, setAbortController] = useState(null)
-  const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] =
-    useState(null)
+  const [isChatAvailabilityChecked, setIsChatAvailabilityChecked] = useState(null)
   const [hasAgentEngaged, setHasAgentEngaged] = useState(false)
   const [callbackUrl, setCallbackUrl] = useState(null)
   const [unreadMessagesCount, setUnreadMessagesCount] = useState({
@@ -112,16 +99,7 @@ export const TollChat = ({
     lastMessageId: null
   })
 
-  const initializeChat = async (
-    firstName,
-    lastName,
-    email,
-    isAgent,
-    productCode,
-    endPoint,
-    apiSfOrgId,
-    apiSfName
-  ) => {
+  const initializeChat = async (firstName, lastName, email, isAgent, productCode, endPoint, apiSfOrgId, apiSfName) => {
     try {
       const token = await handleChatInit(endPoint, apiSfOrgId, apiSfName)
 
@@ -175,8 +153,7 @@ export const TollChat = ({
           sendSystemtMessage({
             accessToken: token.accessToken,
             conversationId: newUuid,
-            message:
-              '::System Message:: User initiated chat(' + location.href + ')'
+            message: '::System Message:: User initiated chat(' + location.href + ')'
           })
 
           setAbortController(abortController)
@@ -197,9 +174,7 @@ export const TollChat = ({
             setShowForm(true)
             setShowChatHeader(true)
             setIsChatOpen(true)
-            setError(
-              'There was an error initializing the chat. Please try again.'
-            )
+            setError('There was an error initializing the chat. Please try again.')
           }
         })
       }
@@ -223,13 +198,7 @@ export const TollChat = ({
     setIsCurrentlyChatting(true)
   }
 
-  const handleChatMessage = async (
-    event,
-    firstName,
-    lastName,
-    accessToken,
-    conversationId
-  ) => {
+  const handleChatMessage = async (event, firstName, lastName, accessToken, conversationId) => {
     const messages = []
     let message = {}
     let data, messagePayload
@@ -262,9 +231,7 @@ export const TollChat = ({
         ) {
           // if (!isTransfering.current && !isInConference.current) {
           // afterEndChatReset()
-          setSystemMessage(
-            messagePayload.entries[0].displayName + ' left the conversation'
-          )
+          setSystemMessage(messagePayload.entries[0].displayName + ' left the conversation')
           // } else {
           // setSystemMessage(null)
           // if (isTransfering.current) setShowWaitMessage(false)
@@ -274,10 +241,7 @@ export const TollChat = ({
         } else {
           for (let i = 0; i < messagePayload?.entries?.length; i++) {
             const entry = messagePayload.entries[i]
-            if (
-              entry.operation === 'add' &&
-              entry.participant?.role !== 'Supervisor'
-            ) {
+            if (entry.operation === 'add' && entry.participant?.role !== 'Supervisor') {
               handleAddAgent(entry)
               continue
             }
@@ -371,23 +335,12 @@ export const TollChat = ({
             email
           )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
             lastName
-          )}&gaClientId=${encodeURIComponent(
-            gaClientIds.gaClientId
-          )}&gaUserId=${encodeURIComponent(
+          )}&gaClientId=${encodeURIComponent(gaClientIds.gaClientId)}&gaUserId=${encodeURIComponent(
             gaClientIds.gaUserId
           )}&gaTrackId=${encodeURIComponent(gaClientIds.gaTrackId)}`
         )
 
-        await initializeChat(
-          firstName,
-          lastName,
-          email,
-          isAgent,
-          productCode,
-          endPoint,
-          apiSfOrgId,
-          apiSfName
-        )
+        await initializeChat(firstName, lastName, email, isAgent, productCode, endPoint, apiSfOrgId, apiSfName)
       } else {
         setShowForm(true)
         setShowWaitMessage(false)
@@ -443,26 +396,15 @@ export const TollChat = ({
     } else {
       setShowChatButton(false)
     }
-  }, [
-    chatStatus,
-    isCurrentlyChatting,
-    disableFloatingChatButton,
-    isChatOpen,
-    chatRegion
-  ])
+  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton, isChatOpen, chatRegion])
 
   useEffect(() => {
     async function getOscInfo() {
       try {
-        const availability = await fetchAvailability(
-          chatRegion,
-          availabilityAPI
-        )
+        const availability = await fetchAvailability(chatRegion, availabilityAPI)
         if (availability?.data?.payload?.length > 0) {
           setChatStatus('online')
-          const index = Math.floor(
-            Math.random() * availability.data.payload.length
-          )
+          const index = Math.floor(Math.random() * availability.data.payload.length)
           if (!isCurrentlyChatting) {
             setChatPhoto(availability.data.payload[index]?.photo)
           }
@@ -484,11 +426,7 @@ export const TollChat = ({
     setChatStatus('offline')
   }, [chatRegion, availabilityAPI])
 
-  const sendSystemtMessage = async ({
-    accessToken,
-    conversationId,
-    message
-  }) => {
+  const sendSystemtMessage = async ({ accessToken, conversationId, message }) => {
     try {
       await postMessage({
         accessToken,
@@ -524,32 +462,18 @@ export const TollChat = ({
         const tbChatBackup = { ...tbChat }
 
         const hasTransferEvent = response.conversationEntries.some((entry) => {
-          return (
-            entry.entryType === 'RoutingResult' &&
-            entry.entryPayload?.routingType === 'Transfer'
-          )
+          return entry.entryType === 'RoutingResult' && entry.entryPayload?.routingType === 'Transfer'
         })
 
-        const hasConferenceEvent = response.conversationEntries.some(
-          (entry) => {
-            return (
-              entry.entryType === 'RoutingResult' &&
-              entry.entryPayload?.routingType === 'Conference'
-            )
-          }
-        )
+        const hasConferenceEvent = response.conversationEntries.some((entry) => {
+          return entry.entryType === 'RoutingResult' && entry.entryPayload?.routingType === 'Conference'
+        })
 
         response.conversationEntries.map((entry) => {
-          if (
-            entry.entryType === 'ParticipantChanged' &&
-            entry.entryPayload?.entries?.length > 0
-          ) {
+          if (entry.entryType === 'ParticipantChanged' && entry.entryPayload?.entries?.length > 0) {
             entry.entryPayload.entries.map((entry) => {
               // find the add entry to get agent name
-              if (
-                entry.operation === 'add' &&
-                entry.participant?.role !== 'Supervisor'
-              ) {
+              if (entry.operation === 'add' && entry.participant?.role !== 'Supervisor') {
                 // always first since the messages are in chronological order.
                 // If the user was transfered this will be in the message list a second time
                 // so we need to add all the chat data back into localStorage and React state
@@ -778,9 +702,7 @@ export const TollChat = ({
         {
           id: popNextUUID(),
           type: 'Message',
-          text:
-            showActiveTyping?.conversationEntry?.senderDisplayName +
-            ' is typing...',
+          text: showActiveTyping?.conversationEntry?.senderDisplayName + ' is typing...',
           payload: { formatType: 'Typing' },
           role: 'Agent'
         }
@@ -817,28 +739,23 @@ export const TollChat = ({
 
   return (
     <div
-      className={`${styles.chatWrapper} ${
-        showChatHeader ? styles.chatPanelOpen : ''
-      } ${isMinimized ? styles.isMinimized : ''}`}
+      className={`${styles.chatWrapper} ${showChatHeader ? styles.chatPanelOpen : ''} ${
+        isMinimized ? styles.isMinimized : ''
+      }`}
     >
       {(showChatButton || isMinimized) && (
         <>
           {(showTextChatOptions || isMinimized) && (
             <div className={styles.textChatOptions}>
               {unreadMessagesCount?.count > 0 && (
-                <div className={styles.unreadMessagesIndicator}>
-                  {unreadMessagesCount.count}
-                </div>
+                <div className={styles.unreadMessagesIndicator}>{unreadMessagesCount.count}</div>
               )}
               <div className={styles.textChatWrapper}>
                 <button
                   className={`${styles.chatButton} ${styles.textChatButtons}`}
                   onClick={!isMinimized ? showFormHandler : handleMinimize}
                 >
-                  <img
-                    src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg'
-                    alt='chat'
-                  />
+                  <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/chat.svg' alt='chat' />
                   Chat
                 </button>
                 {!isMinimized && (
@@ -846,10 +763,7 @@ export const TollChat = ({
                     href={chatSms ? `sms:${chatSms}` : '#'}
                     className={`${styles.textButton} ${styles.textChatButtons}`}
                   >
-                    <img
-                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/sms.svg'
-                      alt='chat'
-                    />
+                    <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/sms.svg' alt='chat' />
                     Text
                   </a>
                 )}
@@ -857,20 +771,13 @@ export const TollChat = ({
             </div>
           )}
 
-          <button
-            className={styles.chatLaunch}
-            onClick={!isMinimized ? showTextChatOption : handleMinimize}
-          >
+          <button className={styles.chatLaunch} onClick={!isMinimized ? showTextChatOption : handleMinimize}>
             <img
               className={styles.oscHead}
-              src={
-                chatPhoto ??
-                'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
-              }
+              src={chatPhoto ?? 'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'}
               alt='osc'
               onError={(e) => {
-                e.currentTarget.src =
-                  'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                e.currentTarget.src = 'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
               }}
             />
 
@@ -899,22 +806,17 @@ export const TollChat = ({
         <div className={styles.header}>
           <h2>Chat</h2>
           <div className={styles.panelControls}>
-            {hasAgentEngaged && (
-              <button onClick={() => handleMinimize()} type='button'>
-                <Minus fill='#000' />
-              </button>
-            )}
-            <button onClick={() => handleConfirmationEnd()} type='button'>
-              <CloseX fill='#000' />
-            </button>
+            <HeaderButtons
+              onMinimize={handleMinimize}
+              onClose={handleConfirmationEnd}
+              isMinimizeHidden={!hasAgentEngaged}
+            />
           </div>
         </div>
       )}
       {showWaitMessage && !isMinimized && (
         <>
-          <p className={styles.waitMessage}>
-            Please wait while we connect you with a representative.
-          </p>
+          <p className={styles.waitMessage}>Please wait while we connect you with a representative.</p>
           <div className={styles.loading}>
             <span />
             <span />
@@ -923,30 +825,15 @@ export const TollChat = ({
         </>
       )}
       {showConfirmationEndMessage && !isMinimized && (
-        <div className={styles.confirmationEndMessage}>
-          <p>Are you sure you want to leave this chat?</p>
-          <div className={styles.buttonWrapper}>
-            <button onClick={handleStay}>Stay</button>
-            <button onClick={() => handleEndChat(accessToken, conversationId)}>
-              Leave
-            </button>
-          </div>
-        </div>
+        <ConfirmationEndDialog onStay={handleStay} onLeave={() => handleEndChat(accessToken, conversationId)} />
       )}
       {showForm && !isMinimized && (
         <div className={styles.formContainer}>
-          <ChatForm
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleSubmit}
-            cta='Start Chat'
-          />
+          <ChatForm formData={formData} setFormData={setFormData} onSubmit={handleSubmit} cta='Start Chat' />
         </div>
       )}
 
-      {systemMessage && !isMinimized && (
-        <p className={styles.persistentText}>{systemMessage}.</p>
-      )}
+      {systemMessage && !isMinimized && <p className={styles.persistentText}>{systemMessage}.</p>}
 
       <div className={styles.messagesWrapper} ref={chatContainerRef}>
         {!isMinimized && (
@@ -955,22 +842,15 @@ export const TollChat = ({
               (message, index) =>
                 message.type === 'Message' &&
                 !message.text?.includes('::System Message::') &&
-                !(
-                  message.text?.startsWith('/url') && message?.role === 'Agent'
-                ) && (
+                !(message.text?.startsWith('/url') && message?.role === 'Agent') && (
                   <React.Fragment key={message.id}>
-                    <div className={styles.timestamp}>
-                      {convertTimeStamp(message.timestamp)}
-                    </div>
+                    <div className={styles.timestamp}>{convertTimeStamp(message.timestamp)}</div>
                     {message.payload?.formatType === 'RichLink' && (
                       <>
                         {message.text && <ChatMessageText message={message} />}
                         <ChatMessageRichLink
                           richLink={message.payload}
-                          leftAlign={
-                            message?.role === 'Agent' ||
-                            message?.role === 'System'
-                          }
+                          leftAlign={message?.role === 'Agent' || message?.role === 'System'}
                         />
                       </>
                     )}
@@ -984,8 +864,7 @@ export const TollChat = ({
                         />
                       </>
                     )}
-                    {(message.payload?.formatType === 'Text' ||
-                      message.payload?.formatType === 'Typing') && (
+                    {(message.payload?.formatType === 'Text' || message.payload?.formatType === 'Typing') && (
                       <ChatMessageText message={message} />
                     )}
                   </React.Fragment>
@@ -1007,9 +886,7 @@ export const TollChat = ({
         </div>
       )}
       {error && <span className={styles.error}>{error}</span>}
-      {callbackUrl && (
-        <iframe className={styles.callbackIframe} src={callbackUrl} />
-      )}
+      {callbackUrl && <iframe className={styles.callbackIframe} src={callbackUrl} />}
     </div>
   )
 }

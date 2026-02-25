@@ -1,0 +1,38 @@
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.buttonReset {
+  background: transparent !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  font: inherit;
+}
+
+.headerButton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  color: black;
+  align-items: center;
+  justify-content: center;
+
+  &.closeButton {
+    img {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline-offset: 0 !important;
+  }
+}

@@ -180,6 +180,9 @@ export const Chatbot = ({
     setUserEvents([])
     setShowConfirmationEndMessage(false)
     setChatBotTransferData(null)
+    setInputMessage('')
+    setError(null)
+    setIsThinking(false)
     window.localStorage.removeItem('tbChatBot')
   }
 

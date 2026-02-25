@@ -12,6 +12,7 @@ import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
+import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
@@ -122,7 +123,6 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const messageContainerRef = useRef(null)
-  const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
@@ -164,9 +164,18 @@ export const Chatbot = ({
     setIsChatBotOpen(true)
   }
 
+  const onMinimizeChat = () => {
+    setIsChatBotOpen(false)
+    setIsChatBotOpenExternal(false)
+  }
+
   const onCloseChat = () => {
     setIsChatBotOpen(false)
     setIsChatBotOpenExternal(false)
+    // setMessages([])
+    // setSessionId(null)
+    // setSessionTime(null)
+    // setUserEvents([])
   }
 
   const handleShowChatForm = () => {
@@ -540,15 +549,7 @@ export const Chatbot = ({
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
             <span>Hi, I'm AI Concierge</span>
           </div>
-          <button
-            ref={closeButtonRef}
-            className={`${styles.closeButton} ${styles.buttonReset}`}
-            aria-label='Close AI Concierge'
-            onClick={onCloseChat}
-            type='button'
-          >
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg' alt='' />
-          </button>
+          <HeaderButtons className={styles.headerButtons} onClose={onCloseChat} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>

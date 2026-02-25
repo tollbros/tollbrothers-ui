@@ -1,7 +1,7 @@
 .headerButtons {
   display: flex;
   align-items: center;
-  //gap: 8px;
+  gap: 12px;
 }
 
 .buttonReset {
@@ -25,17 +25,11 @@
     img {
       width: 14px;
       height: 14px;
-      opacity: 0.8;
     }
   }
 
-  img {
-    width: 16px;
-    height: 16px;
-  }
-
   &:hover {
-    opacity: 0.8;
+    opacity: 0.6;
   }
 
   &:focus-visible {

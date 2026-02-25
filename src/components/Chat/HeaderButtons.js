@@ -22,7 +22,9 @@ const MinimizeButton = ({ onClick, ariaLabel = 'Minimize AI Concierge', classNam
       onClick={onClick}
       type='button'
     >
-      <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrow-down.svg' alt='' />
+      <svg width='16' height='2' viewBox='0 0 16 2' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M0 1H16' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+      </svg>
     </button>
   )
 }

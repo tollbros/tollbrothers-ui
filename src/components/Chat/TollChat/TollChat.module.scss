@@ -78,57 +78,7 @@
         100% {
             opacity: 0.2;
         }
-    } 
-
-    .confirmationEndMessage {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        width: 92%;
-        margin-left: 4%;
-        padding: 20px 10px;
-        top: 80px;
-        background: #fff;
-        z-index: 99;
-        color: #000;
-        font-weight: 500;
-        box-shadow: 1px 4px 14px rgba(0, 0, 0, .2);
-
-        @media screen and (min-width: 1200px) {
-            top: auto;
-            bottom: 30px;
-        }
-
-        p {
-            color: black;
-            font-size: .9em;
-            font-weight: $font_weight_bold;
-            margin: 0 0 30px 0;
-        }
-
-        .buttonWrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            button {
-                width: 50%;
-                background: transparent;
-                font-size: .8em;
-                font-family: $special_font_family;
-                border: none;
-                text-align: center;
-
-                &:nth-child(2) {
-                    color: #8d0e27;
-                }
-            }
-            
-        }
     }
-    
 
     &.chatPanelOpen:not(.isMinimized) {
         bottom: 0;
@@ -350,27 +300,9 @@
     display: flex;
     align-items: flex-end;
     position: absolute;
-    right: 15px;
-    top: 12px;
+    right: 10px;
+    top: 16px;
     gap: 10px;
-
-    button {
-        width: 40px;
-        height: 40px;
-        padding: 10px;
-        color: #000;
-        border: 1px solid #d0d7db;
-        border-radius: 100%;
-        cursor: pointer;
-        background-color: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
-            overflow: visible;
-        }
-    }
 }
 
 .chatInputWrapper {

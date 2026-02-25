@@ -12,9 +12,11 @@ import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
+import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -122,11 +124,11 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const messageContainerRef = useRef(null)
-  const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
 
   // Add to userEvents array, keeping only last page navigation and last card view
   const addUserEvent = (newEvent, from = {}) => {
@@ -164,9 +166,32 @@ export const Chatbot = ({
     setIsChatBotOpen(true)
   }
 
+  const onMinimizeChat = () => {
+    setIsChatBotOpen(false)
+    setIsChatBotOpenExternal(false)
+  }
+
   const onCloseChat = () => {
     setIsChatBotOpen(false)
     setIsChatBotOpenExternal(false)
+    setMessages([])
+    setSessionId(null)
+    setSessionTime(null)
+    setUserEvents([])
+    setShowConfirmationEndMessage(false)
+    setChatBotTransferData(null)
+    setInputMessage('')
+    setError(null)
+    setIsThinking(false)
+    window.localStorage.removeItem('tbChatBot')
+  }
+
+  const handleConfirmationEnd = () => {
+    setShowConfirmationEndMessage(true)
+  }
+
+  const handleStay = () => {
+    setShowConfirmationEndMessage(false)
   }
 
   const handleShowChatForm = () => {
@@ -540,15 +565,7 @@ export const Chatbot = ({
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
             <span>Hi, I'm AI Concierge</span>
           </div>
-          <button
-            ref={closeButtonRef}
-            className={`${styles.closeButton} ${styles.buttonReset}`}
-            aria-label='Close AI Concierge'
-            onClick={onCloseChat}
-            type='button'
-          >
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg' alt='' />
-          </button>
+          <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>
@@ -633,6 +650,7 @@ export const Chatbot = ({
             <span>Speak to an expert</span>
           </button>
         </div>
+        {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
       </div>
     </div>
   )

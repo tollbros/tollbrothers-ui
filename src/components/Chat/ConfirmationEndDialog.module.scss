@@ -18,7 +18,7 @@
     max-width: 320px;
     min-height: 130px;
     margin: auto;
-    border-radius: 4px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,7 +34,7 @@
     color: black;
     font-size: 0.9em;
     font-weight: $font_weight_bold;
-    padding: 0 0 30px 0 !important;
+    padding: 0 0 24px 0 !important;
     margin: 0 !important;
   }
 
@@ -43,18 +43,34 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    gap: 16px;
 
     button {
-      width: 50%;
-      background: transparent;
+      width: 200px;
+      color: white;
       font-size: 0.8em;
       font-family: $special_font_family;
+      padding: 10px 20px;
       border: none;
       text-align: center;
       cursor: pointer;
+      border-radius: 100px;
+      background-color: $accent_blue;
 
-      &:nth-child(2) {
-        color: #8d0e27;
+       &:hover {
+        background-color: $medium_blue4;
+       }
+
+    }
+
+    .continue {
+      color: black;
+      border: 1px solid black;
+      background: transparent;
+
+      &:hover {
+        background-color: #f5f7f8;
       }
     }
   }

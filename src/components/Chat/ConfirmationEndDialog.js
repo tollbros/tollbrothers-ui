@@ -12,9 +12,7 @@ export const ConfirmationEndDialog = ({
       <div className={`${styles.dialog} ${classes.dialog ?? ''}`}>
         <p>{message}</p>
         <div className={styles.buttonWrapper}>
-          <button className={styles.end} onClick={onLeave}>
-            End Chat
-          </button>
+          <button onClick={onLeave}>End Chat</button>
           <button className={styles.continue} onClick={onStay}>
             Continue Chat
           </button>

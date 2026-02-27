@@ -111,6 +111,8 @@ export const Chatbot = ({
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   setChatBotTransferData = () => null,
+  chatEndpointId,
+  chatApiKey,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted'
@@ -243,8 +245,8 @@ export const Chatbot = ({
     // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
     // const urlParams = location.search;
     const urlParams = new URLSearchParams(window.location.search)
-    const endpointId = urlParams.get('endpointId') ?? 'c5wmooifc5'
-    const apiKey = urlParams.get('apiKey') ?? 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC'
+    const endpointId = urlParams.get('endpointId') ?? chatEndpointId
+    const apiKey = urlParams.get('apiKey') ?? chatApiKey
 
     // console.log(systemMessage)
 

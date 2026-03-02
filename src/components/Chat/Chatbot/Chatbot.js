@@ -625,6 +625,7 @@ export const Chatbot = ({
                       <ChatBotForm
                         chatRegion={chatRegion}
                         productCode={productCode}
+                        sessionId={sessionId}
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
                         onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}

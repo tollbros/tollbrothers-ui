@@ -31,7 +31,8 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
       url: image.url || image.src,
       title: caption,
       description: caption,
-      type: image.type
+      type: image.type,
+      variant: 'chatbot'
     }
   })
 

@@ -17,7 +17,7 @@ export const ProductLayout = ({
   handleProductSelect = () => null,
   utils,
   onClose,
-  onCloseChat = () => null
+  onMinimizeChat = () => null
 }) => {
   const rootRef = useRef(null)
   const headShotImage = product?.headShot?.media?.url
@@ -120,7 +120,7 @@ export const ProductLayout = ({
     const layoutWidth = rootRef.current.offsetWidth
     const availableSpace = window.innerWidth - 680
     if (layoutWidth > availableSpace) {
-      onCloseChat()
+      onMinimizeChat()
     }
   }
 

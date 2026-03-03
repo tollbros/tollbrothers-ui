@@ -612,7 +612,7 @@ export const Chatbot = ({
                         utils={utils}
                         handleProductSelect={handleProductSelect}
                         onClose={() => handleProductRemoval(msg.id, msg.product)}
-                        onCloseChat={onCloseChat}
+                        onMinimizeChat={onMinimizeChat}
                       />
                     }
                   />

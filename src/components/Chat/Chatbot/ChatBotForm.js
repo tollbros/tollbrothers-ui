@@ -16,7 +16,15 @@ const checkLiveAgentAvailability = async (region, availabilityAPI) => {
   return false
 }
 
-export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, productCode, sessionId, onClose }) => {
+export const ChatBotForm = ({
+  tollRegionsEndpoint,
+  availabilityAPI,
+  chatRegion,
+  productCode,
+  sessionId,
+  onClose,
+  utils
+}) => {
   const [selectedValue, setSelectedValue] = useState('')
   const [selectedRegion, setSelectedRegion] = useState(null)
   const [regions, setRegions] = useState([])
@@ -64,6 +72,14 @@ export const ChatBotForm = ({ tollRegionsEndpoint, availabilityAPI, chatRegion, 
       region: selectedRegion?.chatRegion ?? chatRegion,
       sessionId
     })
+
+    if (utils?.dataLayerPush) {
+      utils.dataLayerPush({
+        event: 'chatStarted',
+        agent_status: isAgentAvailable ? 'online' : 'offline',
+        variant: 'chatbot'
+      })
+    }
   }
 
   useEffect(() => {

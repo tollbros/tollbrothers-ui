@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, use } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
@@ -510,6 +510,15 @@ export const Chatbot = ({
     }
   }, [isChatBotOpenExternal])
 
+  useEffect(() => {
+    if (utils?.dataLayerPush && (isChatBotOpen || isChatBotOpenExternal) && !sessionId) {
+      utils.dataLayerPush({
+        event: 'chatClicked',
+        variant: 'chatbot'
+      })
+    }
+  }, [isChatBotOpen])
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     setChatBotTransferData({
@@ -629,6 +638,7 @@ export const Chatbot = ({
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
                         onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
+                        utils={utils}
                       />
                     }
                   />

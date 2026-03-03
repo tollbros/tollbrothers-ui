@@ -4,15 +4,9 @@ import { FullScreenGallery } from '../../FullScreenGallery'
 
 import styles from './ImageCarousel.module.scss'
 
-const getCaption = (image) =>
-  image.title || image.alt || image.caption || image.description || ''
+const getCaption = (image) => image.title || image.alt || image.caption || image.description || ''
 
-export const ImageCarousel = ({
-  images = [],
-  title,
-  utils,
-  isUseHighRes = false
-}) => {
+export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false }) => {
   const [showGallery, setShowGallery] = useState(false)
   const [initialSlide, setInitialSlide] = useState(1)
 
@@ -21,18 +15,23 @@ export const ImageCarousel = ({
   const handleImageClick = (index) => {
     setInitialSlide(index + 1)
     setShowGallery(true)
+    onSlideView({ slideIndex: index })
   }
 
-  const imageList = isUseHighRes
-    ? utils?.setToOriginalImages?.(images) || images
-    : images
+  const onSlideView = function (data) {
+    const list = data?.mediaList || mediaList
+    if (utils?.trackGalleryItem) utils.trackGalleryItem(list[data.slideIndex])
+  }
+
+  const imageList = isUseHighRes ? utils?.setToOriginalImages?.(images) || images : images
 
   const mediaList = imageList.map((image) => {
     const caption = getCaption(image)
     return {
       url: image.url || image.src,
       title: caption,
-      description: caption
+      description: caption,
+      type: image.type
     }
   })
 
@@ -64,15 +63,9 @@ export const ImageCarousel = ({
                 }}
                 role='button'
                 tabIndex={0}
-                aria-label={`View ${
-                  caption || `image ${index + 1}`
-                } in full screen`}
+                aria-label={`View ${caption || `image ${index + 1}`} in full screen`}
               >
-                <img
-                  src={image.url || image.src}
-                  alt={caption}
-                  className={styles.image}
-                />
+                <img src={image.url || image.src} alt={caption} className={styles.image} />
                 {caption && <span className={styles.caption}>{caption}</span>}
               </div>
             )
@@ -84,6 +77,8 @@ export const ImageCarousel = ({
         mediaList={mediaList}
         initialSlide={initialSlide}
         onClose={() => setShowGallery(false)}
+        onNext={onSlideView}
+        onPrevious={onSlideView}
       />
     </div>
   )

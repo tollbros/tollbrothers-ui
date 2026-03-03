@@ -278,7 +278,19 @@ export const ProductLayout = ({
                 />
               )}
               {canShowDirections && mapLink && (
-                <OptionButton text='Get directions' href={mapLink} isLink target='_blank' />
+                <OptionButton
+                  text='Get directions'
+                  href={mapLink}
+                  isLink
+                  target='_blank'
+                  onClick={() => {
+                    if (utils?.dataLayerPush)
+                      utils.dataLayerPush({
+                        event: 'directions-event',
+                        variant: 'chatbot'
+                      })
+                  }}
+                />
               )}
             </div>
           </div>

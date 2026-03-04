@@ -158,7 +158,8 @@ export const ProductLayout = ({
           <div className={styles.designReadyWrapper} id='design-ready-timeline-panel'>
             {React.createElement(utils.DesignReadyTimeline, {
               moveInDate: product.moveInDate,
-              dates: product.designReadyOptions
+              dates: product.designReadyOptions,
+              options: product.options
             })}
           </div>
         )}

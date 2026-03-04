@@ -250,6 +250,13 @@ export const Chatbot = ({
 
     // console.log(systemMessage)
 
+    // track user sent a new prompt
+    if (utils?.dataLayerPush && !systemMessage) {
+      utils.dataLayerPush({
+        event: 'chatbot_prompt_sent'
+      })
+    }
+
     const userMessageText = inputMessage || systemMessage
     const newUserMessage = {
       id: Date.now(),
@@ -511,10 +518,9 @@ export const Chatbot = ({
   }, [isChatBotOpenExternal])
 
   useEffect(() => {
-    if (utils?.dataLayerPush && (isChatBotOpen || isChatBotOpenExternal) && !sessionId) {
+    if (utils?.dataLayerPush && isChatBotOpen && !sessionId) {
       utils.dataLayerPush({
-        event: 'chatClicked',
-        variant: 'chatbot'
+        event: 'chatbotClicked'
       })
     }
   }, [isChatBotOpen])

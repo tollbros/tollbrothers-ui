@@ -3,12 +3,7 @@ import styles from './CommunityModels.module.scss'
 import { OptionButton } from './OptionButton'
 import { ProductsList } from './ProductsList'
 
-export const CommunityModels = ({
-  communityQMIs,
-  communityModels,
-  handleProductSelect,
-  utils
-}) => {
+export const CommunityModels = ({ communityQMIs, communityModels, handleProductSelect, utils, classes }) => {
   const [showHomeTypes, setShowHomeTypes] = React.useState([])
 
   return (
@@ -26,6 +21,7 @@ export const CommunityModels = ({
               }
               utils={utils}
               hideModelLocation
+              classes={classes}
             />
           </div>
         )
@@ -33,20 +29,11 @@ export const CommunityModels = ({
 
       <div className={styles.actionButtonsWrapper}>
         {!showHomeTypes.includes('qmi') && communityQMIs?.length > 0 && (
-          <OptionButton
-            onClick={() => setShowHomeTypes((prev) => [...prev, 'qmi'])}
-            text='Show Quick Move-In Homes'
-          />
+          <OptionButton onClick={() => setShowHomeTypes((prev) => [...prev, 'qmi'])} text='Show Quick Move-In Homes' />
         )}
-        {!showHomeTypes.includes('homeDesigns') &&
-          communityModels?.length > 0 && (
-            <OptionButton
-              onClick={() =>
-                setShowHomeTypes((prev) => [...prev, 'homeDesigns'])
-              }
-              text='Show Home Designs'
-            />
-          )}
+        {!showHomeTypes.includes('homeDesigns') && communityModels?.length > 0 && (
+          <OptionButton onClick={() => setShowHomeTypes((prev) => [...prev, 'homeDesigns'])} text='Show Home Designs' />
+        )}
       </div>
     </>
   )

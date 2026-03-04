@@ -25,16 +25,8 @@ export const UserInputField = ({
         cols={50}
       />
 
-      <button
-        className={styles.sendButton}
-        onClick={onSend}
-        aria-label='Send message'
-        type='button'
-      >
-        <img
-          src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg'
-          alt=''
-        />
+      <button className={styles.sendButton} onClick={onSend} aria-label='Send message' type='button'>
+        <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/up-arrow.svg' alt='' />
       </button>
     </div>
   )

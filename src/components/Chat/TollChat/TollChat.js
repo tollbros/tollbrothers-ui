@@ -18,11 +18,11 @@ import ChatInput from './ChatInput'
 import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
 
-import Minus from '../../../icons/Minus'
-import CloseX from '../../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
+import { HeaderButtons } from '../HeaderButtons'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 export const TollChat = ({
   availabilityAPI,
@@ -782,14 +782,11 @@ export const TollChat = ({
         <div className={styles.header}>
           <h2>Chat</h2>
           <div className={styles.panelControls}>
-            {hasAgentEngaged && (
-              <button onClick={() => handleMinimize()} type='button'>
-                <Minus fill='#000' />
-              </button>
-            )}
-            <button onClick={() => handleConfirmationEnd()} type='button'>
-              <CloseX fill='#000' />
-            </button>
+            <HeaderButtons
+              onMinimize={handleMinimize}
+              onClose={handleConfirmationEnd}
+              isMinimizeHidden={!hasAgentEngaged}
+            />
           </div>
         </div>
       )}
@@ -804,13 +801,7 @@ export const TollChat = ({
         </>
       )}
       {showConfirmationEndMessage && !isMinimized && (
-        <div className={styles.confirmationEndMessage}>
-          <p>Are you sure you want to leave this chat?</p>
-          <div className={styles.buttonWrapper}>
-            <button onClick={handleStay}>Stay</button>
-            <button onClick={() => handleEndChat(accessToken, conversationId)}>Leave</button>
-          </div>
-        </div>
+        <ConfirmationEndDialog onStay={handleStay} onLeave={() => handleEndChat(accessToken, conversationId)} />
       )}
       {showForm && !isMinimized && (
         <div className={styles.formContainer}>

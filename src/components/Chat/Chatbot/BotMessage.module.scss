@@ -31,12 +31,31 @@
 .text {
   font-family: $alt_font_family;
   font-size: .875em;
-  font-weight: $font_weight_bold;
+  font-weight: $font_weight_book;
   line-height: 1.25em;
   color: black;
   margin: 0;
-  white-space: pre-wrap;
   word-break: break-word;
+
+  p:not(:first-child) {
+    margin: 16px 0 8px 0!important;
+  }
+
+  //for markdown
+  ul, ol {
+   margin: 10px 0;
+
+    li {
+      margin-left: 18px;
+      padding-bottom: 4px;
+      line-height: 1.4;
+      list-style: outside;
+
+      p {
+        margin: 8px 0!important;
+      }
+    }
+  }
 }
 
 .component {

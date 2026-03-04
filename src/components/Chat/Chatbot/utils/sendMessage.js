@@ -1,7 +1,4 @@
-export const sendMessage = async (
-  prompt,
-  { baseUrl, apiKey, onChunk, onDone, onError }
-) => {
+export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, onError }) => {
   const headers = {
     'Content-Type': 'application/json'
   }
@@ -40,8 +37,7 @@ export const sendMessage = async (
         if (!trimmed) continue
         try {
           const parsed = JSON.parse(trimmed)
-          if (onChunk && parsed.response)
-            onChunk({ ...parsed.response, session_id: parsed.session_id })
+          if (onChunk && parsed.response) onChunk({ ...parsed.response, session_id: parsed.session_id })
         } catch {
           // skip non-JSON lines
         }

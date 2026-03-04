@@ -11,7 +11,7 @@
 
 .hidden {
     opacity: 0;
-    visiblity: hidden;
+    visibility: hidden;
     pointer-events: none;
 }
 
@@ -46,6 +46,10 @@
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+
+    @include breakpoint(sm) {
+        width: 410px;
+    }
 
     p {
         margin: 0 !important;
@@ -95,26 +99,13 @@
         color: #000;
     }
 
-    .closeButton {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: -10px;
-
-        img {
-            width: 16px;
-            height: 16px;
-        }
-    }
 }
 
 .body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 12px;
+    padding: 12px 20px;
 }
 
 .messages {
@@ -133,6 +124,9 @@
 }
 
 .transferButton {
+    display: flex;
+    gap: 6px;
+    align-items: center;
     position: absolute;
     bottom: 14px;
     left: 50%;

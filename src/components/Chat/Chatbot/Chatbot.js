@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, use } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
@@ -10,15 +10,22 @@ import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
+import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
+import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
+import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
+import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
   let eventObject = {
     name: product.name,
-    url: product.url
+    url: product.url,
+    fromModelList: product.fromModelList || false,
+    fromProductsList: product.fromProductsList || false,
+    fromPageNavigation: product.fromPageNavigation || false
   }
 
   if (product.commPlanID) {
@@ -104,6 +111,8 @@ export const Chatbot = ({
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   setChatBotTransferData = () => null,
+  chatEndpointId,
+  chatApiKey,
   trackChatEvent = () => null,
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted'
@@ -117,22 +126,37 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const messageContainerRef = useRef(null)
-  const closeButtonRef = useRef(null)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
+  const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
+  const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
 
-  // Add to userEvents array, keeping only the last 10 items and removing duplicates
-  const addUserEvent = (newEvent) => {
+  // Add to userEvents array, keeping only last page navigation and last card view
+  const addUserEvent = (newEvent, from = {}) => {
     setUserEvents((prev) => {
       // Remove any existing event with the same name, type, and commPlanID (if exists)
+      // Also remove previous events from product/model lists if new event is from those sources
       const filtered = prev.filter((event) => {
         const isSameName = event.name === newEvent.name
         const isSameType = event.type === newEvent.type
         const isSameCommPlanID = event.commPlanID === newEvent.commPlanID
-        return !(isSameName && isSameType && isSameCommPlanID)
+        const isSameFrom =
+          event.fromProductsList === from.fromProductsList &&
+          event.fromModelList === from.fromModelList &&
+          event.fromPageNavigation === from.fromPageNavigation
+        const isDuplicate = isSameName && isSameType && isSameCommPlanID && isSameFrom
+
+        const shouldRemoveFromList =
+          (from.fromProductsList && (event.fromProductsList || event.fromModelList)) ||
+          (from.fromModelList && event.fromModelList) ||
+          (from.fromPageNavigation && event.fromPageNavigation)
+
+        return !isDuplicate && !shouldRemoveFromList
       })
+
       const updated = [...filtered, newEvent]
+
       return updated.slice(-10)
     })
   }
@@ -144,9 +168,32 @@ export const Chatbot = ({
     setIsChatBotOpen(true)
   }
 
+  const onMinimizeChat = () => {
+    setIsChatBotOpen(false)
+    setIsChatBotOpenExternal(false)
+  }
+
   const onCloseChat = () => {
     setIsChatBotOpen(false)
     setIsChatBotOpenExternal(false)
+    setMessages([])
+    setSessionId(null)
+    setSessionTime(null)
+    setUserEvents([])
+    setShowConfirmationEndMessage(false)
+    setChatBotTransferData(null)
+    setInputMessage('')
+    setError(null)
+    setIsThinking(false)
+    window.localStorage.removeItem('tbChatBot')
+  }
+
+  const handleConfirmationEnd = () => {
+    setShowConfirmationEndMessage(true)
+  }
+
+  const handleStay = () => {
+    setShowConfirmationEndMessage(false)
   }
 
   const handleShowChatForm = () => {
@@ -159,6 +206,34 @@ export const Chatbot = ({
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
   }
 
+  const handleProductRemoval = (productId, product) => {
+    setMessages((prev) => prev.filter((m) => m.id !== productId))
+    if (product) {
+      const isModel = Boolean(product.commPlanID)
+      const isMaster = Boolean(product.isMaster)
+
+      setUserEvents((prev) =>
+        prev.filter((event) => {
+          if (event.fromPageNavigation) {
+            return true
+          } else if (isModel && event.commPlanID === product.commPlanID) {
+            return false
+          } else if (!isMaster && !isModel && product.communityId && event.communityId === product.communityId) {
+            return false
+          } else if (
+            isMaster &&
+            !isModel &&
+            product.masterCommunityId &&
+            event.masterCommunityId === product.masterCommunityId
+          ) {
+            return false
+          }
+          return true
+        })
+      )
+    }
+  }
+
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
@@ -167,7 +242,20 @@ export const Chatbot = ({
   const handleSendMessage = async (_event, systemMessage) => {
     if (!inputMessage.trim() && !systemMessage) return
 
+    // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
+    // const urlParams = location.search;
+    const urlParams = new URLSearchParams(window.location.search)
+    const endpointId = urlParams.get('endpointId') ?? chatEndpointId
+    const apiKey = urlParams.get('apiKey') ?? chatApiKey
+
     // console.log(systemMessage)
+
+    // track user sent a new prompt
+    if (utils?.dataLayerPush && !systemMessage) {
+      utils.dataLayerPush({
+        event: 'chatbot_prompt_sent'
+      })
+    }
 
     const userMessageText = inputMessage || systemMessage
     const newUserMessage = {
@@ -181,24 +269,36 @@ export const Chatbot = ({
     setInputMessage('')
     setIsThinking(true)
 
+    const lastEvent = userEvents[userEvents.length - 1]
+
+    const isSessionValid = sessionId && sessionTime && !isExpired(sessionTime)
     const promp = {
       prompt: userMessageText,
-      session_id: sessionId || ''
+      session_id: isSessionValid ? sessionId : '',
+      ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 
+    let hasProducts = false
+
     sendMessage(promp, {
-      baseUrl: 'https://c5wmooifc5.execute-api.us-east-1.amazonaws.com/prod',
-      apiKey: 'hakKak197h8VbuVbPdU2H8ggcUCsWmIa8GUMwdUC',
+      baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
+      apiKey: apiKey,
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
+        setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
-        if (products && Array.isArray(products) && products.length > 0) {
+        if (response.transfer_to_osc) {
+          handleShowChatForm()
+        } else if (products && Array.isArray(products) && products.length > 0) {
+          hasProducts = true
           setIsThinking(true)
+          // console.log('fetch products')
           getProductData(products, tollRouteApi)
             .then((productData) => {
               setIsThinking(false)
+              // console.log('producst were fetched')
               console.log('getProductData products:', productData)
               if (productData?.length > 0) {
                 const botResponse = {
@@ -223,6 +323,9 @@ export const Chatbot = ({
               console.error('getProductData error:', err)
               setIsThinking(false)
             })
+        } else if (response.error) {
+          setError('An error occurred while sending the message. Pleaesse try again.')
+          setIsThinking(false)
         } else {
           const botResponse = {
             id: Date.now() + 1,
@@ -234,7 +337,7 @@ export const Chatbot = ({
         }
       },
       onDone: () => {
-        setIsThinking(false)
+        if (!hasProducts) setIsThinking(false)
         console.log('stream done')
       },
       onError: (err) => {
@@ -281,10 +384,68 @@ export const Chatbot = ({
       setMessages((prev) => [...prev, newBotMessage])
     }
 
-    addUserEvent(buildUserEventObject(product))
+    addUserEvent(buildUserEventObject({ ...product, fromProductsList, fromModelList }), {
+      fromModelList,
+      fromProductsList
+    })
   }
 
-  console.log('userEvents :', userEvents)
+  const restoreUiChatSession = (event) => {
+    if (event && event.type === 'visibilitychange' && document.hidden) {
+      return
+    }
+
+    const stored = getLocalStorage('tbChatBot')
+    console.log(stored)
+    if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
+      const {
+        messages: storedMessages,
+        sessionId: storedSessionId,
+        expiry: storedExpiry,
+        userEvents: storedUserEvents
+      } = stored.value || {}
+      if (storedMessages) setMessages(storedMessages)
+      if (storedSessionId) setSessionId(storedSessionId)
+      if (storedExpiry) setSessionTime(storedExpiry)
+      if (storedUserEvents) setUserEvents(storedUserEvents)
+      setIsChatBotOpen(true)
+    } else if (stored) {
+      clearLocalStorage('tbChatBot')
+    }
+  }
+
+  useEffect(() => {
+    restoreUiChatSession()
+
+    window.addEventListener('visibilitychange', restoreUiChatSession)
+
+    return () => {
+      window.removeEventListener('visibilitychange', restoreUiChatSession)
+    }
+  }, [])
+
+  // Store chatbot state in localStorage
+  useEffect(() => {
+    if (sessionId && sessionTime) {
+      const messagesToStore = messages.slice(-10)
+
+      messagesToStore.map((msg) => {
+        if (msg.products?.length > 0) {
+          msg.products = msg.products.map((p) => {
+            const productToStore = { ...p }
+            deleteExtraProductInfo(productToStore)
+            return productToStore
+          })
+        } else if (msg.product) {
+          const productToStore = { ...msg.product }
+          deleteExtraProductInfo(productToStore)
+          return productToStore
+        }
+      })
+
+      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime, userEvents })
+    }
+  }, [messages, sessionId, sessionTime, userEvents])
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -358,6 +519,14 @@ export const Chatbot = ({
     }
   }, [isChatBotOpenExternal])
 
+  useEffect(() => {
+    if (utils?.dataLayerPush && isChatBotOpen && !sessionId) {
+      utils.dataLayerPush({
+        event: 'chatbotClicked'
+      })
+    }
+  }, [isChatBotOpen])
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     setChatBotTransferData({
@@ -373,7 +542,7 @@ export const Chatbot = ({
 
   useEffect(() => {
     if (pageSummaryData) {
-      addUserEvent(buildUserEventObject(pageSummaryData))
+      addUserEvent(buildUserEventObject({ ...pageSummaryData, fromPageNavigation: true }), { fromPageNavigation: true })
     }
   }, [pageSummaryData])
 
@@ -413,21 +582,13 @@ export const Chatbot = ({
         <div className={styles.header}>
           <div className={styles.title}>
             <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-            <span>Hi, I'm TollBot</span>
+            <span>Hi, I'm AI Concierge</span>
           </div>
-          <button
-            ref={closeButtonRef}
-            className={`${styles.closeButton} ${styles.buttonReset}`}
-            aria-label="Close Toll Brothers' AI Assistant"
-            onClick={onCloseChat}
-            type='button'
-          >
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close.svg' alt='' />
-          </button>
+          <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
           <p>
-            I am the Toll Brothers AI assistant. I can assist with your home search using the prompts below or direct
+            I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
             you to one of our human experts for additional help.
           </p>
           <div className={styles.messages} ref={messageContainerRef}>
@@ -467,8 +628,8 @@ export const Chatbot = ({
                         product={msg.product}
                         utils={utils}
                         handleProductSelect={handleProductSelect}
-                        onClose={() => setMessages((prev) => prev.filter((m) => m.id !== msg.id))}
-                        onCloseChat={onCloseChat}
+                        onClose={() => handleProductRemoval(msg.id, msg.product)}
+                        onMinimizeChat={onMinimizeChat}
                       />
                     }
                   />
@@ -481,9 +642,11 @@ export const Chatbot = ({
                       <ChatBotForm
                         chatRegion={chatRegion}
                         productCode={productCode}
+                        sessionId={sessionId}
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
                         onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
+                        utils={utils}
                       />
                     }
                   />
@@ -501,12 +664,14 @@ export const Chatbot = ({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onSend={handleSendMessage}
-            placeholder='Ask TollBot your question here.'
+            placeholder='Ask AI Concierge your question here.'
           />
           <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-            I want to talk to a Sales Consultant.
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+            <span>Speak to an expert</span>
           </button>
         </div>
+        {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
       </div>
     </div>
   )

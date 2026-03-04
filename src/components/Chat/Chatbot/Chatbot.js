@@ -289,7 +289,9 @@ export const Chatbot = ({
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
-        if (products && Array.isArray(products) && products.length > 0) {
+        if (response.transfer_to_osc) {
+          handleShowChatForm()
+        } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
           // console.log('fetch products')

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import styles from './ProductLayout.module.scss'
 import { ModelStats } from './ModelStats'
 import { ModelDetails } from './ModelDetails'
@@ -124,6 +124,28 @@ export const ProductLayout = ({
     }
   }
 
+  useEffect(() => {
+    if (utils?.dataLayerPush && utils?.trackModelPageView && utils?.trackCommunityPageView) {
+      let pageTypeEvent = 'community'
+      if (isModel) {
+        pageTypeEvent = 'home_design'
+        if (isQMI) {
+          pageTypeEvent = 'qmi'
+        }
+      }
+      utils.dataLayerPush({
+        event: 'chatbot_page_view',
+        page_type: pageTypeEvent
+      })
+
+      if (isModel) {
+        utils.trackModelPageView(product)
+      } else {
+        utils.trackCommunityPageView(product)
+      }
+    }
+  }, [])
+
   return (
     <div className={styles.root} ref={rootRef}>
       <CloseButton className={styles.closeButton} onClick={onClose} ariaLabel='Close product details' />
@@ -158,7 +180,8 @@ export const ProductLayout = ({
           <div className={styles.designReadyWrapper} id='design-ready-timeline-panel'>
             {React.createElement(utils.DesignReadyTimeline, {
               moveInDate: product.moveInDate,
-              dates: product.designReadyOptions
+              dates: product.designReadyOptions,
+              options: product.options
             })}
           </div>
         )}
@@ -278,7 +301,19 @@ export const ProductLayout = ({
                 />
               )}
               {canShowDirections && mapLink && (
-                <OptionButton text='Get directions' href={mapLink} isLink target='_blank' />
+                <OptionButton
+                  text='Get directions'
+                  href={mapLink}
+                  isLink
+                  target='_blank'
+                  onClick={() => {
+                    if (utils?.dataLayerPush)
+                      utils.dataLayerPush({
+                        event: 'directions-event',
+                        variant: 'chatbot'
+                      })
+                  }}
+                />
               )}
             </div>
           </div>

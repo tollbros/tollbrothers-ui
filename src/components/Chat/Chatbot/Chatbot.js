@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, use } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
@@ -250,6 +250,13 @@ export const Chatbot = ({
 
     // console.log(systemMessage)
 
+    // track user sent a new prompt
+    if (utils?.dataLayerPush && !systemMessage) {
+      utils.dataLayerPush({
+        event: 'chatbot_prompt_sent'
+      })
+    }
+
     const userMessageText = inputMessage || systemMessage
     const newUserMessage = {
       id: Date.now(),
@@ -282,7 +289,9 @@ export const Chatbot = ({
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
-        if (products && Array.isArray(products) && products.length > 0) {
+        if (response.transfer_to_osc) {
+          handleShowChatForm()
+        } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
           // console.log('fetch products')
@@ -510,6 +519,14 @@ export const Chatbot = ({
     }
   }, [isChatBotOpenExternal])
 
+  useEffect(() => {
+    if (utils?.dataLayerPush && isChatBotOpen && !sessionId) {
+      utils.dataLayerPush({
+        event: 'chatbotClicked'
+      })
+    }
+  }, [isChatBotOpen])
+
   // useEffect(() => {
   //   setTimeout(() => {
   //     setChatBotTransferData({
@@ -629,6 +646,7 @@ export const Chatbot = ({
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
                         onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
+                        utils={utils}
                       />
                     }
                   />

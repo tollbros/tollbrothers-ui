@@ -4,14 +4,22 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import styles from './FloorPlanViewer.module.scss'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { ZoomInIcon, ZoomOutIcon, ResetZoomIcon } from './icons'
+import { useTrackInView } from './hooks/useTrackInView'
 
 export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [isCoverActive, setIsCoverActive] = useState(true)
-  const { svgContent, isLoading } = utils?.useFetchSvg?.(
-    floorPlans?.[activeTab]?.url,
-    [activeTab, floorPlans]
-  )
+  const { svgContent, isLoading } = utils?.useFetchSvg?.(floorPlans?.[activeTab]?.url, [activeTab, floorPlans])
+  const containerRef = useTrackInView({
+    onInView: () => {
+      if (utils?.dataLayerPush) {
+        utils.dataLayerPush({
+          event: 'floorplan_view',
+          variant: 'chatbot'
+        })
+      }
+    }
+  })
 
   if (!floorPlans?.length) return null
 
@@ -31,7 +39,7 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
   }
 
   return (
-    <div className={styles.floorPlanViewer}>
+    <div className={styles.floorPlanViewer} ref={containerRef}>
       <h3 className={styles.title}>Floor Plans</h3>
       <div className={styles.svgContainer}>
         {isLoading ? (
@@ -100,9 +108,7 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
           {floorPlans.map((fp, index) => (
             <button
               key={index}
-              className={`${styles.tab} ${
-                activeTab === index ? styles.active : ''
-              }`}
+              className={`${styles.tab} ${activeTab === index ? styles.active : ''}`}
               onClick={(e) => handleTabClick(index, e)}
               aria-label={`Show ${fp.title} || 'Floor Plan'`}
             >

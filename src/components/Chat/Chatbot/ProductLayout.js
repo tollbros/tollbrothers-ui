@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import styles from './ProductLayout.module.scss'
 import { ModelStats } from './ModelStats'
 import { ModelDetails } from './ModelDetails'
@@ -123,6 +123,28 @@ export const ProductLayout = ({
       onMinimizeChat()
     }
   }
+
+  useEffect(() => {
+    if (utils?.dataLayerPush && utils?.trackModelPageView && utils?.trackCommunityPageView) {
+      let pageTypeEvent = 'community'
+      if (isModel) {
+        pageTypeEvent = 'home_design'
+        if (isQMI) {
+          pageTypeEvent = 'qmi'
+        }
+      }
+      utils.dataLayerPush({
+        event: 'chatbot_page_view',
+        page_type: pageTypeEvent
+      })
+
+      if (isModel) {
+        utils.trackModelPageView(product)
+      } else {
+        utils.trackCommunityPageView(product)
+      }
+    }
+  }, [])
 
   return (
     <div className={styles.root} ref={rootRef}>

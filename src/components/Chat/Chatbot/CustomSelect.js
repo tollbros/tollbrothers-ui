@@ -12,13 +12,7 @@ export const CustomSelect = ({
   labelKey = 'label'
 }) => {
   return (
-    <select
-      className={styles.select}
-      value={value}
-      onChange={onChange}
-      aria-label={ariaLabel}
-      disabled={disabled}
-    >
+    <select className={styles.select} value={value} onChange={onChange} aria-label={ariaLabel} disabled={disabled}>
       <option value='' disabled>
         {placeholder}
       </option>

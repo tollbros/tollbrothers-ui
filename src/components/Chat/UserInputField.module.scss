@@ -17,19 +17,26 @@
 }
 
 .input {
-    flex: 1;
     border: none;
     background: transparent;
     font-family: $alt_font_family;
-    font-size: .75em;
+    font-size: 16px;
     line-height: 18px;
     color: #000;
     outline: none;
-    padding: 8px 12px 8px 12px;
+    padding: 8px 12px;
     resize: none;
     overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
+
+    /* hack so iphone doesn't zoom in on focus */
+    transform: scale(0.8125);
+    transform-origin: left center;
+    width: 336px;
+    width: calc(100% / .8125 - 46px);
+    flex-grow: 1;
+    flex-shrink: 0;
 
     &::-webkit-scrollbar {
         display: none;
@@ -48,6 +55,10 @@
 }
 
 .sendButton {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     flex-shrink: 0;
     width: 32px;
     height: 32px;
@@ -56,7 +67,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 6px;
+    //margin-right: 20px;
     //transition: background-color 0.2s ease;
     border: none;
     padding: 0;

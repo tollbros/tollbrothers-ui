@@ -18,37 +18,11 @@ import ChatInput from './ChatInput'
 import { ChatForm } from '../ChatForm'
 import { validateChatForm } from '../utils/validateChatForm'
 
-import Minus from '../../../icons/Minus'
-import CloseX from '../../../icons/CloseX'
 import ChatMessageText from './ChatMessageText'
 import ChatMessageAttachment from './ChatMessageAttachment'
 import ChatMessageRichLink from './ChatMessageRichLink'
 import { HeaderButtons } from '../HeaderButtons'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
-
-const getGaClientId = () => {
-  const gaIds = { gaClientId: '', gaUserId: '', gaTrackId: '' }
-  if (typeof window.ga !== 'undefined' && typeof window.ga.getAll === 'function') {
-    const gaTracker = window.ga.getAll()[0]
-    const gaClientId = gaTracker.get('clientId')
-    const gaUserId = gaTracker.get('userId')
-    const gaTrackId = gaTracker.get('trackingId')
-
-    if (typeof gaClientId !== 'undefined' && gaClientId !== '') {
-      gaIds.gaClientId = gaClientId
-    }
-
-    if (typeof gaUserId !== 'undefined' && gaUserId !== '') {
-      gaIds.gaUserId = gaUserId
-    }
-
-    if (typeof gaTrackId !== 'undefined' && gaTrackId !== '') {
-      gaIds.gaTrackId = gaTrackId
-    }
-  }
-
-  return gaIds
-}
 
 export const TollChat = ({
   availabilityAPI,
@@ -66,6 +40,7 @@ export const TollChat = ({
   chatClickedEventString = 'chatClicked',
   chatStartedEventString = 'chatStarted',
   productCode, // ie JDE number of community/model/qmi
+  utils = {},
   chatBotTransferData = null,
   setChatBotTransferData = () => null,
   setIsChatBotOpenExternal = () => null
@@ -329,15 +304,16 @@ export const TollChat = ({
         const email = form.email?.value?.trim()
         const isAgent = form.isAgent?.value ?? '0'
 
-        const gaClientIds = getGaClientId()
+        const { clientId, email_sha256, gaTrackId } = (await utils?.getGaTrackingIds?.(email)) || {}
+
         setCallbackUrl(
           `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
             email
           )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(
             lastName
-          )}&gaClientId=${encodeURIComponent(gaClientIds.gaClientId)}&gaUserId=${encodeURIComponent(
-            gaClientIds.gaUserId
-          )}&gaTrackId=${encodeURIComponent(gaClientIds.gaTrackId)}`
+          )}&gaClientId=${encodeURIComponent(clientId ?? '')}&gaUserId=${encodeURIComponent(
+            email_sha256 ?? ''
+          )}&gaTrackId=${encodeURIComponent(gaTrackId ?? '')}`
         )
 
         await initializeChat(firstName, lastName, email, isAgent, productCode, endPoint, apiSfOrgId, apiSfName)

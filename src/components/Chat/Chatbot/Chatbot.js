@@ -324,7 +324,7 @@ export const Chatbot = ({
               setIsThinking(false)
             })
         } else if (response.error) {
-          setError('An error occurred while sending the message. Pleaesse try again.')
+          setError('An error occurred while sending the message. Please try again.')
           setIsThinking(false)
         } else {
           const botResponse = {
@@ -407,7 +407,20 @@ export const Chatbot = ({
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
-      if (storedUserEvents) setUserEvents(storedUserEvents)
+      if (storedUserEvents)
+        setUserEvents((prev) => {
+          const combined = [...prev, ...storedUserEvents]
+          // Remove duplicates based on name, type, and relevant IDs
+          const seen = new Set()
+          return combined.filter((event) => {
+            const key = `${event.name}-${event.type}-${event.commPlanID || ''}-${event.communityId || ''}-${
+              event.masterCommunityId || ''
+            }`
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+          })
+        })
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
@@ -427,7 +440,7 @@ export const Chatbot = ({
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
-      const messagesToStore = messages.slice(-10)
+      const messagesToStore = JSON.parse(JSON.stringify(messages.slice(-20)))
 
       messagesToStore.map((msg) => {
         if (msg.products?.length > 0) {

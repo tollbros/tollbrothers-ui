@@ -1,8 +1,9 @@
 import { useRef, useEffect } from 'react'
 
-export const useTrackInView = ({ onInView, threshold = 0.5 }) => {
+export const useTrackInView = ({ onInView, threshold = 0.5, once = false }) => {
   const ref = useRef(null)
   const wasVisibleRef = useRef(false)
+  const hasFiredRef = useRef(false)
 
   useEffect(() => {
     const element = ref.current
@@ -12,7 +13,9 @@ export const useTrackInView = ({ onInView, threshold = 0.5 }) => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !wasVisibleRef.current) {
+            if (once && hasFiredRef.current) return
             onInView?.()
+            hasFiredRef.current = true
           }
           wasVisibleRef.current = entry.isIntersecting
         })
@@ -24,7 +27,7 @@ export const useTrackInView = ({ onInView, threshold = 0.5 }) => {
     return () => {
       observer.disconnect()
     }
-  }, [onInView, threshold])
+  }, [onInView, threshold, once])
 
   return ref
 }

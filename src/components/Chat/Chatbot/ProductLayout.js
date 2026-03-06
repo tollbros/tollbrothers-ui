@@ -133,16 +133,17 @@ export const ProductLayout = ({
           pageTypeEvent = 'qmi'
         }
       }
-      utils.dataLayerPush({
-        event: 'chatbot_page_view',
-        page_type: pageTypeEvent
-      })
 
       if (isModel) {
         utils.trackModelPageView(product)
       } else {
         utils.trackCommunityPageView(product)
       }
+
+      utils.dataLayerPush({
+        event: 'chatbot_page_view',
+        page_type: pageTypeEvent
+      })
     }
   }, [])
 

@@ -18,7 +18,8 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
           variant: 'chatbot'
         })
       }
-    }
+    },
+    once: true
   })
 
   if (!floorPlans?.length) return null

@@ -407,7 +407,20 @@ export const Chatbot = ({
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
-      if (storedUserEvents) setUserEvents(storedUserEvents)
+      if (storedUserEvents)
+        setUserEvents((prev) => {
+          const combined = [...prev, ...storedUserEvents]
+          // Remove duplicates based on name, type, and relevant IDs
+          const seen = new Set()
+          return combined.filter((event) => {
+            const key = `${event.name}-${event.type}-${event.commPlanID || ''}-${event.communityId || ''}-${
+              event.masterCommunityId || ''
+            }`
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+          })
+        })
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')

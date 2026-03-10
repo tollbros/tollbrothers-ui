@@ -50,28 +50,24 @@ export const ChatBotForm = ({
 
     const email = form.email?.value?.trim()
     const phone = form.phone?.value?.trim()
-    const isAgent = form.isAgent?.value ?? '0'
-    console.log(
-      'Form submitted with data:',
-      firstName,
-      lastName,
-      email,
-      phone,
-      isAgent,
-      productCode,
-      selectedRegion?.chatRegion ?? chatRegion
-    )
+    let isAgent = false
 
-    console.log({
+    if (form.isAgent?.value === '1') {
+      isAgent = true
+    }
+
+    const formData = {
       firstName,
       lastName,
       email,
       phone,
       isAgent,
-      productCode,
-      region: selectedRegion?.chatRegion ?? chatRegion,
-      sessionId
-    })
+      toll_product_code: productCode,
+      toll_division_code: selectedRegion?.chatRegion ?? chatRegion,
+      session_id: sessionId
+    }
+
+    console.log('Form submitted with data:', formData)
 
     if (utils?.dataLayerPush) {
       utils.dataLayerPush({

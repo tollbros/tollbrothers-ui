@@ -89,6 +89,7 @@ export const ProductLayout = ({
     isVip = true
   } else if (hasSelfGuidedTour) {
     label += 'Schedule a self-guided tour'
+    hash = '#self-guided-tour'
   } else {
     label += 'Schedule a tour'
   }

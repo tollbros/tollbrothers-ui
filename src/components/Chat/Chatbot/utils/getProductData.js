@@ -16,16 +16,9 @@ export const getProductData = async (routes, baseUrl) => {
           }
           return response.json()
         })
-        .then(
-          (data) =>
-            data.communityComponent ??
-            data.masterCommunityComponent ??
-            data.modelComponent
-        )
+        .then((data) => data.communityComponent ?? data.masterCommunityComponent ?? data.modelComponent)
     )
   )
 
-  return results
-    .filter((result) => result.status === 'fulfilled' && result.value)
-    .map((result) => result.value)
+  return results.filter((result) => result.status === 'fulfilled' && result.value).map((result) => result.value)
 }

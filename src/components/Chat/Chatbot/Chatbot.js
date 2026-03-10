@@ -181,7 +181,7 @@ export const Chatbot = ({
     setSessionTime(null)
     setUserEvents([])
     setShowConfirmationEndMessage(false)
-    setChatBotTransferData(null)
+    // setChatBotTransferData(null)
     setInputMessage('')
     setError(null)
     setIsThinking(false)
@@ -237,6 +237,22 @@ export const Chatbot = ({
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
+  }
+
+  const onTransferSuccess = (data) => {
+    // setChatBotTransferData(transferData)
+    console.log('Transfer successful with data:', data)
+
+    setChatBotTransferData({
+      accessToken: data.sf_miaw_token,
+      conversationId: data.sf_miaw_uuid,
+      firstName: data.firstName,
+      lastName: data.lastName
+    })
+
+    onCloseChat()
+
+    // setIsTransferring(true)
   }
 
   const handleSendMessage = async (_event, systemMessage) => {
@@ -658,8 +674,11 @@ export const Chatbot = ({
                         sessionId={sessionId}
                         tollRegionsEndpoint={tollRegionsEndpoint}
                         availabilityAPI={availabilityAPI}
+                        chatEndpointId={chatEndpointId}
+                        chatApiKey={chatApiKey}
                         onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
                         utils={utils}
+                        onTransferSuccess={onTransferSuccess}
                       />
                     }
                   />

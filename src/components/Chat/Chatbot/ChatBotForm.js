@@ -23,7 +23,12 @@ export const ChatBotForm = ({
   productCode,
   sessionId,
   onClose,
-  utils
+  utils,
+  // onFormSubmissionStatus,
+  // formSubmissionStatus,
+  onTransferSuccess,
+  chatEndpointId,
+  chatApiKey
 }) => {
   const [selectedValue, setSelectedValue] = useState('')
   const [selectedRegion, setSelectedRegion] = useState(null)
@@ -33,6 +38,7 @@ export const ChatBotForm = ({
   const [isAgentAvailable, setIsAgentAvailable] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
   const [isThinking, setIsThinking] = useState(true)
+  const [formSubmissionStatus, setFormSubmissionStatus] = useState(null)
 
   const handleChange = async (e) => {
     const value = e.target.value
@@ -41,7 +47,7 @@ export const ChatBotForm = ({
     setSelectedRegion(region)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     const form = e.target
@@ -75,6 +81,61 @@ export const ChatBotForm = ({
         agent_status: isAgentAvailable ? 'online' : 'offline',
         variant: 'chatbot'
       })
+    }
+
+    // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
+    const urlParams = new URLSearchParams(window.location.search)
+    const endpointId = urlParams.get('endpointId') ?? chatEndpointId
+    const apiKey = urlParams.get('apiKey') ?? chatApiKey
+
+    setIsThinking(true)
+    setFormSubmissionStatus({
+      message: 'Processing your information.'
+    })
+
+    const isAvailable = await checkLiveAgentAvailability(chatRegion ?? selectedRegion?.chatRegion, availabilityAPI)
+    setIsAgentAvailable(isAvailable)
+
+    setFormSubmissionStatus({
+      message: isAvailable
+        ? 'Please wait while I transfer you to a local expert.'
+        : 'Please wait while I send your information.'
+    })
+
+    try {
+      const response = await fetch(
+        `https://ssadsf${endpointId}.execute-api.us-east-1.amazonaws.com/prod/agent/transfer`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey
+          },
+          body: JSON.stringify(formData)
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form')
+      }
+
+      const data = await response.json()
+      console.log('Transfer response:', data)
+      setFormSubmissionStatus(null)
+      setIsThinking(false)
+
+      if (!data.sf_miaw_token || !data.sf_miaw_uuid) {
+        setFormSubmissionStatus({
+          message: 'Thank you! Your information was sent successfully. A local expert will contact you soon.'
+        })
+      } else {
+        onTransferSuccess({ ...data, firstName, lastName })
+      }
+    } catch (err) {
+      // TODO - display error to user
+      console.error('submit error:', err)
+      setIsThinking(false)
+      setFormSubmissionStatus(null)
     }
   }
 
@@ -182,6 +243,15 @@ export const ChatBotForm = ({
     }
 
     chatFormMessage += '. Share your contact information below so I can transfer you.'
+  }
+
+  if (formSubmissionStatus) {
+    return (
+      <div className={styles.submittingContainer}>
+        <p className={styles.text}>{formSubmissionStatus.message}</p>
+        {isThinking && <ThinkingIndicator classes={{ root: styles.thinkingIndicatorOverride }} />}
+      </div>
+    )
   }
 
   return (

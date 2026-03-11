@@ -126,7 +126,7 @@ export const ChatBotForm = ({
 
       if (!data.sf_miaw_token || !data.sf_miaw_uuid) {
         setFormSubmissionStatus({
-          message: 'Thank you! Your information was sent successfully. A local expert will contact you soon.'
+          message: 'Your information was sent successfully. A local expert will contact you soon.'
         })
       } else {
         onTransferSuccess({ ...data, firstName, lastName })

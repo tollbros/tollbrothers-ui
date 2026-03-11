@@ -103,17 +103,14 @@ export const ChatBotForm = ({
     })
 
     try {
-      const response = await fetch(
-        `https://ssadsf${endpointId}.execute-api.us-east-1.amazonaws.com/prod/agent/transfer`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey
-          },
-          body: JSON.stringify(formData)
-        }
-      )
+      const response = await fetch(`https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod/agent/transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify(formData)
+      })
 
       if (!response.ok) {
         throw new Error('Failed to submit form')

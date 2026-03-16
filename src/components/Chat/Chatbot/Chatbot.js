@@ -131,6 +131,7 @@ export const Chatbot = ({
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
+  const [chatFormDialog, setChatFormDialog] = useState(null)
 
   // Add to userEvents array, keeping only last page navigation and last card view
   const addUserEvent = (newEvent, from = {}) => {
@@ -196,14 +197,19 @@ export const Chatbot = ({
     setShowConfirmationEndMessage(false)
   }
 
-  const handleShowChatForm = () => {
+  const handleShowChatForm = ({ text = '' } = {}) => {
     const newBotMessage = {
       id: Date.now(),
-      text: 'In order to connect you with a local expert, please select your area of interest:',
+      text: text,
       type: 'form'
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
+  }
+
+  const onCloseChatForm = () => {
+    setChatFormDialog(null)
+    setMessages((prev) => prev.filter((m) => m.type !== 'form'))
   }
 
   const handleProductRemoval = (productId, product) => {
@@ -306,7 +312,7 @@ export const Chatbot = ({
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
 
         if (response.transfer_to_osc) {
-          handleShowChatForm()
+          handleShowChatForm({ text: response.message })
         } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
@@ -540,7 +546,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isThinking])
+  }, [messages, isThinking, chatFormDialog])
 
   useEffect(() => {
     if (isChatBotOpenExternal) {
@@ -665,23 +671,28 @@ export const Chatbot = ({
                 )
               } else if (msg.type === 'form') {
                 return (
-                  <BotMessage
-                    key={msg.id}
-                    component={
-                      <ChatBotForm
-                        chatRegion={chatRegion}
-                        productCode={productCode}
-                        sessionId={sessionId}
-                        tollRegionsEndpoint={tollRegionsEndpoint}
-                        availabilityAPI={availabilityAPI}
-                        chatEndpointId={chatEndpointId}
-                        chatApiKey={chatApiKey}
-                        onClose={() => setMessages((prev) => prev.filter((m) => m.type !== 'form'))}
-                        utils={utils}
-                        onTransferSuccess={onTransferSuccess}
-                      />
-                    }
-                  />
+                  <div className={styles.chatFormContainer} key={msg.id}>
+                    {msg.text && !chatFormDialog && <BotMessage key={msg.id} message={msg.text} />}
+                    <BotMessage
+                      component={
+                        <ChatBotForm
+                          message={msg.text}
+                          chatRegion={chatRegion}
+                          productCode={productCode}
+                          sessionId={sessionId}
+                          tollRegionsEndpoint={tollRegionsEndpoint}
+                          availabilityAPI={availabilityAPI}
+                          chatEndpointId={chatEndpointId}
+                          chatApiKey={chatApiKey}
+                          onClose={onCloseChatForm}
+                          utils={utils}
+                          onTransferSuccess={onTransferSuccess}
+                          setChatFormDialog={setChatFormDialog}
+                          chatFormDialog={chatFormDialog}
+                        />
+                      }
+                    />
+                  </div>
                 )
               }
             })}
@@ -698,10 +709,12 @@ export const Chatbot = ({
             onSend={handleSendMessage}
             placeholder='Ask AI Concierge your question here.'
           />
-          <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
-            <span>Speak to an expert</span>
-          </button>
+          {!chatFormDialog && (
+            <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
+              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+              <span>Speak to an expert</span>
+            </button>
+          )}
         </div>
         {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
       </div>

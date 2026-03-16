@@ -6,12 +6,7 @@ export const OptionsList = ({ options, onOptionSelect }) => {
   return (
     <div className={styles.optionsContainer}>
       {options.map((option) => (
-        <OptionButton
-          key={option.id}
-          text={option.text}
-          onClick={() => onOptionSelect(option)}
-          size='lg'
-        />
+        <OptionButton key={option.id} text={option.text} onClick={() => onOptionSelect(option)} size='lg' />
       ))}
     </div>
   )

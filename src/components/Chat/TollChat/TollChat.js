@@ -342,37 +342,39 @@ export const TollChat = ({
   }
 
   useEffect(() => {
-    if ((!chatRegion || chatStatus === 'offline') && !isCurrentlyChatting) {
-      setIsChatOpen(false)
-      setShowChatHeader(false)
-      setShowForm(false)
-      setShowChatButton(false)
-      setIsMinimized(false)
-      setShowConfirmationEndMessage(false)
-      setShowTextChatOptions(false)
-      return
-    }
+    if (!chatBotTransferData) {
+      if ((!chatRegion || chatStatus === 'offline') && !isCurrentlyChatting) {
+        setIsChatOpen(false)
+        setShowChatHeader(false)
+        setShowForm(false)
+        setShowChatButton(false)
+        setIsMinimized(false)
+        setShowConfirmationEndMessage(false)
+        setShowTextChatOptions(false)
+        return
+      }
 
-    if (isChatOpen && !isCurrentlyChatting) {
-      showFormHandler()
-      setShowConfirmationEndMessage(false)
-      setShowTextChatOptions(false)
-      // setIsMinimized(false)
-      return
-    }
+      if (isChatOpen && !isCurrentlyChatting) {
+        showFormHandler()
+        setShowConfirmationEndMessage(false)
+        setShowTextChatOptions(false)
+        // setIsMinimized(false)
+        return
+      }
 
-    if (
-      chatRegion &&
-      chatStatus === 'online' &&
-      !isCurrentlyChatting &&
-      !disableFloatingChatButton &&
-      !showChatHeader
-    ) {
-      setShowChatButton(true)
-    } else {
-      setShowChatButton(false)
+      if (
+        chatRegion &&
+        chatStatus === 'online' &&
+        !isCurrentlyChatting &&
+        !disableFloatingChatButton &&
+        !showChatHeader
+      ) {
+        setShowChatButton(true)
+      } else {
+        setShowChatButton(false)
+      }
     }
-  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton, isChatOpen, chatRegion])
+  }, [chatStatus, isCurrentlyChatting, disableFloatingChatButton, isChatOpen, chatRegion, chatBotTransferData])
 
   useEffect(() => {
     async function getOscInfo() {
@@ -540,7 +542,6 @@ export const TollChat = ({
         setSystemMessage(null)
         setShowActiveTyping(false)
         setShowChatHeader(true)
-        setShowWaitMessage(false)
         setShowTextChatOptions(false)
         getConversationList(value)
 
@@ -556,6 +557,8 @@ export const TollChat = ({
             },
             1000 * 60 * 60 * 2 // expire in 2 hours
           )
+        } else {
+          setShowWaitMessage(false)
         }
 
         // turned this off since it was sending a system message every time the tab was restored
@@ -588,6 +591,16 @@ export const TollChat = ({
       reestablishConnection()
     }
   }, [isChatAvailabilityChecked])
+
+  useEffect(() => {
+    if (chatBotTransferData) {
+      setShowChatButton(false)
+      setShowChatHeader(true)
+      setShowWaitMessage(true)
+      setShowTextChatOptions(false)
+      setIsChatOpen(true)
+    }
+  }, [chatBotTransferData])
 
   const handleMinimize = () => {
     setError(null)
@@ -792,7 +805,7 @@ export const TollChat = ({
       )}
       {showWaitMessage && !isMinimized && (
         <>
-          <p className={styles.waitMessage}>Please wait while we connect you with a representative.</p>
+          <p className={styles.waitMessage}>Please wait while we connect you with a local expert.</p>
           <div className={styles.loading}>
             <span />
             <span />

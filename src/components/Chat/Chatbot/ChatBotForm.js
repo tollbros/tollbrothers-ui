@@ -6,6 +6,7 @@ import { validateChatForm } from '../utils/validateChatForm'
 import { fetchAvailability } from '../../../../utils/chat/apis'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { CloseButton } from './CloseButton'
+import { ActionButton } from './ActionButton'
 
 const checkLiveAgentAvailability = async (region, availabilityAPI) => {
   const availability = await fetchAvailability(region, availabilityAPI)
@@ -24,9 +25,9 @@ export const ChatBotForm = ({
   sessionId,
   onClose,
   utils,
-  // onFormSubmissionStatus,
-  // formSubmissionStatus,
   onTransferSuccess,
+  setChatFormDialog,
+  chatFormDialog,
   chatEndpointId,
   chatApiKey
 }) => {
@@ -38,7 +39,6 @@ export const ChatBotForm = ({
   const [isAgentAvailable, setIsAgentAvailable] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
   const [isThinking, setIsThinking] = useState(true)
-  const [formSubmissionStatus, setFormSubmissionStatus] = useState(null)
 
   const handleChange = async (e) => {
     const value = e.target.value
@@ -88,18 +88,19 @@ export const ChatBotForm = ({
     const endpointId = urlParams.get('endpointId') ?? chatEndpointId
     const apiKey = urlParams.get('apiKey') ?? chatApiKey
 
-    setIsThinking(true)
-    setFormSubmissionStatus({
-      message: 'Processing your information.'
+    setChatFormDialog({
+      message: 'Routing your request...',
+      isSending: true
     })
 
     const isAvailable = await checkLiveAgentAvailability(chatRegion ?? selectedRegion?.chatRegion, availabilityAPI)
     setIsAgentAvailable(isAvailable)
 
-    setFormSubmissionStatus({
+    setChatFormDialog({
       message: isAvailable
         ? 'Please wait while I transfer you to a local expert.'
-        : 'Please wait while I send your information.'
+        : 'Please wait while I send your information.',
+      isSending: true
     })
 
     try {
@@ -118,21 +119,20 @@ export const ChatBotForm = ({
 
       const data = await response.json()
       console.log('Transfer response:', data)
-      setFormSubmissionStatus(null)
-      setIsThinking(false)
 
       if (!data.sf_miaw_token || !data.sf_miaw_uuid) {
-        setFormSubmissionStatus({
-          message: 'Your information was sent successfully. A local expert will contact you soon.'
+        setChatFormDialog({
+          message: 'Your information was sent successfully. A local expert will contact you soon.',
+          showConfirmation: true
         })
       } else {
         onTransferSuccess({ ...data, firstName, lastName })
       }
     } catch (err) {
-      // TODO - display error to user
-      console.error('submit error:', err)
-      setIsThinking(false)
-      setFormSubmissionStatus(null)
+      setChatFormDialog({
+        message: 'There was an issue with your request. Please try again later.',
+        showConfirmation: true
+      })
     }
   }
 
@@ -242,11 +242,16 @@ export const ChatBotForm = ({
     chatFormMessage += '. Share your contact information below so I can transfer you.'
   }
 
-  if (formSubmissionStatus) {
+  if (chatFormDialog) {
     return (
       <div className={styles.submittingContainer}>
-        <p className={styles.text}>{formSubmissionStatus.message}</p>
-        {isThinking && <ThinkingIndicator classes={{ root: styles.thinkingIndicatorOverride }} />}
+        <p className={styles.text}>{chatFormDialog.message}</p>
+        {chatFormDialog?.isSending && <ThinkingIndicator classes={{ root: styles.thinkingIndicatorOverride }} />}
+        {chatFormDialog?.showConfirmation && (
+          <ActionButton onClick={onClose} ariaLabel='Close form'>
+            OK
+          </ActionButton>
+        )}
       </div>
     )
   }

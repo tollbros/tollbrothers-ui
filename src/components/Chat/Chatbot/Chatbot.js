@@ -182,10 +182,10 @@ export const Chatbot = ({
     setSessionTime(null)
     setUserEvents([])
     setShowConfirmationEndMessage(false)
-    // setChatBotTransferData(null)
     setInputMessage('')
     setError(null)
     setIsThinking(false)
+    setChatFormDialog(null)
     window.localStorage.removeItem('tbChatBot')
   }
 

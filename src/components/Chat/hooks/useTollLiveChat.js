@@ -21,7 +21,7 @@ export const useTollLiveChat = ({
   apiSfOrgId,
   apiSfName,
   disableFloatingChatButton = false,
-  setChatStatus,
+  setChatStatus = () => null,
   chatStatus,
   chatRegion,
   setIsChatOpen = () => null,
@@ -456,13 +456,13 @@ export const useTollLiveChat = ({
     }
   }
 
-  const reestablishConnection = (event) => {
+  const reestablishConnection = (event, chatBotTransferData) => {
     if (event && event.type === 'visibilitychange' && document.hidden) {
       return
     }
 
     let initialize = false
-    const tbChat = getLocalStorage('tbChat') // ?? chatBotTransferData
+    const tbChat = getLocalStorage('tbChat') ?? chatBotTransferData
 
     if (!tbChat || isExpired(tbChat.expiry)) {
       clearLocalStorage('tbChat')
@@ -503,20 +503,20 @@ export const useTollLiveChat = ({
 
         setShowWaitMessage(false)
 
-        // if (chatBotTransferData) {
-        //   setLocalStorage(
-        //     'tbChat',
-        //     {
-        //       accessToken: value.accessToken,
-        //       conversationId: value.conversationId,
-        //       firstName: value.firstName,
-        //       lastName: value.lastName
-        //     },
-        //     1000 * 60 * 60 * 2
-        //   )
-        // } else {
-        //   setShowWaitMessage(false)
-        // }
+        if (chatBotTransferData) {
+          setLocalStorage(
+            'tbChat',
+            {
+              accessToken: value.accessToken,
+              conversationId: value.conversationId,
+              firstName: value.firstName,
+              lastName: value.lastName
+            },
+            1000 * 60 * 60 * 2
+          )
+        } else {
+          setShowWaitMessage(false)
+        }
 
         setAbortController(abortController)
         setIsChatOpen(true)
@@ -615,6 +615,7 @@ export const useTollLiveChat = ({
 
   // Effect: Reestablish connection after availability check
   useEffect(() => {
+    console.log('Chat availability checked:', isChatAvailabilityChecked)
     if (isChatAvailabilityChecked) {
       reestablishConnection()
     }
@@ -711,6 +712,7 @@ export const useTollLiveChat = ({
     hasAgentEngaged,
     callbackUrl,
     unreadMessagesCount,
+    showActiveTyping,
 
     // Setters
     setFormData,
@@ -723,6 +725,8 @@ export const useTollLiveChat = ({
     handleMinimize,
     handleConfirmationEnd,
     handleStay,
-    handleEndChat
+    handleEndChat,
+    setShowActiveTyping,
+    reestablishConnection
   }
 }

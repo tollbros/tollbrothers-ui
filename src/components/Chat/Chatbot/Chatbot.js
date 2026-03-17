@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect, use } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
@@ -17,6 +17,9 @@ import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
+import { useTollLiveChat } from '../hooks/useTollLiveChat'
+import ChatInput from '../TollChat/ChatInput'
+import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -108,6 +111,9 @@ export const Chatbot = ({
   productCode,
   pageSummaryData,
   availabilityAPI,
+  liveChatEndPoint,
+  apiSfOrgId,
+  apiSfName,
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   setChatBotTransferData = () => null,
@@ -132,6 +138,58 @@ export const Chatbot = ({
   const [userEvents, setUserEvents] = useState([])
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
   const [chatFormDialog, setChatFormDialog] = useState(null)
+  const [isLiveChat, setIsLiveChat] = useState(false)
+
+  const {
+    showChatButton,
+    accessToken,
+    messages: liveChatMessages,
+    conversationId,
+    // showForm,
+    // showChatHeader,
+    showTextChatOptions,
+    showWaitMessage,
+    // showConfirmationEndMessage,
+    // formData,
+    // isMinimized,
+    systemMessage,
+    chatPhoto,
+    // error,
+    hasAgentEngaged,
+    showActiveTyping,
+    setShowActiveTyping,
+    // callbackUrl,
+    unreadMessagesCount,
+    // setFormData,
+    // setError,
+    // handleSubmit,
+    // showTextChatOption,
+    // showFormHandler,
+    // handleMinimize,
+    // handleConfirmationEnd,
+    // handleStay,
+    handleEndChat,
+    reestablishConnection
+  } = useTollLiveChat({
+    availabilityAPI,
+    endPoint: liveChatEndPoint,
+    apiSfOrgId,
+    apiSfName,
+    // disableFloatingChatButton,
+    // setChatStatus,
+    // chatStatus,
+    // chatRegion,
+    // setIsChatOpen,
+    // isChatOpen,
+    // trackChatEvent,
+    chatClickedEventString,
+    chatStartedEventString,
+    productCode,
+    utils
+    // chatBotTransferData,
+    // setChatBotTransferData,
+    // setIsChatBotOpenExternal
+  })
 
   // Add to userEvents array, keeping only last page navigation and last card view
   const addUserEvent = (newEvent, from = {}) => {
@@ -186,7 +244,12 @@ export const Chatbot = ({
     setError(null)
     setIsThinking(false)
     setChatFormDialog(null)
+    setIsLiveChat(false)
     window.localStorage.removeItem('tbChatBot')
+    window.localStorage.removeItem('tbChat')
+
+    // closese out the live chat session if it's active
+    handleEndChat(accessToken, conversationId)
   }
 
   const handleConfirmationEnd = () => {
@@ -243,22 +306,6 @@ export const Chatbot = ({
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
-  }
-
-  const onTransferSuccess = (data) => {
-    // setChatBotTransferData(transferData)
-    console.log('Transfer successful with data:', data)
-
-    setChatBotTransferData({
-      accessToken: data.sf_miaw_token,
-      conversationId: data.sf_miaw_uuid,
-      firstName: data.firstName,
-      lastName: data.lastName
-    })
-
-    onCloseChat()
-
-    // setIsTransferring(true)
   }
 
   const handleSendMessage = async (_event, systemMessage) => {
@@ -581,6 +628,43 @@ export const Chatbot = ({
     }
   }, [pageSummaryData])
 
+  // Live Chat Integration Start
+  const onTransferSuccess = (data) => {
+    console.log('Transfer successful with data:', data)
+
+    reestablishConnection(null, {
+      accessToken: data.sf_miaw_token,
+      conversationId: data.sf_miaw_uuid,
+      firstName: data.firstName,
+      lastName: data.lastName
+    })
+  }
+
+  useEffect(() => {
+    if (hasAgentEngaged && conversationId && accessToken) {
+      onCloseChatForm()
+      setIsLiveChat(true)
+    }
+  }, [hasAgentEngaged, conversationId, accessToken])
+
+  useEffect(() => {
+    if (isLiveChat && liveChatMessages && liveChatMessages.length > 0 && hasAgentEngaged) {
+      const filteredMessages = liveChatMessages.filter(
+        (message) =>
+          message.type === 'Message' &&
+          !message.text?.includes('::System Message::') &&
+          !(message.text?.startsWith('/url') && message?.role === 'Agent')
+      )
+      setMessages((prev) => {
+        const existingIds = new Set(prev.filter((m) => m.type === 'Message').map((m) => m.id))
+        const newMessages = filteredMessages.filter((m) => !existingIds.has(m.id))
+        const prevFiltered = prev.filter((m) => m.payload?.formatType !== 'Typing')
+        return [...prevFiltered, ...newMessages]
+      })
+    }
+  }, [liveChatMessages, isLiveChat, hasAgentEngaged])
+  // Live Chat Integration End
+
   if (!showChatbot) {
     return null
   }
@@ -694,21 +778,37 @@ export const Chatbot = ({
                     />
                   </div>
                 )
+              } else if (isLiveChat && msg.type === 'Message') {
+                return <LiveChatMessage key={msg.id} message={msg} />
               }
             })}
 
             {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             {error && <div className={styles.errorMessage}>{error}</div>}
+            {/* {systemMessage && <p key='system'>{systemMessage}</p>} */}
           </div>
         </div>
         <div className={styles.footer}>
-          <UserInputField
-            value={inputMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onSend={handleSendMessage}
-            placeholder='Ask AI Concierge your question here.'
-          />
+          {!isLiveChat && (
+            <UserInputField
+              value={inputMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onSend={handleSendMessage}
+              placeholder='Ask AI Concierge your question here.'
+              disabled={chatFormDialog || isThinking}
+            />
+          )}
+          {conversationId && accessToken && isLiveChat && (
+            <ChatInput
+              accessToken={accessToken}
+              conversationId={conversationId}
+              apiSfName={apiSfName}
+              endPoint={liveChatEndPoint}
+              setError={setError}
+              placeholder='Ask your question here.'
+            />
+          )}
           {!chatFormDialog && (
             <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
               <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />

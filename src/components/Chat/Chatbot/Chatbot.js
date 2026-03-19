@@ -137,6 +137,7 @@ export const Chatbot = ({
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
+  const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
 
@@ -240,6 +241,7 @@ export const Chatbot = ({
     setSessionTime(null)
     setUserEvents([])
     setShowConfirmationEndMessage(false)
+    setShowConfirmationEndLiveMessage(false)
     setInputMessage('')
     setError(null)
     setIsThinking(false)
@@ -258,6 +260,7 @@ export const Chatbot = ({
 
   const handleStay = () => {
     setShowConfirmationEndMessage(false)
+    setShowConfirmationEndLiveMessage(false)
   }
 
   const handleShowChatForm = ({ text = '' } = {}) => {
@@ -268,6 +271,17 @@ export const Chatbot = ({
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
+  }
+
+  const handleSwitchToChatbot = () => {
+    setShowConfirmationEndLiveMessage(true)
+  }
+
+  const onCloseLiveChat = () => {
+    handleEndChat(accessToken, conversationId)
+    window.localStorage.removeItem('tbChat')
+    setIsLiveChat(false)
+    setShowConfirmationEndLiveMessage(false)
   }
 
   const onCloseChatForm = () => {
@@ -662,7 +676,7 @@ export const Chatbot = ({
         return [...prevFiltered, ...newMessages]
       })
     }
-  }, [liveChatMessages, isLiveChat, hasAgentEngaged])
+  }, [isLiveChat, liveChatMessages, hasAgentEngaged])
   // Live Chat Integration End
 
   if (!showChatbot) {
@@ -778,7 +792,7 @@ export const Chatbot = ({
                     />
                   </div>
                 )
-              } else if (isLiveChat && msg.type === 'Message') {
+              } else if (msg.type === 'Message') {
                 return <LiveChatMessage key={msg.id} message={msg} />
               }
             })}
@@ -809,14 +823,27 @@ export const Chatbot = ({
               placeholder='Ask your question here.'
             />
           )}
-          {!chatFormDialog && (
+          {!chatFormDialog && !isLiveChat && (
             <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
               <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
               <span>Speak to an expert</span>
             </button>
           )}
+          {isLiveChat && (
+            <button className={styles.transferButton} onClick={handleSwitchToChatbot} type='button'>
+              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
+              <span>Speak to the AI Concierge</span>
+            </button>
+          )}
         </div>
         {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
+        {showConfirmationEndLiveMessage && (
+          <ConfirmationEndDialog
+            onStay={handleStay}
+            onLeave={onCloseLiveChat}
+            message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'
+          />
+        )}
       </div>
     </div>
   )

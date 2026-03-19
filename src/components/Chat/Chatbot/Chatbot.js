@@ -677,6 +677,10 @@ export const Chatbot = ({
       })
     }
   }, [isLiveChat, liveChatMessages, hasAgentEngaged])
+
+  const firstLiveMessageIndex = messages.findIndex((m) => m.type === 'Message')
+  const lastLiveMessageIndex = messages.length - 1 - [...messages].reverse().findIndex((m) => m.type === 'Message')
+
   // Live Chat Integration End
 
   if (!showChatbot) {
@@ -725,7 +729,7 @@ export const Chatbot = ({
             you to one of our human experts for additional help.
           </p>
           <div className={styles.messages} ref={messageContainerRef}>
-            {messages.map((msg) => {
+            {messages.map((msg, index) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
               } else if (msg.type === 'bot') {
@@ -793,7 +797,17 @@ export const Chatbot = ({
                   </div>
                 )
               } else if (msg.type === 'Message') {
-                return <LiveChatMessage key={msg.id} message={msg} />
+                return (
+                  <>
+                    {isLiveChat && firstLiveMessageIndex === index && systemMessage && (
+                      <p key='system-message-add'>{systemMessage}</p>
+                    )}
+                    <LiveChatMessage key={msg.id} message={msg} />
+                    {!isLiveChat && lastLiveMessageIndex === index && systemMessage && (
+                      <p key='system-message-leave'>{systemMessage}</p>
+                    )}
+                  </>
+                )
               }
             })}
 

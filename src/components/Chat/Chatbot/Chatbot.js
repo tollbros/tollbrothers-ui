@@ -20,6 +20,7 @@ import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
+import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -155,6 +156,7 @@ export const Chatbot = ({
     // isMinimized,
     systemMessage,
     chatPhoto,
+    agentName,
     // error,
     hasAgentEngaged,
     showActiveTyping,
@@ -607,7 +609,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isThinking, chatFormDialog])
+  }, [messages, isThinking, chatFormDialog, error])
 
   useEffect(() => {
     if (isChatBotOpenExternal) {
@@ -692,11 +694,17 @@ export const Chatbot = ({
       <button
         className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
         onClick={onChatButtonClick}
-        aria-label="Open Toll Brothers' AI Assistant"
+        aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
         aria-controls='chatbot-interface'
         aria-expanded={isChatBotOpen}
       >
-        <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-button.svg' />
+        <img
+          src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_BUTTON_ICON}
+          onError={(e) => {
+            e.currentTarget.src = CHAT_FALLBACK_IMAGE
+          }}
+          alt='chat icon'
+        />
       </button>
 
       <div
@@ -718,8 +726,15 @@ export const Chatbot = ({
         </div>
         <div className={styles.header}>
           <div className={styles.title}>
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-            <span>Hi, I'm AI Concierge</span>
+            <img
+              className={`${styles.icon} ${isLiveChat ? styles.agentIcon : ''}`}
+              src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_ICON}
+              onError={(e) => {
+                e.currentTarget.src = CHAT_FALLBACK_IMAGE
+              }}
+              alt='chat icon'
+            />
+            <span>{isLiveChat ? `Toll Chat ${agentName ? `- ${agentName}` : ''}` : "Hi, I'm AI Concierge"}</span>
           </div>
           <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
@@ -800,11 +815,15 @@ export const Chatbot = ({
                 return (
                   <>
                     {isLiveChat && firstLiveMessageIndex === index && systemMessage && (
-                      <p key='system-message-add'>{systemMessage}</p>
+                      <p className={styles.systemMessage} key='system-message-add'>
+                        {systemMessage}
+                      </p>
                     )}
                     <LiveChatMessage key={msg.id} message={msg} />
                     {!isLiveChat && lastLiveMessageIndex === index && systemMessage && (
-                      <p key='system-message-leave'>{systemMessage}</p>
+                      <p className={styles.systemMessage} key='system-message-leave'>
+                        {systemMessage}
+                      </p>
                     )}
                   </>
                 )
@@ -839,13 +858,13 @@ export const Chatbot = ({
           )}
           {!chatFormDialog && !isLiveChat && (
             <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+              <img src={OSC_ICON} />
               <span>Speak to an expert</span>
             </button>
           )}
           {isLiveChat && (
             <button className={styles.transferButton} onClick={handleSwitchToChatbot} type='button'>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
+              <img src={CHATBOT_ICON} />
               <span>Speak to the AI Concierge</span>
             </button>
           )}

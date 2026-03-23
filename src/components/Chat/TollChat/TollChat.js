@@ -9,6 +9,7 @@ import { LiveChatMessage } from './LiveChatMessage'
 import { HeaderButtons } from '../HeaderButtons'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
+import { CHAT_FALLBACK_IMAGE } from '../Chatbot/constants'
 
 export const TollChat = ({
   availabilityAPI,
@@ -117,10 +118,10 @@ export const TollChat = ({
           <button className={styles.chatLaunch} onClick={!isMinimized ? showTextChatOption : handleMinimize}>
             <img
               className={styles.oscHead}
-              src={chatPhoto ?? 'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'}
+              src={chatPhoto ?? CHAT_FALLBACK_IMAGE}
               alt='osc'
               onError={(e) => {
-                e.currentTarget.src = 'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+                e.currentTarget.src = CHAT_FALLBACK_IMAGE
               }}
             />
 

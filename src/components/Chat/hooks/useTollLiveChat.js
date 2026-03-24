@@ -31,9 +31,6 @@ export const useTollLiveChat = ({
   chatStartedEventString = 'chatStarted',
   productCode,
   utils = {}
-  // chatBotTransferData = null,
-  // setChatBotTransferData = () => null,
-  // setIsChatBotOpenExternal = () => null
 }) => {
   const isTransfering = useRef(false)
   const isInConference = useRef(false)
@@ -177,6 +174,18 @@ export const useTollLiveChat = ({
       case 'CONVERSATION_CLOSE_CONVERSATION':
         console.log('conversation close conversation...')
         break
+      case 'CONVERSATION_SESSION_STATUS_CHANGED':
+        data = JSON.parse(event.data)
+        messagePayload = JSON.parse(data.conversationEntry.entryPayload)
+        if (
+          messagePayload?.entryType === 'SessionStatusChanged' &&
+          messagePayload?.sessionStatus === 'Ended' &&
+          messagePayload?.sessionEndedByRole !== 'Supervisor'
+        ) {
+          handleEndChat()
+          setSystemMessage('Conversation ended with local expert.')
+        }
+        break
       default:
         console.log('Unknown event:', event)
         break
@@ -205,8 +214,6 @@ export const useTollLiveChat = ({
     setAgentName('Agent')
     setSystemMessage(null)
     setUnreadMessagesCount({ count: 0, lastMessageId: null })
-    // setChatBotTransferData(null)
-    // setIsChatBotOpenExternal(false)
     isTransfering.current = false
     isInConference.current = false
     if (abortController) {
@@ -442,6 +449,15 @@ export const useTollLiveChat = ({
                 chatWasEndedByAgentWhileOffline = true
               }
             })
+          } else if (
+            entry.entryType === 'SessionStatusChanged' &&
+            entry.entryPayload?.sessionStatus === 'Ended' &&
+            entry.entryPayload?.sessionEndedByRole !== 'Supervisor' &&
+            (hasTransferEvent || hasConferenceEvent)
+          ) {
+            handleEndChat()
+            setSystemMessage('Conversation ended with local expert.')
+            chatWasEndedByAgentWhileOffline = true
           }
         })
 
@@ -466,8 +482,6 @@ export const useTollLiveChat = ({
 
     if (!tbChat || isExpired(tbChat.expiry)) {
       clearLocalStorage('tbChat')
-      // setIsChatBotOpenExternal(false)
-      // setChatBotTransferData(null)
       return
     }
 
@@ -500,7 +514,6 @@ export const useTollLiveChat = ({
         setShowChatHeader(true)
         setShowTextChatOptions(false)
         getConversationList(value)
-
         setShowWaitMessage(false)
 
         if (chatBotTransferData) {
@@ -514,8 +527,6 @@ export const useTollLiveChat = ({
             },
             1000 * 60 * 60 * 2
           )
-        } else {
-          setShowWaitMessage(false)
         }
 
         setAbortController(abortController)

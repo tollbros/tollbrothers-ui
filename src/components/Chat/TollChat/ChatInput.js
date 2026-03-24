@@ -32,11 +32,9 @@ export default function ChatInput({
     }
 
     try {
-      console.log(payload)
       await postMessage(payload)
       setMessage('')
     } catch (err) {
-      console.error('Error sending message:', err?.message)
       setError(
         err?.message?.includes('PRECHAT_FORM_REQUIRED')
           ? 'Your conversation has ended. Please close this window if you wish to start a new chat.'

@@ -28,6 +28,7 @@
     img {
         width: 100%;
         height: auto;
+        border-radius: 100%;
     }
 }
 
@@ -94,9 +95,18 @@
         align-items: center;
         gap: 8px;
         margin: 0;
-        font-size: 1.25em;
+        font-size: 1.15em;
         font-family: $domaine_font_family;
         color: #000;
+    }
+
+    .icon {
+
+        &.agentIcon {
+            width: 20px;
+            height: 20px;
+            border-radius: 100%;
+        }
     }
 
 }
@@ -169,4 +179,12 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.systemMessage {
+    margin: 0;
+    padding: 20px 0;
+    color: black;
+    font-size: .9em;
+    text-align: center;
 }

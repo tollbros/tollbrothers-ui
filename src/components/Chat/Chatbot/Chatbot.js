@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect, use } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import styles from './Chatbot.module.scss'
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
@@ -17,6 +17,10 @@ import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
+import { useTollLiveChat } from '../hooks/useTollLiveChat'
+import ChatInput from '../TollChat/ChatInput'
+import { LiveChatMessage } from '../TollChat/LiveChatMessage'
+import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -108,14 +112,13 @@ export const Chatbot = ({
   productCode,
   pageSummaryData,
   availabilityAPI,
+  liveChatEndPoint,
+  apiSfOrgId,
+  apiSfName,
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
-  setChatBotTransferData = () => null,
   chatEndpointId,
-  chatApiKey,
-  trackChatEvent = () => null,
-  chatClickedEventString = 'chatClicked',
-  chatStartedEventString = 'chatStarted'
+  chatApiKey
 }) => {
   const chatInterfaceRef = useRef(null)
   const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
@@ -131,7 +134,28 @@ export const Chatbot = ({
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
   const [userEvents, setUserEvents] = useState([])
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
+  const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
   const [chatFormDialog, setChatFormDialog] = useState(null)
+  const [isLiveChat, setIsLiveChat] = useState(false)
+
+  const {
+    accessToken,
+    messages: liveChatMessages,
+    conversationId,
+    systemMessage,
+    chatPhoto,
+    agentName,
+    hasAgentEngaged,
+    handleEndChat,
+    reestablishConnection
+  } = useTollLiveChat({
+    availabilityAPI,
+    endPoint: liveChatEndPoint,
+    apiSfOrgId,
+    apiSfName,
+    productCode,
+    utils
+  })
 
   // Add to userEvents array, keeping only last page navigation and last card view
   const addUserEvent = (newEvent, from = {}) => {
@@ -182,11 +206,17 @@ export const Chatbot = ({
     setSessionTime(null)
     setUserEvents([])
     setShowConfirmationEndMessage(false)
+    setShowConfirmationEndLiveMessage(false)
     setInputMessage('')
     setError(null)
     setIsThinking(false)
     setChatFormDialog(null)
+    setIsLiveChat(false)
     window.localStorage.removeItem('tbChatBot')
+    window.localStorage.removeItem('tbChat')
+
+    // closese out the live chat session if it's active
+    handleEndChat(accessToken, conversationId)
   }
 
   const handleConfirmationEnd = () => {
@@ -195,6 +225,7 @@ export const Chatbot = ({
 
   const handleStay = () => {
     setShowConfirmationEndMessage(false)
+    setShowConfirmationEndLiveMessage(false)
   }
 
   const handleShowChatForm = ({ text = '' } = {}) => {
@@ -202,6 +233,24 @@ export const Chatbot = ({
       id: Date.now(),
       text: text,
       type: 'form'
+    }
+
+    setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
+  }
+
+  const handleSwitchToChatbot = () => {
+    setShowConfirmationEndLiveMessage(true)
+  }
+
+  const onCloseLiveChat = () => {
+    handleEndChat(accessToken, conversationId)
+    window.localStorage.removeItem('tbChat')
+    setIsLiveChat(false)
+    setShowConfirmationEndLiveMessage(false)
+    const newBotMessage = {
+      id: `system-message-${Date.now()}`,
+      type: 'system',
+      text: 'Conversation ended with local expert.'
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
@@ -243,22 +292,6 @@ export const Chatbot = ({
   const handleInputChange = (e) => {
     const value = e.target.value
     setInputMessage(value)
-  }
-
-  const onTransferSuccess = (data) => {
-    // setChatBotTransferData(transferData)
-    console.log('Transfer successful with data:', data)
-
-    setChatBotTransferData({
-      accessToken: data.sf_miaw_token,
-      conversationId: data.sf_miaw_uuid,
-      firstName: data.firstName,
-      lastName: data.lastName
-    })
-
-    onCloseChat()
-
-    // setIsTransferring(true)
   }
 
   const handleSendMessage = async (_event, systemMessage) => {
@@ -546,7 +579,7 @@ export const Chatbot = ({
         behavior: 'smooth'
       })
     }
-  }, [messages, isThinking, chatFormDialog])
+  }, [messages, isThinking, chatFormDialog, error])
 
   useEffect(() => {
     if (isChatBotOpenExternal) {
@@ -562,24 +595,73 @@ export const Chatbot = ({
     }
   }, [isChatBotOpen])
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setChatBotTransferData({
-  //       accessToken:
-  //         'eyJvcmdKd3QuaW5jbCI6ZmFsc2UsImtpZCI6IjQ2NDkzYjJhMTI4NTgyN2YxMWRkZWVlMTZmNTg2ZTFmNTk0NDY4YzY4YTM5ZDczMjZmYTZlYjVjNWZjMjAwMDgiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ2Mi9pYW1lc3NhZ2UvVU5BVVRIL05BL3VpZDowMjg4MTQzMS0wNjFlLTQyYWMtYTIwZi1iMDAzOTI5MjEwNmUiLCJjbGllbnRJZCI6InYxL09TQ19XZWJfQVBJLzk3MmI1MGViLTAwZmEtNDhhMy05NWQ0LTkxMWI0MDgwNTY4NSIsImZhbGNvbkNlbGwiOiJzY3J0MDEiLCJjaGFubmVsQWRkSWQiOiIxZTFlM2M2NS1jODEyLTRhYzItYjQyNy1lMGEyNjQ4NjE5NGEiLCJpc3MiOiJpYW1lc3NhZ2UiLCJmYWxjb25GRCI6InVlbmdhZ2UxIiwiZGV2aWNlSWQiOiIrSDYxcXpvb2M1bFBaeXlVd0RnNkpZclkrT0JHalBCU2E5VmY4NEhIUHgvOXhEd0F5dHFHbEhPVG5lZnhGUUdWbS83cE5YMCtJLzNFbCt1bGpmVm5kUT09IiwiY2FwYWJpbGl0aWVzVmVyc2lvbiI6IjI0OCIsIm9yZ0lkIjoiMDBETzgwMDAwME5RT1BkIiwiZGV2aWNlSW5mbyI6Int9IiwicGxhdGZvcm0iOiJXZWIiLCJmYWxjb25GSUhhc2giOiJseXdmcGQiLCJqd3RJZCI6IjU4OXBmZlFDZjNXSXFHdGJxQXNnY1YiLCJjbGllbnRTZXNzaW9uSWQiOiJhNGE4ZGY5OC03YmFkLTRhNWMtODIyOS00NWM1MDUwZDk2YzEiLCJhdWQiOiJVU0VSIiwiZXZ0S2V5Ijoic2NydC5wcm9kLmV2ZW50cm91dGVyX19hd3MuYXdzLXByb2Q1LXVzd2VzdDIudWVuZ2FnZTEuYWpuYWxvY2FsMV9fcHVibGljLmV2ZW50cy5zY3J0MDE6NjEiLCJvcmdNaWdyYXRpb25CZWhhdmlvciI6dHJ1ZSwiYXBpVmVyc2lvbiI6InYyIiwic2NvcGUiOiJwdWJsaWMiLCJqd2tzX3VyaSI6Imh0dHBzOi8vc2NydDAxLnVlbmdhZ2UxLnNmZGMtbHl3ZnBkLnN2Yy5zZmRjZmMubmV0L2lhbWVzc2FnZS92MS8ud2VsbC1rbm93bi9qd2tzLmpzb24_a2V5SWQ9NDY0OTNiMmExMjg1ODI3ZjExZGRlZWUxNmY1ODZlMWY1OTQ0NjhjNjhhMzlkNzMyNmZhNmViNWM1ZmMyMDAwOCIsImVzRGVwbG95bWVudFR5cGUiOiJBUEkiLCJleHAiOjE3NzA2OTkwMjUsImlhdCI6MTc3MDY3NzM2NX0.U0cy2-59nAqc5HZDoRQMnjxkc4IHF8yj4fxHJoZEo-vco_5W0F7XnaSxDKFob5exXu2c69LWWv3zdaH8rVniBjyqYVkrbpuLANpVqHznX1VHLTPJj5oMXFcHryikPxCEV9RfFJ2I5BsVnsGJJdFUy3Y1vw3yMgId2yqp4oFuNqQ1zQ2bEzYiT7MaopQtqzJJjgViqjbdex_9w1AMizVCJ6Q6uOntoXEsSanFrVnMVij4njKyLYoqFoDK9LnSXdZqij0pAjR62SvV7ho1o60gDaQhTehxbPrSzvo3Q6z7IHihMKGeKVOVsS8-MW3eGn2S8KDACG1BQOj6_ZmHGoyDGw',
-  //       conversationId: '1284d46f-3785-4fd6-a77f-3df284c82530',
-  //       firstName: 'Michael',
-  //       lastName: 'Duarte',
-  //     })
-  //     onCloseChat()
-  //   }, 5000)
-  // }, [])
-
   useEffect(() => {
     if (pageSummaryData) {
       addUserEvent(buildUserEventObject({ ...pageSummaryData, fromPageNavigation: true }), { fromPageNavigation: true })
     }
   }, [pageSummaryData])
+
+  // Live Chat Integration Start
+  const onTransferSuccess = (data) => {
+    console.log('Transfer successful with data:', data)
+
+    reestablishConnection(null, {
+      accessToken: data.sf_miaw_token,
+      conversationId: data.sf_miaw_uuid,
+      firstName: data.firstName,
+      lastName: data.lastName
+    })
+  }
+
+  useEffect(() => {
+    if (hasAgentEngaged && conversationId && accessToken) {
+      onCloseChatForm()
+      setIsLiveChat(true)
+    } else if (!hasAgentEngaged && !conversationId && !accessToken) {
+      setIsLiveChat(false)
+    }
+  }, [hasAgentEngaged, conversationId, accessToken])
+
+  useEffect(() => {
+    if (isLiveChat && liveChatMessages && liveChatMessages.length > 0 && hasAgentEngaged) {
+      const filteredMessages = liveChatMessages.filter(
+        (message) =>
+          message.type === 'Message' &&
+          !message.text?.includes('::System Message::') &&
+          !(message.text?.startsWith('/url') && message?.role === 'Agent')
+      )
+      setMessages((prev) => {
+        const existingIds = new Set(prev.filter((m) => m.type === 'Message').map((m) => m.id))
+        const newMessages = filteredMessages.filter((m) => !existingIds.has(m.id))
+        const prevFiltered = prev.filter((m) => m.payload?.formatType !== 'Typing')
+
+        if (systemMessage && !prev.some((m) => m.text === systemMessage)) {
+          newMessages.push({
+            id: `system-message-${Date.now()}`,
+            type: 'system',
+            text: systemMessage
+          })
+        }
+
+        return [...prevFiltered, ...newMessages]
+      })
+    } else if (!isLiveChat && systemMessage) {
+      setMessages((prev) => {
+        const newMessages = []
+        if (!prev.some((m) => m.text === systemMessage)) {
+          newMessages.push({
+            id: `system-message-${Date.now()}`,
+            type: 'system',
+            text: systemMessage
+          })
+        }
+
+        return [...prev, ...newMessages]
+      })
+    }
+  }, [isLiveChat, liveChatMessages, hasAgentEngaged, systemMessage])
+
+  // Live Chat Integration End
 
   if (!showChatbot) {
     return null
@@ -590,11 +672,17 @@ export const Chatbot = ({
       <button
         className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
         onClick={onChatButtonClick}
-        aria-label="Open Toll Brothers' AI Assistant"
+        aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
         aria-controls='chatbot-interface'
         aria-expanded={isChatBotOpen}
       >
-        <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-button.svg' />
+        <img
+          src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_BUTTON_ICON}
+          onError={(e) => {
+            e.currentTarget.src = CHAT_FALLBACK_IMAGE
+          }}
+          alt='chat icon'
+        />
       </button>
 
       <div
@@ -616,8 +704,15 @@ export const Chatbot = ({
         </div>
         <div className={styles.header}>
           <div className={styles.title}>
-            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
-            <span>Hi, I'm AI Concierge</span>
+            <img
+              className={`${styles.icon} ${isLiveChat ? styles.agentIcon : ''}`}
+              src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_ICON}
+              onError={(e) => {
+                e.currentTarget.src = CHAT_FALLBACK_IMAGE
+              }}
+              alt='chat icon'
+            />
+            <span>{isLiveChat ? `Live Chat ${agentName ? `- ${agentName}` : ''}` : "Hi, I'm AI Concierge"}</span>
           </div>
           <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
@@ -627,7 +722,7 @@ export const Chatbot = ({
             you to one of our human experts for additional help.
           </p>
           <div className={styles.messages} ref={messageContainerRef}>
-            {messages.map((msg) => {
+            {messages.map((msg, index) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
               } else if (msg.type === 'bot') {
@@ -694,29 +789,64 @@ export const Chatbot = ({
                     />
                   </div>
                 )
+              } else if (msg.type === 'Message') {
+                return <LiveChatMessage key={msg.id} message={msg} />
+              } else if (msg.type === 'system') {
+                return (
+                  <p key={msg.id} className={styles.systemMessage}>
+                    {msg.text}
+                  </p>
+                )
               }
             })}
 
             {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             {error && <div className={styles.errorMessage}>{error}</div>}
+            {/* {systemMessage && <p key='system'>{systemMessage}</p>} */}
           </div>
         </div>
         <div className={styles.footer}>
-          <UserInputField
-            value={inputMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onSend={handleSendMessage}
-            placeholder='Ask AI Concierge your question here.'
-          />
-          {!chatFormDialog && (
+          {!isLiveChat && (
+            <UserInputField
+              value={inputMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onSend={handleSendMessage}
+              placeholder='Ask AI Concierge your question here.'
+              disabled={chatFormDialog || isThinking}
+            />
+          )}
+          {conversationId && accessToken && isLiveChat && (
+            <ChatInput
+              accessToken={accessToken}
+              conversationId={conversationId}
+              apiSfName={apiSfName}
+              endPoint={liveChatEndPoint}
+              setError={setError}
+              placeholder='Ask your question here.'
+            />
+          )}
+          {!chatFormDialog && !isLiveChat && (
             <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc.svg' />
+              <img src={OSC_ICON} />
               <span>Speak to an expert</span>
+            </button>
+          )}
+          {isLiveChat && (
+            <button className={styles.transferButton} onClick={handleSwitchToChatbot} type='button'>
+              <img src={CHATBOT_ICON} />
+              <span>Speak to the AI Concierge</span>
             </button>
           )}
         </div>
         {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
+        {showConfirmationEndLiveMessage && (
+          <ConfirmationEndDialog
+            onStay={handleStay}
+            onLeave={onCloseLiveChat}
+            message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'
+          />
+        )}
       </div>
     </div>
   )

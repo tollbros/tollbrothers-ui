@@ -1,0 +1,9 @@
+@import "styles/modules/all";
+
+.timestamp {
+    font-size: 10px;
+    font-family: $special_font_family;
+    white-space: nowrap;
+    color: #000;
+    text-align: center;
+}

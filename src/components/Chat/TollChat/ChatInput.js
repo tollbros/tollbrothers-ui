@@ -11,7 +11,8 @@ export default function ChatInput({
   conversationId,
   apiSfName,
   endPoint,
-  setError
+  setError,
+  placeholder = 'Type Here'
 }) {
   const [message, setMessage] = useState('')
 
@@ -60,7 +61,7 @@ export default function ChatInput({
         onChange={handleInputChange}
         onKeyDown={onKeyDown}
         onSend={sendMessage}
-        placeholder='Type Here'
+        placeholder={placeholder}
       />
     </div>
   )

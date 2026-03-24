@@ -28,9 +28,6 @@ export const TollChat = ({
   chatStartedEventString = 'chatStarted',
   productCode,
   utils = {}
-  // chatBotTransferData = null,
-  // setChatBotTransferData = () => null,
-  // setIsChatBotOpenExternal = () => null
 }) => {
   const {
     chatContainerRef,
@@ -76,9 +73,6 @@ export const TollChat = ({
     chatStartedEventString,
     productCode,
     utils
-    // chatBotTransferData,
-    // setChatBotTransferData,
-    // setIsChatBotOpenExternal
   })
 
   return (
@@ -177,7 +171,7 @@ export const TollChat = ({
         </div>
       )}
 
-      {systemMessage && !isMinimized && <p className={styles.persistentText}>{systemMessage}.</p>}
+      {systemMessage && !isMinimized && showChatHeader && <p className={styles.persistentText}>{systemMessage}</p>}
 
       <div className={styles.messagesWrapper} ref={chatContainerRef}>
         {!isMinimized && (

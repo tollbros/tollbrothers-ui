@@ -319,7 +319,7 @@ export const Chatbot = ({
       })
     }
 
-    const userMessageText = inputMessage || systemMessage
+    const userMessageText = (inputMessage || systemMessage).trim()
     const newUserMessage = {
       id: Date.now(),
       text: userMessageText,

@@ -247,13 +247,20 @@ export const Chatbot = ({
     window.localStorage.removeItem('tbChat')
     setIsLiveChat(false)
     setShowConfirmationEndLiveMessage(false)
-    const newBotMessage = {
+
+    const conversationEndedMessage = {
       id: `system-message-${Date.now()}`,
       type: 'system',
       text: 'Conversation ended with local expert.'
     }
 
-    setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
+    const newBotMessage = {
+      id: Date.now() + 1,
+      type: 'bot',
+      text: 'Thank you for speaking with our local expert. I’m available to help with any additional questions you may have.'
+    }
+
+    setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), conversationEndedMessage, newBotMessage])
   }
 
   const onCloseChatForm = () => {

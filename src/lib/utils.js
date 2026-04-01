@@ -297,7 +297,7 @@ const setLocalStorage = (key, value, ttl) => {
   try {
     localStorage.setItem(key, JSON.stringify(item))
   } catch (err) {
-    console.log('Unable to set item in localStorage', err)
+    console.log('Error setting item in localStorage', err)
   }
 }
 

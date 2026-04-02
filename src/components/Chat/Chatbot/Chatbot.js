@@ -137,6 +137,7 @@ export const Chatbot = ({
   const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
+  const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
 
   const {
     accessToken,
@@ -228,11 +229,12 @@ export const Chatbot = ({
     setShowConfirmationEndLiveMessage(false)
   }
 
-  const handleShowChatForm = ({ text = '' } = {}) => {
+  const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
     const newBotMessage = {
       id: Date.now(),
       text: text,
-      type: 'form'
+      type: 'form',
+      bypassLiveAgent: bypassLiveAgent
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
@@ -464,11 +466,13 @@ export const Chatbot = ({
         messages: storedMessages,
         sessionId: storedSessionId,
         expiry: storedExpiry,
-        userEvents: storedUserEvents
+        userEvents: storedUserEvents,
+        wasFormSubmitted: storedWasFormSubmitted
       } = stored.value || {}
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
+      if (storedWasFormSubmitted) setWasFormSubmitted(storedWasFormSubmitted)
       if (storedUserEvents)
         setUserEvents((prev) => {
           const combined = [...prev, ...storedUserEvents]
@@ -518,9 +522,15 @@ export const Chatbot = ({
         }
       })
 
-      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime, userEvents })
+      setLocalStorage('tbChatBot', {
+        messages: messagesToStore,
+        sessionId,
+        expiry: sessionTime,
+        userEvents,
+        wasFormSubmitted
+      })
     }
-  }, [messages, sessionId, sessionTime, userEvents])
+  }, [messages, sessionId, sessionTime, userEvents, wasFormSubmitted])
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -779,6 +789,7 @@ export const Chatbot = ({
                       component={
                         <ChatBotForm
                           message={msg.text}
+                          bypassLiveAgent={msg.bypassLiveAgent}
                           chatRegion={chatRegion}
                           productCode={productCode}
                           sessionId={sessionId}
@@ -790,6 +801,7 @@ export const Chatbot = ({
                           utils={utils}
                           onTransferSuccess={onTransferSuccess}
                           setChatFormDialog={setChatFormDialog}
+                          setWasFormSubmitted={setWasFormSubmitted}
                           chatFormDialog={chatFormDialog}
                         />
                       }
@@ -846,7 +858,34 @@ export const Chatbot = ({
             </button>
           )}
         </div>
-        {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
+        {showConfirmationEndMessage && (
+          <ConfirmationEndDialog
+            onStay={handleStay}
+            onLeave={onCloseChat}
+            // stayButtonText='Resume Chat'
+            endButtonText={!wasFormSubmitted ? 'No, End Chat' : undefined}
+            message={
+              !wasFormSubmitted
+                ? 'Would you like to provide your contact information before ending the chat so that a local expert can follow up with you?'
+                : undefined
+            }
+            CustomButton={
+              !wasFormSubmitted ? (
+                <button
+                  className={styles.contactMeButton}
+                  onClick={() => {
+                    setShowConfirmationEndMessage(false)
+                    handleShowChatForm({
+                      bypassLiveAgent: true
+                    })
+                  }}
+                >
+                  Yes, Contact Me
+                </button>
+              ) : undefined
+            }
+          />
+        )}
         {showConfirmationEndLiveMessage && (
           <ConfirmationEndDialog
             onStay={handleStay}

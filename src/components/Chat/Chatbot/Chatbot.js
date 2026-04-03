@@ -634,6 +634,7 @@ export const Chatbot = ({
     if (hasAgentEngaged && conversationId && accessToken) {
       onCloseChatForm()
       setIsLiveChat(true)
+      setWasFormSubmitted(true)
     } else if (!hasAgentEngaged && !conversationId && !accessToken) {
       setIsLiveChat(false)
     }

@@ -259,7 +259,7 @@ export const Chatbot = ({
     const newBotMessage = {
       id: Date.now() + 1,
       type: 'bot',
-      text: 'Thank you for speaking with our local expert. I’m available to help with any additional questions you may have.'
+      text: 'Thank you for speaking with our local expert today. If you have additional questions, it would be my pleasure to assist you at any time.'
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), conversationEndedMessage, newBotMessage])
@@ -863,27 +863,17 @@ export const Chatbot = ({
           <ConfirmationEndDialog
             onStay={handleStay}
             onLeave={onCloseChat}
-            // stayButtonText='Resume Chat'
-            endButtonText={!wasFormSubmitted ? 'No, End Chat' : undefined}
+            isContactOption={!wasFormSubmitted}
+            onContact={() => {
+              setShowConfirmationEndMessage(false)
+              handleShowChatForm({
+                bypassLiveAgent: true
+              })
+            }}
             message={
               !wasFormSubmitted
-                ? 'Would you like to provide your contact information before ending the chat so that a local expert can follow up with you?'
+                ? 'Our local experts can provide additional details. Share your contact information, and we will follow up with you.'
                 : undefined
-            }
-            CustomButton={
-              !wasFormSubmitted ? (
-                <button
-                  className={styles.contactMeButton}
-                  onClick={() => {
-                    setShowConfirmationEndMessage(false)
-                    handleShowChatForm({
-                      bypassLiveAgent: true
-                    })
-                  }}
-                >
-                  Yes, Contact Me
-                </button>
-              ) : undefined
             }
           />
         )}

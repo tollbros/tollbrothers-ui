@@ -137,6 +137,7 @@ export const Chatbot = ({
   const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
+  const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
 
   const {
     accessToken,
@@ -228,11 +229,12 @@ export const Chatbot = ({
     setShowConfirmationEndLiveMessage(false)
   }
 
-  const handleShowChatForm = ({ text = '' } = {}) => {
+  const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
     const newBotMessage = {
       id: Date.now(),
       text: text,
-      type: 'form'
+      type: 'form',
+      bypassLiveAgent: bypassLiveAgent
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), newBotMessage])
@@ -257,7 +259,7 @@ export const Chatbot = ({
     const newBotMessage = {
       id: Date.now() + 1,
       type: 'bot',
-      text: 'Thank you for speaking with our local expert. I’m available to help with any additional questions you may have.'
+      text: 'Thank you for speaking with our local expert today. If you have additional questions, it would be my pleasure to assist you at any time.'
     }
 
     setMessages((prev) => [...prev.filter((msg) => msg.type !== 'form'), conversationEndedMessage, newBotMessage])
@@ -464,11 +466,13 @@ export const Chatbot = ({
         messages: storedMessages,
         sessionId: storedSessionId,
         expiry: storedExpiry,
-        userEvents: storedUserEvents
+        userEvents: storedUserEvents,
+        wasFormSubmitted: storedWasFormSubmitted
       } = stored.value || {}
       if (storedMessages) setMessages(storedMessages)
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
+      if (storedWasFormSubmitted) setWasFormSubmitted(storedWasFormSubmitted)
       if (storedUserEvents)
         setUserEvents((prev) => {
           const combined = [...prev, ...storedUserEvents]
@@ -518,9 +522,15 @@ export const Chatbot = ({
         }
       })
 
-      setLocalStorage('tbChatBot', { messages: messagesToStore, sessionId, expiry: sessionTime, userEvents })
+      setLocalStorage('tbChatBot', {
+        messages: messagesToStore,
+        sessionId,
+        expiry: sessionTime,
+        userEvents,
+        wasFormSubmitted
+      })
     }
-  }, [messages, sessionId, sessionTime, userEvents])
+  }, [messages, sessionId, sessionTime, userEvents, wasFormSubmitted])
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -624,6 +634,7 @@ export const Chatbot = ({
     if (hasAgentEngaged && conversationId && accessToken) {
       onCloseChatForm()
       setIsLiveChat(true)
+      setWasFormSubmitted(true)
     } else if (!hasAgentEngaged && !conversationId && !accessToken) {
       setIsLiveChat(false)
     }
@@ -779,6 +790,7 @@ export const Chatbot = ({
                       component={
                         <ChatBotForm
                           message={msg.text}
+                          bypassLiveAgent={msg.bypassLiveAgent}
                           chatRegion={chatRegion}
                           productCode={productCode}
                           sessionId={sessionId}
@@ -790,6 +802,7 @@ export const Chatbot = ({
                           utils={utils}
                           onTransferSuccess={onTransferSuccess}
                           setChatFormDialog={setChatFormDialog}
+                          setWasFormSubmitted={setWasFormSubmitted}
                           chatFormDialog={chatFormDialog}
                         />
                       }
@@ -846,7 +859,24 @@ export const Chatbot = ({
             </button>
           )}
         </div>
-        {showConfirmationEndMessage && <ConfirmationEndDialog onStay={handleStay} onLeave={onCloseChat} />}
+        {showConfirmationEndMessage && (
+          <ConfirmationEndDialog
+            onStay={handleStay}
+            onLeave={onCloseChat}
+            isContactOption={!wasFormSubmitted}
+            onContact={() => {
+              setShowConfirmationEndMessage(false)
+              handleShowChatForm({
+                bypassLiveAgent: true
+              })
+            }}
+            message={
+              !wasFormSubmitted
+                ? 'Our local experts can provide additional details. Share your contact information, and we will follow up with you.'
+                : undefined
+            }
+          />
+        )}
         {showConfirmationEndLiveMessage && (
           <ConfirmationEndDialog
             onStay={handleStay}

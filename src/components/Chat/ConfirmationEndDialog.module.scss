@@ -9,7 +9,7 @@
 }
 
 .buttonWrapper {
-  width: 100%;
+  width: fit-content;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,7 +17,12 @@
   gap: 16px;
 
   button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     width: 200px;
+    min-height: 42px;
     color: white;
     font-size: 0.8em;
     font-family: $special_font_family;
@@ -28,13 +33,13 @@
     border-radius: 100px;
     background-color: $accent_blue;
 
-      &:hover {
+    &:hover {
       background-color: $medium_blue4;
-      }
+    }
 
   }
 
-  .continue {
+  .white {
     color: black;
     border: 1px solid black;
     background: transparent;
@@ -43,5 +48,57 @@
       background-color: #f5f7f8;
     }
   }
+
+  .contactButton {
+    .iconWrapper {
+      background-color: #007518;
+    }
+  }
+
+  .iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 100%;
+    background-color: $accent_blue;
+
+    img {
+      width: 10px;
+      height: auto;
+    }
+  }
+
+  &.contactOption {
+    button {
+      padding: 6px 20px;
+    }
+
+    .endChat .iconWrapper {
+      margin-left: -12px;
+    }
+  }
+
+  .or {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $dark_gray;
+    width: 100%;
+    font-size: .9em;
+    line-height: 1;
+
+    &::before,
+    &::after {
+      content: '';
+      display: block;
+      width: 50%;
+      height: 1px;
+      flex: 1;
+      background-color: $dark_gray;
+      margin: 0 10px;
+    }
+  }  
 }
 

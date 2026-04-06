@@ -27,6 +27,8 @@ export const ChatBotForm = ({
   utils,
   onTransferSuccess,
   setChatFormDialog,
+  setWasFormSubmitted = () => null,
+  bypassLiveAgent = false,
   chatFormDialog,
   chatEndpointId,
   chatApiKey
@@ -70,7 +72,12 @@ export const ChatBotForm = ({
       isAgent,
       toll_product_code: productCode,
       toll_division_code: selectedRegion?.chatRegion ?? chatRegion,
-      session_id: sessionId
+      session_id: sessionId,
+      bypassLiveAgent: false
+    }
+
+    if (bypassLiveAgent) {
+      formData.bypassLiveAgent = true
     }
 
     console.log('Form submitted with data:', formData)
@@ -97,9 +104,10 @@ export const ChatBotForm = ({
     setIsAgentAvailable(isAvailable)
 
     setChatFormDialog({
-      message: isAvailable
-        ? 'Please wait while I transfer you to a local expert.'
-        : 'Please wait while I send your information.',
+      message:
+        isAvailable && !bypassLiveAgent
+          ? 'Please wait while I transfer you to a local expert.'
+          : 'Please wait while I send your information.',
       isSending: true
     })
 
@@ -128,6 +136,7 @@ export const ChatBotForm = ({
       } else {
         onTransferSuccess({ ...data, firstName, lastName })
       }
+      setWasFormSubmitted(true)
     } catch (err) {
       setChatFormDialog({
         message: 'There was an issue with your request. Please try again later.',
@@ -220,7 +229,12 @@ export const ChatBotForm = ({
   let chatFormMessage = ''
   let chatFormButtonText = 'Speak with Local Expert'
 
-  if (!isAgentAvailable) {
+  console.log('bypassLiveAgent:', bypassLiveAgent)
+
+  if (bypassLiveAgent) {
+    chatFormButtonText = 'Contact Me'
+    chatFormMessage += 'Please share your contact information below and we will get back to you.'
+  } else if (!isAgentAvailable) {
     chatFormButtonText = 'Contact Me'
     chatFormMessage = 'Our local experts are currently offline'
 
@@ -277,7 +291,7 @@ export const ChatBotForm = ({
         </div>
       )}
 
-      {isThinking && (
+      {isThinking && !bypassLiveAgent && (
         <p className={styles.text}>Please wait while I look for an available expert in your area of interest.</p>
       )}
 

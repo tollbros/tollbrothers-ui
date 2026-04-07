@@ -29,7 +29,7 @@ export const ChatForm = ({
         fullName += `${storedUserData?.lastname}`
       }
 
-      const phone = storedUserData?.homephone || storedUserData?.phone || ''
+      const phone = storedUserData?.phone || storedUserData?.homephone || ''
 
       setFormData({
         name: fullName,

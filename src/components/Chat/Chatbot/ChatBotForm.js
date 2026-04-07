@@ -28,6 +28,7 @@ export const ChatBotForm = ({
   onTransferSuccess,
   setChatFormDialog,
   setWasFormSubmitted = () => null,
+  setFormSuccessCallback = () => null,
   bypassLiveAgent = false,
   chatFormDialog,
   chatEndpointId,
@@ -82,14 +83,6 @@ export const ChatBotForm = ({
 
     console.log('Form submitted with data:', formData)
 
-    if (utils?.dataLayerPush) {
-      utils.dataLayerPush({
-        event: 'chatStarted',
-        agent_status: isAgentAvailable ? 'online' : 'offline',
-        variant: 'chatbot'
-      })
-    }
-
     // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
     const urlParams = new URLSearchParams(window.location.search)
     const endpointId = urlParams.get('endpointId') ?? chatEndpointId
@@ -128,6 +121,25 @@ export const ChatBotForm = ({
       const data = await response.json()
       console.log('Transfer response:', data)
 
+      const { clientId, email_sha256, gaTrackId } = (await utils?.getGaTrackingIds?.(email)) || {}
+
+      if (utils?.dataLayerPush) {
+        utils.dataLayerPush({
+          event: 'chatStarted',
+          agent_status: isAgentAvailable ? 'online' : 'offline',
+          variant: 'chatbot'
+        })
+        if (email_sha256) utils.dataLayerPush({ email_sha256: email_sha256 })
+      }
+
+      setFormSuccessCallback(
+        `https://hello.tollbrothers.com/l/402642/2026-04-07/2cv3sc1?email=${encodeURIComponent(
+          email
+        )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(lastName)}&gaClientId=${encodeURIComponent(
+          clientId ?? ''
+        )}&gaUserId=${encodeURIComponent(email_sha256 ?? '')}&gaTrackId=${encodeURIComponent(gaTrackId ?? '')}`
+      )
+
       if (!data.sf_miaw_token || !data.sf_miaw_uuid) {
         setChatFormDialog({
           message: 'Your information was sent successfully. A local expert will contact you soon.',
@@ -137,6 +149,19 @@ export const ChatBotForm = ({
         onTransferSuccess({ ...data, firstName, lastName })
       }
       setWasFormSubmitted(true)
+
+      try {
+        const formDataToStore = {
+          email: email,
+          firstname: firstName,
+          lastname: lastName,
+          phone: phone
+        }
+        if (email_sha256) {
+          formDataToStore.shaEmail = email_sha256
+        }
+        if (utils?.mergeFormResponseToLocalStorage) utils.mergeFormResponseToLocalStorage(formDataToStore)
+      } catch (err) {}
     } catch (err) {
       setChatFormDialog({
         message: 'There was an issue with your request. Please try again later.',
@@ -229,7 +254,7 @@ export const ChatBotForm = ({
   let chatFormMessage = ''
   let chatFormButtonText = 'Speak with Local Expert'
 
-  console.log('bypassLiveAgent:', bypassLiveAgent)
+  // console.log('bypassLiveAgent:', bypassLiveAgent)
 
   if (bypassLiveAgent) {
     chatFormButtonText = 'Contact Me'

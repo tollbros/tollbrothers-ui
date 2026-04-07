@@ -138,6 +138,7 @@ export const Chatbot = ({
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
+  const [formSuccessCallback, setFormSuccessCallback] = useState(null)
 
   const {
     accessToken,
@@ -804,6 +805,7 @@ export const Chatbot = ({
                           setChatFormDialog={setChatFormDialog}
                           setWasFormSubmitted={setWasFormSubmitted}
                           chatFormDialog={chatFormDialog}
+                          setFormSuccessCallback={setFormSuccessCallback}
                         />
                       }
                     />
@@ -885,6 +887,7 @@ export const Chatbot = ({
           />
         )}
       </div>
+      {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
     </div>
   )
 }

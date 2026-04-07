@@ -29,10 +29,12 @@ export const ChatForm = ({
         fullName += `${storedUserData?.lastname}`
       }
 
+      const phone = storedUserData?.phone || storedUserData?.homephone || ''
+
       setFormData({
         name: fullName,
         email: storedUserData?.email ?? '',
-        phone: storedUserData?.homephone?.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') ?? ''
+        phone: phone?.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') ?? ''
       })
     }
   }, [])

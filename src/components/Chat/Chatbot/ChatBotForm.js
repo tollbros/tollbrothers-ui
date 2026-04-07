@@ -28,6 +28,7 @@ export const ChatBotForm = ({
   onTransferSuccess,
   setChatFormDialog,
   setWasFormSubmitted = () => null,
+  setFormSuccessCallback = () => null,
   bypassLiveAgent = false,
   chatFormDialog,
   chatEndpointId,
@@ -127,6 +128,15 @@ export const ChatBotForm = ({
 
       const data = await response.json()
       console.log('Transfer response:', data)
+
+      const { clientId, email_sha256, gaTrackId } = (await utils?.getGaTrackingIds?.(email)) || {}
+      setFormSuccessCallback(
+        `https://hello.tollbrothers.com/l/402642/2025-08-05/2chvs9x?email=${encodeURIComponent(
+          email
+        )}&fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(lastName)}&gaClientId=${encodeURIComponent(
+          clientId ?? ''
+        )}&gaUserId=${encodeURIComponent(email_sha256 ?? '')}&gaTrackId=${encodeURIComponent(gaTrackId ?? '')}`
+      )
 
       if (!data.sf_miaw_token || !data.sf_miaw_uuid) {
         setChatFormDialog({

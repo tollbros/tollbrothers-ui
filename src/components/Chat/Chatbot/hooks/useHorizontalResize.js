@@ -121,16 +121,7 @@ export function useHorizontalResize(elementRef) {
       const maxHeight = getMaxHeight()
       // Ensure min doesn't exceed available max
       const minHeight = Math.min(getEffectiveMinHeight(), maxHeight)
-      console.log(
-        'max width: ',
-        maxWidth,
-        'min width: ',
-        minWidth,
-        'max height: ',
-        maxHeight,
-        'min height: ',
-        minHeight
-      )
+
       // Clamp width to fit available space
       const clampedWidth = Math.min(Math.max(width, minWidth), maxWidth)
       if (clampedWidth !== width) {

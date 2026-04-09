@@ -116,6 +116,8 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 12px 20px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .messages {

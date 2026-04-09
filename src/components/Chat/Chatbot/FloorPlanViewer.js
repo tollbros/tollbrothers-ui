@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
 import styles from './FloorPlanViewer.module.scss'
@@ -9,7 +9,12 @@ import { useTrackInView } from './hooks/useTrackInView'
 export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [isCoverActive, setIsCoverActive] = useState(true)
-  const { svgContent, isLoading } = utils?.useFetchSvg?.(floorPlans?.[activeTab]?.url, [activeTab, floorPlans])
+  const sortedFloorplans = useMemo(() => utils?.sortFloorplans?.(floorPlans) || floorPlans, [floorPlans])
+  const { svgContent, isLoading } = utils?.useFetchSvg?.(sortedFloorplans?.[activeTab]?.url, [
+    activeTab,
+    sortedFloorplans
+  ])
+
   const containerRef = useTrackInView({
     onInView: () => {
       if (utils?.dataLayerPush) {
@@ -22,9 +27,9 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
     once: true
   })
 
-  if (!floorPlans?.length) return null
+  if (!sortedFloorplans?.length) return null
 
-  const activeFloorPlan = floorPlans[activeTab]
+  const activeFloorPlan = sortedFloorplans[activeTab]
 
   const handleTabClick = (index, event) => {
     setActiveTab(index)
@@ -104,9 +109,9 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
           </TransformWrapper>
         )}
       </div>
-      {floorPlans.length > 1 && (
+      {sortedFloorplans.length > 1 && (
         <div className={styles.tabsContainer}>
-          {floorPlans.map((fp, index) => (
+          {sortedFloorplans.map((fp, index) => (
             <button
               key={index}
               className={`${styles.tab} ${activeTab === index ? styles.active : ''}`}

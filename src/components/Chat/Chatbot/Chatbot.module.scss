@@ -72,7 +72,7 @@
     justify-content: center;
     color: rgba(0, 0, 0, 0.45);
 
-    @media (min-width: $screen-sm) {
+    @media (min-width: $screen-sm) and (min-height: 601px) {
         display: flex;
     }
 }

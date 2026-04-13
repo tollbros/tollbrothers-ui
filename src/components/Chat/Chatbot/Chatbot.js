@@ -551,11 +551,8 @@ export const Chatbot = ({
           })
         } else if (msg.product) {
           msg.product = msg.product.url
-          // return msg
         }
       })
-
-      console.log(messagesToStore)
 
       setLocalStorage('tbChatBot', {
         messages: messagesToStore,

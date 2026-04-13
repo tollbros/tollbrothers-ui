@@ -9,7 +9,7 @@ const toPath = (route) => {
 export const getProductData = async (routes, baseUrl) => {
   const results = await Promise.allSettled(
     routes.map((route) =>
-      fetch(`${baseUrl}/${toPath(route)}`)
+      fetch(`${baseUrl}/${toPath(route)}&max-age=900`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)

@@ -10,7 +10,6 @@ import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
-import { deleteExtraProductInfo } from './utils/deleteExtraProductInfo'
 import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
@@ -129,6 +128,7 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const messageContainerRef = useRef(null)
+  const isRestoringFromVisibilityChange = useRef(false)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
@@ -231,6 +231,7 @@ export const Chatbot = ({
   }
 
   const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
+    isRestoringFromVisibilityChange.current = false
     const newBotMessage = {
       id: Date.now(),
       text: text,
@@ -306,6 +307,7 @@ export const Chatbot = ({
 
   const handleSendMessage = async (_event, systemMessage) => {
     if (!inputMessage.trim() && !systemMessage) return
+    isRestoringFromVisibilityChange.current = false
 
     // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
     // const urlParams = location.search;
@@ -425,6 +427,7 @@ export const Chatbot = ({
   }
 
   const handleProductSelect = async (product, { fromProductsList = false, fromModelList = false } = {}) => {
+    isRestoringFromVisibilityChange.current = false
     const isModel = Boolean(product.commPlanID)
     let modelData = null
 
@@ -455,9 +458,14 @@ export const Chatbot = ({
     })
   }
 
-  const restoreUiChatSession = (event) => {
+  const restoreUiChatSession = async (event) => {
     if (event && event.type === 'visibilitychange' && document.hidden) {
       return
+    }
+
+    const isFromVisibilityChange = event?.type === 'visibilitychange'
+    if (isFromVisibilityChange) {
+      isRestoringFromVisibilityChange.current = true
     }
 
     const stored = getLocalStorage('tbChatBot')
@@ -470,11 +478,37 @@ export const Chatbot = ({
         userEvents: storedUserEvents,
         wasFormSubmitted: storedWasFormSubmitted
       } = stored.value || {}
-      if (storedMessages) setMessages(storedMessages)
+
+      if (storedMessages) {
+        // Fetch product data for any messages that have products or product (stored as URLs)
+        const messagesWithProductData = await Promise.all(
+          storedMessages.map(async (msg) => {
+            if (msg.products?.length > 0) {
+              try {
+                const productData = await getProductData(msg.products, tollRouteApi)
+                return { ...msg, products: productData }
+              } catch (err) {
+                console.error('Error restoring product data:', err)
+                return msg
+              }
+            } else if (msg.product && typeof msg.product === 'string') {
+              try {
+                const productData = await getProductData([msg.product], tollRouteApi)
+                return { ...msg, product: productData?.[0] || msg.product }
+              } catch (err) {
+                console.error('Error restoring product data:', err)
+                return msg
+              }
+            }
+            return msg
+          })
+        )
+        setMessages(messagesWithProductData)
+      }
       if (storedSessionId) setSessionId(storedSessionId)
       if (storedExpiry) setSessionTime(storedExpiry)
       if (storedWasFormSubmitted) setWasFormSubmitted(storedWasFormSubmitted)
-      if (storedUserEvents)
+      if (storedUserEvents) {
         setUserEvents((prev) => {
           const combined = [...prev, ...storedUserEvents]
           // Remove duplicates based on name, type, and relevant IDs
@@ -488,6 +522,7 @@ export const Chatbot = ({
             return true
           })
         })
+      }
       setIsChatBotOpen(true)
     } else if (stored) {
       clearLocalStorage('tbChatBot')
@@ -507,19 +542,15 @@ export const Chatbot = ({
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
-      const messagesToStore = JSON.parse(JSON.stringify(messages.slice(-20)))
+      const messagesToStore = JSON.parse(JSON.stringify(messages.slice(-40)))
 
       messagesToStore.map((msg) => {
         if (msg.products?.length > 0) {
           msg.products = msg.products.map((p) => {
-            const productToStore = { ...p }
-            deleteExtraProductInfo(productToStore)
-            return productToStore
+            return p.url
           })
         } else if (msg.product) {
-          const productToStore = { ...msg.product }
-          deleteExtraProductInfo(productToStore)
-          return productToStore
+          return msg.url
         }
       })
 
@@ -588,6 +619,11 @@ export const Chatbot = ({
   // }, [])
 
   useEffect(() => {
+    if (isRestoringFromVisibilityChange.current) {
+      isRestoringFromVisibilityChange.current = false
+      return
+    }
+
     if (chatContainerRef.current && messageContainerRef.current?.lastElementChild) {
       const lastElement = messageContainerRef.current.lastElementChild
       const elementTop = lastElement.offsetTop

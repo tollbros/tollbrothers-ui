@@ -550,7 +550,7 @@ export const Chatbot = ({
             return p.url
           })
         } else if (msg.product) {
-          return msg.url
+          msg.product = msg.product.url
         }
       })
 

@@ -111,11 +111,34 @@
 
 }
 
+.openingDisclaimer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto 30px auto;
+    font-family: $alt_font_family;
+    font-size: .75em;
+    color: #333;
+
+    .disclaimerButtons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin: 10px auto 0 auto;
+    }
+
+    button, a {
+        font-size: inherit !important;
+        font-family: inherit;
+        text-decoration: underline;
+    }
+}
+
 .body {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 12px 20px;
+    padding: 0px 20px 12px 20px;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }

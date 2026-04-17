@@ -20,6 +20,7 @@ import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+import { MoreInformation } from '../MoreInformation'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -139,6 +140,7 @@ export const Chatbot = ({
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
+  const [showMoreInfo, setShowMoreInfo] = useState(false)
 
   const {
     accessToken,
@@ -772,10 +774,30 @@ export const Chatbot = ({
           <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
-          <p>
-            I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
-            you to one of our human experts for additional help.
-          </p>
+          <div className={styles.openingDisclaimer}>
+            <span>
+              You are interacting with an AI‑powered virtual assistant. Responses may be inaccurate or incomplete.{' '}
+            </span>
+            <div className={styles.disclaimerButtons}>
+              <button className={styles.buttonReset} onClick={() => setShowMoreInfo(true)}>
+                More Information
+              </button>
+              |{' '}
+              <a href='/privacy' target='_blank'>
+                Privacy Policy
+              </a>
+              |{' '}
+              <a href='/legal' target='_blank'>
+                Legal Statement
+              </a>
+            </div>
+          </div>
+          <div>
+            <BotMessage
+              message='I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
+            you to one of our human experts for additional help.'
+            />
+          </div>
           <div className={styles.messages} ref={messageContainerRef}>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {
@@ -922,6 +944,7 @@ export const Chatbot = ({
             message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'
           />
         )}
+        {showMoreInfo && <MoreInformation onClose={() => setShowMoreInfo(false)} />}
       </div>
       {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
     </div>

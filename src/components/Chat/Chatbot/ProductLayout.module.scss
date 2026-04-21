@@ -53,17 +53,15 @@
 
 .topContactButtons {
   display: flex;
-  gap: 0px;
+  gap: 8px;
   justify-content: space-between;
-  padding: 0 16px;
 
-  a {
-    width: auto;
-    padding: 6px;
-    border: none;
-    //text-align: left;
+  .button {
+    flex: 1 1 auto;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: center;
     white-space: nowrap;
-    text-decoration: underline !important;
   }
 }
 

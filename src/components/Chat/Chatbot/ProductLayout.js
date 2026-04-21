@@ -74,23 +74,29 @@ export const ProductLayout = ({
   // this is only relevant if we decide to go with showing OSC phone numbers in this component
 
   let label = ``
+  let smallLabel = ''
   let hash = '#appointment'
   let isVip = false
   if (dcaDisclaimer) {
     label += 'Contact the community'
+    smallLabel += 'Contact'
     hash = '#contact'
   } else if (hideTour) {
     label += 'Talk to a local expert'
+    smallLabel += 'Talk to an Expert'
     hash = '#contact-email'
   } else if (isFuture) {
     label += vipSalesOnly ? 'Contact the community' : 'Become a VIP'
+    smallLabel += vipSalesOnly ? 'Contact' : 'Become a VIP'
     hash = '#join-vip'
     isVip = true
   } else if (hasSelfGuidedTour) {
     label += 'Schedule a self-guided tour'
+    smallLabel += 'Schedule a Tour'
     hash = '#self-guided-tour'
   } else {
     label += 'Schedule a tour'
+    smallLabel += 'Schedule a Tour'
   }
 
   // console.log(label, hash)
@@ -147,6 +153,36 @@ export const ProductLayout = ({
     }
   }, [])
 
+  const onContactClick = (e) => {
+    closeChatIfNoSpace()
+    const isCurrentPage = preventIfCurrentPage(product.url, e)
+    if (isCurrentPage && utils) {
+      if (isVip) {
+        utils.openVIPPanel()
+      } else if (hideTour) {
+        utils.openEmailPanel()
+      } else {
+        utils.openTourPanel()
+      }
+      // utils.closeEmailPanel()
+      utils.closeSalesPanel()
+    }
+  }
+
+  const onSalesOfficeContactClick = (e) => {
+    closeChatIfNoSpace()
+    const isCurrentPage = preventIfCurrentPage(product.url, e)
+    if (isCurrentPage && utils) {
+      utils.closeSalesPanel()
+      utils.closeEmailPanel()
+      utils.closeVIPPanel()
+      utils.closeTourPanel()
+      setTimeout(() => {
+        utils.openSalesPanel()
+      }, 350)
+    }
+  }
+
   return (
     <div className={styles.root} ref={rootRef}>
       <CloseButton className={styles.closeButton} onClick={onClose} ariaLabel='Close product details' />
@@ -176,48 +212,24 @@ export const ProductLayout = ({
       <div className={styles.content}>
         {canShowCTAs && (
           <div className={styles.topContactButtons}>
-            <OptionButton
-              text={label}
-              href={product.url + hash}
-              isLink
-              utils={utils}
-              onClick={(e) => {
-                closeChatIfNoSpace()
-                const isCurrentPage = preventIfCurrentPage(product.url, e)
-                if (isCurrentPage && utils) {
-                  if (isVip) {
-                    utils.openVIPPanel()
-                  } else if (hideTour) {
-                    utils.openEmailPanel()
-                  } else {
-                    utils.openTourPanel()
-                  }
-                  // utils.closeEmailPanel()
-                  utils.closeSalesPanel()
-                }
-              }}
-            />
             {!dcaDisclaimer && !isFuture && (
               <OptionButton
-                text='Contact the community'
+                classes={{ root: styles.button }}
+                text='Contact'
                 href={product.url + '#contact'}
                 isLink
                 utils={utils}
-                onClick={(e) => {
-                  closeChatIfNoSpace()
-                  const isCurrentPage = preventIfCurrentPage(product.url, e)
-                  if (isCurrentPage && utils) {
-                    utils.closeSalesPanel()
-                    utils.closeEmailPanel()
-                    utils.closeVIPPanel()
-                    utils.closeTourPanel()
-                    setTimeout(() => {
-                      utils.openSalesPanel()
-                    }, 350)
-                  }
-                }}
+                onClick={(e) => onSalesOfficeContactClick(e)}
               />
             )}
+            <OptionButton
+              classes={{ root: styles.button }}
+              text={smallLabel}
+              href={product.url + hash}
+              isLink
+              utils={utils}
+              onClick={(e) => onContactClick(e)}
+            />
           </div>
         )}
         {isModel && <QMICallout model={product} utils={utils} />}
@@ -289,21 +301,7 @@ export const ProductLayout = ({
                 href={product.url + hash}
                 isLink
                 utils={utils}
-                onClick={(e) => {
-                  closeChatIfNoSpace()
-                  const isCurrentPage = preventIfCurrentPage(product.url, e)
-                  if (isCurrentPage && utils) {
-                    if (isVip) {
-                      utils.openVIPPanel()
-                    } else if (hideTour) {
-                      utils.openEmailPanel()
-                    } else {
-                      utils.openTourPanel()
-                    }
-                    // utils.closeEmailPanel()
-                    utils.closeSalesPanel()
-                  }
-                }}
+                onClick={(e) => onContactClick(e)}
               />
               {!dcaDisclaimer && !isFuture && (
                 <OptionButton
@@ -311,19 +309,7 @@ export const ProductLayout = ({
                   href={product.url + '#contact'}
                   isLink
                   utils={utils}
-                  onClick={(e) => {
-                    closeChatIfNoSpace()
-                    const isCurrentPage = preventIfCurrentPage(product.url, e)
-                    if (isCurrentPage && utils) {
-                      utils.closeSalesPanel()
-                      utils.closeEmailPanel()
-                      utils.closeVIPPanel()
-                      utils.closeTourPanel()
-                      setTimeout(() => {
-                        utils.openSalesPanel()
-                      }, 350)
-                    }
-                  }}
+                  onClick={(e) => onSalesOfficeContactClick(e)}
                 />
               )}
               {showHours && !isFuture && !hideDirections && (

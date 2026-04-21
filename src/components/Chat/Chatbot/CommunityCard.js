@@ -4,12 +4,10 @@ import { ActionButton } from './ActionButton'
 import { CommunityStats } from './CommunityStats'
 import { CommunityDetails } from './CommunityDetails'
 import { ConditionalLink } from './ConditionalLink'
+import { getProductHeroImage } from './utils/getProductHeroImage'
 
 export const CommunityCard = ({ community, onClick = () => null, utils = {} }) => {
-  let headShotImage = community.headShot?.media?.url
-  if (community.headShot?.media?.type?.includes('video')) {
-    headShotImage = community?.gallery?.mediaGroups?.[0]?.media?.find((media) => media.type === 'image')?.url
-  }
+  const headShotImage = getProductHeroImage(community)
   const desc = community.overview?.shortDescription || community.overview?.description
   const isActiveAdult = community?.communityTypes?.some((type) => type.toLowerCase() === 'active adult')
 

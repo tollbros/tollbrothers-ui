@@ -11,6 +11,7 @@ import { ImageCarousel } from './ImageCarousel'
 import { ConditionalLink } from './ConditionalLink'
 import { CloseButton } from './CloseButton'
 import { OptionButton } from './OptionButton'
+import { getProductHeroImage } from './utils/getProductHeroImage'
 
 export const ProductLayout = ({
   product,
@@ -20,11 +21,9 @@ export const ProductLayout = ({
   onMinimizeChat = () => null
 }) => {
   const rootRef = useRef(null)
-  const headShotImage = product?.headShot?.media?.url
+  const headShotImage = getProductHeroImage(product)
   const desc = product.overview?.shortDescription || product.overview?.description || product.description
   const bullets = product?.overview?.bulletPoints || product?.modelBullets
-
-  // console.log(product)
 
   const isMasterCommunity = Boolean(product?.communities?.length > 0) && product.isMaster
   const isCommunity = !isMasterCommunity && !product?.commPlanID
@@ -60,7 +59,7 @@ export const ProductLayout = ({
 
   const state = product.salesOffice?.state
   const street = product.salesOffice?.street
-  const buildingStreet = product.street
+  // const buildingStreet = product.street
   const city = product.salesOffice?.city
   const zip = product.salesOffice?.zip
 

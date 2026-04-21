@@ -51,6 +51,22 @@
   padding-bottom: 16px;
 }
 
+.topContactButtons {
+  display: flex;
+  gap: 0px;
+  justify-content: space-between;
+  padding: 0 16px;
+
+  a {
+    width: auto;
+    padding: 6px;
+    border: none;
+    //text-align: left;
+    white-space: nowrap;
+    text-decoration: underline !important;
+  }
+}
+
 .summarySection {
   display: flex;
   flex-direction: column;

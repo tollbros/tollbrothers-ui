@@ -175,6 +175,52 @@ export const ProductLayout = ({
         )}
       </div>
       <div className={styles.content}>
+        {canShowCTAs && (
+          <div className={styles.topContactButtons}>
+            <OptionButton
+              text={label}
+              href={product.url + hash}
+              isLink
+              utils={utils}
+              onClick={(e) => {
+                closeChatIfNoSpace()
+                const isCurrentPage = preventIfCurrentPage(product.url, e)
+                if (isCurrentPage && utils) {
+                  if (isVip) {
+                    utils.openVIPPanel()
+                  } else if (hideTour) {
+                    utils.openEmailPanel()
+                  } else {
+                    utils.openTourPanel()
+                  }
+                  // utils.closeEmailPanel()
+                  utils.closeSalesPanel()
+                }
+              }}
+            />
+            {!dcaDisclaimer && !isFuture && (
+              <OptionButton
+                text='Contact the community'
+                href={product.url + '#contact'}
+                isLink
+                utils={utils}
+                onClick={(e) => {
+                  closeChatIfNoSpace()
+                  const isCurrentPage = preventIfCurrentPage(product.url, e)
+                  if (isCurrentPage && utils) {
+                    utils.closeSalesPanel()
+                    utils.closeEmailPanel()
+                    utils.closeVIPPanel()
+                    utils.closeTourPanel()
+                    setTimeout(() => {
+                      utils.openSalesPanel()
+                    }, 350)
+                  }
+                }}
+              />
+            )}
+          </div>
+        )}
         {isModel && <QMICallout model={product} utils={utils} />}
         {isModel && <ModelDetails model={product} utils={utils} />}
         {isModel && <ModelStats model={product} utils={utils} />}

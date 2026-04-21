@@ -206,7 +206,10 @@ export const Chatbot = ({
     setMessages([])
     setSessionId(null)
     setSessionTime(null)
-    setUserEvents([])
+    setUserEvents((prev) => {
+      const pageNavEvents = prev.filter((event) => event.fromPageNavigation)
+      return pageNavEvents.length > 0 ? [pageNavEvents[pageNavEvents.length - 1]] : []
+    })
     setShowConfirmationEndMessage(false)
     setShowConfirmationEndLiveMessage(false)
     setInputMessage('')

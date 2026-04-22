@@ -779,7 +779,7 @@ export const Chatbot = ({
             I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
             you to one of our human experts for additional help.
           </p>
-          <div className={styles.messages} ref={messageContainerRef}>
+          <div className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />

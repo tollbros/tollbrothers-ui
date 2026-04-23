@@ -5,7 +5,7 @@ import styles from './BotMessage.module.scss'
 export const BotMessage = ({ message, component }) => {
   return (
     // BotMessage.js
-    <div className={styles.container} aria-label='AI Conceirge message'>
+    <article className={styles.container} aria-label='AI Conceirge message'>
       <div className={styles.response}>
         <div className={styles.icon}>
           <img
@@ -21,6 +21,6 @@ export const BotMessage = ({ message, component }) => {
         )}
         {component && <div className={styles.component}>{component}</div>}
       </div>
-    </div>
+    </article>
   )
 }

@@ -26,7 +26,6 @@ export const UserInputField = ({
         cols={50}
         disabled={disabled}
         tabIndex={1}
-        aria-live='polite'
       />
 
       <button

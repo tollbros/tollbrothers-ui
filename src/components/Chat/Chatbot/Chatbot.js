@@ -650,6 +650,16 @@ export const Chatbot = ({
     }
   }, [messages, isThinking, chatFormDialog, error])
 
+  // // Focus the dialog when it opens for screen reader announcement
+  useEffect(() => {
+    if (isChatBotOpen && chatInterfaceRef.current) {
+      // Small delay to ensure dialog is fully rendered
+      setTimeout(() => {
+        chatInterfaceRef.current.focus()
+      }, 100)
+    }
+  }, [isChatBotOpen])
+
   useEffect(() => {
     if (isChatBotOpenExternal) {
       setIsChatBotOpen(true)
@@ -738,7 +748,7 @@ export const Chatbot = ({
   }
 
   return (
-    <div className={`${styles.root}`}>
+    <aside className={`${styles.root}`} aria-label='chat'>
       <button
         id='chabot-launch-button'
         ref={chatButtonRef}
@@ -762,6 +772,10 @@ export const Chatbot = ({
         className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}
         ref={chatInterfaceRef}
         style={{ width: `${width}px`, height: `${height}px` }}
+        role='dialog'
+        aria-modal='true'
+        aria-label={isLiveChat ? `Live Chat ${agentName ? `with ${agentName}` : ''}` : 'Toll Brothers AI Concierge'}
+        tabIndex={-1}
       >
         <div
           className={`${styles.resizeHandle} ${isResizing ? styles.resizing : ''}`}
@@ -793,7 +807,7 @@ export const Chatbot = ({
             I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
             you to one of our human experts for additional help.
           </p>
-          <div className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
+          <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
@@ -879,7 +893,7 @@ export const Chatbot = ({
             {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             {error && <div className={styles.errorMessage}>{error}</div>}
             {/* {systemMessage && <p key='system'>{systemMessage}</p>} */}
-          </div>
+          </section>
         </div>
         <div className={styles.footer}>
           {!isLiveChat && (
@@ -944,6 +958,6 @@ export const Chatbot = ({
         )}
       </div>
       {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
-    </div>
+    </aside>
   )
 }

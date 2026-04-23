@@ -14,6 +14,7 @@ import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
+import { useFocusTrap } from './hooks/useFocusTrap'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
@@ -120,14 +121,17 @@ export const Chatbot = ({
   chatApiKey
 }) => {
   const chatInterfaceRef = useRef(null)
+  const chatButtonRef = useRef(null)
+  const messageContainerRef = useRef(null)
+  const confirmationDialogRef = useRef(null)
   const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
+
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
-  const messageContainerRef = useRef(null)
   const isRestoringFromVisibilityChange = useRef(false)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
@@ -139,6 +143,8 @@ export const Chatbot = ({
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
+
+  useFocusTrap(isChatBotOpen, chatInterfaceRef, chatButtonRef, messageContainerRef, confirmationDialogRef)
 
   const {
     accessToken,
@@ -728,6 +734,8 @@ export const Chatbot = ({
   return (
     <div className={`${styles.root}`}>
       <button
+        id='chabot-launch-button'
+        ref={chatButtonRef}
         className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
         onClick={onChatButtonClick}
         aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
@@ -902,6 +910,7 @@ export const Chatbot = ({
         </div>
         {showConfirmationEndMessage && (
           <ConfirmationEndDialog
+            ref={confirmationDialogRef}
             onStay={handleStay}
             onLeave={onCloseChat}
             isContactOption={!wasFormSubmitted}
@@ -920,6 +929,7 @@ export const Chatbot = ({
         )}
         {showConfirmationEndLiveMessage && (
           <ConfirmationEndDialog
+            ref={confirmationDialogRef}
             onStay={handleStay}
             onLeave={onCloseLiveChat}
             message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'

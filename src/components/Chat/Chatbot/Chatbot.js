@@ -144,7 +144,13 @@ export const Chatbot = ({
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
 
-  useFocusTrap(isChatBotOpen, chatInterfaceRef, chatButtonRef, messageContainerRef, confirmationDialogRef)
+  const disableTrap = useFocusTrap(
+    isChatBotOpen,
+    chatInterfaceRef,
+    chatButtonRef,
+    messageContainerRef,
+    confirmationDialogRef
+  )
 
   const {
     accessToken,
@@ -826,6 +832,7 @@ export const Chatbot = ({
                         handleProductSelect={handleProductSelect}
                         onClose={() => handleProductRemoval(msg.id, msg.product)}
                         onMinimizeChat={onMinimizeChat}
+                        clearFocusTrap={disableTrap}
                       />
                     }
                   />

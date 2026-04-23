@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 
 const FOCUSABLE_SELECTORS = [
   'a[href]',
@@ -51,8 +51,14 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
   const previousActiveElement = useRef(null)
   const lastMessageRef = useRef(null)
   const pendingFocusElementRef = useRef(null)
+  const isTrapDisabled = useRef(false)
 
-  // console.log('chatFormDialog in useFocusTrap:', chatFormDialog)
+  // Function to manually disable the focus trap
+  const disableTrap = useCallback(() => {
+    console.log('Disabling focus trap')
+    isTrapDisabled.current = true
+    pendingFocusElementRef.current = null
+  }, [])
 
   // Track new messages and prepare to focus on next tab
   useEffect(() => {
@@ -67,18 +73,15 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
 
       // If the last message has changed (new message added)
       if (currentLastMessage && currentLastMessage !== lastMessageRef.current) {
-        // console.log('New message detected:', currentLastMessage)
         lastMessageRef.current = currentLastMessage
 
         const focusableElements = Array.from(currentLastMessage.querySelectorAll(FOCUSABLE_SELECTORS)).filter(
           isElementVisible
         )
-        // console.log('Focusable elements in new message:', focusableElements)
 
         if (focusableElements.length > 0) {
           // Store the element to focus on next tab, but don't focus it yet
           pendingFocusElementRef.current = focusableElements[0]
-          // console.log('Pending focus element set:', focusableElements[0])
         }
       }
     })
@@ -96,6 +99,9 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
       return
     }
 
+    // Reset trap disabled state when chat opens
+    isTrapDisabled.current = false
+
     // Store the element that was focused before opening
     previousActiveElement.current = document.activeElement
 
@@ -103,8 +109,6 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
 
     const getFocusableElements = () => {
       const allFocusable = Array.from(container.querySelectorAll(FOCUSABLE_SELECTORS)).filter(isElementVisible)
-
-      // console.log('All focusable elements in container:', allFocusable)
 
       // Sort by tabindex first
       const sorted = sortByTabIndex(allFocusable)
@@ -186,6 +190,19 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
         return
       }
 
+      // If trap is disabled, check if focus is back inside container
+      if (isTrapDisabled.current) {
+        // Allow tab to happen naturally first
+        setTimeout(() => {
+          // After tab completes, check if focus landed inside the container
+          if (container.contains(document.activeElement)) {
+            console.log('Focus returned to chat, re-enabling trap')
+            isTrapDisabled.current = false
+          }
+        }, 0)
+        return
+      }
+
       const { all: focusable } = getFocusableElements()
       if (focusable.length === 0) {
         event.preventDefault()
@@ -195,7 +212,6 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
       // Check if we have a pending focus element (from a new message)
       if (pendingFocusElementRef.current && !event.shiftKey) {
         event.preventDefault()
-        // console.log('Focusing pending element:', pendingFocusElementRef.current)
         pendingFocusElementRef.current.focus()
         pendingFocusElementRef.current = null
         return
@@ -251,4 +267,6 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
       previousActiveElement.current = null
     }
   }, [isActive, triggerRef])
+
+  return disableTrap
 }

@@ -1,20 +1,24 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { Dialog } from './Dialog'
 
 import styles from './ConfirmationEndDialog.module.scss'
 
-export const ConfirmationEndDialog = ({
-  message = 'Are you sure you want to end this chat?',
-  onStay,
-  onLeave,
-  onContact,
-  endButtonText = 'End Chat',
-  stayButtonText = 'Continue Chat',
-  isContactOption = false
-}) => {
-  return (
-    <Dialog>
-      <p className={styles.message}>{message}</p>
+export const ConfirmationEndDialog = forwardRef(
+  (
+    {
+      message = 'Are you sure you want to end this chat?',
+      onStay,
+      onLeave,
+      onContact,
+      endButtonText = 'End Chat',
+      stayButtonText = 'Continue Chat',
+      isContactOption = false
+    },
+    ref
+  ) => {
+    return (
+      <Dialog ref={ref}>
+        <p className={styles.message}>{message}</p>
       <div className={`${styles.buttonWrapper} ${isContactOption ? styles.contactOption : ''}`}>
         {isContactOption && (
           <button className={`${styles.white} ${styles.contactButton}`} onClick={onContact}>
@@ -40,3 +44,4 @@ export const ConfirmationEndDialog = ({
     </Dialog>
   )
 }
+)

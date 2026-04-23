@@ -55,7 +55,6 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
 
   // Function to manually disable the focus trap
   const disableTrap = useCallback(() => {
-    console.log('Disabling focus trap')
     isTrapDisabled.current = true
     pendingFocusElementRef.current = null
   }, [])
@@ -196,7 +195,6 @@ export const useFocusTrap = (isActive, containerRef, triggerRef, messagesContain
         setTimeout(() => {
           // After tab completes, check if focus landed inside the container
           if (container.contains(document.activeElement)) {
-            console.log('Focus returned to chat, re-enabling trap')
             isTrapDisabled.current = false
           }
         }, 0)

@@ -18,7 +18,8 @@ export const ProductLayout = ({
   handleProductSelect = () => null,
   utils,
   onClose,
-  onMinimizeChat = () => null
+  onMinimizeChat = () => null,
+  clearFocusTrap = () => null
 }) => {
   const rootRef = useRef(null)
   const headShotImage = getProductHeroImage(product)
@@ -155,6 +156,7 @@ export const ProductLayout = ({
 
   const onContactClick = (e) => {
     closeChatIfNoSpace()
+    clearFocusTrap()
     const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
       if (isVip) {
@@ -171,6 +173,7 @@ export const ProductLayout = ({
 
   const onSalesOfficeContactClick = (e) => {
     closeChatIfNoSpace()
+    clearFocusTrap()
     const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
       utils.closeSalesPanel()
@@ -320,6 +323,7 @@ export const ProductLayout = ({
                   utils={utils}
                   onClick={(e) => {
                     closeChatIfNoSpace()
+                    clearFocusTrap()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {
                       utils.openSalesPanel()

@@ -4,10 +4,15 @@ import styles from './BotMessage.module.scss'
 
 export const BotMessage = ({ message, component }) => {
   return (
-    <div className={styles.container}>
+    // BotMessage.js
+    <article className={styles.container} aria-label='AI Conceirge message'>
       <div className={styles.response}>
         <div className={styles.icon}>
-          <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg' />
+          <img
+            src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/chatbot-icon.svg'
+            alt=''
+            aria-hidden='true'
+          />
         </div>
         {message && (
           <div className={styles.text}>
@@ -16,6 +21,6 @@ export const BotMessage = ({ message, component }) => {
         )}
         {component && <div className={styles.component}>{component}</div>}
       </div>
-    </div>
+    </article>
   )
 }

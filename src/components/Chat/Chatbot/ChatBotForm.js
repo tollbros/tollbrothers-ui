@@ -283,7 +283,7 @@ export const ChatBotForm = ({
 
   if (chatFormDialog) {
     return (
-      <div className={styles.submittingContainer}>
+      <div className={styles.submittingContainer} id='chat-form-dialog'>
         <p className={styles.text}>{chatFormDialog.message}</p>
         {chatFormDialog?.isSending && <ThinkingIndicator classes={{ root: styles.thinkingIndicatorOverride }} />}
         {chatFormDialog?.showConfirmation && (

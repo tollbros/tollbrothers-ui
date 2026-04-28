@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './ChatForm.module.scss'
 
 export const ChatForm = ({
@@ -7,8 +7,11 @@ export const ChatForm = ({
   onSubmit,
   cta = 'Start Chat',
   isShowPhoneInput = false,
+  isShowAgentFields = false,
   disabled = false
 }) => {
+  const [isAgent, setIsAgent] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target
     e.target.setCustomValidity('')
@@ -88,15 +91,79 @@ export const ChatForm = ({
         <span className={styles.radioLabel}>Are you a Real Estate Agent?</span>
         <div className={styles.radioGroup}>
           <label>
-            <input type='radio' id='chat-is-agent-yes' name='isAgent' value='1' disabled={disabled} />
+            <input
+              type='radio'
+              id='chat-is-agent-yes'
+              name='isAgent'
+              value='1'
+              disabled={disabled}
+              onChange={() => setIsAgent(true)}
+            />
             Yes
           </label>
           <label>
-            <input type='radio' id='chat-is-agent-no' name='isAgent' value='0' defaultChecked disabled={disabled} />
+            <input
+              type='radio'
+              id='chat-is-agent-no'
+              name='isAgent'
+              value='0'
+              defaultChecked
+              disabled={disabled}
+              onChange={() => setIsAgent(false)}
+            />
             No
           </label>
         </div>
       </div>
+
+      {isShowAgentFields && isAgent && (
+        <div className={styles.agentFields}>
+          <input
+            type='text'
+            id='chat-brokerage'
+            name='brokerage'
+            value={formData.brokerage}
+            onChange={handleChange}
+            placeholder='Broker Firm*'
+            aria-label='Broker Firm*'
+            disabled={disabled}
+            required
+          />
+          <input
+            type='text'
+            id='chat-brokerage-address'
+            name='brokerageAddress'
+            value={formData.brokerageAddress}
+            onChange={handleChange}
+            placeholder='Broker Address*'
+            aria-label='Broker Address*'
+            disabled={disabled}
+            required
+          />
+          <input
+            type='text'
+            id='chat-brokerage-state'
+            name='brokerageState'
+            value={formData.brokerageState}
+            onChange={handleChange}
+            placeholder='Broker State*'
+            aria-label='Broker State*'
+            disabled={disabled}
+            required
+          />
+          <input
+            type='text'
+            id='chat-brokerage-zip'
+            name='brokerageZip'
+            value={formData.brokerageZip}
+            onChange={handleChange}
+            placeholder='Broker Zip Code*'
+            aria-label='Broker Zip Code*'
+            disabled={disabled}
+            required
+          />
+        </div>
+      )}
 
       <p className={styles.privacyPolicy}>
         The information you provide will be used in accordance with our{' '}

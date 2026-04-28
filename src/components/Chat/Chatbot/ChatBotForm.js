@@ -81,6 +81,13 @@ export const ChatBotForm = ({
       formData.bypassLiveAgent = true
     }
 
+    if (form.brokerage?.value) {
+      formData.brokerage = form.brokerage.value?.trim()
+      formData.brokerageAddress = form.brokerageAddress?.value?.trim()
+      formData.brokerageState = form.brokerageState?.value?.trim()
+      formData.brokerageZip = form.brokerageZip?.value?.trim()
+    }
+
     console.log('Form submitted with data:', formData)
 
     // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
@@ -337,6 +344,7 @@ export const ChatBotForm = ({
           onSubmit={handleSubmit}
           cta={chatFormButtonText}
           isShowPhoneInput
+          isShowAgentFields
           disabled={(!chatRegion && !selectedRegion) || isThinking}
         />
       </div>

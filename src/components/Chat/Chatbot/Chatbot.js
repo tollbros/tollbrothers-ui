@@ -14,6 +14,7 @@ import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
 import { useHorizontalResize } from './hooks/useHorizontalResize'
+import { useFocusTrap } from './hooks/useFocusTrap'
 import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '../../../lib/utils'
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
@@ -121,14 +122,17 @@ export const Chatbot = ({
   chatApiKey
 }) => {
   const chatInterfaceRef = useRef(null)
+  const chatButtonRef = useRef(null)
+  const messageContainerRef = useRef(null)
+  const confirmationDialogRef = useRef(null)
   const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
+
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
-  const messageContainerRef = useRef(null)
   const isRestoringFromVisibilityChange = useRef(false)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
@@ -141,6 +145,14 @@ export const Chatbot = ({
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
+
+  const disableTrap = useFocusTrap(
+    isChatBotOpen,
+    chatInterfaceRef,
+    chatButtonRef,
+    messageContainerRef,
+    confirmationDialogRef
+  )
 
   const {
     accessToken,
@@ -208,7 +220,10 @@ export const Chatbot = ({
     setMessages([])
     setSessionId(null)
     setSessionTime(null)
-    setUserEvents([])
+    setUserEvents((prev) => {
+      const pageNavEvents = prev.filter((event) => event.fromPageNavigation)
+      return pageNavEvents.length > 0 ? [pageNavEvents[pageNavEvents.length - 1]] : []
+    })
     setShowConfirmationEndMessage(false)
     setShowConfirmationEndLiveMessage(false)
     setInputMessage('')
@@ -637,6 +652,16 @@ export const Chatbot = ({
     }
   }, [messages, isThinking, chatFormDialog, error])
 
+  // // Focus the dialog when it opens for screen reader announcement
+  useEffect(() => {
+    if (isChatBotOpen && chatInterfaceRef.current) {
+      // Small delay to ensure dialog is fully rendered
+      setTimeout(() => {
+        chatInterfaceRef.current.focus()
+      }, 100)
+    }
+  }, [isChatBotOpen])
+
   useEffect(() => {
     if (isChatBotOpenExternal) {
       setIsChatBotOpen(true)
@@ -725,8 +750,10 @@ export const Chatbot = ({
   }
 
   return (
-    <div className={`${styles.root}`}>
+    <aside className={`${styles.root}`} aria-label='chat'>
       <button
+        id='chabot-launch-button'
+        ref={chatButtonRef}
         className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
         onClick={onChatButtonClick}
         aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
@@ -747,6 +774,10 @@ export const Chatbot = ({
         className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}
         ref={chatInterfaceRef}
         style={{ width: `${width}px`, height: `${height}px` }}
+        role='dialog'
+        aria-modal='true'
+        aria-label={isLiveChat ? `Live Chat ${agentName ? `with ${agentName}` : ''}` : 'Toll Brothers AI Concierge'}
+        tabIndex={-1}
       >
         <div
           className={`${styles.resizeHandle} ${isResizing ? styles.resizing : ''}`}
@@ -793,12 +824,9 @@ export const Chatbot = ({
             </div>
           </div>
           <div>
-            <BotMessage
-              message='I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
-            you to one of our human experts for additional help.'
-            />
+            <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our human experts for additional help.' />
           </div>
-          <div className={styles.messages} ref={messageContainerRef}>
+          <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
@@ -837,6 +865,7 @@ export const Chatbot = ({
                         handleProductSelect={handleProductSelect}
                         onClose={() => handleProductRemoval(msg.id, msg.product)}
                         onMinimizeChat={onMinimizeChat}
+                        clearFocusTrap={disableTrap}
                       />
                     }
                   />
@@ -883,7 +912,7 @@ export const Chatbot = ({
             {isThinking && <BotMessage component={<ThinkingIndicator />} />}
             {error && <div className={styles.errorMessage}>{error}</div>}
             {/* {systemMessage && <p key='system'>{systemMessage}</p>} */}
-          </div>
+          </section>
         </div>
         <div className={styles.footer}>
           {!isLiveChat && (
@@ -921,6 +950,7 @@ export const Chatbot = ({
         </div>
         {showConfirmationEndMessage && (
           <ConfirmationEndDialog
+            ref={confirmationDialogRef}
             onStay={handleStay}
             onLeave={onCloseChat}
             isContactOption={!wasFormSubmitted}
@@ -939,14 +969,15 @@ export const Chatbot = ({
         )}
         {showConfirmationEndLiveMessage && (
           <ConfirmationEndDialog
+            ref={confirmationDialogRef}
             onStay={handleStay}
             onLeave={onCloseLiveChat}
             message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'
           />
         )}
-        {showMoreInfo && <MoreInformation onClose={() => setShowMoreInfo(false)} />}
+        {showMoreInfo && <MoreInformation ref={confirmationDialogRef} onClose={() => setShowMoreInfo(false)} />}
       </div>
       {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
-    </div>
+    </aside>
   )
 }

@@ -2,16 +2,13 @@ import React from 'react'
 
 import styles from './ChatMessageText.module.scss'
 
-const ChatMessageText = ({ message }) => {
+const ChatMessageText = ({ message, isAgentOrSystem }) => {
   return (
     <div
+      aria-label={isAgentOrSystem ? 'Local Expert Message' : 'Your message'}
       className={`${styles.messageWrapper}  ${
-        message?.role === 'Agent' || message?.role === 'System'
-          ? styles.agent
-          : styles.guest
-      } ${
-        message.payload.formatType === 'Typing' ? styles.typingIndicator : ''
-      }`}
+        message?.role === 'Agent' || message?.role === 'System' ? styles.agent : styles.guest
+      } ${message.payload.formatType === 'Typing' ? styles.typingIndicator : ''}`}
     >
       <>
         {message.image && (
@@ -21,8 +18,7 @@ const ChatMessageText = ({ message }) => {
             height={30}
             alt='Agent Thumbnail'
             onError={(e) => {
-              e.currentTarget.src =
-                'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
+              e.currentTarget.src = 'https://cdn.tollbrothers.com/images/osc/0053q00000B3pUhAAJ.jpg'
             }}
           />
         )}

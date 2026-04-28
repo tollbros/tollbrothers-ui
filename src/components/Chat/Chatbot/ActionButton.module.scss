@@ -19,6 +19,11 @@
     padding-left: 8px;
   }
 
+  &:focus-visible {
+    outline: 2px solid $medium_blue3;
+    outline-offset: 2px;
+  }
+
 }
 
 .text {

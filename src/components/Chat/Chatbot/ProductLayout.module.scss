@@ -51,6 +51,20 @@
   padding-bottom: 16px;
 }
 
+.topContactButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+
+  .button {
+    flex: 1 1 auto;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
 .summarySection {
   display: flex;
   flex-direction: column;

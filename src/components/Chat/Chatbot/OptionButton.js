@@ -2,8 +2,17 @@ import React from 'react'
 import styles from './OptionButton.module.scss'
 import { ConditionalLink } from './ConditionalLink'
 
-export const OptionButton = ({ text, onClick = () => null, size = '', isLink = false, href, target, utils }) => {
-  const style = `${styles.option} ${styles[size] ?? ''}`
+export const OptionButton = ({
+  text,
+  onClick = () => null,
+  size = '',
+  isLink = false,
+  href,
+  target,
+  classes = {},
+  utils
+}) => {
+  const style = `${styles.option} ${styles[size] ?? ''} ${classes.root ?? ''}`
 
   if (isLink) {
     return (

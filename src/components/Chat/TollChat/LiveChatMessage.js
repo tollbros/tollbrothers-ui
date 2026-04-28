@@ -29,7 +29,9 @@ export const LiveChatMessage = ({ message }) => {
           />
         </>
       )}
-      {(formatType === 'Text' || formatType === 'Typing') && <ChatMessageText message={message} />}
+      {(formatType === 'Text' || formatType === 'Typing') && (
+        <ChatMessageText message={message} isAgentOrSystem={isAgentOrSystem} />
+      )}
     </>
   )
 }

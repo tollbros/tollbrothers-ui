@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { Dialog } from './Dialog'
 
 import styles from './MoreInformation.module.scss'
 
-export const MoreInformation = ({ onClose }) => {
+export const MoreInformation = forwardRef(({ onClose }, ref) => {
   return (
-    <Dialog>
+    <Dialog ref={ref}>
       <p className={styles.message}>
         You are interacting with an AI‑powered virtual assistant that provides general information about Toll Brothers
         communities and homes. Responses may be inaccurate or incomplete. Please do not share personal or sensitive
@@ -16,4 +16,4 @@ export const MoreInformation = ({ onClose }) => {
       </button>
     </Dialog>
   )
-}
+})

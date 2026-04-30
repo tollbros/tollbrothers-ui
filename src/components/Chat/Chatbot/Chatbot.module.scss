@@ -30,15 +30,17 @@
     position: fixed;
     right: 10px;
     bottom: 56px;
-     z-index: 9999;
+    z-index: 9999;
 }
 
 .launchButton {
     width: 60px;
     height: 60px;
     border-radius: 100%;
-    opacity: 0;
-    animation: buttonFadeInGrow 0.36s $ease-out-cubic forwards;
+    opacity: 1;
+    transform: scale(1);
+    animation: buttonFadeInGrow 0.36s $ease-out-cubic;
+    transition: transform 0.5s ease, filter 0.5s ease;
 
     img, svg {
         width: 100%;
@@ -47,9 +49,18 @@
     }
 
     &:hover {
-        transform:scale(1.1);
+        transform: scale(1.1);
         filter: brightness(1.5);
-        transition: all 0.5s ease;
+    }
+
+    &.liveChat {
+        animation: none;
+        border: 2px solid white;
+
+        &:hover {
+            transform: none;
+            filter: none;
+        }
     }
 }
 
@@ -64,12 +75,13 @@
     width: 345px;
     height: 650px;
     background-color: #fff;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, .35);
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 
     @include breakpoint(sm) {
         width: 410px;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
     }
 
     p {

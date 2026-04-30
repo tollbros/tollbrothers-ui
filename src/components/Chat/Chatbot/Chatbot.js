@@ -90,6 +90,7 @@ export const Chatbot = ({
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
+  const [hasSeenAnimation, setHasSeenAnimation] = useState(false)
 
   const disableTrap = useFocusTrap(
     isChatBotOpen,
@@ -152,6 +153,13 @@ export const Chatbot = ({
 
   const onChatButtonClick = () => {
     setIsChatBotOpen(true)
+    // Mark that user has seen the animation (expires in 1 hour)
+    if (!hasSeenAnimation) {
+      setLocalStorage('tbChatAnimationSeen', {
+        expiry: Date.now() + 60 * 60 * 1000 // 1 hour from now
+      })
+      setHasSeenAnimation(true)
+    }
   }
 
   const onMinimizeChat = () => {
@@ -494,6 +502,11 @@ export const Chatbot = ({
   useEffect(() => {
     restoreUiChatSession()
 
+    // Check if user has seen the animation before (within the last hour)
+    const animationData = getLocalStorage('tbChatAnimationSeen')
+    const hasSeenAnimationBefore = animationData && animationData.value && !isExpired(animationData.value.expiry)
+    setHasSeenAnimation(hasSeenAnimationBefore)
+
     window.addEventListener('visibilitychange', restoreUiChatSession)
 
     return () => {
@@ -697,11 +710,13 @@ export const Chatbot = ({
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
       <div className={styles.launchContainer}>
-        <SpeechBubble />
+        <SpeechBubble isHidden={hasSeenAnimation} />
         <button
           id='chabot-launch-button'
           ref={chatButtonRef}
-          className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
+          className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''} ${
+            isLiveChat ? styles.liveChat : ''
+          }`}
           onClick={onChatButtonClick}
           aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
           aria-controls='chatbot-interface'

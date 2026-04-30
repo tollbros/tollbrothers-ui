@@ -51,61 +51,6 @@ const buildUserEventObject = (product) => {
   return eventObject
 }
 
-const TEST_DATA = [
-  {
-    id: 1,
-    type: 'user',
-    text: 'I am looking for a new home'
-  },
-  {
-    id: 2,
-    type: 'bot',
-    text: 'I am happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
-  },
-
-  {
-    id: 3,
-    type: 'user',
-    text: 'Wow that was fast! What a great AI assistant you are.'
-  },
-  {
-    id: 4,
-    type: 'bot',
-    text: 'Thank you!'
-  },
-  {
-    id: 5,
-    type: 'user',
-    text: 'You are quite welcome. I would like to know more about your home designs.'
-  },
-  {
-    id: 6,
-    type: 'user',
-    text: 'And another thing I want is a pool!'
-  },
-  {
-    id: 7,
-    type: 'bot',
-    text: 'Could you please tell me in what location you are interested in?'
-  },
-  {
-    id: 8,
-    type: 'prompt',
-    options: [
-      {
-        id: 'opt1',
-        text: 'North Carolina',
-        value: 'North Carolina'
-      },
-      {
-        id: 'opt2',
-        text: 'Charlotte, NC',
-        value: 'Charlotte, NC'
-      }
-    ]
-  }
-]
-
 export const Chatbot = ({
   tollRegionsEndpoint,
   tollRouteApi,
@@ -836,6 +781,7 @@ export const Chatbot = ({
                             fromProductsList: true
                           })
                         }
+                        onMinimizeChat={onMinimizeChat}
                         utils={utils}
                       />
                     }

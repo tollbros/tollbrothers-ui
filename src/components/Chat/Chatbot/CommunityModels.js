@@ -3,7 +3,14 @@ import styles from './CommunityModels.module.scss'
 import { OptionButton } from './OptionButton'
 import { ProductsList } from './ProductsList'
 
-export const CommunityModels = ({ communityQMIs, communityModels, handleProductSelect, utils, classes }) => {
+export const CommunityModels = ({
+  communityQMIs,
+  communityModels,
+  handleProductSelect,
+  onMinimizeChat,
+  utils,
+  classes
+}) => {
   const [showHomeTypes, setShowHomeTypes] = React.useState([])
 
   return (
@@ -21,6 +28,7 @@ export const CommunityModels = ({ communityQMIs, communityModels, handleProductS
               }
               utils={utils}
               hideModelLocation
+              onMinimizeChat={onMinimizeChat}
               classes={classes}
             />
           </div>

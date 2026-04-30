@@ -5,7 +5,7 @@ import { CommunityDetails } from './CommunityDetails'
 import { CommunityModels } from './CommunityModels'
 import { ConditionalLink } from './ConditionalLink'
 
-export const CollectionCard = ({ collection, handleProductSelect = () => null, utils = {} }) => {
+export const CollectionCard = ({ collection, handleProductSelect = () => null, onMinimizeChat, utils = {} }) => {
   let name = collection?.cleanName
   if (name && !name.toLowerCase().includes(' collection')) {
     name = `${name} Collection`
@@ -16,7 +16,7 @@ export const CollectionCard = ({ collection, handleProductSelect = () => null, u
   return (
     <div className={styles.root}>
       {collection.cleanName && (
-        <ConditionalLink href={collection.url} utils={utils}>
+        <ConditionalLink href={collection.url} utils={utils} onMinimizeChat={onMinimizeChat}>
           <h3 className={styles.name}>{name}</h3>
         </ConditionalLink>
       )}
@@ -29,6 +29,7 @@ export const CollectionCard = ({ collection, handleProductSelect = () => null, u
         communityQMIs={communityQMIs}
         communityModels={communityModels}
         handleProductSelect={handleProductSelect}
+        onMinimizeChat={onMinimizeChat}
         utils={utils}
         classes={{ controls: styles.scrollerControls }}
       />

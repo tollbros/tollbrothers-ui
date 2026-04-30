@@ -122,14 +122,14 @@ export const ProductLayout = ({
     return false
   }
 
-  const closeChatIfNoSpace = () => {
-    if (!rootRef.current) return
-    const layoutWidth = rootRef.current.offsetWidth
-    const availableSpace = window.innerWidth - 680
-    if (layoutWidth > availableSpace) {
-      onMinimizeChat()
-    }
-  }
+  // const closeChatIfNoSpace = () => {
+  //   if (!rootRef.current) return
+  //   const layoutWidth = rootRef.current.offsetWidth
+  //   const availableSpace = window.innerWidth - 680
+  //   if (layoutWidth > availableSpace) {
+  //     onMinimizeChat()
+  //   }
+  // }
 
   useEffect(() => {
     if (utils?.dataLayerPush && utils?.trackModelPageView && utils?.trackCommunityPageView) {
@@ -155,7 +155,7 @@ export const ProductLayout = ({
   }, [])
 
   const onContactClick = (e) => {
-    closeChatIfNoSpace()
+    onMinimizeChat()
     clearFocusTrap()
     const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
@@ -172,7 +172,7 @@ export const ProductLayout = ({
   }
 
   const onSalesOfficeContactClick = (e) => {
-    closeChatIfNoSpace()
+    onMinimizeChat()
     clearFocusTrap()
     const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
@@ -192,7 +192,7 @@ export const ProductLayout = ({
       <div className={styles.header}>
         {product?.name && (
           <div>
-            <ConditionalLink href={product.url} utils={utils}>
+            <ConditionalLink href={product.url} utils={utils} onMinimizeChat={onMinimizeChat}>
               <h2 className={styles.title}>{product.name}</h2>
             </ConditionalLink>
             <span className={styles.location}>
@@ -268,6 +268,7 @@ export const ProductLayout = ({
                 collection={community}
                 utils={utils}
                 handleProductSelect={handleProductSelect}
+                onMinimizeChat={onMinimizeChat}
               />
             ))}
           </div>
@@ -277,6 +278,7 @@ export const ProductLayout = ({
             communityQMIs={filteredCommunityQMIs}
             communityModels={communityModels}
             handleProductSelect={handleProductSelect}
+            onMinimizeChat={onMinimizeChat}
             utils={utils}
           />
         )}
@@ -322,7 +324,7 @@ export const ProductLayout = ({
                   isLink
                   utils={utils}
                   onClick={(e) => {
-                    closeChatIfNoSpace()
+                    onMinimizeChat()
                     clearFocusTrap()
                     const isCurrentPage = preventIfCurrentPage(product.url, e)
                     if (isCurrentPage && utils) {

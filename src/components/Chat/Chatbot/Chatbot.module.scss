@@ -1,5 +1,16 @@
 @import "styles/modules/all";
 
+@keyframes buttonFadeInGrow {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .buttonReset {
     background: transparent !important;
     padding: 0 !important;
@@ -15,20 +26,30 @@
     pointer-events: none;
 }
 
-.launchButton {
+.launchContainer {
     position: fixed;
     right: 10px;
     bottom: 56px;
-    width: 50px;
-    height: 50px;
-    border: 2px solid white !important;
-    border-radius: 100%;
-    z-index: 9999;
+     z-index: 9999;
+}
 
-    img {
+.launchButton {
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    opacity: 0;
+    animation: buttonFadeInGrow 0.36s $ease-out-cubic forwards;
+
+    img, svg {
         width: 100%;
         height: auto;
         border-radius: 100%;
+    }
+
+    &:hover {
+        transform:scale(1.1);
+        filter: brightness(1.5);
+        transition: all 0.5s ease;
     }
 }
 
@@ -42,7 +63,6 @@
     color: black;
     width: 345px;
     height: 650px;
-    //padding-bottom: 10px;
     background-color: #fff;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .1);
     border-top-left-radius: 8px;

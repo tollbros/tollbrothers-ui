@@ -20,7 +20,9 @@ import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
-import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+import { SpeechBubble } from './SpeechBubble'
+import ChatIcon from './ChatIcon'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -749,24 +751,30 @@ export const Chatbot = ({
 
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
-      <button
-        id='chabot-launch-button'
-        ref={chatButtonRef}
-        className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
-        onClick={onChatButtonClick}
-        aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
-        aria-controls='chatbot-interface'
-        aria-expanded={isChatBotOpen}
-      >
-        <img
-          src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_BUTTON_ICON}
-          onError={(e) => {
-            e.currentTarget.src = CHAT_FALLBACK_IMAGE
-          }}
-          alt='chat icon'
-        />
-      </button>
-
+      <div className={styles.launchContainer}>
+        <SpeechBubble />
+        <button
+          id='chabot-launch-button'
+          ref={chatButtonRef}
+          className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
+          onClick={onChatButtonClick}
+          aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
+          aria-controls='chatbot-interface'
+          aria-expanded={isChatBotOpen}
+        >
+          {isLiveChat ? (
+            <img
+              src={chatPhoto || CHAT_FALLBACK_IMAGE}
+              onError={(e) => {
+                e.currentTarget.src = CHAT_FALLBACK_IMAGE
+              }}
+              alt='chat icon'
+            />
+          ) : (
+            <ChatIcon />
+          )}
+        </button>
+      </div>
       <div
         id='chatbot-interface'
         className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}

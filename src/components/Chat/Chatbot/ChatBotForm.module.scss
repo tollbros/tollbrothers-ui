@@ -17,9 +17,12 @@
 }
 
 .submittingContainer {
-  min-width: 340px;
   padding: 8px 0 3px 0;
   text-align: center;
+
+  @include breakpoint(lg) {
+    min-width: 340px;
+  }
 
   button {
       display: block;

@@ -1,0 +1,37 @@
+@import "styles/modules/all";
+
+@keyframes sparkleAppear {
+  from {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+@keyframes bubbleAppear {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: bubbleAppear .4s $ease-out-cubic .2s forwards;
+}
+
+.sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: sparkleAppear .5s cubic-bezier(0.3, 0, 0.1, 1) .3s forwards;
+}

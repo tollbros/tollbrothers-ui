@@ -6,7 +6,7 @@ import { CommunityDetails } from './CommunityDetails'
 import { ConditionalLink } from './ConditionalLink'
 import { getProductHeroImage } from './utils/getProductHeroImage'
 
-export const CommunityCard = ({ community, onClick = () => null, utils = {} }) => {
+export const CommunityCard = ({ community, onMinimizeChat, onClick = () => null, utils = {} }) => {
   const headShotImage = getProductHeroImage(community)
   const desc = community.overview?.shortDescription || community.overview?.description
   const isActiveAdult = community?.communityTypes?.some((type) => type.toLowerCase() === 'active adult')
@@ -22,7 +22,7 @@ export const CommunityCard = ({ community, onClick = () => null, utils = {} }) =
       <div className={styles.communityContent}>
         <div className={styles.communityHeader}>
           {community.name && (
-            <ConditionalLink href={community.url} utils={utils}>
+            <ConditionalLink href={community.url} utils={utils} onMinimizeChat={onMinimizeChat}>
               <h3 className={styles.communityName}>{community.name}</h3>
             </ConditionalLink>
           )}

@@ -8,6 +8,7 @@ export const ProductsList = ({
   products,
   handleProductSelect = () => null,
   hideModelLocation,
+  onMinimizeChat,
   utils,
   classes = {}
 }) => {
@@ -36,11 +37,13 @@ export const ProductsList = ({
               onClick={handleProductSelect}
               utils={utils}
               hideLocation={hideModelLocation}
+              onMinimizeChat={onMinimizeChat}
             />
           ) : (
             <CommunityCard
               key={product.communityId || product.masterCommunityId || index}
               community={product}
+              onMinimizeChat={onMinimizeChat}
               onClick={handleProductSelect}
               utils={utils}
             />

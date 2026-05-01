@@ -20,8 +20,14 @@ import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
+<<<<<<< HEAD
 import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
 import { MoreInformation } from '../MoreInformation'
+=======
+import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+import { SpeechBubble } from './SpeechBubble'
+import ChatIcon from './ChatIcon'
+>>>>>>> master
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -49,61 +55,6 @@ const buildUserEventObject = (product) => {
 
   return eventObject
 }
-
-const TEST_DATA = [
-  {
-    id: 1,
-    type: 'user',
-    text: 'I am looking for a new home'
-  },
-  {
-    id: 2,
-    type: 'bot',
-    text: 'I am happy to help. In what location are you focusing your home search? Are you still interested in your previous search areas?'
-  },
-
-  {
-    id: 3,
-    type: 'user',
-    text: 'Wow that was fast! What a great AI assistant you are.'
-  },
-  {
-    id: 4,
-    type: 'bot',
-    text: 'Thank you!'
-  },
-  {
-    id: 5,
-    type: 'user',
-    text: 'You are quite welcome. I would like to know more about your home designs.'
-  },
-  {
-    id: 6,
-    type: 'user',
-    text: 'And another thing I want is a pool!'
-  },
-  {
-    id: 7,
-    type: 'bot',
-    text: 'Could you please tell me in what location you are interested in?'
-  },
-  {
-    id: 8,
-    type: 'prompt',
-    options: [
-      {
-        id: 'opt1',
-        text: 'North Carolina',
-        value: 'North Carolina'
-      },
-      {
-        id: 'opt2',
-        text: 'Charlotte, NC',
-        value: 'Charlotte, NC'
-      }
-    ]
-  }
-]
 
 export const Chatbot = ({
   tollRegionsEndpoint,
@@ -145,6 +96,7 @@ export const Chatbot = ({
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
+  const [hasSeenAnimation, setHasSeenAnimation] = useState(false)
 
   const disableTrap = useFocusTrap(
     isChatBotOpen,
@@ -207,6 +159,13 @@ export const Chatbot = ({
 
   const onChatButtonClick = () => {
     setIsChatBotOpen(true)
+    // Mark that user has seen the animation (expires in 1 hour)
+    if (!hasSeenAnimation) {
+      setLocalStorage('tbChatAnimationSeen', {
+        expiry: Date.now() + 60 * 60 * 1000 // 1 hour from now
+      })
+      setHasSeenAnimation(true)
+    }
   }
 
   const onMinimizeChat = () => {
@@ -549,6 +508,11 @@ export const Chatbot = ({
   useEffect(() => {
     restoreUiChatSession()
 
+    // Check if user has seen the animation before (within the last hour)
+    const animationData = getLocalStorage('tbChatAnimationSeen')
+    const hasSeenAnimationBefore = animationData && animationData.value && !isExpired(animationData.value.expiry)
+    setHasSeenAnimation(hasSeenAnimationBefore)
+
     window.addEventListener('visibilitychange', restoreUiChatSession)
 
     return () => {
@@ -751,24 +715,32 @@ export const Chatbot = ({
 
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
-      <button
-        id='chabot-launch-button'
-        ref={chatButtonRef}
-        className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''}`}
-        onClick={onChatButtonClick}
-        aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
-        aria-controls='chatbot-interface'
-        aria-expanded={isChatBotOpen}
-      >
-        <img
-          src={isLiveChat && chatPhoto ? chatPhoto : CHATBOT_BUTTON_ICON}
-          onError={(e) => {
-            e.currentTarget.src = CHAT_FALLBACK_IMAGE
-          }}
-          alt='chat icon'
-        />
-      </button>
-
+      <div className={styles.launchContainer}>
+        <SpeechBubble isHidden={hasSeenAnimation} />
+        <button
+          id='chabot-launch-button'
+          ref={chatButtonRef}
+          className={`${styles.launchButton} ${styles.buttonReset} ${isChatBotOpen ? styles.hidden : ''} ${
+            isLiveChat ? styles.liveChat : ''
+          }`}
+          onClick={onChatButtonClick}
+          aria-label={isLiveChat ? 'Open Live Chat' : 'Open Toll Brothers AI Concierge'}
+          aria-controls='chatbot-interface'
+          aria-expanded={isChatBotOpen}
+        >
+          {isLiveChat ? (
+            <img
+              src={chatPhoto || CHAT_FALLBACK_IMAGE}
+              onError={(e) => {
+                e.currentTarget.src = CHAT_FALLBACK_IMAGE
+              }}
+              alt='chat icon'
+            />
+          ) : (
+            <ChatIcon />
+          )}
+        </button>
+      </div>
       <div
         id='chatbot-interface'
         className={`${styles.interface} ${!isChatBotOpen ? styles.hidden : ''}`}
@@ -847,6 +819,7 @@ export const Chatbot = ({
                             fromProductsList: true
                           })
                         }
+                        onMinimizeChat={onMinimizeChat}
                         utils={utils}
                       />
                     }

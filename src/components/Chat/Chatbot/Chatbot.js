@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-import styles from './Chatbot.module.scss'
+
+import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
@@ -19,16 +21,12 @@ import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
-import { LiveChatMessage } from '../TollChat/LiveChatMessage'
-<<<<<<< HEAD
-import { CHATBOT_BUTTON_ICON, CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
-import { MoreInformation } from '../MoreInformation'
-=======
-import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
-import { SpeechBubble } from './SpeechBubble'
 import ChatIcon from './ChatIcon'
->>>>>>> master
+import { LiveChatMessage } from '../TollChat/LiveChatMessage'
+import { SpeechBubble } from './SpeechBubble'
+import { MoreInformation } from '../MoreInformation'
 
+import styles from './Chatbot.module.scss'
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
   let eventObject = {

@@ -19,29 +19,29 @@ export const ConfirmationEndDialog = forwardRef(
     return (
       <Dialog ref={ref}>
         <p className={styles.message}>{message}</p>
-      <div className={`${styles.buttonWrapper} ${isContactOption ? styles.contactOption : ''}`}>
-        {isContactOption && (
-          <button className={`${styles.white} ${styles.contactButton}`} onClick={onContact}>
-            <div className={styles.iconWrapper}>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/oscicon-white.svg' />
-            </div>
-            <span>Contact Me</span>
-          </button>
-        )}
-        <button className={`${styles.endChat} ${isContactOption ? styles.white : ''}`} onClick={onLeave}>
+        <div className={`${styles.buttonWrapper} ${isContactOption ? styles.contactOption : ''}`}>
           {isContactOption && (
-            <div className={styles.iconWrapper}>
-              <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close-white.svg' />
-            </div>
+            <button className={`${styles.white} ${styles.contactButton}`} onClick={onContact}>
+              <div className={styles.iconWrapper}>
+                <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/oscicon-white.svg' />
+              </div>
+              <span>Contact Me</span>
+            </button>
           )}
-          <span>{endButtonText}</span>
-        </button>
-        {isContactOption && <div className={styles.or}>or</div>}
-        <button className={`${styles.white}`} onClick={onStay}>
-          {stayButtonText}
-        </button>
-      </div>
-    </Dialog>
-  )
-}
+          <button className={`${styles.endChat} ${isContactOption ? styles.white : ''}`} onClick={onLeave}>
+            {isContactOption && (
+              <div className={styles.iconWrapper}>
+                <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/close-white.svg' />
+              </div>
+            )}
+            <span>{endButtonText}</span>
+          </button>
+          {isContactOption && <div className={styles.or}>or</div>}
+          <button className={`${styles.white}`} onClick={onStay}>
+            {stayButtonText}
+          </button>
+        </div>
+      </Dialog>
+    )
+  }
 )

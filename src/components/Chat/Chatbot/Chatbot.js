@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-import styles from './Chatbot.module.scss'
+
+import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
+
 import { BotMessage } from './BotMessage'
 import { UserMessage } from './UserMessage'
 import { ThinkingIndicator } from './ThinkingIndicator'
@@ -19,11 +21,12 @@ import { setLocalStorage, getLocalStorage, isExpired, clearLocalStorage } from '
 import { ConfirmationEndDialog } from '../ConfirmationEndDialog'
 import { useTollLiveChat } from '../hooks/useTollLiveChat'
 import ChatInput from '../TollChat/ChatInput'
-import { LiveChatMessage } from '../TollChat/LiveChatMessage'
-import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
-import { SpeechBubble } from './SpeechBubble'
 import ChatIcon from './ChatIcon'
+import { LiveChatMessage } from '../TollChat/LiveChatMessage'
+import { SpeechBubble } from './SpeechBubble'
+import { MoreInformation } from '../MoreInformation'
 
+import styles from './Chatbot.module.scss'
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
   let eventObject = {
@@ -90,6 +93,7 @@ export const Chatbot = ({
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
+  const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [hasSeenAnimation, setHasSeenAnimation] = useState(false)
 
   const disableTrap = useFocusTrap(
@@ -771,10 +775,27 @@ export const Chatbot = ({
           <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
         <div className={styles.body} ref={chatContainerRef}>
-          <p>
-            I am the Toll Brothers AI Concierge. I can assist with your home search using the prompts below or direct
-            you to one of our human experts for additional help.
-          </p>
+          <div className={styles.openingDisclaimer}>
+            <span>
+              You are interacting with an AI‑powered virtual assistant. Responses may be inaccurate or incomplete.{' '}
+            </span>
+            <div className={styles.disclaimerButtons}>
+              <button className={styles.buttonReset} onClick={() => setShowMoreInfo(true)}>
+                More Information
+              </button>
+              |{' '}
+              <a href='/privacy' target='_blank'>
+                Privacy Policy
+              </a>
+              |{' '}
+              <a href='/legal' target='_blank'>
+                Legal Statement
+              </a>
+            </div>
+          </div>
+          <div>
+            <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our local experts for additional help.' />
+          </div>
           <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {
@@ -925,6 +946,7 @@ export const Chatbot = ({
             message='Are you sure you want to return to AI Concierge and end the chat with our local expert?'
           />
         )}
+        {showMoreInfo && <MoreInformation ref={confirmationDialogRef} onClose={() => setShowMoreInfo(false)} />}
       </div>
       {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
     </aside>

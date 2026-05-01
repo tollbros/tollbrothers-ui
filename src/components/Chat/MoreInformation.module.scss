@@ -1,11 +1,19 @@
 @import 'styles/modules/all';
 
-.message {
-  //color: black;
-  font-size: 0.9em;
+.heading {
+  width: 90%;
+  font-family: $domaine_font_family;
+  font-size: 1.2em;
   font-weight: $font_weight_book;
-  //padding: 0 0 24px 0 !important;
-  //margin: 0 !important;
+  margin: 0 0 24px 0 !important;
+  padding-bottom: 10px;
+  border-bottom: 1px solid $medium_gray;
+  text-align: center;
+}
+
+.message {
+  font-size: 0.875em;
+  font-weight: $font_weight_book;
 }
 
 .closeButton {
@@ -17,7 +25,7 @@
   color: white;
   font-size: 0.8em;
   font-family: $special_font_family;
-  margin-top: 20px;
+  margin-top: 26px;
   padding: 10px 20px;
   border: none;
   text-align: center;

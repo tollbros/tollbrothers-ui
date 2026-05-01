@@ -794,7 +794,7 @@ export const Chatbot = ({
             </div>
           </div>
           <div>
-            <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our human experts for additional help.' />
+            <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our local experts for additional help.' />
           </div>
           <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {

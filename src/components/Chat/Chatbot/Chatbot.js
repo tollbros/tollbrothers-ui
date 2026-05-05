@@ -59,6 +59,8 @@ export const Chatbot = ({
   tollRouteApi,
   utils = {},
   chatRegion,
+  setChatStatus,
+  chatStatus,
   productCode,
   pageSummaryData,
   availabilityAPI,
@@ -77,6 +79,7 @@ export const Chatbot = ({
   const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
+  const [showChatSelection, setShowChatSelection] = useState(false)
 
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
@@ -120,6 +123,8 @@ export const Chatbot = ({
     apiSfOrgId,
     apiSfName,
     productCode,
+    setChatStatus,
+    chatRegion,
     utils
   })
 
@@ -518,6 +523,12 @@ export const Chatbot = ({
     }
   }, [])
 
+  useEffect(() => {
+    if (chatStatus === 'online' && isChatBotOpen && !sessionId) {
+      setShowChatSelection(true)
+    }
+  }, [chatStatus, isChatBotOpen, sessionId])
+
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
@@ -774,6 +785,7 @@ export const Chatbot = ({
           </div>
           <HeaderButtons className={styles.headerButtons} onClose={handleConfirmationEnd} onMinimize={onMinimizeChat} />
         </div>
+
         <div className={styles.body} ref={chatContainerRef}>
           <div className={styles.openingDisclaimer}>
             <span>
@@ -793,9 +805,43 @@ export const Chatbot = ({
               </a>
             </div>
           </div>
-          <div>
-            <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our local experts for additional help.' />
-          </div>
+          {showChatSelection && (
+            <div className={styles.chatSelection}>
+              <p className={styles.heading}>How would you like to connect today?</p>
+              <p className={styles.subtitle}>A Toll Brothers Online Sales Consultant is available now.</p>
+              <div className={styles.selectionOptions}>
+                <button className={styles.optionCard} onClick={handleShowChatForm}>
+                  <div className={`${styles.iconWrapper} ${styles.osc}`}>
+                    <img
+                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc-green.svg'
+                      alt='sales consultant icon'
+                    />
+                  </div>
+                  <div className={styles.optionContent}>
+                    <p className={styles.heading}>Chat with an Online Sales Consultant</p>
+                    <p className={styles.subtitle}>A Toll Brothers expert is online and ready to help</p>
+                  </div>
+                </button>
+                <div className={styles.divider}>
+                  <span>OR</span>
+                </div>
+                <button className={styles.optionCard} onClick={() => setShowChatSelection(false)}>
+                  <div className={styles.iconWrapper}>
+                    <img src={CHATBOT_ICON} alt='chatbot icon' />
+                  </div>
+                  <div className={styles.optionContent}>
+                    <p className={styles.heading}>Chat with AI Concierge</p>
+                    <p className={styles.subtitle}>Instant answers about communities, floor plans, and pricing</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+          {!showChatSelection && (
+            <div>
+              <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our local experts for additional help.' />
+            </div>
+          )}
           <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {
               if (msg.type === 'user') {

@@ -1,0 +1,74 @@
+@import "styles/modules/all";
+
+.root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    text-align: center;
+    max-width: 360px;
+
+    .heading {
+        font-size: .875em;
+        font-weight: $font_weight_bold;
+        color: $navy_blue;
+
+        &.top {
+            font-size: .9em;
+            color: black;
+        }
+    }
+
+    .subtitle {
+        font-family: $alt_font_family;
+        font-size: 0.8em;
+        line-height: 1.3 !important;
+    }
+}
+
+.selectionButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 16px;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid $medium_gray;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    width: 100%;
+
+    &:hover {
+       background: #f5f7f8;
+    }
+}
+
+.iconWrapper {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $light_gray;
+    border-radius: 50%;
+
+    &.osc {
+        background: #009D4721
+    }
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+}

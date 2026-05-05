@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react'
 import { Dialog } from './Dialog'
 
 import styles from './ConfirmationEndDialog.module.scss'
+import { Divider } from './Divider'
 
 export const ConfirmationEndDialog = forwardRef(
   (
@@ -36,7 +37,7 @@ export const ConfirmationEndDialog = forwardRef(
             )}
             <span>{endButtonText}</span>
           </button>
-          {isContactOption && <div className={styles.or}>or</div>}
+          {isContactOption && <Divider />}
           <button className={`${styles.white}`} onClick={onStay}>
             {stayButtonText}
           </button>

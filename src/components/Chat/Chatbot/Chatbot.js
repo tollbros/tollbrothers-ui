@@ -10,6 +10,7 @@ import { ThinkingIndicator } from './ThinkingIndicator'
 import { OptionsList } from './OptionsList'
 import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
+import { ChatSelection } from './ChatSelection'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
@@ -285,6 +286,7 @@ export const Chatbot = ({
   }
 
   const handleSendMessage = async (_event, systemMessage) => {
+    setShowChatSelection(false)
     if (!inputMessage.trim() && !systemMessage) return
     isRestoringFromVisibilityChange.current = false
 
@@ -526,6 +528,8 @@ export const Chatbot = ({
   useEffect(() => {
     if (chatStatus === 'online' && isChatBotOpen && !sessionId) {
       setShowChatSelection(true)
+    } else {
+      setShowChatSelection(false)
     }
   }, [chatStatus, isChatBotOpen, sessionId])
 
@@ -806,36 +810,11 @@ export const Chatbot = ({
             </div>
           </div>
           {showChatSelection && (
-            <div className={styles.chatSelection}>
-              <p className={styles.heading}>How would you like to connect today?</p>
-              <p className={styles.subtitle}>A Toll Brothers Online Sales Consultant is available now.</p>
-              <div className={styles.selectionOptions}>
-                <button className={styles.optionCard} onClick={handleShowChatForm}>
-                  <div className={`${styles.iconWrapper} ${styles.osc}`}>
-                    <img
-                      src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/osc-green.svg'
-                      alt='sales consultant icon'
-                    />
-                  </div>
-                  <div className={styles.optionContent}>
-                    <p className={styles.heading}>Chat with an Online Sales Consultant</p>
-                    <p className={styles.subtitle}>A Toll Brothers expert is online and ready to help</p>
-                  </div>
-                </button>
-                <div className={styles.divider}>
-                  <span>OR</span>
-                </div>
-                <button className={styles.optionCard} onClick={() => setShowChatSelection(false)}>
-                  <div className={styles.iconWrapper}>
-                    <img src={CHATBOT_ICON} alt='chatbot icon' />
-                  </div>
-                  <div className={styles.optionContent}>
-                    <p className={styles.heading}>Chat with AI Concierge</p>
-                    <p className={styles.subtitle}>Instant answers about communities, floor plans, and pricing</p>
-                  </div>
-                </button>
-              </div>
-            </div>
+            <ChatSelection
+              onSelectAI={() => setShowChatSelection(false)}
+              onSelectConsultant={handleShowChatForm}
+              chatbotIcon={CHATBOT_ICON}
+            />
           )}
           {!showChatSelection && (
             <div>

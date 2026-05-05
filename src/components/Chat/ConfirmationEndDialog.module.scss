@@ -80,25 +80,5 @@
     }
   }
 
-  .or {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $dark_gray;
-    width: 100%;
-    font-size: .9em;
-    line-height: 1;
-
-    &::before,
-    &::after {
-      content: '';
-      display: block;
-      width: 50%;
-      height: 1px;
-      flex: 1;
-      background-color: $dark_gray;
-      margin: 0 10px;
-    }
-  }  
 }
 

@@ -81,6 +81,7 @@ export const Chatbot = ({
   const [showChatbot, setShowChatbot] = useState(true)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
   const [showChatSelection, setShowChatSelection] = useState(false)
+  const [userPrefersLiveChatOnIntialInteraction, setUserPrefersLiveChatOnIntialInteraction] = useState(false)
 
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
@@ -194,6 +195,7 @@ export const Chatbot = ({
     setIsThinking(false)
     setChatFormDialog(null)
     setIsLiveChat(false)
+    setUserPrefersLiveChatOnIntialInteraction(false)
     window.localStorage.removeItem('tbChatBot')
     window.localStorage.removeItem('tbChat')
 
@@ -249,6 +251,7 @@ export const Chatbot = ({
 
   const onCloseChatForm = () => {
     setChatFormDialog(null)
+    setUserPrefersLiveChatOnIntialInteraction(false)
     setMessages((prev) => prev.filter((m) => m.type !== 'form'))
   }
 
@@ -525,14 +528,6 @@ export const Chatbot = ({
     }
   }, [])
 
-  useEffect(() => {
-    if (chatStatus === 'online' && isChatBotOpen && !sessionId) {
-      setShowChatSelection(true)
-    } else {
-      setShowChatSelection(false)
-    }
-  }, [chatStatus, isChatBotOpen, sessionId])
-
   // Store chatbot state in localStorage
   useEffect(() => {
     if (sessionId && sessionTime) {
@@ -557,60 +552,6 @@ export const Chatbot = ({
       })
     }
   }, [messages, sessionId, sessionTime, userEvents, wasFormSubmitted])
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const routes = [
-  //       '/luxury-homes-for-sale/California/Metro-Heights', // mix of future and non-future collections
-  //       '/luxury-homes-for-sale/California/Metro-Heights/Ironridge', // future
-  //       '/luxury-homes-for-sale/Florida/Alora', // Vip only
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River', // hide tour
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Pearl-River/Maycomb',
-  //       '/luxury-homes-for-sale/New-Jersey/400-Lake-at-Asbury-Park', // schedule a tour
-  //       '/luxury-homes-for-sale/New-York/Regency-at-Kensico-Ridge', // DCA disclaimer "contact us" only cta
-  //       '/luxury-homes-for-sale/Florida/Shores-at-RiverTown/Riverview-Collection/Quick-Move-In/MLS-2024039', // model with self guided tour
-  //       '/luxury-homes-for-sale/Florida/Seabrook-Village' // community with self guided tour
-  //     ]
-
-  //     Promise.allSettled(
-  //       routes.map((route) =>
-  //         fetch(`${tollRouteApi}${route}`)
-  //           .then((response) => {
-  //             // console.log('Fetch response for', route, ':', response)
-  //             if (!response.ok) {
-  //               throw new Error(`HTTP error! status: ${response.status}`)
-  //             }
-  //             return response.json()
-  //           })
-  //           .then((data) => data.communityComponent ?? data.masterCommunityComponent ?? data.modelComponent)
-  //       )
-  //     )
-  //       .then((results) => {
-  //         setIsThinking(false)
-  //         const communities = results
-  //           .filter((result) => result.status === 'fulfilled' && result.value)
-  //           .map((result) => result.value)
-
-  //         // console.log('Fetched communities:', communities)
-
-  //         if (communities.length > 0) {
-  //           const newBotMessage = {
-  //             id: Date.now(),
-  //             text: 'Here are some communities that you might like:',
-  //             type: 'products',
-  //             products: communities
-  //           }
-
-  //           setMessages([...messages, newBotMessage])
-  //         } else {
-  //           console.error('No communities were successfully fetched')
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error fetching routes:', error)
-  //       })
-  //   }, 2000)
-  // }, [])
 
   useEffect(() => {
     if (isRestoringFromVisibilityChange.current) {
@@ -722,6 +663,14 @@ export const Chatbot = ({
 
   // Live Chat Integration End
 
+  useEffect(() => {
+    if (chatStatus === 'online' && isChatBotOpen && messages.length < 1) {
+      setShowChatSelection(true)
+    } else {
+      setShowChatSelection(false)
+    }
+  }, [chatStatus, isChatBotOpen, messages])
+
   if (!showChatbot) {
     return null
   }
@@ -809,17 +758,20 @@ export const Chatbot = ({
               </a>
             </div>
           </div>
-          {showChatSelection && (
-            <ChatSelection
-              onSelectAI={() => setShowChatSelection(false)}
-              onSelectConsultant={handleShowChatForm}
-              chatbotIcon={CHATBOT_ICON}
-            />
-          )}
-          {!showChatSelection && (
+          {!showChatSelection && !userPrefersLiveChatOnIntialInteraction && !isLiveChat && (
             <div>
               <BotMessage message='I am the Toll Brothers AI Concierge. I can assist with your home search or direct you to one of our local experts for additional help.' />
             </div>
+          )}
+          {showChatSelection && !userPrefersLiveChatOnIntialInteraction && !isLiveChat && (
+            <ChatSelection
+              chatPhoto={chatPhoto}
+              onSelectAI={() => setShowChatSelection(false)}
+              onSelectConsultant={() => {
+                handleShowChatForm()
+                setUserPrefersLiveChatOnIntialInteraction(true)
+              }}
+            />
           )}
           <section className={styles.messages} ref={messageContainerRef} role='log' aria-label='Chat messages'>
             {messages.map((msg, index) => {

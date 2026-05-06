@@ -9,9 +9,11 @@
     max-width: 360px;
 
     .heading {
-        font-size: .875em;
+        font-size: .8em;
         font-weight: $font_weight_bold;
         color: $navy_blue;
+        line-height: 1.2 !important;
+        margin-bottom: 4px !important;
 
         &.top {
             font-size: .9em;
@@ -21,7 +23,7 @@
 
     .subtitle {
         font-family: $alt_font_family;
-        font-size: 0.8em;
+        font-size: 0.75em;
         line-height: 1.3 !important;
     }
 }
@@ -32,14 +34,14 @@
     gap: 14px;
     width: 100%;
     margin-top: 20px;
-    padding: 0 16px;
+    padding: 0;
 }
 
 .button {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px;
+    padding: 16px 12px;
     background: #fff;
     border: 1px solid $medium_gray;
     border-radius: 10px;
@@ -55,13 +57,14 @@
 
 .iconWrapper {
     flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $light_gray;
     border-radius: 50%;
+    overflow: hidden;
 
     &.osc {
         background: #009D4721
@@ -70,5 +73,11 @@
     img {
         width: 20px;
         height: 20px;
+
+        &.chatPhoto {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     }
 }

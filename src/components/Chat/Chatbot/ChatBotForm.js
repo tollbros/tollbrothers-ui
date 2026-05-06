@@ -277,7 +277,7 @@ export const ChatBotForm = ({
     }
     chatFormMessage += '. Share your contact information below and we will get back to you.'
   } else {
-    chatFormMessage = 'Good news! A local expert is available'
+    chatFormMessage = 'A local expert is available'
 
     if (chatRegion) {
       chatFormMessage += ' for this area of interest'

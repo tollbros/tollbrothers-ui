@@ -37,6 +37,11 @@
   margin: 0;
   word-break: break-word;
 
+  h1,h2,h3,h4,h5,h6 {
+    font-size: 1.3em;
+    line-height: 1em;
+  }
+
   p:not(:first-child) {
     margin: 16px 0 8px 0!important;
   }

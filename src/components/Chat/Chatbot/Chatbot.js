@@ -25,6 +25,7 @@ import ChatIcon from './ChatIcon'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 import { SpeechBubble } from './SpeechBubble'
 import { MoreInformation } from '../MoreInformation'
+import { ConversationFeedback } from './ConversationFeedback'
 
 import styles from './Chatbot.module.scss'
 // Build a user event object from product data
@@ -885,6 +886,7 @@ export const Chatbot = ({
             {/* {systemMessage && <p key='system'>{systemMessage}</p>} */}
           </section>
         </div>
+        <ConversationFeedback />
         <div className={styles.footer}>
           {!isLiveChat && (
             <UserInputField

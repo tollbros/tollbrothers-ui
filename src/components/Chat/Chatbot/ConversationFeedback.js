@@ -10,7 +10,6 @@ export const ConversationFeedback = forwardRef(({ onSubmit, onClose, className =
   const [comments, setComments] = useState('')
 
   const handleSubmit = (e) => {
-    // console.log(rating, 'hell')
     e.preventDefault()
     if (onSubmit) onSubmit({ rating, comments })
   }

@@ -870,7 +870,8 @@ export const Chatbot = ({
               onKeyDown={handleKeyDown}
               onSend={handleSendMessage}
               placeholder='Ask AI Concierge your question here.'
-              disabled={chatFormDialog || isThinking}
+              disabled={chatFormDialog}
+              readOnly={isThinking}
             />
           )}
           {conversationId && accessToken && isLiveChat && (

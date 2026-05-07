@@ -12,7 +12,6 @@ import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { ChatSelection } from './ChatSelection'
 import { sendMessage } from './utils/sendMessage'
-import { submitConversationFeedback } from './utils/submitConversationFeedback'
 import { getProductData } from './utils/getProductData'
 import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
@@ -97,6 +96,7 @@ export const Chatbot = ({
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
   const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
   const [showConversationFeedback, setShowConversationFeedback] = useState(false)
+  const [feedbackSessionId, setFeedbackSessionId] = useState(null)
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
@@ -220,27 +220,17 @@ export const Chatbot = ({
   const handleEndChatWithFeedback = () => {
     const hasUserAskedQuestion = messages.some((msg) => msg.type === 'user')
 
-    onCloseChat()
-
     if (hasUserAskedQuestion) {
+      setFeedbackSessionId(sessionId)
       setShowConversationFeedback(true)
     }
+
+    onCloseChat()
   }
 
-  const handleConversationFeedbackSubmit = async ({ rating, comments }) => {
-    const payload = {
-      session_id: sessionId,
-      session_rating: rating,
-      ...(comments && { feedback: comments })
-    }
-
-    try {
-      await submitConversationFeedback(payload, chatApiConfig)
-    } catch (error) {
-      console.error('Feedback submission failed:', error)
-    } finally {
-      setShowConversationFeedback(false)
-    }
+  const onCloseFeedback = () => {
+    setShowConversationFeedback(false)
+    setFeedbackSessionId(null)
   }
 
   const handleConfirmationEnd = () => {
@@ -960,11 +950,12 @@ export const Chatbot = ({
         {showMoreInfo && <MoreInformation ref={confirmationDialogRef} onClose={() => setShowMoreInfo(false)} />}
       </div>
       {showConversationFeedback && (
-        <div className={styles.conversationFeedbackOverlay} onClick={() => setShowConversationFeedback(false)}>
+        <div className={styles.conversationFeedbackOverlay} onClick={onCloseFeedback}>
           <ConversationFeedback
-            className={styles.conversationFeedback}
-            onSubmit={handleConversationFeedbackSubmit}
-            onClose={() => setShowConversationFeedback(false)}
+            classes={{ root: styles.conversationFeedback }}
+            onClose={onCloseFeedback}
+            chatApiConfig={chatApiConfig}
+            sessionId={feedbackSessionId}
           />
         </div>
       )}

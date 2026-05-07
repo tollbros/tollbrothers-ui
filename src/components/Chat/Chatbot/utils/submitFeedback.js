@@ -1,4 +1,4 @@
-export const submitConversationFeedback = async (payload, { baseUrl, apiKey }) => {
+export const submitFeedback = async (payload, { baseUrl, apiKey }) => {
   const headers = {
     'Content-Type': 'application/json'
   }

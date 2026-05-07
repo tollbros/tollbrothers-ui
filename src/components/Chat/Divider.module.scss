@@ -1,0 +1,25 @@
+@import "styles/modules/all";
+
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 4px 0;
+    width: 100%;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: $medium_gray;
+    }
+
+    span {
+        padding: 0 16px;
+        font-weight: $font_weight_book;
+        font-size: 9px;
+        color: $dark_gray;
+    }
+}

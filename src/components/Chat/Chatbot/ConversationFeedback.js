@@ -3,8 +3,9 @@ import React, { forwardRef, useState } from 'react'
 import styles from './ConversationFeedback.module.scss'
 import { StarRating } from './StarRating'
 import { OptionButton } from './OptionButton'
+import { CloseButton } from './CloseButton'
 
-export const ConversationFeedback = forwardRef(({ onSubmit, className = '' }, ref) => {
+export const ConversationFeedback = forwardRef(({ onSubmit, onClose, className = '' }, ref) => {
   const [rating, setRating] = useState(0)
   const [comments, setComments] = useState('')
 
@@ -15,7 +16,8 @@ export const ConversationFeedback = forwardRef(({ onSubmit, className = '' }, re
   }
 
   return (
-    <div className={`${styles.root} ${className}`} ref={ref}>
+    <div className={`${styles.root} ${className}`} ref={ref} onClick={(e) => e.stopPropagation()}>
+      {onClose && <CloseButton className={styles.closeButton} onClick={onClose} ariaLabel='Close feedback' />}
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.header}>
           <h2>How was your AI Concierge experience?</h2>

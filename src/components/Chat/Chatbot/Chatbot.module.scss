@@ -91,6 +91,18 @@
 
 }
 
+.conversationFeedbackOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+}
+
+.conversationFeedback {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+}
+
 .resizeHandle {
     position: absolute;
     top: 1px;

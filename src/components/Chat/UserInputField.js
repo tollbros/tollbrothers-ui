@@ -8,7 +8,8 @@ export const UserInputField = ({
   onSend,
   placeholder = 'Type Here',
   id = 'chat-user-input',
-  disabled = false
+  disabled = false,
+  readOnly = false
 }) => {
   return (
     <div className={styles.inputContainer}>
@@ -25,6 +26,7 @@ export const UserInputField = ({
         rows={1}
         cols={50}
         disabled={disabled}
+        readOnly={readOnly}
         tabIndex={1}
       />
 

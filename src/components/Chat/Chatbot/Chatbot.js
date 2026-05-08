@@ -218,9 +218,9 @@ export const Chatbot = ({
   }
 
   const handleEndChatWithFeedback = () => {
-    const hasUserAskedQuestion = messages.some((msg) => msg.type === 'user')
+    const hasUserEngagedChatbot = Boolean(sessionId)
 
-    if (hasUserAskedQuestion) {
+    if (hasUserEngagedChatbot) {
       setFeedbackSessionId(sessionId)
       setShowConversationFeedback(true)
     }

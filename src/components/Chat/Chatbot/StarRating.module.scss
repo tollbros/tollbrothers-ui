@@ -1,0 +1,36 @@
+@import "styles/modules/all";
+
+.rating {
+  max-width: 275px;
+  padding: 0;
+  margin: 0 auto 28px;
+  border: 0;
+}
+
+.stars {
+  display: flex;
+  width: 98%;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ratingLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  color: $dark_gray;
+  font-family: $alt_font_family;
+  font-size: 0.65em;
+}

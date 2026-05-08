@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 
 import { CHATBOT_ICON, CHAT_FALLBACK_IMAGE, OSC_ICON } from './constants'
 
@@ -26,6 +26,7 @@ import ChatIcon from './ChatIcon'
 import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 import { SpeechBubble } from './SpeechBubble'
 import { MoreInformation } from '../MoreInformation'
+import { ConversationFeedback } from './ConversationFeedback'
 
 import styles from './Chatbot.module.scss'
 // Build a user event object from product data
@@ -94,12 +95,24 @@ export const Chatbot = ({
   const [userEvents, setUserEvents] = useState([])
   const [showConfirmationEndMessage, setShowConfirmationEndMessage] = useState(false)
   const [showConfirmationEndLiveMessage, setShowConfirmationEndLiveMessage] = useState(false)
+  const [showConversationFeedback, setShowConversationFeedback] = useState(false)
+  const [feedbackSessionId, setFeedbackSessionId] = useState(null)
   const [chatFormDialog, setChatFormDialog] = useState(null)
   const [isLiveChat, setIsLiveChat] = useState(false)
   const [wasFormSubmitted, setWasFormSubmitted] = useState(false)
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [hasSeenAnimation, setHasSeenAnimation] = useState(false)
+  const chatApiConfig = useMemo(() => {
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const endpointId = urlParams?.get('endpointId') ?? chatEndpointId
+    const apiKey = urlParams?.get('apiKey') ?? chatApiKey
+
+    return {
+      baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
+      apiKey
+    }
+  }, [chatApiKey, chatEndpointId])
 
   const disableTrap = useFocusTrap(
     isChatBotOpen,
@@ -164,6 +177,7 @@ export const Chatbot = ({
 
   const onChatButtonClick = () => {
     setIsChatBotOpen(true)
+    setShowConversationFeedback(false)
     // Mark that user has seen the animation (expires in 1 hour)
     if (!hasSeenAnimation) {
       setLocalStorage('tbChatAnimationSeen', {
@@ -201,6 +215,22 @@ export const Chatbot = ({
 
     // closese out the live chat session if it's active
     handleEndChat(accessToken, conversationId)
+  }
+
+  const handleEndChatWithFeedback = () => {
+    const hasUserEngagedChatbot = Boolean(sessionId)
+
+    if (hasUserEngagedChatbot) {
+      setFeedbackSessionId(sessionId)
+      setShowConversationFeedback(true)
+    }
+
+    onCloseChat()
+  }
+
+  const onCloseFeedback = () => {
+    setShowConversationFeedback(false)
+    setFeedbackSessionId(null)
   }
 
   const handleConfirmationEnd = () => {
@@ -293,12 +323,6 @@ export const Chatbot = ({
     if (!inputMessage.trim() && !systemMessage) return
     isRestoringFromVisibilityChange.current = false
 
-    // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
-    // const urlParams = location.search;
-    const urlParams = new URLSearchParams(window.location.search)
-    const endpointId = urlParams.get('endpointId') ?? chatEndpointId
-    const apiKey = urlParams.get('apiKey') ?? chatApiKey
-
     // console.log(systemMessage)
 
     // track user sent a new prompt
@@ -332,8 +356,7 @@ export const Chatbot = ({
     let hasProducts = false
 
     sendMessage(promp, {
-      baseUrl: `https://${endpointId}.execute-api.us-east-1.amazonaws.com/prod`,
-      apiKey: apiKey,
+      ...chatApiConfig,
       onChunk: (response) => {
         console.log('chunk:', response)
         setSessionId(response.session_id)
@@ -901,7 +924,7 @@ export const Chatbot = ({
           <ConfirmationEndDialog
             ref={confirmationDialogRef}
             onStay={handleStay}
-            onLeave={onCloseChat}
+            onLeave={handleEndChatWithFeedback}
             isContactOption={!wasFormSubmitted}
             onContact={() => {
               setShowConfirmationEndMessage(false)
@@ -926,6 +949,16 @@ export const Chatbot = ({
         )}
         {showMoreInfo && <MoreInformation ref={confirmationDialogRef} onClose={() => setShowMoreInfo(false)} />}
       </div>
+      {showConversationFeedback && (
+        <div className={styles.conversationFeedbackOverlay} onClick={onCloseFeedback}>
+          <ConversationFeedback
+            classes={{ root: styles.conversationFeedback }}
+            onClose={onCloseFeedback}
+            chatApiConfig={chatApiConfig}
+            sessionId={feedbackSessionId}
+          />
+        </div>
+      )}
       {formSuccessCallback && <iframe className={styles.callbackIframe} src={formSuccessCallback} />}
     </aside>
   )

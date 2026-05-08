@@ -44,11 +44,17 @@
   }
 }
 
+.thankYou {
+  .description {
+    text-align: left;
+  }
+}
+
 .inner {
   padding: 28px 18px 22px;
 }
 
-.prompt {
+.description {
   margin: 0 0 12px !important;
   font-size: 0.8em;
   line-height: 1.4 !important;

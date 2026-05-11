@@ -37,7 +37,14 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
         if (!trimmed) continue
         try {
           const parsed = JSON.parse(trimmed)
-          if (onChunk && parsed.response) onChunk({ ...parsed.response, session_id: parsed.session_id })
+
+          if (onChunk && parsed.response) {
+            onChunk({
+              ...parsed.response,
+              session_id: parsed.session_id,
+              conversation_turn_id: parsed.conversation_turn_id
+            })
+          }
         } catch {
           // skip non-JSON lines
         }
@@ -47,7 +54,14 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
     if (buffer.trim()) {
       try {
         const parsed = JSON.parse(buffer.trim())
-        if (onChunk && parsed.response) onChunk(parsed.response)
+
+        if (onChunk && parsed.response) {
+          onChunk({
+            ...parsed.response,
+            session_id: parsed.session_id,
+            conversation_turn_id: parsed.conversation_turn_id
+          })
+        }
       } catch {
         // skip non-JSON lines
       }

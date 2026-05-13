@@ -382,7 +382,6 @@ export const Chatbot = ({
     sendMessage(promp, {
       ...chatApiConfig,
       onChunk: (response) => {
-        console.log('chunk:', response)
         setSessionId(response.session_id)
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
@@ -413,7 +412,6 @@ export const Chatbot = ({
             .then((productData) => {
               setIsThinking(false)
               // console.log('producst were fetched')
-              console.log('getProductData products:', productData)
               if (productData?.length > 0) {
                 const botResponse = {
                   id: messageId,
@@ -465,7 +463,6 @@ export const Chatbot = ({
         isTurnComplete = true
         if (!isProductResponsePending) showLatestFeedback()
         if (!hasProducts) setIsThinking(false)
-        console.log('stream done')
       },
       onError: (err) => {
         setIsThinking(false)

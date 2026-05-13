@@ -11,6 +11,17 @@
   }
 }
 
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
 .buttonReset {
     background: transparent !important;
     padding: 0 !important;
@@ -194,11 +205,16 @@
     gap: 20px;
 }
 
+.messageWithFeedback {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .messageFeedbackWrapper {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: -12px;
 }
 
 .messageFeedback {
@@ -235,6 +251,11 @@
 
 .messageFeedbackComment {
     max-width: 328px;
+
+    &.fadeOut {
+        pointer-events: none;
+        animation: fadeOut 180ms ease forwards;
+    }
 }
 
 .footer {

@@ -3,6 +3,8 @@
 .container {
   display: flex;
   align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
   padding-left: 0;
   //padding-right: 24px;
   width: 100%;
@@ -65,4 +67,8 @@
 
 .component {
   text-align: right;
+}
+
+.outsideComponent {
+  width: 100%;
 }

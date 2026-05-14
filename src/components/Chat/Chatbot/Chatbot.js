@@ -13,7 +13,6 @@ import { ProductLayout } from './ProductLayout'
 import { ChatSelection } from './ChatSelection'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
-import { submitFeedback } from './utils/submitFeedback'
 import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
@@ -28,12 +27,9 @@ import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 import { SpeechBubble } from './SpeechBubble'
 import { MoreInformation } from '../MoreInformation'
 import { ConversationFeedback } from './ConversationFeedback'
-import { FeedbackCommentForm } from './FeedbackCommentForm'
 
 import styles from './Chatbot.module.scss'
-
-const THUMBS_ICON = 'https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/thumbs-down-gray.svg'
-const THUMBS_ICON_SELECTED = 'https://cdn.tollbrothers.com/sites/comtollbrotherswww/icons/thumbs-down-white.svg'
+import { MessageFeedback } from './MessageFeedBack'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
@@ -95,6 +91,7 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const isRestoringFromVisibilityChange = useRef(false)
+  const isFeedbackChange = useRef(false)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
@@ -109,12 +106,6 @@ export const Chatbot = ({
   const [formSuccessCallback, setFormSuccessCallback] = useState(null)
   const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [hasSeenAnimation, setHasSeenAnimation] = useState(false)
-  const [messageFeedback, setMessageFeedback] = useState({})
-  const [messageFeedbackComments, setMessageFeedbackComments] = useState({})
-  const [messageFeedbackSubmitting, setMessageFeedbackSubmitting] = useState({})
-  const [messageFeedbackCommentFading, setMessageFeedbackCommentFading] = useState({})
-  const [messageFeedbackCommentHidden, setMessageFeedbackCommentHidden] = useState({})
-  const [feedbackScrollTargetId, setFeedbackScrollTargetId] = useState(null)
   const chatApiConfig = useMemo(() => {
     const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
     const endpointId = urlParams?.get('endpointId') ?? chatEndpointId
@@ -256,6 +247,7 @@ export const Chatbot = ({
 
   const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
     const newBotMessage = {
       id: Date.now(),
       text: text,
@@ -330,10 +322,26 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
+  const handleMessageFeedbackChange = (message, feedback) => {
+    isFeedbackChange.current = true
+    const id = message.conversation_turn_id
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.conversation_turn_id === id
+          ? {
+              ...msg,
+              feedback
+            }
+          : msg
+      )
+    )
+  }
+
   const handleSendMessage = async (_event, systemMessage) => {
     setShowChatSelection(false)
     if (!inputMessage.trim() && !systemMessage) return
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
 
     // console.log(systemMessage)
 
@@ -366,46 +374,20 @@ export const Chatbot = ({
     }
 
     let hasProducts = false
-    let isTurnComplete = false
-    let isProductResponsePending = false
-    let latestFeedbackMessageId = null
-    let responseIndex = 0
-
-    const showLatestFeedback = () => {
-      if (!latestFeedbackMessageId) return
-
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === latestFeedbackMessageId ? { ...msg, isFeedbackEligible: true } : msg))
-      )
-    }
 
     sendMessage(promp, {
       ...chatApiConfig,
       onChunk: (response) => {
+        console.log('chunk:', response)
         setSessionId(response.session_id)
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
-        const messageText = response.message?.trim() || ''
-        const conversationTurnId =
-          response.conversation_turn_id || response.conversationTurnId || response.turn_id || response.id
-        const isFeedbackEligible = isTurnComplete && Boolean(messageText) && !response.transfer_to_osc
-        const messageId = `${conversationTurnId || Date.now()}-${responseIndex}`
-        responseIndex += 1
-        const appendResponseMessage = (botResponse) => {
-          const nextResponse = {
-            ...botResponse,
-            isFeedbackEligible: botResponse.isFeedbackEligible || (isTurnComplete && Boolean(botResponse.text))
-          }
-
-          latestFeedbackMessageId = nextResponse.id
-          setMessages((prev) => [...prev, nextResponse])
-        }
+        const conversationTurnId = response.conversation_turn_id
 
         if (response.transfer_to_osc) {
           handleShowChatForm({ text: response.message })
         } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
-          isProductResponsePending = true
           setIsThinking(true)
           // console.log('fetch products')
           getProductData(products, tollRouteApi)
@@ -414,60 +396,71 @@ export const Chatbot = ({
               // console.log('producst were fetched')
               if (productData?.length > 0) {
                 const botResponse = {
-                  id: messageId,
+                  id: Date.now() + 2,
                   text: response.message,
                   type: 'products',
                   products: productData,
-                  isFeedbackEligible,
-                  conversation_turn_id: conversationTurnId
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
                 }
-                appendResponseMessage(botResponse)
-                isProductResponsePending = false
+
+                setMessages((prev) => [...prev, botResponse])
               } else {
                 // TODO: might want to modify this message if no products found
                 const botResponse = {
-                  id: messageId,
+                  id: Date.now() + 1,
                   text: response.message,
                   type: 'bot',
-                  isFeedbackEligible,
-                  conversation_turn_id: conversationTurnId
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
                 }
-
-                appendResponseMessage(botResponse)
-                isProductResponsePending = false
+                setMessages((prev) => [...prev, botResponse])
               }
             })
             .catch((err) => {
               console.error('getProductData error:', err)
-              isProductResponsePending = false
-              showLatestFeedback()
               setIsThinking(false)
             })
         } else if (response.error) {
-          showLatestFeedback()
           setError('An error occurred while sending the message. Please try again.')
           setIsThinking(false)
         } else {
           const botResponse = {
-            id: messageId,
+            id: Date.now() + 3,
             text: response.message,
             type: 'bot',
-            isFeedbackEligible,
+            session_id: response.session_id,
             conversation_turn_id: conversationTurnId
           }
 
-          appendResponseMessage(botResponse)
+          setMessages((prev) => [...prev, botResponse])
         }
       },
       onDone: () => {
-        isTurnComplete = true
-        if (!isProductResponsePending) showLatestFeedback()
-        if (!hasProducts) setIsThinking(false)
+        if (!hasProducts) {
+          setIsThinking(false)
+          setMessages((prev) => {
+            const updated = [...prev]
+            // Find the last message with conversation_turn_id
+            for (let i = updated.length - 1; i >= 0; i--) {
+              if (updated[i].conversation_turn_id) {
+                updated[i] = {
+                  ...updated[i],
+                  isFeedbackEligible: true
+                }
+                break
+              }
+            }
+            return updated
+          })
+        }
+
+        console.log('stream done')
       },
       onError: (err) => {
         setIsThinking(false)
-        isTurnComplete = true
-        showLatestFeedback()
         console.error('stream error:', err)
         setError('An error occurred while sending the message. Please try again.')
       }
@@ -487,6 +480,7 @@ export const Chatbot = ({
 
   const handleProductSelect = async (product, { fromProductsList = false, fromModelList = false } = {}) => {
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
     const isModel = Boolean(product.commPlanID)
     let modelData = null
 
@@ -515,94 +509,6 @@ export const Chatbot = ({
       fromModelList,
       fromProductsList
     })
-  }
-
-  const handleMessageFeedback = async (msg, rating, feedback) => {
-    if (messageFeedbackSubmitting[msg.id]) return
-
-    setMessageFeedback((prev) => ({ ...prev, [msg.id]: rating === 1 ? 'up' : 'down' }))
-
-    const payload = {
-      session_id: sessionId,
-      conversation_turn_id: msg.conversation_turn_id,
-      rating,
-      ...(feedback && { feedback })
-    }
-
-    try {
-      setMessageFeedbackSubmitting((prev) => ({ ...prev, [msg.id]: true }))
-      await submitFeedback(payload, chatApiConfig)
-      if (rating === -1) {
-        setMessageFeedbackCommentFading((prev) => ({ ...prev, [msg.id]: true }))
-      }
-    } catch (error) {
-      console.error('Message feedback submission failed:', error)
-    } finally {
-      setMessageFeedbackSubmitting((prev) => ({ ...prev, [msg.id]: false }))
-    }
-  }
-
-  const renderMessageFeedback = (msg) => {
-    if (!msg.isFeedbackEligible) return null
-    const selectedFeedback = messageFeedback[msg.id]
-    const comment = messageFeedbackComments[msg.id] || ''
-    const isSubmitting = Boolean(messageFeedbackSubmitting[msg.id])
-    const isCommentFading = Boolean(messageFeedbackCommentFading[msg.id])
-    const isCommentHidden = Boolean(messageFeedbackCommentHidden[msg.id])
-
-    return (
-      <div className={styles.messageFeedbackWrapper}>
-        <div className={styles.messageFeedback}>
-          <button
-            className={`${styles.messageFeedbackButton} ${selectedFeedback === 'up' ? styles.selected : ''}`}
-            type='button'
-            aria-label='Thumbs up'
-            onClick={() => handleMessageFeedback(msg, 1)}
-          >
-            <img
-              className={styles.thumbsUpIcon}
-              src={selectedFeedback === 'up' ? THUMBS_ICON_SELECTED : THUMBS_ICON}
-              alt=''
-            />
-          </button>
-          <button
-            className={`${styles.messageFeedbackButton} ${selectedFeedback === 'down' ? styles.selected : ''}`}
-            type='button'
-            aria-label='Thumbs down'
-            onClick={() => {
-              setMessageFeedback((prev) => ({ ...prev, [msg.id]: 'down' }))
-              setMessageFeedbackComments((prev) => ({ ...prev, [msg.id]: '' }))
-              setMessageFeedbackCommentFading((prev) => ({ ...prev, [msg.id]: false }))
-              setMessageFeedbackCommentHidden((prev) => ({ ...prev, [msg.id]: false }))
-              setMessageFeedbackSubmitting((prev) => ({ ...prev, [msg.id]: false }))
-              setFeedbackScrollTargetId(msg.id)
-            }}
-          >
-            <img src={selectedFeedback === 'down' ? THUMBS_ICON_SELECTED : THUMBS_ICON} alt='' />
-          </button>
-        </div>
-        {selectedFeedback === 'down' && !isCommentHidden && (
-          <div
-            className={`${styles.messageFeedbackComment} ${isCommentFading ? styles.fadeOut : ''}`}
-            data-feedback-message-id={msg.id}
-            onAnimationEnd={() => {
-              if (!messageFeedbackCommentFading[msg.id]) return
-              setMessageFeedbackCommentHidden((prev) => ({ ...prev, [msg.id]: true }))
-              setMessageFeedbackCommentFading((prev) => ({ ...prev, [msg.id]: false }))
-            }}
-          >
-            <FeedbackCommentForm
-              value={comment}
-              onChange={(value) => setMessageFeedbackComments((prev) => ({ ...prev, [msg.id]: value }))}
-              onSubmit={() => handleMessageFeedback(msg, -1, comment)}
-              submitText={isSubmitting ? 'Submitting...' : 'Submit'}
-              disabled={isSubmitting || isCommentFading}
-              aria-label='Additional comments about this response'
-            />
-          </div>
-        )}
-      </div>
-    )
   }
 
   const restoreUiChatSession = async (event) => {
@@ -717,17 +623,15 @@ export const Chatbot = ({
   }, [messages, sessionId, sessionTime, userEvents, wasFormSubmitted])
 
   useEffect(() => {
-    if (isRestoringFromVisibilityChange.current) {
+    if (isRestoringFromVisibilityChange.current || isFeedbackChange.current) {
       isRestoringFromVisibilityChange.current = false
+      isFeedbackChange.current = false
       return
     }
 
-    if (chatContainerRef.current && messageContainerRef.current) {
-      const targetElement = messageContainerRef.current.lastElementChild
-      if (!targetElement) return
-
-      const feedbackElement = targetElement.querySelector(`.${styles.messageFeedbackWrapper}`)
-      const elementTop = feedbackElement?.offsetTop || targetElement.offsetTop
+    if (chatContainerRef.current && messageContainerRef.current?.lastElementChild) {
+      const lastElement = messageContainerRef.current.lastElementChild
+      const elementTop = lastElement.offsetTop
       const offset = 80
       chatContainerRef.current.scrollTo({
         top: elementTop - offset,
@@ -735,22 +639,6 @@ export const Chatbot = ({
       })
     }
   }, [messages, isThinking, chatFormDialog, error])
-
-  useEffect(() => {
-    if (!feedbackScrollTargetId || !chatContainerRef.current || !messageContainerRef.current) return
-
-    const activeFeedback = messageContainerRef.current.querySelector(
-      `[data-feedback-message-id="${feedbackScrollTargetId}"]`
-    )
-    if (!activeFeedback) return
-
-    const offset = 80
-    chatContainerRef.current.scrollTo({
-      top: activeFeedback.offsetTop - offset,
-      behavior: 'smooth'
-    })
-    setFeedbackScrollTargetId(null)
-  }, [feedbackScrollTargetId, messageFeedback])
 
   // // Focus the dialog when it opens for screen reader announcement
   useEffect(() => {
@@ -961,33 +849,50 @@ export const Chatbot = ({
                 return <UserMessage key={msg.id} message={msg.text} />
               } else if (msg.type === 'bot') {
                 return (
-                  <div className={styles.messageWithFeedback} key={msg.id}>
-                    <BotMessage message={msg.text} component={msg.component} />
-                    {renderMessageFeedback(msg)}
-                  </div>
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={msg.component}
+                    outsideComponent={
+                      msg.isFeedbackEligible ? (
+                        <MessageFeedback
+                          msg={msg}
+                          chatApiConfig={chatApiConfig}
+                          onChange={handleMessageFeedbackChange}
+                        />
+                      ) : null
+                    }
+                  />
                 )
               } else if (msg.type === 'prompt') {
                 return <OptionsList key={msg.id} options={msg.options} onOptionSelect={handleOptionSelect} />
               } else if (msg.type === 'products') {
                 return (
-                  <div className={styles.messageWithFeedback} key={msg.id}>
-                    <BotMessage
-                      message={msg.text}
-                      component={
-                        <ProductsList
-                          products={msg.products}
-                          handleProductSelect={(product) =>
-                            handleProductSelect(product, {
-                              fromProductsList: true
-                            })
-                          }
-                          onMinimizeChat={onMinimizeChat}
-                          utils={utils}
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={
+                      <ProductsList
+                        products={msg.products}
+                        handleProductSelect={(product) =>
+                          handleProductSelect(product, {
+                            fromProductsList: true
+                          })
+                        }
+                        onMinimizeChat={onMinimizeChat}
+                        utils={utils}
+                      />
+                    }
+                    outsideComponent={
+                      msg.isFeedbackEligible ? (
+                        <MessageFeedback
+                          msg={msg}
+                          chatApiConfig={chatApiConfig}
+                          onChange={handleMessageFeedbackChange}
                         />
-                      }
-                    />
-                    {renderMessageFeedback(msg)}
-                  </div>
+                      ) : null
+                    }
+                  />
                 )
               } else if (msg.type === 'product') {
                 return (

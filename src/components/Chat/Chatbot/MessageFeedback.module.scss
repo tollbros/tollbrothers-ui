@@ -1,0 +1,60 @@
+@import "styles/modules/all";
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.messageFeedback {
+    display: flex;
+    gap: 8px;
+}
+
+.messageFeedbackButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #d0d7db;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+
+    &.selected {
+        border-color: $accent_blue;
+        background: $accent_blue;
+    }
+
+    img {
+        width: 15px;
+        height: 15px;
+    }
+
+}
+
+.thumbsUpIcon {
+    transform: rotate(180deg);
+}
+
+.messageFeedbackComment {
+    max-width: 328px;
+
+    &.fadeOut {
+        pointer-events: none;
+        animation: fadeOut 180ms ease forwards;
+    }
+}

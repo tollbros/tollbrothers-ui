@@ -7,17 +7,20 @@ export const FeedbackCommentForm = ({
   onChange,
   onSubmit,
   submitText = 'Submit',
-  placeholder = 'Tell us more about your experience...',
+  placeholder = 'Tell us more about your experience',
   ariaLabel = 'Additional comments',
-  disabled = false
+  disabled = false,
+  rows = 3,
+  id = 'feedback-comments'
 }) => {
   return (
     <div className={styles.root}>
       <textarea
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        rows={3}
+        rows={rows}
         maxLength={1000}
         aria-label={ariaLabel}
       />

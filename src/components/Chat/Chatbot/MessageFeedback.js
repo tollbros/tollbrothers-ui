@@ -17,14 +17,20 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
   const [isCommentShowing, setIsCommentShowing] = useState(false)
   const [isCommentFading, setIsCommentFading] = useState(false)
   const commentFormRef = useRef(null)
+  const closeButtonRef = useRef(null)
+  const wasKeyboardActivated = useRef(false)
 
   useEffect(() => {
     if (isCommentShowing && commentFormRef.current) {
       commentFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      if (closeButtonRef.current && wasKeyboardActivated.current) {
+        setTimeout(() => closeButtonRef.current.focus(), 300)
+      }
     }
-  }, [isCommentShowing])
+  }, [isCommentShowing, feedback])
 
-  const handleFeedback = async (direction) => {
+  const handleFeedback = async (event, direction) => {
+    wasKeyboardActivated.current = event.detail === 0
     setIsSubmitting(true)
     setFeedback(direction)
     setIsCommentShowing(true)
@@ -83,7 +89,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
           type='button'
           aria-label='Thumbs up'
           disabled={isSubmitting || isCommentSubmitting || feedback === 'up'}
-          onClick={() => handleFeedback('up')}
+          onClick={(e) => handleFeedback(e, 'up')}
         >
           <img className={styles.thumbsUpIcon} src={feedback === 'up' ? THUMBS_ICON_SELECTED : THUMBS_ICON} alt='' />
         </button>
@@ -92,7 +98,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
           type='button'
           aria-label='Thumbs down'
           disabled={isSubmitting || isCommentSubmitting || feedback === 'dn'}
-          onClick={() => handleFeedback('dn')}
+          onClick={(e) => handleFeedback(e, 'dn')}
         >
           <img src={feedback === 'dn' ? THUMBS_ICON_SELECTED : THUMBS_ICON} alt='' />
         </button>
@@ -101,13 +107,19 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
         <div
           ref={commentFormRef}
           className={`${styles.messageFeedbackComment} ${isCommentFading ? styles.fadeOut : ''}`}
-          data-feedback-message-id={msg.id}
+          role='region'
+          aria-label='Feedback Comment Form'
           onAnimationEnd={() => {
             setIsCommentFading(false)
             setIsCommentShowing(false)
           }}
         >
-          <CloseButton className={styles.closeButton} onClick={handleCloseComment} ariaLabel='Close feedback comment' />
+          <CloseButton
+            ref={closeButtonRef}
+            className={styles.closeButton}
+            onClick={handleCloseComment}
+            ariaLabel='Close feedback comment form'
+          />
           <FeedbackCommentForm
             value={comment}
             onChange={(value) => setComment(value)}

@@ -27,9 +27,9 @@ import { LiveChatMessage } from '../TollChat/LiveChatMessage'
 import { SpeechBubble } from './SpeechBubble'
 import { MoreInformation } from '../MoreInformation'
 import { ConversationFeedback } from './ConversationFeedback'
+import { MessageFeedback } from './MessageFeedback'
 
 import styles from './Chatbot.module.scss'
-import { MessageFeedback } from './MessageFeedBack'
 
 // Build a user event object from product data
 const buildUserEventObject = (product) => {

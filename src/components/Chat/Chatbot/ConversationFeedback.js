@@ -4,6 +4,7 @@ import styles from './ConversationFeedback.module.scss'
 import { StarRating } from './StarRating'
 import { CloseButton } from './CloseButton'
 import { submitFeedback } from './utils/submitFeedback'
+import { FeedbackCommentForm } from './FeedbackCommentForm'
 
 export const ConversationFeedback = forwardRef(
   ({ sessionId, chatApiConfig, onClose = () => null, classes = {} }, ref) => {
@@ -86,24 +87,16 @@ export const ConversationFeedback = forwardRef(
                 <span>
                   Additional Comments <em>(optional)</em>
                 </span>
-                <textarea
-                  id='feedback-comments'
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
-                  placeholder='Tell us more about your experience...'
-                  rows={4}
-                  maxLength={1000}
-                  aria-label='Additional comments about your experience'
-                />
               </label>
-              <button
-                className={styles.submit}
-                onClick={handleSubmit}
+              <FeedbackCommentForm
+                value={comments}
+                onChange={(value) => setComments(value)}
+                onSubmit={handleSubmit}
+                submitText={isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                 disabled={rating === 0 || isSubmitting}
-                aria-label={rating === 0 ? 'Please select a rating before submitting' : 'Submit feedback'}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
-              </button>
+                rows={4}
+                aria-label='Additional comments about your experience'
+              />
             </div>
           </form>
         )}

@@ -51,10 +51,22 @@
 }
 
 .messageFeedbackComment {
+    position: relative;
     max-width: 328px;
 
     &.fadeOut {
         pointer-events: none;
         animation: fadeOut 180ms ease forwards;
+    }
+}
+
+.closeButton {
+    position: absolute;
+    top: -22px;
+    right: -2px;
+
+    svg {
+        width: 8px;
+        height: 8px;
     }
 }

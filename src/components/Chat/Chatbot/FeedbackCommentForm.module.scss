@@ -3,22 +3,28 @@
 .root {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
     max-width: 328px;
 
     textarea {
         width: 100%;
-        min-height: 70px;
+        min-height: 91px;
         padding: 12px 14px;
         resize: none;
         border: 1px solid #d0d7db;
         border-radius: $border-radius;
         color: #000;
         font-family: $alt_font_family;
-        font-size: 0.8em;
+        font-size: 16px;
         font-weight: $font_weight_light;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
+
+        // iphone override to prevent zoom on focus
+        transform: scale(0.8125);
+        transform-origin: left center;
+        width: calc(100% / .8125);
+        height: calc(100% / .8125);
 
         &::placeholder {
             color: $dark_gray;

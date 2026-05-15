@@ -30,11 +30,16 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
   }, [isCommentShowing, feedback])
 
   const handleFeedback = async (event, direction) => {
+    setIsCommentShowing(true)
+    if (feedback === direction) return // Prevent resubmitting the same feedback
+
     wasKeyboardActivated.current = event.detail === 0
     setIsSubmitting(true)
     setFeedback(direction)
-    setIsCommentShowing(true)
+
     const rating = direction === 'up' ? 1 : -1
+
+    console.log('already sent: ', feedback === direction)
 
     const payload = {
       session_id: msg.session_id,
@@ -88,7 +93,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
           className={`${styles.messageFeedbackButton} ${feedback === 'up' ? styles.selected : ''}`}
           type='button'
           aria-label='Thumbs up'
-          disabled={isSubmitting || isCommentSubmitting || feedback === 'up'}
+          disabled={isSubmitting || isCommentSubmitting}
           onClick={(e) => handleFeedback(e, 'up')}
         >
           <img className={styles.thumbsUpIcon} src={feedback === 'up' ? THUMBS_ICON_SELECTED : THUMBS_ICON} alt='' />
@@ -97,7 +102,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
           className={`${styles.messageFeedbackButton} ${feedback === 'dn' ? styles.selected : ''}`}
           type='button'
           aria-label='Thumbs down'
-          disabled={isSubmitting || isCommentSubmitting || feedback === 'dn'}
+          disabled={isSubmitting || isCommentSubmitting}
           onClick={(e) => handleFeedback(e, 'dn')}
         >
           <img src={feedback === 'dn' ? THUMBS_ICON_SELECTED : THUMBS_ICON} alt='' />

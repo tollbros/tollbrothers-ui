@@ -14,7 +14,7 @@
 .root {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
 }
 
 .messageFeedback {
@@ -62,7 +62,7 @@
 
 .closeButton {
     position: absolute;
-    top: -22px;
+    top: -14px;
     right: -2px;
 
     svg {

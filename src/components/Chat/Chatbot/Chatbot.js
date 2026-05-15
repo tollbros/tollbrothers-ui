@@ -29,6 +29,8 @@ import { MoreInformation } from '../MoreInformation'
 import { ConversationFeedback } from './ConversationFeedback'
 
 import styles from './Chatbot.module.scss'
+import { MessageFeedback } from './MessageFeedBack'
+
 // Build a user event object from product data
 const buildUserEventObject = (product) => {
   let eventObject = {
@@ -89,6 +91,7 @@ export const Chatbot = ({
   const [error, setError] = useState(null)
   const chatContainerRef = useRef(null)
   const isRestoringFromVisibilityChange = useRef(false)
+  const isFeedbackChange = useRef(false)
   const [isThinking, setIsThinking] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [sessionTime, setSessionTime] = useState(null) // 15 minutes in milliseconds
@@ -244,6 +247,7 @@ export const Chatbot = ({
 
   const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
     const newBotMessage = {
       id: Date.now(),
       text: text,
@@ -318,10 +322,26 @@ export const Chatbot = ({
     setInputMessage(value)
   }
 
+  const handleMessageFeedbackChange = (message, feedback) => {
+    isFeedbackChange.current = true
+    const id = message.conversation_turn_id
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.conversation_turn_id === id
+          ? {
+              ...msg,
+              feedback
+            }
+          : msg
+      )
+    )
+  }
+
   const handleSendMessage = async (_event, systemMessage) => {
     setShowChatSelection(false)
     if (!inputMessage.trim() && !systemMessage) return
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
 
     // console.log(systemMessage)
 
@@ -362,6 +382,7 @@ export const Chatbot = ({
         setSessionId(response.session_id)
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
+        const conversationTurnId = response.conversation_turn_id
 
         if (response.transfer_to_osc) {
           handleShowChatForm({ text: response.message })
@@ -373,23 +394,28 @@ export const Chatbot = ({
             .then((productData) => {
               setIsThinking(false)
               // console.log('producst were fetched')
-              console.log('getProductData products:', productData)
               if (productData?.length > 0) {
                 const botResponse = {
                   id: Date.now() + 2,
                   text: response.message,
                   type: 'products',
-                  products: productData
+                  products: productData,
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
                 }
+
                 setMessages((prev) => [...prev, botResponse])
               } else {
                 // TODO: might want to modify this message if no products found
                 const botResponse = {
                   id: Date.now() + 1,
                   text: response.message,
-                  type: 'bot'
+                  type: 'bot',
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
                 }
-
                 setMessages((prev) => [...prev, botResponse])
               }
             })
@@ -402,22 +428,41 @@ export const Chatbot = ({
           setIsThinking(false)
         } else {
           const botResponse = {
-            id: Date.now() + 1,
+            id: Date.now() + 3,
             text: response.message,
-            type: 'bot'
+            type: 'bot',
+            session_id: response.session_id,
+            conversation_turn_id: conversationTurnId
           }
 
           setMessages((prev) => [...prev, botResponse])
         }
       },
       onDone: () => {
-        if (!hasProducts) setIsThinking(false)
+        if (!hasProducts) {
+          setIsThinking(false)
+          setMessages((prev) => {
+            const updated = [...prev]
+            // Find the last message with conversation_turn_id
+            for (let i = updated.length - 1; i >= 0; i--) {
+              if (updated[i].conversation_turn_id) {
+                updated[i] = {
+                  ...updated[i],
+                  isFeedbackEligible: true
+                }
+                break
+              }
+            }
+            return updated
+          })
+        }
+
         console.log('stream done')
       },
       onError: (err) => {
         setIsThinking(false)
         console.error('stream error:', err)
-        setError('An error occurred while sending the message. Pleaesse try again.')
+        setError('An error occurred while sending the message. Please try again.')
       }
     })
   }
@@ -435,6 +480,7 @@ export const Chatbot = ({
 
   const handleProductSelect = async (product, { fromProductsList = false, fromModelList = false } = {}) => {
     isRestoringFromVisibilityChange.current = false
+    isFeedbackChange.current = false
     const isModel = Boolean(product.commPlanID)
     let modelData = null
 
@@ -577,8 +623,9 @@ export const Chatbot = ({
   }, [messages, sessionId, sessionTime, userEvents, wasFormSubmitted])
 
   useEffect(() => {
-    if (isRestoringFromVisibilityChange.current) {
+    if (isRestoringFromVisibilityChange.current || isFeedbackChange.current) {
       isRestoringFromVisibilityChange.current = false
+      isFeedbackChange.current = false
       return
     }
 
@@ -701,7 +748,7 @@ export const Chatbot = ({
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
       <div className={styles.launchContainer}>
-        <SpeechBubble isHidden={hasSeenAnimation} />
+        <SpeechBubble isHidden={hasSeenAnimation} onClick={onChatButtonClick} />
         <button
           id='chabot-launch-button'
           ref={chatButtonRef}
@@ -801,7 +848,22 @@ export const Chatbot = ({
               if (msg.type === 'user') {
                 return <UserMessage key={msg.id} message={msg.text} />
               } else if (msg.type === 'bot') {
-                return <BotMessage key={msg.id} message={msg.text} component={msg.component} />
+                return (
+                  <BotMessage
+                    key={msg.id}
+                    message={msg.text}
+                    component={msg.component}
+                    outsideComponent={
+                      msg.isFeedbackEligible ? (
+                        <MessageFeedback
+                          msg={msg}
+                          chatApiConfig={chatApiConfig}
+                          onChange={handleMessageFeedbackChange}
+                        />
+                      ) : null
+                    }
+                  />
+                )
               } else if (msg.type === 'prompt') {
                 return <OptionsList key={msg.id} options={msg.options} onOptionSelect={handleOptionSelect} />
               } else if (msg.type === 'products') {
@@ -820,6 +882,15 @@ export const Chatbot = ({
                         onMinimizeChat={onMinimizeChat}
                         utils={utils}
                       />
+                    }
+                    outsideComponent={
+                      msg.isFeedbackEligible ? (
+                        <MessageFeedback
+                          msg={msg}
+                          chatApiConfig={chatApiConfig}
+                          onChange={handleMessageFeedbackChange}
+                        />
+                      ) : null
                     }
                   />
                 )

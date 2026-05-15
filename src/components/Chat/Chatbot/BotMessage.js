@@ -2,7 +2,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import styles from './BotMessage.module.scss'
 
-export const BotMessage = ({ message, component }) => {
+export const BotMessage = ({ message, component, outsideComponent }) => {
   return (
     // BotMessage.js
     <article className={styles.container} aria-label='AI Conceirge message'>
@@ -21,6 +21,7 @@ export const BotMessage = ({ message, component }) => {
         )}
         {component && <div className={styles.component}>{component}</div>}
       </div>
+      {outsideComponent && <div className={styles.outsideComponent}>{outsideComponent}</div>}
     </article>
   )
 }

@@ -37,13 +37,20 @@
     transform: translateY(-50%);
     min-width: 260px;
     background: $light_gray;
+    border: 0;
     border-radius: 16px;
     padding: 20px 16px 19px 16px;
     text-align: left;
+    font: inherit;
     opacity: 0;
     transform-origin: right center;
     animation: fadeInScale 5s $ease-out-cubic .8s forwards;
-    pointer-events: none;
+    cursor: pointer;
+
+    &.animationEnded {
+      pointer-events: none;
+      cursor: default;
+    }
 
     @include breakpoint(sm) {
       padding: 20px 30px 19px 30px;
@@ -52,6 +59,8 @@
     &.hide {
       animation: none;
       opacity: 0;
+      pointer-events: none;
+      cursor: default;
     }
 
     p {

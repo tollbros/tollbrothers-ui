@@ -748,7 +748,7 @@ export const Chatbot = ({
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
       <div className={styles.launchContainer}>
-        <SpeechBubble isHidden={hasSeenAnimation} />
+        <SpeechBubble isHidden={hasSeenAnimation} onClick={onChatButtonClick} />
         <button
           id='chabot-launch-button'
           ref={chatButtonRef}

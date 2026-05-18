@@ -149,7 +149,8 @@ export const ProductLayout = ({
 
       utils.dataLayerPush({
         event: 'chatbot_page_view',
-        page_type: pageTypeEvent
+        page_type: pageTypeEvent,
+        variant: 'chatbot'
       })
     }
   }, [])

@@ -39,12 +39,11 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
 
     const rating = direction === 'up' ? 1 : -1
 
-    console.log('already sent: ', feedback === direction)
-
     const payload = {
       session_id: msg.session_id,
       conversation_turn_id: msg.conversation_turn_id,
-      rating: rating
+      rating: rating,
+      feedback: comment ?? ''
     }
 
     try {
@@ -67,7 +66,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
       session_id: msg.session_id,
       conversation_turn_id: msg.conversation_turn_id,
       rating: rating,
-      ...(comment && { comment })
+      feedback: comment ?? ''
     }
 
     try {

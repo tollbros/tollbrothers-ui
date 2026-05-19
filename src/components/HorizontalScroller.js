@@ -97,11 +97,12 @@ export const HorizontalScroller = ({
   // to detect if window is wider than gallery
   useEffect(() => {
     const handleResize = () => {
+      if (!galleryRef.current) return
       const containerWidth = useContainerWidth
-        ? galleryRef?.current?.clientWidth
+        ? galleryRef.current.clientWidth
         : window.innerWidth
 
-      containerWidth >= galleryRef.current?.scrollWidth
+      containerWidth >= galleryRef.current.scrollWidth
         ? setShowGalleryNav(false)
         : setShowGalleryNav(true)
     }
@@ -110,10 +111,22 @@ export const HorizontalScroller = ({
 
     handleResize()
 
+    // Re-measure when content size changes (e.g., async-loaded images
+    // resolving their intrinsic dimensions after mount).
+    let resizeObserver
+    if (galleryRef.current && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(handleResize)
+      resizeObserver.observe(galleryRef.current)
+      Array.from(galleryRef.current.children).forEach((child) => {
+        resizeObserver.observe(child)
+      })
+    }
+
     setTimeout(() => setInitialized(true), 500)
 
     return () => {
       window.removeEventListener('resize', handleResize)
+      if (resizeObserver) resizeObserver.disconnect()
     }
   }, [])
 

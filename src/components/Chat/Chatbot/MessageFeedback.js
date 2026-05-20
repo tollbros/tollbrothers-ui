@@ -58,7 +58,6 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
   }
 
   const handleCommentSubmit = async () => {
-    if (!comment.trim()) return // Don't submit empty comments
     setIsCommentSubmitting(true)
 
     const rating = feedback === 'up' ? 1 : -1
@@ -129,8 +128,9 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
             onChange={(value) => setComment(value)}
             onSubmit={handleCommentSubmit}
             submitText={isCommentSubmitting ? 'Submitting...' : 'Submit'}
-            disabled={isCommentSubmitting || isCommentFading || !comment.trim()}
-            aria-label='Additional comments about this response'
+            disabled={isCommentSubmitting || isCommentFading}
+            placeholder='Tell us more about your experience (optional)'
+            aria-label='Additional comments about this response (optional)'
             rows={2}
           />
         </div>

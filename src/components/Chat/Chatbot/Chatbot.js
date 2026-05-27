@@ -378,7 +378,7 @@ export const Chatbot = ({
     sendMessage(promp, {
       ...chatApiConfig,
       onChunk: (response) => {
-        console.log('chunk:', response)
+        // console.log('chunk:', response)
         setSessionId(response.session_id)
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
         const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
@@ -457,7 +457,7 @@ export const Chatbot = ({
           })
         }
 
-        console.log('stream done')
+        // console.log('stream done')
       },
       onError: (err) => {
         setIsThinking(false)
@@ -522,7 +522,7 @@ export const Chatbot = ({
     }
 
     const stored = getLocalStorage('tbChatBot')
-    console.log(stored)
+
     if (stored && stored.value && stored.value.expiry && !isExpired(stored.value.expiry)) {
       const {
         messages: storedMessages,
@@ -672,7 +672,7 @@ export const Chatbot = ({
 
   // Live Chat Integration Start
   const onTransferSuccess = (data) => {
-    console.log('Transfer successful with data:', data)
+    // console.log('Transfer successful with data:', data)
 
     reestablishConnection(null, {
       accessToken: data.sf_miaw_token,

@@ -88,7 +88,7 @@ export const ChatBotForm = ({
       formData.brokerageZip = form.brokerageZip?.value?.trim()
     }
 
-    console.log('Form submitted with data:', formData)
+    // console.log('Form submitted with data:', formData)
 
     // FOR TESTING ONLY PLEASE REMOVE WHEN BOT IS READY TO GO LIVE
     const urlParams = new URLSearchParams(window.location.search)
@@ -126,7 +126,7 @@ export const ChatBotForm = ({
       }
 
       const data = await response.json()
-      console.log('Transfer response:', data)
+      // console.log('Transfer response:', data)
 
       const { clientId, email_sha256, gaTrackId } = (await utils?.getGaTrackingIds?.(email)) || {}
 

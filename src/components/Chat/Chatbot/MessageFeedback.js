@@ -51,7 +51,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
     } catch (error) {
       console.error('Message feedback submission failed:', error)
     } finally {
-      console.log('Feedback submitted:', payload)
+      // console.log('Feedback submitted:', payload)
       setIsSubmitting(false)
       onChange(msg, direction)
     }
@@ -73,7 +73,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, onChange = (msg, feedback)
     } catch (error) {
       console.error('Message feedback submission failed:', error)
     } finally {
-      console.log('Feedback submitted:', payload)
+      // console.log('Feedback submitted:', payload)
       setIsCommentSubmitting(false)
       setIsCommentFading(true)
     }

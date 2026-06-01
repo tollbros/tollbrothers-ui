@@ -367,9 +367,13 @@ export const Chatbot = ({
     const lastEvent = userEvents[userEvents.length - 1]
 
     const isSessionValid = sessionId && sessionTime && !isExpired(sessionTime)
+    const isTollEmployee =
+      window.localStorage.getItem('tollEmployee') === 'true' || window.localStorage.getItem('tollemployee') === 'true'
+    const outgoingSessionId =
+      isSessionValid && isTollEmployee && !sessionId.endsWith('test') ? `${sessionId}test` : sessionId
     const promp = {
       prompt: userMessageText,
-      session_id: isSessionValid ? sessionId : '',
+      session_id: isSessionValid ? outgoingSessionId : '',
       ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 

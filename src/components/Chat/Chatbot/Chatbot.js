@@ -13,6 +13,7 @@ import { ProductLayout } from './ProductLayout'
 import { ChatSelection } from './ChatSelection'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
+import { generateUniqueId } from './utils/generateUniqueId'
 import { UserInputField } from '../UserInputField'
 import { HeaderButtons } from '../HeaderButtons'
 import { ChatBotForm } from './ChatBotForm'
@@ -74,7 +75,8 @@ export const Chatbot = ({
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   chatEndpointId,
-  chatApiKey
+  chatApiKey,
+  isTollEmployee
 }) => {
   const chatInterfaceRef = useRef(null)
   const chatButtonRef = useRef(null)
@@ -367,13 +369,17 @@ export const Chatbot = ({
     const lastEvent = userEvents[userEvents.length - 1]
 
     const isSessionValid = sessionId && sessionTime && !isExpired(sessionTime)
-    const isTollEmployee =
-      window.localStorage.getItem('tollEmployee') === 'true' || window.localStorage.getItem('tollemployee') === 'true'
-    const outgoingSessionId =
-      isSessionValid && isTollEmployee && !sessionId.endsWith('test') ? `${sessionId}test` : sessionId
+
+    let sessionIdToUse = ''
+    if (isSessionValid) {
+      sessionIdToUse = sessionId
+    } else if (isTollEmployee) {
+      sessionIdToUse = `${generateUniqueId()}-test`
+    }
+
     const promp = {
       prompt: userMessageText,
-      session_id: isSessionValid ? outgoingSessionId : '',
+      session_id: sessionIdToUse,
       ...(lastEvent && lastEvent.type !== 'other' && { context: lastEvent })
     }
 

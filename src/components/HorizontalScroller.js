@@ -27,17 +27,12 @@ export const HorizontalScroller = ({
       ? setIsNextDisabled(true)
       : setIsNextDisabled(false)
 
-    gallery.scrollLeft === 0
-      ? setIsPrevDisabled(true)
-      : setIsPrevDisabled(false)
+    gallery.scrollLeft === 0 ? setIsPrevDisabled(true) : setIsPrevDisabled(false)
 
     let closestIndex = 0
     let closestDistance = Number.MAX_VALUE
     for (let i = 0; i < gallery.children.length; i++) {
-      const distance = Math.abs(
-        gallery.children[i].getBoundingClientRect().left -
-          gallery.getBoundingClientRect().left
-      )
+      const distance = Math.abs(gallery.children[i].getBoundingClientRect().left - gallery.getBoundingClientRect().left)
       if (distance < closestDistance) {
         closestDistance = distance
         closestIndex = i
@@ -79,13 +74,10 @@ export const HorizontalScroller = ({
       // const imageWidth = galleryRef.current.firstChild.clientWidth
       let totalWidth = 0
       for (let i = 0; i < index; i++) {
-        const computedStyle = window.getComputedStyle(
-          galleryRef.current.children[i]
-        )
+        const computedStyle = window.getComputedStyle(galleryRef.current.children[i])
         const marginLeft = parseFloat(computedStyle.marginLeft.split('px')[0])
         const marginRight = parseFloat(computedStyle.marginRight.split('px')[0])
-        totalWidth +=
-          galleryRef.current.children[i].clientWidth + marginLeft + marginRight
+        totalWidth += galleryRef.current.children[i].clientWidth + marginLeft + marginRight
       }
       galleryRef.current.scrollTo({
         left: totalWidth,
@@ -97,23 +89,31 @@ export const HorizontalScroller = ({
   // to detect if window is wider than gallery
   useEffect(() => {
     const handleResize = () => {
-      const containerWidth = useContainerWidth
-        ? galleryRef?.current?.clientWidth
-        : window.innerWidth
+      if (!galleryRef.current) return
+      const containerWidth = useContainerWidth ? galleryRef.current.clientWidth : window.innerWidth
 
-      containerWidth >= galleryRef.current?.scrollWidth
-        ? setShowGalleryNav(false)
-        : setShowGalleryNav(true)
+      containerWidth >= galleryRef.current.scrollWidth ? setShowGalleryNav(false) : setShowGalleryNav(true)
     }
 
     window.addEventListener('resize', handleResize)
 
     handleResize()
 
+    // fire handleResize on async-loaded images
+    let resizeObserver
+    if (galleryRef.current && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(handleResize)
+      resizeObserver.observe(galleryRef.current)
+      Array.from(galleryRef.current.children).forEach((child) => {
+        resizeObserver.observe(child)
+      })
+    }
+
     setTimeout(() => setInitialized(true), 500)
 
     return () => {
       window.removeEventListener('resize', handleResize)
+      if (resizeObserver) resizeObserver.disconnect()
     }
   }, [])
 
@@ -122,25 +122,19 @@ export const HorizontalScroller = ({
       {showArrows && showGalleryNav && (
         <div className={`${styles.controls} ${classes.controls ?? ''}`}>
           <button onClick={handlePrev} disabled={isPrevDisabled}>
-            <img
-              src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg'
-              alt='Previous Slide'
-            />
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg' alt='Previous Slide' />
           </button>
           <button onClick={handleNext} disabled={isNextDisabled}>
-            <img
-              src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg'
-              alt='Next Slide'
-            />
+            <img src='https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/arrowexit.svg' alt='Next Slide' />
           </button>
         </div>
       )}
 
       <div className={`${styles.viewPort}`}>
         <div
-          className={`${styles.scrollWrap} ${
-            children.length === 1 ? styles.noMargin : ''
-          } ${classes.scrollWrap ?? ''} scrollWrap`}
+          className={`${styles.scrollWrap} ${children.length === 1 ? styles.noMargin : ''} ${
+            classes.scrollWrap ?? ''
+          } scrollWrap`}
           ref={galleryRef}
           onScroll={handleScroll}
         >
@@ -148,9 +142,7 @@ export const HorizontalScroller = ({
             return (
               child && (
                 <div
-                  className={`${styles.scrollItem} ${
-                    classes.scrollItem ?? ''
-                  } scrollItem`}
+                  className={`${styles.scrollItem} ${classes.scrollItem ?? ''} scrollItem`}
                   ref={slideRef}
                   key={child.key}
                   data-index={index}

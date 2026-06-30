@@ -131,11 +131,19 @@ export const ChatBotForm = ({
       const { clientId, email_sha256, gaTrackId } = (await utils?.getGaTrackingIds?.(email)) || {}
 
       if (utils?.dataLayerPush) {
-        utils.dataLayerPush({
-          event: 'chatStarted',
-          agent_status: isAgentAvailable ? 'online' : 'offline',
-          variant: 'chatbot'
-        })
+        if (!isAgentAvailable || bypassLiveAgent) {
+          utils.dataLayerPush({
+            event: 'lead-complete',
+            form_type: 'chatbot_email_sales'
+          })
+        } else {
+          utils.dataLayerPush({
+            event: 'chatStarted',
+            agent_status: 'online',
+            variant: 'chatbot'
+          })
+        }
+
         if (email_sha256) utils.dataLayerPush({ email_sha256: email_sha256 })
       }
 

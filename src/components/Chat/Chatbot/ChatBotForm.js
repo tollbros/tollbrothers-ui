@@ -134,7 +134,8 @@ export const ChatBotForm = ({
         if (!isAgentAvailable || bypassLiveAgent) {
           utils.dataLayerPush({
             event: 'lead-complete',
-            form_type: 'chatbot_email_sales'
+            form_type: 'chatbot_email_sales',
+            variant: 'chatbot'
           })
         } else {
           utils.dataLayerPush({

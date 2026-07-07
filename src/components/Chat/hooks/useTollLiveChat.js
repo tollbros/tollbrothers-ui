@@ -527,6 +527,12 @@ export const useTollLiveChat = ({
             },
             1000 * 60 * 60 * 2
           )
+
+          sendSystemtMessage({
+            accessToken: value.accessToken,
+            conversationId: value.conversationId,
+            message: '::System Message:: User on page: (' + location.href + ')'
+          })
         }
 
         setAbortController(abortController)

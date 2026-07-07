@@ -84,11 +84,15 @@
   max-height: 300px;
   object-fit: contain;
 
-  svg {
+  svg, img {
     width: 100%;
     height: 100%;
 
      @include svgStroke ();
+  }
+
+  img {
+    object-fit: contain;
   }
 }
 

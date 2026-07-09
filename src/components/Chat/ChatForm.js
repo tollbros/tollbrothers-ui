@@ -8,7 +8,8 @@ export const ChatForm = ({
   cta = 'Start Chat',
   isShowPhoneInput = false,
   isShowAgentFields = false,
-  disabled = false
+  disabled = false,
+  isDisableLocalStorageContactInfo = false
 }) => {
   const [isAgent, setIsAgent] = useState(false)
 
@@ -20,7 +21,7 @@ export const ChatForm = ({
 
   useEffect(() => {
     const storedUser = localStorage?.getItem('formResponse')
-    if (storedUser) {
+    if (storedUser && !isDisableLocalStorageContactInfo) {
       const storedUserData = JSON.parse(storedUser)
 
       let fullName = ''
@@ -40,7 +41,7 @@ export const ChatForm = ({
         phone: phone?.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') ?? ''
       })
     }
-  }, [])
+  }, [isDisableLocalStorageContactInfo])
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>

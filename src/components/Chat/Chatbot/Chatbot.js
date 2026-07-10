@@ -247,12 +247,13 @@ export const Chatbot = ({
     setShowConfirmationEndLiveMessage(false)
   }
 
-  const handleShowChatForm = ({ text = '', bypassLiveAgent = null } = {}) => {
+  const handleShowChatForm = ({ text = '', contactInfo = null, bypassLiveAgent = null } = {}) => {
     isRestoringFromVisibilityChange.current = false
     isFeedbackChange.current = false
     const newBotMessage = {
       id: Date.now(),
       text: text,
+      contactInfo: contactInfo,
       type: 'form',
       bypassLiveAgent: bypassLiveAgent
     }
@@ -395,7 +396,7 @@ export const Chatbot = ({
         const conversationTurnId = response.conversation_turn_id
 
         if (response.transfer_to_osc) {
-          handleShowChatForm({ text: response.message })
+          handleShowChatForm({ text: response.message, contactInfo: response.contact_info })
         } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
@@ -930,6 +931,7 @@ export const Chatbot = ({
                       component={
                         <ChatBotForm
                           message={msg.text}
+                          contactInfo={msg.contactInfo}
                           bypassLiveAgent={msg.bypassLiveAgent}
                           chatRegion={chatRegion}
                           productCode={productCode}

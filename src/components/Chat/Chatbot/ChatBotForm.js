@@ -29,6 +29,7 @@ export const ChatBotForm = ({
   setChatFormDialog,
   setWasFormSubmitted = () => null,
   setFormSuccessCallback = () => null,
+  contactInfo,
   bypassLiveAgent = false,
   chatFormDialog,
   chatEndpointId,
@@ -42,6 +43,27 @@ export const ChatBotForm = ({
   const [isAgentAvailable, setIsAgentAvailable] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
   const [isThinking, setIsThinking] = useState(true)
+
+  useEffect(() => {
+    if (contactInfo) {
+      let fullName = ''
+      if (contactInfo?.firstName && contactInfo?.lastName) {
+        fullName += contactInfo.firstName + ` ${contactInfo.lastName}`
+      } else if (contactInfo.firstName) {
+        fullName += `${contactInfo.firstName}`
+      } else if (contactInfo.lastName) {
+        fullName += `${contactInfo.lastName}`
+      }
+
+      const phone = contactInfo.phone || ''
+
+      setFormData({
+        name: fullName,
+        email: contactInfo.email ?? '',
+        phone: phone?.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') ?? ''
+      })
+    }
+  }, [contactInfo])
 
   const handleChange = async (e) => {
     const value = e.target.value
@@ -354,6 +376,7 @@ export const ChatBotForm = ({
           cta={chatFormButtonText}
           isShowPhoneInput
           isShowAgentFields
+          isDisableLocalStorageContactInfo={Boolean(contactInfo)}
           disabled={(!chatRegion && !selectedRegion) || isThinking}
         />
       </div>

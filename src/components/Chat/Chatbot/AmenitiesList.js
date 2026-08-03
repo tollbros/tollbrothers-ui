@@ -8,20 +8,14 @@ export const AmenitiesList = ({ amenities = [] }) => {
 
   if (!amenities?.length) return null
 
-  const visibleAmenities = showAll
-    ? amenities
-    : amenities.slice(0, MAX_VISIBLE_AMENITIES)
+  const visibleAmenities = showAll ? amenities : amenities.slice(0, MAX_VISIBLE_AMENITIES)
   const hasMore = amenities.length > MAX_VISIBLE_AMENITIES
   const isOddCount = visibleAmenities.length % 2 !== 0
 
   return (
     <div className={styles.amenitiesSection}>
       <h3 className={styles.amenitiesTitle}>Amenities</h3>
-      <ul
-        className={`${styles.amenitiesGrid} ${
-          isOddCount ? styles.oddCount : styles.evenCount
-        }`}
-      >
+      <ul className={`${styles.amenitiesGrid} ${isOddCount ? styles.oddCount : styles.evenCount}`}>
         {visibleAmenities.map((amenity, index) => (
           <li key={index} className={`${styles.amenityItem}`}>
             <img
@@ -33,10 +27,7 @@ export const AmenitiesList = ({ amenities = [] }) => {
         ))}
       </ul>
       {hasMore && !showAll && (
-        <button
-          className={styles.showMoreButton}
-          onClick={() => setShowAll(!showAll)}
-        >
+        <button className={styles.showMoreButton} onClick={() => setShowAll(!showAll)}>
           Show More ({amenities.length - MAX_VISIBLE_AMENITIES})
         </button>
       )}

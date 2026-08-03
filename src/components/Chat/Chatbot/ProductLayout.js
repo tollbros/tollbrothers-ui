@@ -100,16 +100,9 @@ export const ProductLayout = ({
     smallLabel += 'Schedule a Tour'
   }
 
-  // console.log(label, hash)
-
-  // in case we decide to show community gallery some day
-  // const communityGallery = !isModel
-  //   ? (product?.gallery?.mediaGroups?.[0]?.media || []).filter(
-  //       (item) => item.type === 'image'
-  //     )
-  //   : []
-
-  // console.log(communityGallery)
+  const communityAmenityGallery = !isModel
+    ? (product?.amenities?.amenityGroups?.[0]?.media || []).filter((item) => item.type === 'image')
+    : []
 
   const preventIfCurrentPage = (url, e) => {
     const pathname = new URL(url, window.location.origin).pathname
@@ -283,13 +276,7 @@ export const ProductLayout = ({
             utils={utils}
           />
         )}
-        {/* {!isModel && communityGallery?.length > 0 && (
-          <ImageCarousel
-            images={communityGallery}
-            utils={utils}
-            title='Gallery'
-          />
-        )} */}
+
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel images={dafs} isUseHighRes utils={utils} title='Designer Appointed Features' />
         )}
@@ -298,6 +285,9 @@ export const ProductLayout = ({
           <ImageCarousel images={elevations} utils={utils} title='Exterior Designs' />
         )}
         {!isModel && amenities && <AmenitiesList amenities={amenities} />}
+        {!isModel && communityAmenityGallery?.length > 0 && (
+          <ImageCarousel images={communityAmenityGallery} utils={utils} />
+        )}
 
         {canShowCTAs && (
           <div className={styles.footer}>

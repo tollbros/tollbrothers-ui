@@ -75,15 +75,14 @@ export const Chatbot = ({
   setIsChatBotOpenExternal = () => null,
   isChatBotOpenExternal, // this is to open chat from a button in the parent app
   chatEndpointId,
-  chatApiKey,
-  isTollEmployee
+  chatApiKey
 }) => {
   const chatInterfaceRef = useRef(null)
   const chatButtonRef = useRef(null)
   const messageContainerRef = useRef(null)
   const confirmationDialogRef = useRef(null)
   const { width, height, isResizing, handleStart } = useHorizontalResize(chatInterfaceRef)
-  const [showChatbot, setShowChatbot] = useState(true)
+  const [showChatbot, setShowChatbot] = useState(false)
   const [isChatBotOpen, setIsChatBotOpen] = useState(false)
   const [showChatSelection, setShowChatSelection] = useState(false)
   const [userPrefersLiveChatOnIntialInteraction, setUserPrefersLiveChatOnIntialInteraction] = useState(false)
@@ -345,8 +344,7 @@ export const Chatbot = ({
     if (!inputMessage.trim() && !systemMessage) return
     isRestoringFromVisibilityChange.current = false
     isFeedbackChange.current = false
-
-    // console.log(systemMessage)
+    const isTollEmployee = localStorage?.getItem('tollEmployee') === 'true'
 
     // track user sent a new prompt
     if (utils?.dataLayerPush && !systemMessage) {
@@ -751,6 +749,11 @@ export const Chatbot = ({
       setShowChatSelection(false)
     }
   }, [chatStatus, isChatBotOpen, messages])
+
+  // to prevent server side rendering and hydration issues
+  useEffect(() => {
+    setShowChatbot(true)
+  }, [])
 
   if (!showChatbot) {
     return null

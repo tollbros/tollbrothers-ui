@@ -16,8 +16,9 @@ export const formatMessageLinks = (message) => {
   // URL regex - matches URLs with or without http(s)://
   // Matches: https://example.com, http://example.com, www.example.com, example.com/path
   // Only match URLs that aren't already part of markdown links or tel: links
+  // Excludes trailing punctuation like periods, commas, etc.
   const urlRegex =
-    /(?<!\[)(?<!\()(?<!tel:)(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/[^\s)]*)?(?!\))/g
+    /(?<!\[)(?<!\()(?<!tel:)(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/[^\s).,;:!?"']*)?(?!\))/g
 
   // Replace phone numbers with tel: markdown links
   formattedMessage = formattedMessage.replace(phoneRegex, (match) => {

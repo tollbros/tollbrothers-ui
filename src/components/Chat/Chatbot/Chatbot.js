@@ -401,9 +401,9 @@ export const Chatbot = ({
 
           // Extract product URLs from response
           const productUrls = [
-            ...(response.communities || [])
-            // ...(response.qmis || []),
-            // ...(response.homeDesigns || [])
+            ...(response.communities || []),
+            ...(response.qmis || []),
+            ...(response.homeDesigns || [])
           ]
 
           const botResponse = {

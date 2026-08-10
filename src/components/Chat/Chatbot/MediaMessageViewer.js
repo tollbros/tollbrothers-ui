@@ -4,6 +4,7 @@ import { ImageCarousel } from './ImageCarousel'
 import { FloorPlanViewer } from './FloorPlanViewer'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { getProductData } from './utils/getProductData'
+import styles from './MediaMessageViewer.module.scss'
 
 /**
  * MediaMessageViewer Component
@@ -19,7 +20,7 @@ export const MediaMessageViewer = ({
   isFeedbackEligible,
   feedbackComponent
 }) => {
-  const [mediaData, setMediaData] = useState(null)
+  const [productsWithMedia, setProductsWithMedia] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -48,15 +49,28 @@ export const MediaMessageViewer = ({
           return
         }
 
-        // Extract media based on component type
-        if (component === 'Gallery') {
-          const images = extractGalleryImages(productData, types)
-          setMediaData(images)
-        } else if (component === 'FloorPlan') {
-          const floorPlans = extractFloorPlans(productData)
-          setMediaData(floorPlans)
-        }
+        // Extract media for each product individually
+        const productsWithMediaData = productData
+          .map((product) => {
+            let media = []
+            const productName = product.name || product.title || ''
 
+            if (component === 'Gallery') {
+              media = extractGalleryImagesForProduct(product, types)
+            } else if (component === 'FloorPlan') {
+              media = extractFloorPlansForProduct(product)
+            }
+
+            return {
+              key: product.url,
+              name: productName,
+              media: media,
+              product: product
+            }
+          })
+          .filter((item) => item.media && item.media.length > 0)
+
+        setProductsWithMedia(productsWithMediaData)
         setIsLoading(false)
       } catch (err) {
         console.error('Error fetching media data:', err)
@@ -68,142 +82,111 @@ export const MediaMessageViewer = ({
     fetchMediaData()
   }, [productUrls, component, types, tollRouteApi])
 
-  // Extract images from product data based on types filter
-  const extractGalleryImages = (productData, typeFilter) => {
+  // Extract images from a single product based on types filter
+  const extractGalleryImagesForProduct = (product, typeFilter) => {
     const allImages = []
+    const isModel = Boolean(product?.commPlanID)
+    const isQMI = isModel && product?.isQMI
 
-    productData.forEach((product) => {
-      const isModel = Boolean(product?.commPlanID)
-      const isQMI = isModel && product?.isQMI
+    // Add images based on type filter
+    typeFilter.forEach((type) => {
+      switch (type) {
+        case 'AMENITY':
+          if (!isModel && product.amenities?.amenityGroups?.[0]?.media) {
+            allImages.push(...product.amenities.amenityGroups[0].media.map((img) => ({ ...img })))
+          }
+          break
+        case 'ELEVATION':
+          // Model elevations
+          if (isModel && product.elevations) {
+            allImages.push(...product.elevations.map((img) => ({ ...img })))
+          }
+          break
 
-      // Add images based on type filter
-      typeFilter.forEach((type) => {
-        switch (type) {
-          case 'AMENITY':
-            // Model elevations
-            if (!isModel && product.amenities?.amenityGroups?.[0]?.media) {
-              // if (product.amenities?.headshot) allImages.push({ ...product.amenities.headshot })
-              allImages.push(...product.amenities.amenityGroups[0].media.map((img) => ({ ...img })))
-            }
-            break
-          case 'ELEVATION':
-            // Model elevations
-            if (isModel && product.elevations) {
-              allImages.push(...product.elevations.map((img) => ({ ...img, type: 'ELEVATION' })))
-            }
-            break
+        case 'INTERIOR':
+          // Designer Appointed Features (QMI models)
+          if (isQMI && product.designerAppointed) {
+            const dafs = product.designerAppointed.slice(1) // Remove first item as per ProductLayout logic
+            allImages.push(...dafs.map((img) => ({ ...img })))
+          }
 
-          case 'INTERIOR':
-            // Designer Appointed Features (QMI models)
-            if (isQMI && product.designerAppointed) {
-              const dafs = product.designerAppointed.slice(1) // Remove first item as per ProductLayout logic
-              allImages.push(...dafs.map((img) => ({ ...img, type: 'INTERIOR' })))
-            }
-            // Community amenity photos
-            if (!isModel && product?.amenities?.amenityGroups?.[0]?.media) {
-              const amenityImages = product.amenities.amenityGroups[0].media.filter((item) => item.type === 'image')
-              allImages.push(...amenityImages.map((img) => ({ ...img, type: 'INTERIOR' })))
-            }
-            // Gallery images
-            if (product?.gallery?.mediaGroups?.[0]?.media) {
-              const galleryImages = product.gallery.mediaGroups[0].media.filter((item) => item.type === 'image')
-              allImages.push(...galleryImages.map((img) => ({ ...img, type: 'INTERIOR' })))
-            }
-            break
+          // Gallery images
+          if (product?.gallery?.mediaGroups?.[0]?.media) {
+            const galleryImages = product.gallery.mediaGroups[0].media.filter((item) => item.type === 'image')
+            allImages.push(...galleryImages.map((img) => ({ ...img })))
+          }
+          break
 
-          case 'VIDEO':
-          case 'WALKTHROUGH':
-            // Videos from headShot
-            if (product.headShot?.media?.type?.includes('video')) {
-              allImages.push({
-                url: product.headShot.media.url,
-                type: type,
-                title: product.name || ''
-              })
-            }
-            // Videos from gallery
-            if (product?.gallery?.mediaGroups?.[0]?.media) {
-              const videos = product.gallery.mediaGroups[0].media.filter(
-                (item) => item.type === 'video' || item.type?.includes('video')
-              )
-              allImages.push(...videos.map((vid) => ({ ...vid, type: type })))
-            }
-            break
+        case 'VIDEO':
+          if (product.gallery?.mediaGroups?.[0]?.media) {
+            const galleryVideos = product.gallery.mediaGroups[0].media.filter((item) => item.type.includes('vimeo'))
+            allImages.push(...galleryVideos.map((img) => ({ ...img })))
+          }
+          break
 
-          default:
-            break
-        }
-      })
+        case 'WALKTHROUGH':
+          if (isModel && product.walkThroughs) {
+            allImages.push(...product.walkThroughs.map((wt) => ({ ...wt.media })))
+          }
+          break
 
-      // If no type filter specified, add all available images
-      if (typeFilter.length === 0) {
-        if (isModel && product.elevations) {
-          allImages.push(...product.elevations)
-        }
-        if (isQMI && product.designerAppointed) {
-          allImages.push(...product.designerAppointed.slice(1))
-        }
-        if (!isModel && product?.amenities?.amenityGroups?.[0]?.media) {
-          const amenityImages = product.amenities.amenityGroups[0].media.filter((item) => item.type === 'image')
-          allImages.push(...amenityImages)
-        }
-        if (product?.gallery?.mediaGroups?.[0]?.media) {
-          allImages.push(...product.gallery.mediaGroups[0].media)
-        }
+        default:
+          break
       }
     })
 
     return allImages
   }
 
-  // Extract floor plans from product data
-  const extractFloorPlans = (productData) => {
-    const allFloorPlans = []
-
-    productData.forEach((product) => {
-      const isModel = Boolean(product?.commPlanID)
-      if (isModel && product.floorplans) {
-        allFloorPlans.push(...product.floorplans)
-      }
-    })
-
-    return allFloorPlans
+  // Extract floor plans from a single product
+  const extractFloorPlansForProduct = (product) => {
+    const isModel = Boolean(product?.commPlanID)
+    if (isModel && product.floorplans) {
+      return product.floorplans
+    }
+    return []
   }
 
-  console.log('media data: ', mediaData)
+  console.log('products with media: ', productsWithMedia)
 
   // Show loading state
   if (isLoading) {
     return <BotMessage message={message} component={<ThinkingIndicator />} />
   }
 
-  // Show error state
-  if (error || !mediaData || mediaData.length === 0) {
+  // Show error state or no media found
+  if (error || !productsWithMedia || productsWithMedia.length === 0) {
     return <BotMessage message={message} />
   }
 
-  // Render Gallery
-  if (component === 'Gallery') {
-    return (
-      <BotMessage
-        message={message}
-        component={<ImageCarousel images={mediaData} utils={utils} />}
-        outsideComponent={isFeedbackEligible ? feedbackComponent : null}
-      />
-    )
-  }
+  // Render multiple galleries or floor plan viewers in a single BotMessage
+  return (
+    <BotMessage
+      message={message}
+      component={
+        <>
+          {productsWithMedia.map((item) => {
+            if (component === 'Gallery') {
+              return (
+                <div key={`gallery-${item.key}`} className={styles.mediaViewerGallery}>
+                  <ImageCarousel images={item.media} utils={utils} title={item.name} />
+                </div>
+              )
+            }
 
-  // Render FloorPlan
-  if (component === 'FloorPlan') {
-    return (
-      <BotMessage
-        message={message}
-        component={<FloorPlanViewer floorPlans={mediaData} utils={utils} />}
-        outsideComponent={isFeedbackEligible ? feedbackComponent : null}
-      />
-    )
-  }
+            if (component === 'FloorPlan') {
+              return (
+                <div key={`floorplan-${item.key}`} className={styles.mediaViewerFloorplan}>
+                  <FloorPlanViewer floorPlans={item.media} utils={utils} />
+                </div>
+              )
+            }
 
-  // Fallback
-  return <BotMessage message={message} />
+            return null
+          })}
+        </>
+      }
+      outsideComponent={isFeedbackEligible ? feedbackComponent : null}
+    />
+  )
 }

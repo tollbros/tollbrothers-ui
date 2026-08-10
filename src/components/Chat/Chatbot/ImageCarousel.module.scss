@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
+  text-align: left;
 }
 
 .title {
@@ -63,11 +64,11 @@
   //max-height: 250px;
   object-fit: cover;
   border: 1px solid $light_gray;
+  aspect-ratio: 16 / 9;
 }
 
 .caption {
   font-family: $alt_font_family;
   font-size: 0.75em;
   color: black;
-  text-align: left;
 }

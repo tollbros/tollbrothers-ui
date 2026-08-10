@@ -1,38 +1,14 @@
 import React from 'react'
 
 export const ZoomInIcon = (props) => (
-  <svg
-    width='16'
-    height='16'
-    viewBox='0 0 16 16'
-    fill='none'
-    aria-hidden='true'
-    {...props}
-  >
-    <path
-      d='M8 3v10M3 8h10'
-      stroke='currentColor'
-      strokeWidth='2'
-      strokeLinecap='round'
-    />
+  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' {...props}>
+    <path d='M8 3v10M3 8h10' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
   </svg>
 )
 
 export const ZoomOutIcon = (props) => (
-  <svg
-    width='16'
-    height='16'
-    viewBox='0 0 16 16'
-    fill='none'
-    aria-hidden='true'
-    {...props}
-  >
-    <path
-      d='M3 8h10'
-      stroke='currentColor'
-      strokeWidth='2'
-      strokeLinecap='round'
-    />
+  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' aria-hidden='true' {...props}>
+    <path d='M3 8h10' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
   </svg>
 )
 
@@ -53,5 +29,12 @@ export const ResetZoomIcon = (props) => (
 
       <path strokeWidth='2' d='m4 1v4h-4' transform='matrix(1 0 0 -1 0 6)' />
     </g>
+  </svg>
+)
+
+export const PlayIcon = (props) => (
+  <svg width='48' height='48' viewBox='0 0 48 48' fill='none' aria-hidden='true' {...props}>
+    <circle cx='24' cy='24' r='24' fill='rgba(0, 0, 0, 0.6)' />
+    <path d='M18 14L34 24L18 34V14Z' fill='white' />
   </svg>
 )

@@ -58,6 +58,12 @@
   }
 }
 
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+}
+
 .image {
   width: 100%;
   height: auto;
@@ -65,6 +71,24 @@
   object-fit: cover;
   border: 1px solid $light_gray;
   aspect-ratio: 16 / 9;
+}
+
+.playIconOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.playIcon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+// Hover effect for play icon overlay
+.imageItem:hover .imageWrapper :global(.playIconOverlay) {
+  opacity: 0.9;
 }
 
 .caption {

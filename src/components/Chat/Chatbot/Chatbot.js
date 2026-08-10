@@ -396,23 +396,16 @@ export const Chatbot = ({
 
         if (response.transfer_to_osc) {
           handleShowChatForm({ text: response.message, contactInfo: response.contact_info })
-        } else if (response.type === 'ui') {
+        } else if (response.type === 'ui' && response.component && response.component !== 'ProductCards') {
           console.log('response: ', response)
-
-          // Extract product URLs from response
-          const productUrls = [
-            ...(response.communities || []),
-            ...(response.qmis || []),
-            ...(response.homeDesigns || [])
-          ]
 
           const botResponse = {
             id: Date.now() + 4,
             text: response.message,
             type: 'ui',
             component: response.component, // 'FloorPlan' or 'Gallery'
-            types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR)
-            productUrls: productUrls, // Product URLs to fetch media from
+            types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR, AMENITIY)
+            productUrls: products, // Product URLs to fetch media from
             session_id: response.session_id,
             conversation_turn_id: conversationTurnId,
             isFeedbackEligible: true

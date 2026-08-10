@@ -11,6 +11,7 @@ import { OptionsList } from './OptionsList'
 import { ProductsList } from './ProductsList'
 import { ProductLayout } from './ProductLayout'
 import { ChatSelection } from './ChatSelection'
+import { MediaMessageViewer } from './MediaMessageViewer'
 import { sendMessage } from './utils/sendMessage'
 import { getProductData } from './utils/getProductData'
 import { generateUniqueId } from './utils/generateUniqueId'
@@ -395,6 +396,28 @@ export const Chatbot = ({
 
         if (response.transfer_to_osc) {
           handleShowChatForm({ text: response.message, contactInfo: response.contact_info })
+        } else if (response.type === 'ui') {
+          console.log('response: ', response)
+
+          // Extract product URLs from response
+          const productUrls = [
+            ...(response.communities || [])
+            // ...(response.qmis || []),
+            // ...(response.homeDesigns || [])
+          ]
+
+          const botResponse = {
+            id: Date.now() + 4,
+            text: response.message,
+            type: 'ui',
+            component: response.component, // 'FloorPlan' or 'Gallery'
+            types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR)
+            productUrls: productUrls, // Product URLs to fetch media from
+            session_id: response.session_id,
+            conversation_turn_id: conversationTurnId,
+            isFeedbackEligible: true
+          }
+          setMessages((prev) => [...prev, botResponse])
         } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
@@ -875,6 +898,22 @@ export const Chatbot = ({
                           onChange={handleMessageFeedbackChange}
                         />
                       ) : null
+                    }
+                  />
+                )
+              } else if (msg.type === 'ui') {
+                return (
+                  <MediaMessageViewer
+                    key={msg.id}
+                    message={msg.text}
+                    component={msg.component}
+                    types={msg.types}
+                    productUrls={msg.productUrls}
+                    utils={utils}
+                    tollRouteApi={tollRouteApi}
+                    isFeedbackEligible={msg.isFeedbackEligible}
+                    feedbackComponent={
+                      <MessageFeedback msg={msg} chatApiConfig={chatApiConfig} onChange={handleMessageFeedbackChange} />
                     }
                   />
                 )

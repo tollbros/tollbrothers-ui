@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { HorizontalScroller } from '../../HorizontalScroller'
 import { FullScreenGallery } from '../../FullScreenGallery'
-import { PlayIcon } from './icons'
 import { fetchImageThumbnails } from './utils/fetchImageThumbnails'
 
 import styles from './ImageCarousel.module.scss'
-
-const getCaption = (image) => image.title || image.alt || image.caption || image.description || ''
 
 // Check if item is a video
 const isVideo = (item) => {
   return item.type && (item.type.includes('vimeo') || item.type.includes('video'))
 }
+
+// Check if item is a walkthrough
+const isWalkthrough = (item) => {
+  return item.type && item.type.includes('walkthrough')
+}
+
+const getCaption = (image) => {
+  return image.title || image.alt || image.caption || image.description || ''
+}
+
+const PLAY_ICON_URL = 'https://cdn.tollbrothers.com/sites/comtollbrotherswww/brochure/icons/play-icon.svg'
+const WALKTHROUGH_ICON_URL = 'https://cdn.tollbrothers.com/sites/comtollbrotherswww/svg/3D-Tour.svg'
 
 export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false }) => {
   const [showGallery, setShowGallery] = useState(false)
@@ -20,7 +29,7 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
 
   useEffect(() => {
     if (images.length > 0) {
-      fetchImageThumbnails(images, utils, isVideo).then((thumbnails) => {
+      fetchImageThumbnails(images, utils, isVideo, isWalkthrough).then((thumbnails) => {
         setThumbnailUrls(thumbnails)
       })
     }
@@ -42,15 +51,23 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
   const imageList = isUseHighRes ? utils?.setToOriginalImages?.(images) || images : images
 
   const mediaList = imageList.map((image) => {
-    const caption = getCaption(image)
-    const itemIsVideo = isVideo(image)
+    let caption = getCaption(image)
+
+    // for any non-matterport walkthroughs
+    if (image.type === 'walkthrough') {
+      if (caption) {
+        caption = `${caption} | 3D Walkthrough is for representational purposes only. Actual product may differ.`
+      } else if (image.planName) {
+        caption = `${image.planName} | 3D Walkthrough is for representational purposes only. Actual product may differ.`
+      }
+    }
 
     return {
       url: image.url || image.src,
       title: caption,
       description: caption,
       type: image.type,
-      link: itemIsVideo ? image.link : undefined,
+      link: image.link,
       variant: 'chatbot'
     }
   })
@@ -69,9 +86,14 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
           useContainerWidth
         >
           {images.map((image, index) => {
-            const caption = getCaption(image)
+            let caption = getCaption(image)
             const itemIsVideo = isVideo(image)
+            const itemIsWalkthrough = isWalkthrough(image)
             const thumbnailUrl = thumbnailUrls[index] || image.url || image.src
+
+            if (itemIsWalkthrough && !caption) {
+              caption = 'Walkthrough'
+            }
 
             return (
               <div
@@ -90,9 +112,13 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
               >
                 <div className={styles.imageWrapper}>
                   <img src={thumbnailUrl} alt={caption} className={styles.image} />
-                  {itemIsVideo && (
+                  {(itemIsVideo || itemIsWalkthrough) && (
                     <div className={`${styles.playIconOverlay}`}>
-                      <PlayIcon className={styles.playIcon} />
+                      <img
+                        src={itemIsWalkthrough ? WALKTHROUGH_ICON_URL : PLAY_ICON_URL}
+                        alt={itemIsWalkthrough ? '3D Tour' : 'Play Video'}
+                        className={`${styles.playIcon} ${itemIsWalkthrough ? styles.walkthroughIcon : ''}`}
+                      />
                     </div>
                   )}
                 </div>

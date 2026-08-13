@@ -125,8 +125,13 @@ export const MediaMessageViewer = ({
           break
 
         case 'WALKTHROUGH':
-          if (isModel && product.walkThroughs) {
-            allImages.push(...product.walkThroughs.map((wt) => ({ ...wt.media })))
+          if (isModel && product.gallery?.walkThroughs) {
+            allImages.push(
+              ...product.gallery.walkThroughs.map((wt) => ({
+                ...wt.media,
+                planName: product.name
+              }))
+            )
           }
           break
 
@@ -177,7 +182,7 @@ export const MediaMessageViewer = ({
             if (component === 'FloorPlan') {
               return (
                 <div key={`floorplan-${item.key}`} className={styles.mediaViewerFloorplan}>
-                  <FloorPlanViewer floorPlans={item.media} utils={utils} />
+                  <FloorPlanViewer floorPlans={item.media} utils={utils} title={`${item.name} Floor Plans`} />
                 </div>
               )
             }

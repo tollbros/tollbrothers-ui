@@ -917,6 +917,7 @@ export const Chatbot = ({
                     utils={utils}
                     tollRouteApi={tollRouteApi}
                     isFeedbackEligible={msg.isFeedbackEligible}
+                    onMinimizeChat={onMinimizeChat}
                     feedbackComponent={
                       <MessageFeedback msg={msg} chatApiConfig={chatApiConfig} onChange={handleMessageFeedbackChange} />
                     }

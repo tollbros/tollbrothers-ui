@@ -4,6 +4,7 @@ import { ImageCarousel } from './ImageCarousel'
 import { FloorPlanViewer } from './FloorPlanViewer'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { getProductData } from './utils/getProductData'
+import { ConditionalLink } from './ConditionalLink'
 import styles from './MediaMessageViewer.module.scss'
 
 /**
@@ -18,16 +19,12 @@ export const MediaMessageViewer = ({
   utils,
   tollRouteApi,
   isFeedbackEligible,
-  feedbackComponent
+  feedbackComponent,
+  onMinimizeChat
 }) => {
   const [productsWithMedia, setProductsWithMedia] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  console.log(productUrls)
-
-  console.log('component: ', component)
-  console.log('types: ', types)
 
   useEffect(() => {
     const fetchMediaData = async () => {
@@ -40,8 +37,6 @@ export const MediaMessageViewer = ({
       try {
         setIsLoading(true)
         const productData = await getProductData(productUrls, tollRouteApi)
-
-        console.log('product data: ', productData)
 
         if (!productData || productData.length === 0) {
           setError('Failed to load media')
@@ -152,8 +147,6 @@ export const MediaMessageViewer = ({
     return []
   }
 
-  console.log('products with media: ', productsWithMedia)
-
   // Show loading state
   if (isLoading) {
     return <BotMessage message={message} component={<ThinkingIndicator />} />
@@ -174,7 +167,20 @@ export const MediaMessageViewer = ({
             if (component === 'Gallery') {
               return (
                 <div key={`gallery-${item.key}`} className={styles.mediaViewerGallery}>
-                  <ImageCarousel images={item.media} utils={utils} title={item.name} />
+                  <ImageCarousel
+                    images={item.media}
+                    utils={utils}
+                    title={
+                      <div className={styles.title}>
+                        <ConditionalLink href={item.product.url} utils={utils} onMinimizeChat={onMinimizeChat}>
+                          <h3 className={styles.itemTitle}>{item.name}</h3>
+                        </ConditionalLink>
+                        {item.product?.communityUrl && (
+                          <span className={styles.itemSubtitle}>{item.product.communityName}</span>
+                        )}
+                      </div>
+                    }
+                  />
                 </div>
               )
             }

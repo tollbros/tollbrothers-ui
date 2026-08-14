@@ -7,6 +7,17 @@ import { getProductData } from './utils/getProductData'
 import { ConditionalLink } from './ConditionalLink'
 import styles from './MediaMessageViewer.module.scss'
 
+const MediaTitle = ({ item, onMinimizeChat, utils }) => {
+  return (
+    <div className={styles.title}>
+      <ConditionalLink href={item?.product?.url} utils={utils} onMinimizeChat={onMinimizeChat}>
+        <h3 className={styles.itemTitle}>{item?.name}</h3>
+      </ConditionalLink>
+      {item?.product?.communityUrl && <span className={styles.itemSubtitle}>{item.product.communityName}</span>}
+    </div>
+  )
+}
+
 /**
  * MediaMessageViewer Component
  * Fetches product data and displays media (images or floor plans) based on component type
@@ -170,16 +181,7 @@ export const MediaMessageViewer = ({
                   <ImageCarousel
                     images={item.media}
                     utils={utils}
-                    title={
-                      <div className={styles.title}>
-                        <ConditionalLink href={item.product.url} utils={utils} onMinimizeChat={onMinimizeChat}>
-                          <h3 className={styles.itemTitle}>{item.name}</h3>
-                        </ConditionalLink>
-                        {item.product?.communityUrl && (
-                          <span className={styles.itemSubtitle}>{item.product.communityName}</span>
-                        )}
-                      </div>
-                    }
+                    title={<MediaTitle item={item} utils={utils} onMinimizeChat={onMinimizeChat} />}
                   />
                 </div>
               )
@@ -188,7 +190,11 @@ export const MediaMessageViewer = ({
             if (component === 'FloorPlan') {
               return (
                 <div key={`floorplan-${item.key}`} className={styles.mediaViewerFloorplan}>
-                  <FloorPlanViewer floorPlans={item.media} utils={utils} title={`${item.name} Floor Plans`} />
+                  <FloorPlanViewer
+                    floorPlans={item.media}
+                    utils={utils}
+                    title={<MediaTitle item={item} utils={utils} onMinimizeChat={onMinimizeChat} />}
+                  />
                 </div>
               )
             }

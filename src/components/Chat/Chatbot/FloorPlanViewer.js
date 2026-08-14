@@ -15,7 +15,7 @@ export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
     sortedFloorplans
   ])
 
-  const mainTitle = title || 'Floor Plans'
+  // const mainTitle = title || 'Floor Plans'
 
   const containerRef = useTrackInView({
     onInView: () => {
@@ -48,7 +48,7 @@ export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
 
   return (
     <div className={`${styles.floorPlanViewer} ${classes?.root || ''}`} ref={containerRef}>
-      <h3 className={`${styles.title} ${classes?.title || ''}`}>{mainTitle}</h3>
+      <h3 className={`${styles.title} ${classes?.title || ''}`}>{title ?? 'Floor Plans'}</h3>
       <div className={`${styles.svgContainer} ${classes?.svgContainer || ''}`}>
         {isLoading ? (
           <ThinkingIndicator />

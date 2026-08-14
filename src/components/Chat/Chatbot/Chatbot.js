@@ -402,6 +402,9 @@ export const Chatbot = ({
           response.component &&
           response.component !== 'ProductCards'
         ) {
+          hasProducts = true
+          setIsThinking(true)
+
           let productUrls = [...(response.communities || [])]
           if (response.mediaSource === 'qmi') {
             productUrls = [...(response.qmis || [])]
@@ -409,19 +412,45 @@ export const Chatbot = ({
             productUrls = [...(response.homeDesigns || [])]
           }
 
-          const botResponse = {
-            id: Date.now() + 4,
-            text: response.message,
-            type: 'ui',
-            component: response.component, // 'FloorPlan' or 'Gallery'
-            types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR, AMENITIY)
-            productUrls: productUrls, // Product URLs to fetch media from
-            session_id: response.session_id,
-            conversation_turn_id: conversationTurnId,
-            isFeedbackEligible: true
-          }
-          setMessages((prev) => [...prev, botResponse])
-        } else if (products && Array.isArray(products) && products.length > 0) {
+          getProductData(productUrls, tollRouteApi)
+            .then((productData) => {
+              setIsThinking(false)
+              if (productData?.length > 0) {
+                const botResponse = {
+                  id: Date.now() + 4,
+                  text: response.message,
+                  type: 'media',
+                  component: response.component, // 'FloorPlan' or 'Gallery'
+                  types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR, AMENITIY)
+                  products: productData, // Pass actual product data instead of URLs
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
+                }
+                setMessages((prev) => [...prev, botResponse])
+              } else {
+                // Fallback to text message if no products found
+                const botResponse = {
+                  id: Date.now() + 4,
+                  text: response.message,
+                  type: 'bot',
+                  session_id: response.session_id,
+                  conversation_turn_id: conversationTurnId,
+                  isFeedbackEligible: true
+                }
+                setMessages((prev) => [...prev, botResponse])
+              }
+            })
+            .catch((err) => {
+              console.error('getProductData error:', err)
+              setIsThinking(false)
+            })
+        } else if (
+          products &&
+          Array.isArray(products) &&
+          products.length > 0 &&
+          response.component === 'ProductCards'
+        ) {
           hasProducts = true
           setIsThinking(true)
           // console.log('fetch products')
@@ -904,16 +933,15 @@ export const Chatbot = ({
                     }
                   />
                 )
-              } else if (msg.type === 'ui') {
+              } else if (msg.type === 'media') {
                 return (
                   <MediaMessageViewer
                     key={msg.id}
                     message={msg.text}
                     component={msg.component}
                     types={msg.types}
-                    productUrls={msg.productUrls}
+                    products={msg.products}
                     utils={utils}
-                    tollRouteApi={tollRouteApi}
                     isFeedbackEligible={msg.isFeedbackEligible}
                     onMinimizeChat={onMinimizeChat}
                     feedbackComponent={

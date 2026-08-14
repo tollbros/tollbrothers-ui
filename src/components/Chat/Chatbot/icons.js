@@ -31,10 +31,3 @@ export const ResetZoomIcon = (props) => (
     </g>
   </svg>
 )
-
-export const PlayIcon = (props) => (
-  <svg width='48' height='48' viewBox='0 0 48 48' fill='none' aria-hidden='true' {...props}>
-    <circle cx='24' cy='24' r='24' fill='rgba(0, 0, 0, 0.6)' />
-    <path d='M18 14L34 24L18 34V14Z' fill='white' />
-  </svg>
-)

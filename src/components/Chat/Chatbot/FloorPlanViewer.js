@@ -15,8 +15,6 @@ export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
     sortedFloorplans
   ])
 
-  // const mainTitle = title || 'Floor Plans'
-
   const containerRef = useTrackInView({
     onInView: () => {
       if (utils?.dataLayerPush) {

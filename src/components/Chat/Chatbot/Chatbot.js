@@ -398,12 +398,10 @@ export const Chatbot = ({
           handleShowChatForm({ text: response.message, contactInfo: response.contact_info })
         } else if (
           response.type === 'ui' &&
-          // response.mediaSource &&
+          response.mediaSource &&
           response.component &&
           response.component !== 'ProductCards'
         ) {
-          console.log('response: ', response)
-
           let productUrls = [...(response.communities || [])]
           if (response.mediaSource === 'qmi') {
             productUrls = [...(response.qmis || [])]

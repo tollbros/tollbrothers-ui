@@ -100,7 +100,7 @@ export const MediaMessageViewer = ({
   feedbackComponent,
   onMinimizeChat
 }) => {
-  // Extract media for each product - calculated synchronously during render
+  // Extract media for each product
   const productsWithMedia = useMemo(() => {
     if (!products || products.length === 0) {
       return []

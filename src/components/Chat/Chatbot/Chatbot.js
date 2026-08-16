@@ -445,12 +445,7 @@ export const Chatbot = ({
               console.error('getProductData error:', err)
               setIsThinking(false)
             })
-        } else if (
-          products &&
-          Array.isArray(products) &&
-          products.length > 0 &&
-          response.component === 'ProductCards'
-        ) {
+        } else if (products && Array.isArray(products) && products.length > 0) {
           hasProducts = true
           setIsThinking(true)
           // console.log('fetch products')

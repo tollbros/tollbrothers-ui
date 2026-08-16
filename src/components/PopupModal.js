@@ -2,15 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './PopupModal.module.scss'
 
-const PopupModalWrapper = ({
-  animate,
-  autoFocus,
-  children,
-  onClose,
-  onCloseHandler,
-  siteplan,
-  show
-}) => {
+const PopupModalWrapper = ({ animate, autoFocus, children, onClose, onCloseHandler, siteplan, show, classes = {} }) => {
   const ref = useRef(null)
   useEffect(() => {
     if (show && autoFocus && ref?.current) {
@@ -25,22 +17,18 @@ const PopupModalWrapper = ({
         ${show ? styles.show : ''}
         ${animate ? styles.animate : ''}
         ${siteplan ? styles.siteplan : ''}
+        ${classes.modalRoot ?? ''}
       `}
       ref={ref}
       tabIndex={0}
     >
       {children}
-      {onClose && (
-        <button
-          className={`${styles.closeButton} clear-styles closeButton`}
-          onClick={onCloseHandler}
-        />
-      )}
+      {onClose && <button className={`${styles.closeButton} clear-styles closeButton`} onClick={onCloseHandler} />}
     </div>
   )
 }
 
-const PopupModal = ({ children, show, onClose, siteplan, portalId }) => {
+const PopupModal = ({ children, show, onClose, siteplan, portalId, classes = {} }) => {
   const [animate, setAnimate] = useState(false)
 
   useEffect(() => {
@@ -68,6 +56,7 @@ const PopupModal = ({ children, show, onClose, siteplan, portalId }) => {
         siteplan={siteplan}
         show={show}
         autoFocus
+        classes={classes}
       />,
       document.getElementById(portalId)
     )
@@ -81,6 +70,7 @@ const PopupModal = ({ children, show, onClose, siteplan, portalId }) => {
       onCloseHandler={onCloseHandler}
       siteplan={siteplan}
       show={show}
+      classes={classes}
     />
   )
 }

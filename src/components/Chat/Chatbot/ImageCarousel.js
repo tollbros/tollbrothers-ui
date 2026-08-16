@@ -135,6 +135,8 @@ export const ImageCarousel = ({ images = [], title, utils, isUseHighRes = false 
         onClose={() => setShowGallery(false)}
         onNext={onSlideView}
         onPrevious={onSlideView}
+        portalId='myportal'
+        classes={{ modalRoot: styles.modalRoot }}
       />
     </div>
   )

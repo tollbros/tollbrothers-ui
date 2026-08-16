@@ -88,7 +88,7 @@ const extractFloorPlansForProduct = (product) => {
 
 /**
  * MediaMessageViewer Component
- * Displays media (images or floor plans) based on component type from pre-fetched product data
+ * Displays media (images, walkthroughs, videos or floor plans) based on component type from pre-fetched product data
  */
 export const MediaMessageViewer = ({
   message,

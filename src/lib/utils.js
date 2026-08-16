@@ -244,7 +244,7 @@ const getWalkthroughURL = (walkthrough) => {
     src = 'https://my.matterport.com/show/?m=' + walkthrough.link + '&ts=2&lp=1&hl=1&qs=1&play=1&nt=0&search=0'
   } else {
     src = walkthrough.link
-    if (!walkthrough.link.includes('?')) {
+    if (!walkthrough.link?.includes('?')) {
       src = src + '?v=1'
     }
   }

@@ -6,11 +6,17 @@ export const CommunityStats = ({ community }) => {
     return null
   }
 
+  let rangeBed = community.rangeBed
+
+  if (typeof rangeBed === 'string') {
+    rangeBed = community.rangeBed.replace('0-', 'Studio-')
+  }
+
   return (
     <div className={styles.root}>
-      {community.rangeBed && (
+      {rangeBed && (
         <div className={styles.stat}>
-          <div className={styles.statValue}>{community.rangeBed}</div>
+          <div className={styles.statValue}>{rangeBed}</div>
           <div className={styles.statLabel}>Beds</div>
         </div>
       )}

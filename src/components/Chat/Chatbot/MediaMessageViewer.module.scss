@@ -1,0 +1,35 @@
+@import "styles/modules/all";
+
+.mediaViewerGallery {
+  margin-top: 32px;
+
+  &:first-child {
+    margin-top: 16px;
+  }
+}
+
+.mediaViewerFloorplan {
+  margin-top: 50px;
+
+  &:first-child {
+    margin-top: 16px;
+  }
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+
+  .itemTitle {
+    font-family: $domaine_font_family;
+    font-size: .9em;
+    margin: 0;
+  }
+
+  .itemSubtitle {
+    font-family: $alt_font_family;
+    font-size: .7em;
+    font-weight: $font_weight_light;
+    margin-top: -2px;
+  }
+}

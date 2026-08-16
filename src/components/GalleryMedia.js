@@ -73,10 +73,7 @@ function GalleryMedia({
 
   const openFacebook = () => {
     window.open(
-      'http://www.facebook.com/sharer.php?u=' +
-        encodeURIComponent(src) +
-        '&t=' +
-        encodeURIComponent(caption),
+      'http://www.facebook.com/sharer.php?u=' + encodeURIComponent(src) + '&t=' + encodeURIComponent(caption),
       'sharer',
       'toolbar=0,status=0,width=626,height=436'
     )
@@ -107,11 +104,7 @@ function GalleryMedia({
   }, [])
 
   useEffect(() => {
-    if (
-      isZoomedInRef &&
-      !isZoomedInRef.current &&
-      transformComponentRef?.current
-    ) {
+    if (isZoomedInRef && !isZoomedInRef.current && transformComponentRef?.current) {
       transformComponentRef.current.resetTransform()
     }
   }, [isZoomedInRef?.current])
@@ -119,11 +112,7 @@ function GalleryMedia({
   return (
     <div className={styles.mediaWrapper}>
       {!showMedia && <span className='spinner' />}
-      <figure
-        className={`${styles.media} ${
-          showMedia ? styles.show : ''
-        } ${iframeWithCaption}`}
-      >
+      <figure className={`${styles.media} ${showMedia ? styles.show : ''} ${iframeWithCaption}`}>
         {type === 'image' && (
           <TransformWrapper
             ref={transformComponentRef}
@@ -147,10 +136,7 @@ function GalleryMedia({
               }
             }}
           >
-            <TransformComponent
-              wrapperClass={styles.transformWrapper}
-              contentClass={styles.transformContentClass}
-            >
+            <TransformComponent wrapperClass={styles.transformWrapper} contentClass={styles.transformContentClass}>
               <img
                 className={`${isSvg ? 'mediaSVG__adjust' : ''}`}
                 src={src}
@@ -189,10 +175,7 @@ function GalleryMedia({
         )}
 
         {((caption && showCaption) || mediaCount > 1) && ( // need to add the figcaption for the media count (ie 1/3) to show even if there is no caption
-          <figcaption
-            className={`${classes.figcaption ?? ''}`}
-            style={{ backgroundColor: backgroundColor }}
-          >
+          <figcaption className={`${classes.figcaption ?? ''}`} style={{ backgroundColor: backgroundColor }}>
             {showCaption && <span>{caption}</span>}
             <div className={styles.bottomRightNav}>
               {mediaCount > 1 && <span>{imgCount}</span>}

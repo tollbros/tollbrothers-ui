@@ -47,20 +47,15 @@ export const FullScreenGallery = ({
 
   return (
     show && (
-      <PopupModal show portalId={portalId}>
+      <PopupModal show portalId={portalId} classes={{ modalRoot: classes.modalRoot ?? '' }}>
         <div className={`${styles.fullScreen} full`}>
           {showLeftCloseButton && (
             <button
-              className={`${styles.close} ${styles.closeLeft} ${
-                classes.closeButton ?? ''
-              }`}
+              className={`${styles.close} ${styles.closeLeft} ${classes.closeButton ?? ''}`}
               onClick={closeGallery}
             />
           )}
-          <button
-            className={`${styles.close} ${classes.closeButton ?? ''}`}
-            onClick={closeGallery}
-          />
+          <button className={`${styles.close} ${classes.closeButton ?? ''}`} onClick={closeGallery} />
           <div className={styles.container}>
             <Slider
               mediaList={newMediaList}

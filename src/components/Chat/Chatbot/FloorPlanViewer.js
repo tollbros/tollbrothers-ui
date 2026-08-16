@@ -6,7 +6,7 @@ import { ThinkingIndicator } from './ThinkingIndicator'
 import { ZoomInIcon, ZoomOutIcon, ResetZoomIcon } from './icons'
 import { useTrackInView } from './hooks/useTrackInView'
 
-export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
+export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [isCoverActive, setIsCoverActive] = useState(true)
   const sortedFloorplans = useMemo(() => utils?.sortFloorplans?.(floorPlans) || floorPlans, [floorPlans])
@@ -45,9 +45,9 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
   }
 
   return (
-    <div className={styles.floorPlanViewer} ref={containerRef}>
-      <h3 className={styles.title}>Floor Plans</h3>
-      <div className={styles.svgContainer}>
+    <div className={`${styles.floorPlanViewer} ${classes?.root || ''}`} ref={containerRef}>
+      <h3 className={`${styles.title} ${classes?.title || ''}`}>{title ?? 'Floor Plans'}</h3>
+      <div className={`${styles.svgContainer} ${classes?.svgContainer || ''}`}>
         {isLoading ? (
           <ThinkingIndicator />
         ) : (
@@ -56,7 +56,7 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
               <>
                 {isCoverActive && (
                   <div
-                    className={styles.cover}
+                    className={`${styles.cover} ${classes?.cover || ''}`}
                     onClick={removeCover}
                     onDoubleClick={removeCover}
                     role='button'
@@ -64,7 +64,7 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
                     aria-label='Click to interact with floor plan'
                   />
                 )}
-                <div className={styles.controls}>
+                <div className={`${styles.controls} ${classes?.controls || ''}`}>
                   <button
                     onClick={() => {
                       removeCover()
@@ -96,9 +96,9 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
                     <ResetZoomIcon />
                   </button>
                 </div>
-                <TransformComponent wrapperClass={styles.transformWrapper}>
+                <TransformComponent wrapperClass={`${styles.transformWrapper} ${classes?.transformWrapper || ''}`}>
                   <div
-                    className={styles.floorPlanImage}
+                    className={`${styles.floorPlanImage} ${classes?.floorPlanImage || ''}`}
                     dangerouslySetInnerHTML={{ __html: svgContent }}
                     role='img'
                     aria-label={activeFloorPlan.title || 'Floor Plan'}
@@ -110,11 +110,11 @@ export const FloorPlanViewer = ({ floorPlans = [], utils }) => {
         )}
       </div>
       {sortedFloorplans.length > 1 && (
-        <div className={styles.tabsContainer}>
+        <div className={`${styles.tabsContainer} ${classes?.tabsContainer || ''}`}>
           {sortedFloorplans.map((fp, index) => (
             <button
               key={index}
-              className={`${styles.tab} ${activeTab === index ? styles.active : ''}`}
+              className={`${styles.tab} ${activeTab === index ? styles.active : ''} ${classes?.tab || ''}`}
               onClick={(e) => handleTabClick(index, e)}
               aria-label={`Show ${fp.title} || 'Floor Plan'`}
             >

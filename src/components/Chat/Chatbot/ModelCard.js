@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './ModelCard.module.scss'
 import { ActionButton } from './ActionButton'
+import { OptionButton } from './OptionButton'
 import { ModelStats } from './ModelStats'
 import { ModelDetails } from './ModelDetails'
 import { ConditionalLink } from './ConditionalLink'
@@ -51,7 +52,7 @@ export const ModelCard = ({ model, hideLocation, onClick = () => null, onMinimiz
 
         <div className={styles.actionButtonWrapper}>
           {!model.isQMI && model.dyohLink && (
-            <ActionButton onClick={() => window.open(`${model.url}/DYOH`, '_blank')}>Personalize</ActionButton>
+            <OptionButton text='Personalize' onClick={() => window.open(`${model.url}/DYOH`, '_blank')} />
           )}
           {model.url && <ActionButton onClick={() => onClick(model)}>Learn More</ActionButton>}
         </div>

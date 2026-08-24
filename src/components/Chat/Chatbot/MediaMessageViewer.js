@@ -161,6 +161,7 @@ export const MediaMessageViewer = ({
                     floorPlans={item.media}
                     utils={utils}
                     title={<MediaTitle item={item} utils={utils} onMinimizeChat={onMinimizeChat} />}
+                    model={item.product}
                   />
                 </div>
               )

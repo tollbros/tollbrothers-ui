@@ -15,11 +15,8 @@
         justify-content: space-between;
         pointer-events: none;
         z-index: 101;
-        display: none;
+        display: flex;
 
-        @include breakpoint(sm) {
-            display: flex;
-        }
 
         button {
             pointer-events: auto;

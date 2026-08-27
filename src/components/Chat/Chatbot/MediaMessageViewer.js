@@ -22,6 +22,10 @@ const extractGalleryImagesForProduct = (product, typeFilter) => {
   const isModel = Boolean(product?.commPlanID)
   const isQMI = isModel && product?.isQMI
 
+  console.log(product)
+
+  console.log(typeFilter)
+
   // Add images based on type filter
   typeFilter.forEach((type) => {
     switch (type) {

@@ -11,7 +11,7 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
     const response = await fetch(`${baseUrl}/chat`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(prompt)
+      body: JSON.stringify({ ...prompt, streaming: true })
     })
 
     if (!response.ok) {
@@ -23,6 +23,9 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
 
     const decoder = new TextDecoder()
     let buffer = ''
+    let sessionId = null
+    let conversationTurnId = null
+    let uiMessage = null
 
     while (true) {
       const { done, value } = await reader.read()
@@ -38,12 +41,29 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
         try {
           const parsed = JSON.parse(trimmed)
 
-          if (onChunk && parsed.response) {
+          // Handle acknowledgment message to capture session info
+          if (parsed.type === 'ack') {
+            sessionId = parsed.session_id
+            conversationTurnId = parsed.conversation_turn_id
+            continue
+          }
+
+          // Stream text messages immediately
+          if (onChunk && parsed.type === 'text') {
             onChunk({
-              ...parsed.response,
-              session_id: parsed.session_id,
-              conversation_turn_id: parsed.conversation_turn_id
+              ...parsed,
+              session_id: sessionId,
+              conversation_turn_id: conversationTurnId
             })
+          }
+
+          // Buffer ui message to send after stream is done
+          if (parsed.type === 'ui') {
+            uiMessage = {
+              ...parsed,
+              session_id: sessionId,
+              conversation_turn_id: conversationTurnId
+            }
           }
         } catch {
           // skip non-JSON lines
@@ -55,16 +75,33 @@ export const sendMessage = async (prompt, { baseUrl, apiKey, onChunk, onDone, on
       try {
         const parsed = JSON.parse(buffer.trim())
 
-        if (onChunk && parsed.response) {
+        // Handle acknowledgment message to capture session info
+        if (parsed.type === 'ack') {
+          sessionId = parsed.session_id
+          conversationTurnId = parsed.conversation_turn_id
+        } else if (parsed.type === 'text' && onChunk) {
+          // Stream text messages immediately
           onChunk({
-            ...parsed.response,
-            session_id: parsed.session_id,
-            conversation_turn_id: parsed.conversation_turn_id
+            ...parsed,
+            session_id: sessionId,
+            conversation_turn_id: conversationTurnId
           })
+        } else if (parsed.type === 'ui') {
+          // Buffer ui message to send after stream is done
+          uiMessage = {
+            ...parsed,
+            session_id: sessionId,
+            conversation_turn_id: conversationTurnId
+          }
         }
       } catch {
         // skip non-JSON lines
       }
+    }
+
+    // Send the ui message after stream is complete
+    if (onChunk && uiMessage) {
+      onChunk(uiMessage)
     }
 
     if (onDone) onDone()

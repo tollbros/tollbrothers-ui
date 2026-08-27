@@ -384,6 +384,8 @@ export const Chatbot = ({
     }
 
     let hasProducts = false
+    let accumulatedText = ''
+    const currentBotMessageId = Date.now()
 
     sendMessage(promp, {
       ...chatApiConfig,
@@ -391,129 +393,169 @@ export const Chatbot = ({
         // console.log('chunk:', response)
         setSessionId(response.session_id)
         setSessionTime(Date.now() + 15 * 60 * 1000) // set session expiry time to 15 minutes from now
-        const products = [...(response.communities || []), ...(response.qmis || []), ...(response.homeDesigns || [])]
         const conversationTurnId = response.conversation_turn_id
 
-        if (response.transfer_to_osc) {
-          handleShowChatForm({ text: response.message, contactInfo: response.contact_info })
-        } else if (
-          response.type === 'ui' &&
-          response.mediaSource &&
-          response.component &&
-          response.component !== 'ProductCards'
-        ) {
-          hasProducts = true
-          setIsThinking(true)
+        // console.log(response)
 
-          let productUrls = [...(response.communities || [])]
-          if (response.mediaSource === 'qmi') {
-            productUrls = [...(response.qmis || [])]
-          } else if (response.mediaSource === 'design') {
-            productUrls = [...(response.homeDesigns || [])]
+        // Handle streaming text chunks
+        if (response.type === 'text') {
+          accumulatedText += response.content
+
+          // Update or create the bot message with accumulated text + ellipsis
+          setMessages((prev) => {
+            const existingIndex = prev.findIndex((msg) => msg.id === currentBotMessageId)
+
+            const botMessage = {
+              id: currentBotMessageId,
+              text: accumulatedText + '...',
+              type: 'bot',
+              session_id: response.session_id,
+              conversation_turn_id: conversationTurnId
+            }
+
+            if (existingIndex !== -1) {
+              // Update existing message
+              const updated = [...prev]
+              updated[existingIndex] = botMessage
+              return updated
+            } else {
+              // Add new message
+              return [...prev, botMessage]
+            }
+          })
+
+          setIsThinking(false)
+          return
+        }
+
+        // Handle UI message (comes after text is done)
+        if (response.type === 'ui') {
+          const products = [
+            ...(response.props?.communities || []),
+            ...(response.props?.qmis || []),
+            ...(response.props?.homeDesigns || [])
+          ]
+
+          if (response.transfer_to_osc) {
+            handleShowChatForm({ text: accumulatedText, contactInfo: response.contact_info })
+          } else if (response.mediaSource && response.component && response.component !== 'ProductCards') {
+            hasProducts = true
+            setIsThinking(true)
+
+            let productUrls = [...(response.props?.communities || [])]
+            if (response.mediaSource === 'qmi') {
+              productUrls = [...(response.props?.qmis || [])]
+            } else if (response.mediaSource === 'design') {
+              productUrls = [...(response.props?.homeDesigns || [])]
+            }
+
+            getProductData(productUrls, tollRouteApi)
+              .then((productData) => {
+                setIsThinking(false)
+                if (productData?.length > 0) {
+                  // Update the existing bot message with media type
+                  setMessages((prev) => {
+                    const updated = [...prev]
+                    const existingIndex = updated.findIndex((msg) => msg.id === currentBotMessageId)
+                    if (existingIndex !== -1) {
+                      updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        type: 'media',
+                        component: response.component,
+                        types: response.props?.types || [],
+                        products: productData,
+                        isFeedbackEligible: true
+                      }
+                    }
+                    return updated
+                  })
+                } else {
+                  // Mark as feedback eligible if no products found
+                  setMessages((prev) => {
+                    const updated = [...prev]
+                    const existingIndex = updated.findIndex((msg) => msg.id === currentBotMessageId)
+                    if (existingIndex !== -1) {
+                      updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        isFeedbackEligible: true
+                      }
+                    }
+                    return updated
+                  })
+                }
+              })
+              .catch((err) => {
+                console.error('getProductData error:', err)
+                setIsThinking(false)
+              })
+          } else if (products && Array.isArray(products) && products.length > 0) {
+            hasProducts = true
+            setIsThinking(true)
+            getProductData(products, tollRouteApi)
+              .then((productData) => {
+                setIsThinking(false)
+                if (productData?.length > 0) {
+                  // Update the existing bot message with products type
+                  setMessages((prev) => {
+                    const updated = [...prev]
+                    const existingIndex = updated.findIndex((msg) => msg.id === currentBotMessageId)
+                    if (existingIndex !== -1) {
+                      updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        type: 'products',
+                        products: productData,
+                        isFeedbackEligible: true
+                      }
+                    }
+                    return updated
+                  })
+                } else {
+                  // Mark as feedback eligible if no products found
+                  setMessages((prev) => {
+                    const updated = [...prev]
+                    const existingIndex = updated.findIndex((msg) => msg.id === currentBotMessageId)
+                    if (existingIndex !== -1) {
+                      updated[existingIndex] = {
+                        ...updated[existingIndex],
+                        isFeedbackEligible: true
+                      }
+                    }
+                    return updated
+                  })
+                }
+              })
+              .catch((err) => {
+                console.error('getProductData error:', err)
+                setIsThinking(false)
+              })
           }
+        }
 
-          getProductData(productUrls, tollRouteApi)
-            .then((productData) => {
-              setIsThinking(false)
-              if (productData?.length > 0) {
-                const botResponse = {
-                  id: Date.now() + 4,
-                  text: response.message,
-                  type: 'media',
-                  component: response.component, // 'FloorPlan' or 'Gallery'
-                  types: response.types || [], // Array of types for Gallery (VIDEO, WALKTHROUGH, ELEVATION, INTERIOR, AMENITIY)
-                  products: productData, // Pass actual product data instead of URLs
-                  session_id: response.session_id,
-                  conversation_turn_id: conversationTurnId,
-                  isFeedbackEligible: true
-                }
-                setMessages((prev) => [...prev, botResponse])
-              } else {
-                // Fallback to text message if no products found
-                const botResponse = {
-                  id: Date.now() + 4,
-                  text: response.message,
-                  type: 'bot',
-                  session_id: response.session_id,
-                  conversation_turn_id: conversationTurnId,
-                  isFeedbackEligible: true
-                }
-                setMessages((prev) => [...prev, botResponse])
-              }
-            })
-            .catch((err) => {
-              console.error('getProductData error:', err)
-              setIsThinking(false)
-            })
-        } else if (products && Array.isArray(products) && products.length > 0) {
-          hasProducts = true
-          setIsThinking(true)
-          // console.log('fetch products')
-          getProductData(products, tollRouteApi)
-            .then((productData) => {
-              setIsThinking(false)
-              // console.log('producst were fetched')
-              if (productData?.length > 0) {
-                const botResponse = {
-                  id: Date.now() + 2,
-                  text: response.message,
-                  type: 'products',
-                  products: productData,
-                  session_id: response.session_id,
-                  conversation_turn_id: conversationTurnId,
-                  isFeedbackEligible: true
-                }
-
-                setMessages((prev) => [...prev, botResponse])
-              } else {
-                // TODO: might want to modify this message if no products found
-                const botResponse = {
-                  id: Date.now() + 1,
-                  text: response.message,
-                  type: 'bot',
-                  session_id: response.session_id,
-                  conversation_turn_id: conversationTurnId,
-                  isFeedbackEligible: true
-                }
-                setMessages((prev) => [...prev, botResponse])
-              }
-            })
-            .catch((err) => {
-              console.error('getProductData error:', err)
-              setIsThinking(false)
-            })
-        } else if (response.error) {
+        if (response.error) {
           setError('An error occurred while sending the message. Please try again.')
           setIsThinking(false)
-        } else {
-          const botResponse = {
-            id: Date.now() + 3,
-            text: response.message,
-            type: 'bot',
-            session_id: response.session_id,
-            conversation_turn_id: conversationTurnId
-          }
-
-          setMessages((prev) => [...prev, botResponse])
         }
       },
       onDone: () => {
+        // Remove ellipsis from the streaming message
+        setMessages((prev) => {
+          const updated = [...prev]
+          const existingIndex = updated.findIndex((msg) => msg.id === currentBotMessageId)
+
+          if (existingIndex !== -1 && updated[existingIndex].text) {
+            // Remove trailing ellipsis
+            updated[existingIndex] = {
+              ...updated[existingIndex],
+              text: updated[existingIndex].text.replace(/\.\.\.+$/, ''),
+              isFeedbackEligible: !hasProducts
+            }
+          }
+
+          return updated
+        })
+
         if (!hasProducts) {
           setIsThinking(false)
-          setMessages((prev) => {
-            const updated = [...prev]
-            // Find the last message with conversation_turn_id
-            for (let i = updated.length - 1; i >= 0; i--) {
-              if (updated[i].conversation_turn_id) {
-                updated[i] = {
-                  ...updated[i],
-                  isFeedbackEligible: true
-                }
-                break
-              }
-            }
-            return updated
-          })
         }
 
         // console.log('stream done')

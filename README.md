@@ -69,8 +69,8 @@ In while in the root level of `tollbrothers-ui` do the following:
 - On npm, the org is `tollbrothers`
 
 ## GH Token Expires Every Year
-- Just to profile, developer settings, personal access token and make a new token (classic) (use same permissions as the old token)
-- Update the new token under repo settings, actions -> GH_TOKEN
+- On GitHub, click your avatar → Settings → Developer settings → Personal access tokens → Classic tokens → Generate new token. (use same settings as old token) (expire it in a year)
+- Update the new token at the ui repo -> settings, actions -> GH_TOKEN
 
 
 

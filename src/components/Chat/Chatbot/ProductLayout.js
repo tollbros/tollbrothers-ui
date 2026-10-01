@@ -280,7 +280,7 @@ export const ProductLayout = ({
         {isQMI && dafs?.length > 0 && (
           <ImageCarousel images={dafs} isUseHighRes utils={utils} title='Designer Appointed Features' />
         )}
-        {isModel && floorPlans?.length > 0 && <FloorPlanViewer floorPlans={floorPlans} utils={utils} />}
+        {isModel && floorPlans?.length > 0 && <FloorPlanViewer floorPlans={floorPlans} model={product} utils={utils} />}
         {isModel && !isQMI && elevations?.length > 0 && (
           <ImageCarousel images={elevations} utils={utils} title='Exterior Designs' />
         )}

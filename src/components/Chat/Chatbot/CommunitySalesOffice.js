@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styles from './CommunitySalesOffice.module.scss'
-import { OptionButton } from './OptionButton'
+import { ProductContactButtons } from './ProductContactButtons'
 import { HOME_ICON, MAP_PIN_ICON, WALK_IN_ICON, OSC_ICON } from './constants'
 
 const phoneLink = (phone) => `tel:${phone.replace(/[^\d+]/g, '')}`
@@ -57,7 +57,7 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
             {addressLines.length > 0 && (
               <strong>
                 {isFuture
-                  ? 'Future Community Location'
+                  ? 'Future Location'
                   : office?.salesOfficeOffsite
                   ? 'Sales Center (Offsite sales center)'
                   : 'Sales Center'}
@@ -130,59 +130,8 @@ export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => nu
   const office = visitProduct.salesOffice
   const isFuture = Boolean(visitProduct.isFuture || visitProduct.communityTypes?.includes('Future'))
   const productIsFuture = Boolean(product.isFuture || product.communityTypes?.includes('Future'))
-  const { everyOptionSharedByEachCollection } = utils?.getAllCommunityOptions?.(visitProduct) || {}
-  const vipSalesOnly = utils?.hasOption?.(everyOptionSharedByEachCollection, utils?.OPTIONS?.VIP_SALES_ONLY)
-  const actionHash = visitProduct.dcaDisclaimer
-    ? '#contact'
-    : office?.hideTour
-    ? '#contact-email'
-    : isFuture
-    ? '#join-vip'
-    : visitProduct.tour
-    ? '#self-guided-tour'
-    : '#appointment'
-  const actionText = visitProduct.dcaDisclaimer
-    ? 'Contact'
-    : office?.hideTour
-    ? 'Talk to an Expert'
-    : isFuture
-    ? vipSalesOnly
-      ? 'Contact'
-      : 'Become a VIP'
-    : 'Schedule a Tour'
-
-  const preventIfCurrentPage = (e) => {
-    const pathname = new URL(visitProduct.url, window.location.origin).pathname
-    if (window.location.pathname !== pathname) return false
-    e.preventDefault()
-    e.stopPropagation()
-    return true
-  }
-
-  const onPrimaryClick = (e) => {
-    onMinimizeChat()
-    clearFocusTrap()
-    if (!preventIfCurrentPage(e) || !utils) return
-    if (!visitProduct.dcaDisclaimer && !office?.hideTour && isFuture) {
-      utils.openVIPPanel()
-    } else if (office?.hideTour) {
-      utils.openEmailPanel()
-    } else {
-      utils.openTourPanel()
-    }
-    utils.closeSalesPanel()
-  }
-
-  const onContactClick = (e) => {
-    onMinimizeChat()
-    clearFocusTrap()
-    if (!preventIfCurrentPage(e) || !utils) return
-    utils.closeSalesPanel()
-    utils.closeEmailPanel()
-    utils.closeVIPPanel()
-    utils.closeTourPanel()
-    setTimeout(() => utils.openSalesPanel(), 350)
-  }
+  const isUrban = product.communityTypes?.includes('Urban')
+  const salesTeamTitle = product.dcaDisclaimer ? 'Team' : isUrban ? 'Onsite Sales Team' : 'Online Sales Team'
 
   const operatingHours = !isFuture && office?.showHours ? office.operatingHours || [] : []
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -303,7 +252,7 @@ export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => nu
           <div className={styles.detail}>
             <img className={`${styles.detailIcon} ${styles.oscIcon}`} src={OSC_ICON} alt='' />
             <div className={styles.phoneList}>
-              <strong>Online Sales Consultant</strong>
+              <strong>{salesTeamTitle}</strong>
               {oscPhones.map((phone) => (
                 <a key={phone} href={phoneLink(phone)}>
                   {phone}
@@ -324,21 +273,11 @@ export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => nu
       </div>
 
       <div className={styles.actions}>
-        {!visitProduct.dcaDisclaimer && !isFuture && (
-          <OptionButton
-            text='Contact the community'
-            href={visitProduct.url + '#contact'}
-            isLink
-            utils={utils}
-            onClick={onContactClick}
-          />
-        )}
-        <OptionButton
-          text={actionText}
-          href={visitProduct.url + actionHash}
-          isLink
+        <ProductContactButtons
+          product={visitProduct}
           utils={utils}
-          onClick={onPrimaryClick}
+          onMinimizeChat={onMinimizeChat}
+          clearFocusTrap={clearFocusTrap}
         />
       </div>
     </section>

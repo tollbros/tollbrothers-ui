@@ -5,6 +5,27 @@ import { HOME_ICON, MAP_PIN_ICON, WALK_IN_ICON, OSC_ICON } from './constants'
 
 const phoneLink = (phone) => `tel:${phone.replace(/[^\d+]/g, '')}`
 
+export const getVisitSalesOffices = (product) => {
+  const candidates = product?.isMaster && product.communities?.length ? product.communities : [product]
+  const seen = new Set()
+  const salesOffices = candidates.filter((candidate, index) => {
+    const office = candidate?.salesOffice
+    if (!office || office.hideSalesOffice) return false
+
+    const address = [office.street, office.city, office.state, office.zip].filter(Boolean).join('|').toLowerCase()
+    const key = address || (office.lat && office.lon ? `${office.lat}|${office.lon}` : candidate.communityId || index)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  if (product?.isMaster && salesOffices.length === 0 && product.salesOffice && !product.salesOffice.hideSalesOffice) {
+    salesOffices.push(product)
+  }
+
+  return salesOffices
+}
+
 const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
   const office = product.salesOffice
   const isFuture = Boolean(futureCommunity || product.isFuture || product.communityTypes?.includes('Future'))
@@ -38,7 +59,7 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
                 {isFuture
                   ? 'Future Community Location'
                   : office?.salesOfficeOffsite
-                  ? 'Off-site sales center'
+                  ? 'Sales Center (Offsite sales center)'
                   : 'Sales Center'}
               </strong>
             )}
@@ -99,17 +120,70 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
   )
 }
 
-export const CommunitySalesOffice = ({
-  product,
-  salesOffices = [product],
-  title,
-  utils,
-  primaryAction,
-  contactAction
-}) => {
+export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => null, clearFocusTrap = () => null }) => {
   const [showWeeklyHours, setShowWeeklyHours] = useState(false)
-  const office = product.salesOffice
-  const isFuture = Boolean(product.isFuture || product.communityTypes?.includes('Future'))
+  const salesOffices = getVisitSalesOffices(product)
+  const visitProduct =
+    product?.isMaster && product.salesOffice && !product.salesOffice.hideSalesOffice ? product : salesOffices[0]
+  if (!visitProduct) return null
+
+  const office = visitProduct.salesOffice
+  const isFuture = Boolean(visitProduct.isFuture || visitProduct.communityTypes?.includes('Future'))
+  const productIsFuture = Boolean(product.isFuture || product.communityTypes?.includes('Future'))
+  const { everyOptionSharedByEachCollection } = utils?.getAllCommunityOptions?.(visitProduct) || {}
+  const vipSalesOnly = utils?.hasOption?.(everyOptionSharedByEachCollection, utils?.OPTIONS?.VIP_SALES_ONLY)
+  const actionHash = visitProduct.dcaDisclaimer
+    ? '#contact'
+    : office?.hideTour
+    ? '#contact-email'
+    : isFuture
+    ? '#join-vip'
+    : visitProduct.tour
+    ? '#self-guided-tour'
+    : '#appointment'
+  const actionText = visitProduct.dcaDisclaimer
+    ? 'Contact'
+    : office?.hideTour
+    ? 'Talk to an Expert'
+    : isFuture
+    ? vipSalesOnly
+      ? 'Contact'
+      : 'Become a VIP'
+    : 'Schedule a Tour'
+
+  const preventIfCurrentPage = (e) => {
+    const pathname = new URL(visitProduct.url, window.location.origin).pathname
+    if (window.location.pathname !== pathname) return false
+    e.preventDefault()
+    e.stopPropagation()
+    return true
+  }
+
+  const onPrimaryClick = (e) => {
+    onMinimizeChat()
+    clearFocusTrap()
+    if (!preventIfCurrentPage(e) || !utils) return
+    if (!visitProduct.dcaDisclaimer && !office?.hideTour && isFuture) {
+      utils.openVIPPanel()
+    } else if (office?.hideTour) {
+      utils.openEmailPanel()
+    } else {
+      utils.openTourPanel()
+    }
+    utils.closeSalesPanel()
+  }
+
+  const onContactClick = (e) => {
+    onMinimizeChat()
+    clearFocusTrap()
+    if (!preventIfCurrentPage(e) || !utils) return
+    utils.closeSalesPanel()
+    utils.closeEmailPanel()
+    utils.closeVIPPanel()
+    utils.closeTourPanel()
+    setTimeout(() => utils.openSalesPanel(), 350)
+  }
+
   const operatingHours = !isFuture && office?.showHours ? office.operatingHours || [] : []
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const todayIndex = new Date().getDay()
@@ -128,8 +202,8 @@ export const CommunitySalesOffice = ({
     ? `Today ${todayHours}`
     : `Open today ${todayHours}`
   const weeklyHours = operatingHours.map((entry) => ({ day: entry.day || entry.fullDay, hours: entry.timeString }))
-  const { communityModels = [] } = utils?.buildHomeArrays?.(product?.homes, product.options) || {}
-  const decoratedModels = product?.commPlanID
+  const { communityModels = [] } = utils?.buildHomeArrays?.(visitProduct?.homes, visitProduct.options) || {}
+  const decoratedModels = visitProduct?.commPlanID
     ? []
     : communityModels
         .filter(
@@ -140,7 +214,7 @@ export const CommunitySalesOffice = ({
         .filter(Boolean)
   const oscPhones = [
     ...new Set(
-      [product, ...salesOffices].flatMap((location) =>
+      [visitProduct, ...salesOffices].flatMap((location) =>
         (location.salesOffice?.onlineConcierge || []).map((person) => person.phone)
       )
     )
@@ -153,7 +227,7 @@ export const CommunitySalesOffice = ({
           ? 'Please schedule an appointment before visiting.'
           : 'Walk-ins are welcome during sales center hours.'}
       </p> */}
-      {(title || product.name) && <h3 className={styles.title}>{title || product.name}</h3>}
+      {product.name && <h3 className={styles.title}>{productIsFuture ? product.name : `Visit ${product.name}`}</h3>}
       {(todayHours || isClosedToday) && (
         <p
           className={`${styles.today} ${
@@ -250,24 +324,22 @@ export const CommunitySalesOffice = ({
       </div>
 
       <div className={styles.actions}>
-        {contactAction && (
+        {!visitProduct.dcaDisclaimer && !isFuture && (
           <OptionButton
-            text={contactAction.text}
-            href={contactAction.href}
+            text='Contact the community'
+            href={visitProduct.url + '#contact'}
             isLink
             utils={utils}
-            onClick={contactAction.onClick}
+            onClick={onContactClick}
           />
         )}
-        {primaryAction && (
-          <OptionButton
-            text={primaryAction.text}
-            href={primaryAction.href}
-            isLink
-            utils={utils}
-            onClick={primaryAction.onClick}
-          />
-        )}
+        <OptionButton
+          text={actionText}
+          href={visitProduct.url + actionHash}
+          isLink
+          utils={utils}
+          onClick={onPrimaryClick}
+        />
       </div>
     </section>
   )

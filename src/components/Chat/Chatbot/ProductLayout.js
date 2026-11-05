@@ -12,7 +12,7 @@ import { ConditionalLink } from './ConditionalLink'
 import { CloseButton } from './CloseButton'
 import { OptionButton } from './OptionButton'
 import { getProductHeroImage } from './utils/getProductHeroImage'
-import { CommunitySalesOffice } from './CommunitySalesOffice'
+import { CommunitySalesOffice, getVisitSalesOffices } from './CommunitySalesOffice'
 
 export const ProductLayout = ({
   product,
@@ -59,24 +59,7 @@ export const ProductLayout = ({
   const salesOfficeLat = product.salesOffice?.lat
   const salesOfficeLon = product.salesOffice?.lon
   const showHours = product.salesOffice?.showHours && !hideSalesOffice
-  const visitCandidates = isMasterCommunity ? product.communities : [product]
-  const seenSalesOffices = new Set()
-  const visitProducts = visitCandidates.filter((candidate, index) => {
-    const office = candidate.salesOffice
-    if (!office || office.hideSalesOffice) {
-      return false
-    }
-
-    const address = [office.street, office.city, office.state, office.zip].filter(Boolean).join('|').toLowerCase()
-    const key = address || (office.lat && office.lon ? `${office.lat}|${office.lon}` : candidate.communityId || index)
-    if (seenSalesOffices.has(key)) return false
-    seenSalesOffices.add(key)
-    return true
-  })
-  if (isMasterCommunity && visitProducts.length === 0 && product.salesOffice && !product.salesOffice.hideSalesOffice) {
-    visitProducts.push(product)
-  }
-  const showVisitCard = visitProducts.length > 0
+  const showVisitCard = getVisitSalesOffices(product).length > 0
 
   const state = product.salesOffice?.state
   const street = product.salesOffice?.street
@@ -168,20 +151,14 @@ export const ProductLayout = ({
     }
   }, [])
 
-  const onContactClick = (e, target = product) => {
+  const onContactClick = (e) => {
     onMinimizeChat()
     clearFocusTrap()
-    const isCurrentPage = preventIfCurrentPage(target.url, e)
+    const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
-      const targetUsesVip =
-        target === product
-          ? isVip
-          : !target.dcaDisclaimer &&
-            !target.salesOffice?.hideTour &&
-            (target.isFuture || target.communityTypes?.includes('Future'))
-      if (targetUsesVip) {
+      if (isVip) {
         utils.openVIPPanel()
-      } else if (target.salesOffice?.hideTour) {
+      } else if (hideTour) {
         utils.openEmailPanel()
       } else {
         utils.openTourPanel()
@@ -191,10 +168,10 @@ export const ProductLayout = ({
     }
   }
 
-  const onSalesOfficeContactClick = (e, target = product) => {
+  const onSalesOfficeContactClick = (e) => {
     onMinimizeChat()
     clearFocusTrap()
-    const isCurrentPage = preventIfCurrentPage(target.url, e)
+    const isCurrentPage = preventIfCurrentPage(product.url, e)
     if (isCurrentPage && utils) {
       utils.closeSalesPanel()
       utils.closeEmailPanel()
@@ -205,32 +182,6 @@ export const ProductLayout = ({
       }, 350)
     }
   }
-
-  const visitProduct =
-    isMasterCommunity && product.salesOffice && !product.salesOffice.hideSalesOffice ? product : visitProducts[0]
-  const visitIsFuture = visitProduct?.isFuture || visitProduct?.communityTypes?.includes('Future')
-  const visitVipSalesOnly = utils?.hasOption?.(
-    visitProduct && utils?.getAllCommunityOptions?.(visitProduct)?.everyOptionSharedByEachCollection,
-    utils?.OPTIONS?.VIP_SALES_ONLY
-  )
-  const visitActionHash = visitProduct?.dcaDisclaimer
-    ? '#contact'
-    : visitProduct?.salesOffice?.hideTour
-    ? '#contact-email'
-    : visitIsFuture
-    ? '#join-vip'
-    : visitProduct?.tour
-    ? '#self-guided-tour'
-    : '#appointment'
-  const visitActionText = visitProduct?.dcaDisclaimer
-    ? 'Contact'
-    : visitProduct?.salesOffice?.hideTour
-    ? 'Talk to an Expert'
-    : visitIsFuture
-    ? visitVipSalesOnly
-      ? 'Contact'
-      : 'Become a VIP'
-    : 'Schedule a Tour'
 
   return (
     <div className={styles.root} ref={rootRef}>
@@ -343,24 +294,10 @@ export const ProductLayout = ({
 
         {showVisitCard && (
           <CommunitySalesOffice
-            product={visitProduct}
-            salesOffices={visitProducts}
-            title={isFuture ? product.name : `Visit ${product.name}`}
+            product={product}
             utils={utils}
-            primaryAction={{
-              text: visitActionText,
-              href: visitProduct.url + visitActionHash,
-              onClick: (e) => onContactClick(e, visitProduct)
-            }}
-            contactAction={
-              !visitProduct.dcaDisclaimer && !visitIsFuture
-                ? {
-                    text: 'Contact the community',
-                    href: visitProduct.url + '#contact',
-                    onClick: (e) => onSalesOfficeContactClick(e, visitProduct)
-                  }
-                : null
-            }
+            onMinimizeChat={onMinimizeChat}
+            clearFocusTrap={clearFocusTrap}
           />
         )}
 

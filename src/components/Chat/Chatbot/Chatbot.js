@@ -1061,13 +1061,21 @@ export const Chatbot = ({
           )}
           {!chatFormDialog && !isLiveChat && (
             <button className={styles.transferButton} onClick={handleShowChatForm} type='button'>
-              <img src={OSC_ICON} />
+              <img
+                className={chatStatus === 'online' && chatPhoto ? styles.transferPhoto : styles.transferIcon}
+                src={chatStatus === 'online' && chatPhoto ? chatPhoto : OSC_ICON}
+                alt=''
+                onError={(e) => {
+                  e.currentTarget.className = styles.transferIcon
+                  e.currentTarget.src = OSC_ICON
+                }}
+              />
               <span>Speak to an expert</span>
             </button>
           )}
           {isLiveChat && (
             <button className={styles.transferButton} onClick={handleSwitchToChatbot} type='button'>
-              <img src={CHATBOT_ICON} />
+              <img className={styles.conciergeIcon} src={CHATBOT_ICON} alt='' />
               <span>Speak to the AI Concierge</span>
             </button>
           )}

@@ -809,8 +809,6 @@ export const Chatbot = ({
     return null
   }
 
-  console.log('chatStatus: ', chatStatus)
-
   return (
     <aside className={`${styles.root}`} aria-label='chat'>
       <div className={styles.launchContainer}>

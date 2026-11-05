@@ -54,9 +54,27 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
                   }
                 }}
               >
-                {addressLines.map((line) => (
+                {addressLines.map((line, index) => (
                   <span key={line} className={styles.addressLine}>
                     {line}
+                    {index === addressLines.length - 1 && (
+                      <svg
+                        className={styles.externalLinkIcon}
+                        width='12'
+                        height='12'
+                        viewBox='0 0 16 16'
+                        fill='none'
+                        aria-hidden='true'
+                      >
+                        <path
+                          d='M8.5 2.5H13.5V7.5M13.5 2.5L7 9M12.5 9V12.5C12.5 13.0523 12.0523 13.5 11.5 13.5H3.5C2.94772 13.5 2.5 13.0523 2.5 12.5V4.5C2.5 3.94772 2.94772 3.5 3.5 3.5H7'
+                          stroke='currentColor'
+                          strokeWidth='1.5'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                    )}
                   </span>
                 ))}
               </a>
@@ -202,7 +220,7 @@ export const CommunitySalesOffice = ({
           <div className={styles.detail}>
             <img className={styles.detailIcon} src={HOME_ICON} alt='' />
             <div>
-              <strong>Decorated models</strong>
+              <strong>{decoratedModels.length === 1 ? 'Decorated Model' : 'Decorated Models'}</strong>
               <span>{decoratedModels.join(', ')}</span>
             </div>
           </div>

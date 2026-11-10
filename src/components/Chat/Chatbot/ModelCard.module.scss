@@ -70,6 +70,11 @@
   flex-direction: column;
   width: 100%;
   gap: 4px;
+
+  .features {
+    margin-top: 10px !important;
+    font-size: .8125em;
+  }
 }
 
 .description {
@@ -87,5 +92,8 @@
 }
 
 .actionButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
   margin-top: auto;
 }

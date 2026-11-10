@@ -78,6 +78,18 @@
   }
 }
 
+.personalizeButtonContainer {
+  text-align: center;
+  font-size: .8em;
+
+  .personalizeButton {
+    margin-top: 6px;
+    border-radius: 4px;
+  }
+}
+
+
+
 .transformWrapper {
   width: 100% !important;
 

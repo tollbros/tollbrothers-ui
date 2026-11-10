@@ -5,8 +5,9 @@ import styles from './FloorPlanViewer.module.scss'
 import { ThinkingIndicator } from './ThinkingIndicator'
 import { ZoomInIcon, ZoomOutIcon, ResetZoomIcon } from './icons'
 import { useTrackInView } from './hooks/useTrackInView'
+import { OptionButton } from './OptionButton'
 
-export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
+export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils, model }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [isCoverActive, setIsCoverActive] = useState(true)
   const sortedFloorplans = useMemo(() => utils?.sortFloorplans?.(floorPlans) || floorPlans, [floorPlans])
@@ -121,6 +122,16 @@ export const FloorPlanViewer = ({ floorPlans = [], title, classes, utils }) => {
               {fp.title}
             </button>
           ))}
+        </div>
+      )}
+      {!model?.isQMI && model?.dyohLink && (
+        <div className={styles.personalizeButtonContainer}>
+          <p>This floor plan can be personalized.</p>
+          <OptionButton
+            text='See Personalization Options'
+            onClick={() => window.open(`${model.url}/DYOH`, '_blank')}
+            classes={{ root: styles.personalizeButton }}
+          />
         </div>
       )}
     </div>

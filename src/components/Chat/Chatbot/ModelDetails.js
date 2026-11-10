@@ -9,31 +9,22 @@ const getPriceLabelText = (isQMI) => {
   return label
 }
 
-export const ModelDetails = ({
-  model,
-  hideLocation,
-  includeQmiLabel,
-  utils = {}
-}) => {
+export const ModelDetails = ({ model, hideLocation, includeQmiLabel, utils = {} }) => {
   return (
     <p className={styles.root}>
       {model.isQMI && includeQmiLabel && (
-        <>
+        <span className={styles.qmi}>
           {getQmiDateLabelText({
             date: model.moveInDate,
             isComingSoon: model.isComingSoon,
             utils: utils
           })}{' '}
           &bull;{' '}
-        </>
+        </span>
       )}
 
-      {model.homeType &&
-        !model.options?.some((option) => option.id === '112') && (
-          <>{model.homeType} </>
-        )}
-      {model.pricedFrom &&
-        `${getPriceLabelText(model.isQMI)} ${displayPricing(model.pricedFrom)}`}
+      {model.homeType && !model.options?.some((option) => option.id === '112') && <>{model.homeType} </>}
+      {model.pricedFrom && `${getPriceLabelText(model.isQMI)} ${displayPricing(model.pricedFrom)}`}
       {!hideLocation && (
         <>
           {' in '} {model.city}, {model.state}

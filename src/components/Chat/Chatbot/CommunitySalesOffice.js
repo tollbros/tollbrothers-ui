@@ -7,17 +7,21 @@ const phoneLink = (phone) => `tel:${phone.replace(/[^\d+]/g, '')}`
 
 export const getVisitSalesOffices = (product) => {
   const candidates = product?.isMaster && product.communities?.length ? product.communities : [product]
-  const seen = new Set()
-  const salesOffices = candidates.filter((candidate, index) => {
+  const officesByAddress = new Map()
+  candidates.forEach((candidate, index) => {
     const office = candidate?.salesOffice
-    if (!office || office.hideSalesOffice) return false
+    if (!office || office.hideSalesOffice) return
 
     const address = [office.street, office.city, office.state, office.zip].filter(Boolean).join('|').toLowerCase()
     const key = address || (office.lat && office.lon ? `${office.lat}|${office.lon}` : candidate.communityId || index)
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
+    const name = candidate.cleanName || candidate.name
+    if (officesByAddress.has(key)) {
+      if (name) officesByAddress.get(key).collectionNames.push(name)
+    } else {
+      officesByAddress.set(key, { ...candidate, collectionNames: name ? [name] : [] })
+    }
   })
+  const salesOffices = [...officesByAddress.values()]
 
   if (product?.isMaster && salesOffices.length === 0 && product.salesOffice && !product.salesOffice.hideSalesOffice) {
     salesOffices.push(product)
@@ -28,6 +32,7 @@ export const getVisitSalesOffices = (product) => {
 
 const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
   const office = product.salesOffice
+  const collectionNames = showName ? [...new Set(product.collectionNames || [product.cleanName || product.name])] : []
   const isFuture = Boolean(futureCommunity || product.isFuture || product.communityTypes?.includes('Future'))
   const { options } = utils?.getAllCommunityOptions?.(product) || {}
   const showGeoLocation = utils?.hasOption?.(options, utils?.OPTIONS?.GEO_LOCATION_ENABLED)
@@ -47,9 +52,7 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
 
   return (
     <div className={styles.location}>
-      {showName && (product.cleanName || product.name) && (
-        <strong className={styles.locationName}>{product.cleanName || product.name}</strong>
-      )}
+      {collectionNames.length > 0 && <strong className={styles.locationName}>{collectionNames.join(', ')}</strong>}
       {(addressLines.length > 0 || (onSitePhone && !isFuture)) && (
         <div className={styles.detail}>
           {addressLines.length > 0 && <img className={styles.detailIcon} src={MAP_PIN_ICON} alt='' />}
@@ -120,7 +123,13 @@ const SalesOfficeLocation = ({ product, utils, showName, futureCommunity }) => {
   )
 }
 
-export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => null, clearFocusTrap = () => null }) => {
+export const CommunitySalesOffice = ({
+  product,
+  titleName = product.name,
+  utils,
+  onMinimizeChat = () => null,
+  clearFocusTrap = () => null
+}) => {
   const [showWeeklyHours, setShowWeeklyHours] = useState(false)
   const salesOffices = getVisitSalesOffices(product)
   const visitProduct =
@@ -176,7 +185,7 @@ export const CommunitySalesOffice = ({ product, utils, onMinimizeChat = () => nu
           ? 'Please schedule an appointment before visiting.'
           : 'Walk-ins are welcome during sales center hours.'}
       </p> */}
-      {product.name && <h3 className={styles.title}>{productIsFuture ? product.name : `Visit ${product.name}`}</h3>}
+      {titleName && <h3 className={styles.title}>{productIsFuture ? titleName : `Visit ${titleName}`}</h3>}
       {(todayHours || isClosedToday) && (
         <p
           className={`${styles.today} ${

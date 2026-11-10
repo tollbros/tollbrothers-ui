@@ -1,9 +1,7 @@
 @import "styles/modules/all";
 
 .root {
-  position: relative;
   margin-top: 4px;
-  padding-top: 30px;
   background: white;
   font-family: $alt_font_family;
   font-size: .75rem;
@@ -17,17 +15,6 @@
 
   a, a:hover, a:focus-visible {
     text-decoration: none;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 1px;
-    background-color: $light_gray;
   }
 }
 

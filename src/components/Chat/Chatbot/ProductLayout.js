@@ -217,12 +217,16 @@ export const ProductLayout = ({
         )}
 
         {showVisitCard && (
-          <CommunitySalesOffice
-            product={product}
-            utils={utils}
-            onMinimizeChat={onMinimizeChat}
-            clearFocusTrap={clearFocusTrap}
-          />
+          <>
+            <hr className={styles.visitDivider} />
+            <CommunitySalesOffice
+              product={product}
+              titleName={isModel ? product.communityName || product.name : product.name}
+              utils={utils}
+              onMinimizeChat={onMinimizeChat}
+              clearFocusTrap={clearFocusTrap}
+            />
+          </>
         )}
 
         {canShowCTAs && !showVisitCard && (

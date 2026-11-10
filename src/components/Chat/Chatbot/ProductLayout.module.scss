@@ -101,6 +101,14 @@
   width: 100%;
 }
 
+.visitDivider {
+  width: 140px;
+  height: 1px;
+  border: 0;
+  margin: 4px auto 0;
+  background-color: $light_gray;
+}
+
 .footer {
   position: relative;
   margin-top: 4px;

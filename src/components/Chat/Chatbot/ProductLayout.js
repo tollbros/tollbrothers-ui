@@ -12,6 +12,8 @@ import { ConditionalLink } from './ConditionalLink'
 import { CloseButton } from './CloseButton'
 import { OptionButton } from './OptionButton'
 import { getProductHeroImage } from './utils/getProductHeroImage'
+import { CommunitySalesOffice, getVisitSalesOffices } from './CommunitySalesOffice'
+import { ProductContactButtons } from './ProductContactButtons'
 
 export const ProductLayout = ({
   product,
@@ -32,7 +34,7 @@ export const ProductLayout = ({
   const isQMI = isModel && product?.isQMI
   const isDesignReady = isModel && Boolean(product?.designReadyOptions?.length > 0)
 
-  const { communityModels, communityQMIs } = utils?.buildHomeArrays?.(product?.homes, product.options)
+  const { communityModels = [], communityQMIs = [] } = utils?.buildHomeArrays?.(product?.homes, product.options) || {}
 
   // filter things out like BFOs, Home Sites
   const filteredCommunityQMIs = communityQMIs.filter((qmi) => qmi.isQMI)
@@ -42,21 +44,18 @@ export const ProductLayout = ({
   const elevations = isModel ? product.elevations || [] : []
   const amenities = product?.amenities?.amenityGroups?.[0]?.amenities
 
-  const { options, everyOptionSharedByEachCollection } = utils?.getAllCommunityOptions?.(product) || {}
-
-  const vipSalesOnly = utils?.hasOption?.(everyOptionSharedByEachCollection, utils?.OPTIONS?.VIP_SALES_ONLY)
+  const { options } = utils?.getAllCommunityOptions?.(product) || {}
   const isFuture = product.isFuture || product.communityTypes?.includes('Future')
-  const hideTour = product.salesOffice?.hideTour
-  const hasSelfGuidedTour = product.tour
-  const dcaDisclaimer = product?.dcaDisclaimer
   const hideDirections = product.salesOffice?.hideDirections
-  const canShowDirections = !isFuture && !hideDirections
+  const hideSalesOffice = product.salesOffice?.hideSalesOffice
+  const canShowDirections = !isFuture && !hideDirections && !hideSalesOffice
   const canShowCTAs = Boolean(product.salesOffice)
 
   const showGeoLocation = utils?.hasOption?.(options, utils?.OPTIONS?.GEO_LOCATION_ENABLED)
   const salesOfficeLat = product.salesOffice?.lat
   const salesOfficeLon = product.salesOffice?.lon
-  const showHours = product.salesOffice?.showHours
+  const showHours = product.salesOffice?.showHours && !hideSalesOffice
+  const showVisitCard = getVisitSalesOffices(product).length > 0
 
   const state = product.salesOffice?.state
   const street = product.salesOffice?.street
@@ -70,35 +69,6 @@ export const ProductLayout = ({
     salesOffice: { state, street, city, zip },
     showGeoLocation
   })
-
-  // TODO figure out what to do with NYC communities and online sales (since they no longer have that)
-  // this is only relevant if we decide to go with showing OSC phone numbers in this component
-
-  let label = ``
-  let smallLabel = ''
-  let hash = '#appointment'
-  let isVip = false
-  if (dcaDisclaimer) {
-    label += 'Contact the community'
-    smallLabel += 'Contact'
-    hash = '#contact'
-  } else if (hideTour) {
-    label += 'Talk to a local expert'
-    smallLabel += 'Talk to an Expert'
-    hash = '#contact-email'
-  } else if (isFuture) {
-    label += vipSalesOnly ? 'Contact the community' : 'Become a VIP'
-    smallLabel += vipSalesOnly ? 'Contact' : 'Become a VIP'
-    hash = '#join-vip'
-    isVip = true
-  } else if (hasSelfGuidedTour) {
-    label += 'Schedule a self-guided tour'
-    smallLabel += 'Schedule a Tour'
-    hash = '#self-guided-tour'
-  } else {
-    label += 'Schedule a tour'
-    smallLabel += 'Schedule a Tour'
-  }
 
   const communityAmenityGallery = !isModel
     ? (product?.amenities?.amenityGroups?.[0]?.media || []).filter((item) => item.type === 'image')
@@ -148,38 +118,6 @@ export const ProductLayout = ({
     }
   }, [])
 
-  const onContactClick = (e) => {
-    onMinimizeChat()
-    clearFocusTrap()
-    const isCurrentPage = preventIfCurrentPage(product.url, e)
-    if (isCurrentPage && utils) {
-      if (isVip) {
-        utils.openVIPPanel()
-      } else if (hideTour) {
-        utils.openEmailPanel()
-      } else {
-        utils.openTourPanel()
-      }
-      // utils.closeEmailPanel()
-      utils.closeSalesPanel()
-    }
-  }
-
-  const onSalesOfficeContactClick = (e) => {
-    onMinimizeChat()
-    clearFocusTrap()
-    const isCurrentPage = preventIfCurrentPage(product.url, e)
-    if (isCurrentPage && utils) {
-      utils.closeSalesPanel()
-      utils.closeEmailPanel()
-      utils.closeVIPPanel()
-      utils.closeTourPanel()
-      setTimeout(() => {
-        utils.openSalesPanel()
-      }, 350)
-    }
-  }
-
   return (
     <div className={styles.root} ref={rootRef}>
       <CloseButton className={styles.closeButton} onClick={onClose} ariaLabel='Close product details' />
@@ -209,23 +147,12 @@ export const ProductLayout = ({
       <div className={styles.content}>
         {canShowCTAs && (
           <div className={styles.topContactButtons}>
-            {!dcaDisclaimer && !isFuture && (
-              <OptionButton
-                classes={{ root: styles.button }}
-                text='Contact'
-                href={product.url + '#contact'}
-                isLink
-                utils={utils}
-                onClick={(e) => onSalesOfficeContactClick(e)}
-              />
-            )}
-            <OptionButton
-              classes={{ root: styles.button }}
-              text={smallLabel}
-              href={product.url + hash}
-              isLink
+            <ProductContactButtons
+              product={product}
               utils={utils}
-              onClick={(e) => onContactClick(e)}
+              onMinimizeChat={onMinimizeChat}
+              clearFocusTrap={clearFocusTrap}
+              buttonClassName={styles.button}
             />
           </div>
         )}
@@ -289,26 +216,29 @@ export const ProductLayout = ({
           <ImageCarousel images={communityAmenityGallery} utils={utils} />
         )}
 
-        {canShowCTAs && (
+        {showVisitCard && (
+          <>
+            <hr className={styles.visitDivider} />
+            <CommunitySalesOffice
+              product={product}
+              titleName={isModel ? product.communityName || product.name : product.name}
+              utils={utils}
+              onMinimizeChat={onMinimizeChat}
+              clearFocusTrap={clearFocusTrap}
+            />
+          </>
+        )}
+
+        {canShowCTAs && !showVisitCard && (
           <div className={styles.footer}>
             <div className={styles.optionsWrapper}>
-              <OptionButton
-                text={label}
-                href={product.url + hash}
-                isLink
+              <ProductContactButtons
+                product={product}
                 utils={utils}
-                onClick={(e) => onContactClick(e)}
+                onMinimizeChat={onMinimizeChat}
+                clearFocusTrap={clearFocusTrap}
               />
-              {!dcaDisclaimer && !isFuture && (
-                <OptionButton
-                  text='Contact the community'
-                  href={product.url + '#contact'}
-                  isLink
-                  utils={utils}
-                  onClick={(e) => onSalesOfficeContactClick(e)}
-                />
-              )}
-              {showHours && !isFuture && !hideDirections && (
+              {showHours && !isFuture && (
                 <OptionButton
                   text='View Sales Center hours'
                   href={product.url + '#sales-hours'}

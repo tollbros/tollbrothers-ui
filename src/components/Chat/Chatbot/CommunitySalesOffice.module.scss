@@ -1,0 +1,204 @@
+@import "styles/modules/all";
+
+.root {
+  margin-top: 4px;
+  background: white;
+  font-family: $alt_font_family;
+  font-size: .75rem;
+  font-weight: $font_weight_medium;
+  line-height: 1.45;
+  color: black;
+
+  strong {
+    font-weight: $font_weight_bold;
+  }
+
+  a, a:hover, a:focus-visible {
+    text-decoration: none;
+  }
+}
+
+.title {
+  margin: 0 0 8px;
+  color: $medium_blue3;
+  font-family: $special_font_family;
+  font-size: .6875rem;
+  font-weight: $font_weight_bold;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.intro {
+  margin: 0 0 16px;
+}
+
+.today, .tomorrow, .appointment {
+  margin: 0;
+}
+
+.today {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .8rem;
+  font-family: $special_font_family;
+  font-weight: $font_weight_bold;
+
+  &::before {
+    content: '';
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #218451;
+  }
+
+  &.todayAppointment::before {
+    background: #b77813;
+  }
+
+  &.todayClosed::before {
+    background: $dark_gray;
+  }
+}
+
+.hoursSection {
+  margin-top: 12px;
+  border-top: 1px solid $medium_gray;
+  border-bottom: 1px solid $medium_gray;
+}
+
+.hoursToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0;
+  background: transparent;
+  color: inherit;
+  font-family: $special_font_family;
+  font-size: inherit;
+  font-weight: $font_weight_bold;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hoursChevron {
+  flex-shrink: 0;
+  color: $medium_blue3;
+  transition: transform .2s ease;
+
+  &.expanded {
+    transform: rotate(180deg);
+  }
+}
+
+.weeklyHours {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.location {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.locationName {
+  color: black;
+  font-family: $special_font_family;
+}
+
+.detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  strong, span {
+    display: block;
+  }
+
+  strong {
+    color: $medium_blue3;
+    font-family: $special_font_family;
+  }
+}
+
+.detailIcon {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  object-fit: contain;
+  color: $medium_blue3;
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+.oscIcon {
+  box-sizing: border-box;
+  padding: 3px;
+  border-radius: 50%;
+  background: $medium_blue3;
+}
+
+.addressLink {
+  display: block;
+  color: black;
+}
+
+.addressLine {
+  display: block;
+}
+
+.externalLinkIcon {
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: -1px;
+}
+
+.addressPhone {
+  display: block;
+  margin-top: 2px;
+  color: black;
+  font-weight: $font_weight_bold;
+}
+
+.phoneList {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    display: block;
+    color: black;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+
+  a {
+    flex: 1 1 auto;
+    border-radius: 3px;
+    padding: 6px 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+}

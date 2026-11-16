@@ -1,20 +1,27 @@
 @import "styles/modules/all";
 
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-}
-
 .root {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 12px;
+    max-width: 328px;
+    padding: 12px;
+    border: 1px solid $light_gray;
+    border-radius: $border-radius;
+    background: $white;
+    color: $black;
+    font-family: $alt_font_family;
+}
+
+.feedbackHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.feedbackPrompt {
+    font-size: 0.75em;
+    font-weight: $font_weight_bold;
 }
 
 .messageFeedback {
@@ -46,28 +53,87 @@
 
 }
 
+.feedbackResponse {
+    margin: 0 !important;
+    font-size: 0.75em;
+    line-height: 1.4;
+}
+
+.feedbackReasons {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    legend {
+        margin-bottom: 10px;
+        font-size: 0.75em;
+    }
+}
+
+.feedbackReasonOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    button {
+        padding: 9px 14px;
+        border: 1px solid $medium_gray;
+        border-radius: 18px;
+        background: $white;
+        color: $navy_blue;
+        font-family: $alt_font_family;
+        font-size: 0.75em;
+        cursor: pointer;
+
+        &:disabled {
+            cursor: default;
+            opacity: 0.65;
+        }
+    }
+
+    .selectedReason {
+        border-color: $accent_blue;
+        background: $accent_blue;
+        color: $white;
+    }
+}
+
 .thumbsUpIcon {
     transform: rotate(180deg);
 }
 
 .messageFeedbackComment {
-    position: relative;
-    max-width: 328px;
+    padding-top: 10px;
+    border-top: 1px solid $light_gray;
+    font-size: 0.75em;
+}
 
-    &.fadeOut {
-        pointer-events: none;
-        animation: fadeOut 180ms ease forwards;
+.commentToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+
+    small {
+        color: $dark_gray;
+    }
+
+    strong {
+        color: $navy_blue;
+        font-size: 0.85em;
+        text-transform: uppercase;
     }
 }
 
-.closeButton {
-    position: absolute;
-    top: -14px;
-    right: -2px;
-    z-index: 1;
-
-    svg {
-        width: 8px;
-        height: 8px;
-    }
+.commentSent {
+    margin: 0 !important;
+    color: $navy_blue;
 }

@@ -10,7 +10,8 @@ export const OptionButton = ({
   href,
   target,
   classes = {},
-  utils
+  utils,
+  ...buttonProps
 }) => {
   const style = `${styles.option} ${styles[size] ?? ''} ${classes.root ?? ''}`
 
@@ -23,7 +24,7 @@ export const OptionButton = ({
   }
 
   return (
-    <button className={style} onClick={onClick} type='button'>
+    <button className={style} onClick={onClick} type='button' {...buttonProps}>
       {text}
     </button>
   )

@@ -67,6 +67,7 @@ export const Chatbot = ({
   chatRegion,
   setChatStatus,
   chatStatus,
+  chatPhone,
   productCode,
   pageSummaryData,
   availabilityAPI,
@@ -338,6 +339,15 @@ export const Chatbot = ({
           : msg
       )
     )
+  }
+
+  const isSearchPage = pageSummaryData?.type?.endsWith('Search')
+  const oscProps = {
+    isOnline: chatStatus === 'online',
+    chatPhoto,
+    phone: isSearchPage ? chatPhone : pageSummaryData?.salesOffice?.onlineConcierge?.find((osc) => osc.phone)?.phone,
+    showOscOptions: !isLiveChat,
+    onAction: () => handleShowChatForm(chatStatus === 'online' ? undefined : { bypassLiveAgent: true })
   }
 
   const handleSendMessage = async (_event, systemMessage) => {
@@ -922,6 +932,7 @@ export const Chatbot = ({
                         <MessageFeedback
                           msg={msg}
                           chatApiConfig={chatApiConfig}
+                          oscProps={oscProps}
                           onChange={handleMessageFeedbackChange}
                         />
                       ) : null
@@ -940,7 +951,12 @@ export const Chatbot = ({
                     isFeedbackEligible={msg.isFeedbackEligible}
                     onMinimizeChat={onMinimizeChat}
                     feedbackComponent={
-                      <MessageFeedback msg={msg} chatApiConfig={chatApiConfig} onChange={handleMessageFeedbackChange} />
+                      <MessageFeedback
+                        msg={msg}
+                        chatApiConfig={chatApiConfig}
+                        oscProps={oscProps}
+                        onChange={handleMessageFeedbackChange}
+                      />
                     }
                   />
                 )
@@ -968,6 +984,7 @@ export const Chatbot = ({
                         <MessageFeedback
                           msg={msg}
                           chatApiConfig={chatApiConfig}
+                          oscProps={oscProps}
                           onChange={handleMessageFeedbackChange}
                         />
                       ) : null

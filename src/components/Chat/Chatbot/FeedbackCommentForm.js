@@ -8,7 +8,8 @@ export const FeedbackCommentForm = ({
   onSubmit,
   submitText = 'Submit',
   placeholder = 'Tell us more about your experience',
-  ariaLabel = 'Additional comments',
+  ariaLabel,
+  'aria-label': ariaLabelAttr,
   disabled = false,
   rows = 3,
   id = 'feedback-comments'
@@ -22,7 +23,7 @@ export const FeedbackCommentForm = ({
         placeholder={placeholder}
         rows={rows}
         maxLength={1000}
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? ariaLabelAttr ?? 'Additional comments'}
       />
       <button type='button' onClick={onSubmit} disabled={disabled}>
         {submitText}

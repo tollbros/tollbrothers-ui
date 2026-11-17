@@ -346,7 +346,7 @@ export const Chatbot = ({
     isOnline: chatStatus === 'online',
     chatPhoto,
     phone: isSearchPage ? chatPhone : pageSummaryData?.salesOffice?.onlineConcierge?.find((osc) => osc.phone)?.phone,
-    showContactOptions: chatStatus !== 'online' || Boolean(productCode) || isSearchPage,
+    showOscOptions: !isLiveChat,
     onAction: () => handleShowChatForm(chatStatus === 'online' ? undefined : { bypassLiveAgent: true })
   }
 

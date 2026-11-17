@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 
 import { submitFeedback } from './utils/submitFeedback'
 import { FeedbackCommentForm } from './FeedbackCommentForm'
 import { FeedbackOSC } from './FeedbackOSC'
+import { OptionButton } from './OptionButton'
 
 import styles from './MessageFeedback.module.scss'
 
@@ -21,10 +22,23 @@ export const MessageFeedback = ({ msg, chatApiConfig, oscProps, onChange = (msg,
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
   const [isCommentShowing, setIsCommentShowing] = useState(false)
   const [isCommentSent, setIsCommentSent] = useState(false)
+  const feedbackBodyRef = useRef(null)
+  const commentRegionRef = useRef(null)
+  const shouldScrollRef = useRef(false)
+  const commentId = useId()
+
+  // Keep newly revealed feedback content (reasons, OSC card, comment form) in view
+  useEffect(() => {
+    if (!shouldScrollRef.current) return
+    shouldScrollRef.current = false
+    const target = isCommentShowing ? commentRegionRef.current : feedbackBodyRef.current
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [feedback, isCommentShowing])
 
   const handleFeedback = async (direction) => {
     if (feedback === direction) return // Prevent resubmitting the same feedback
 
+    shouldScrollRef.current = true
     setIsSubmitting(true)
     setFeedback(direction)
     setIsCommentSent(false)
@@ -94,10 +108,12 @@ export const MessageFeedback = ({ msg, chatApiConfig, oscProps, onChange = (msg,
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} ref={feedbackBodyRef}>
       <div className={styles.feedbackHeader}>
-        <span className={styles.feedbackPrompt}>Was this helpful?</span>
-        <div className={styles.messageFeedback}>
+        <span className={styles.feedbackPrompt} id={`${commentId}-prompt`}>
+          Was this helpful?
+        </span>
+        <div className={styles.messageFeedback} role='group' aria-labelledby={`${commentId}-prompt`}>
           <button
             className={`${styles.messageFeedbackButton} ${feedback === 'up' ? styles.selected : ''}`}
             type='button'
@@ -121,7 +137,7 @@ export const MessageFeedback = ({ msg, chatApiConfig, oscProps, onChange = (msg,
         </div>
       </div>
       {feedback === 'up' && (
-        <p className={styles.feedbackResponse}>
+        <p className={styles.feedbackResponse} role='status'>
           <strong>Glad that Helped.</strong> Thanks for letting us know.
         </p>
       )}
@@ -131,16 +147,14 @@ export const MessageFeedback = ({ msg, chatApiConfig, oscProps, onChange = (msg,
             <legend>What went wrong?</legend>
             <div className={styles.feedbackReasonOptions}>
               {FEEDBACK_REASONS.map((option) => (
-                <button
+                <OptionButton
                   key={option}
-                  className={reason === option ? styles.selectedReason : ''}
-                  type='button'
+                  text={option}
+                  classes={{ root: reason === option ? styles.selectedReason : '' }}
                   aria-pressed={reason === option}
                   disabled={isSubmitting || isCommentSubmitting}
                   onClick={() => handleReasonSelect(option)}
-                >
-                  {option}
-                </button>
+                />
               ))}
             </div>
           </fieldset>
@@ -148,24 +162,31 @@ export const MessageFeedback = ({ msg, chatApiConfig, oscProps, onChange = (msg,
         </>
       )}
       {feedback && (
-        <div className={styles.messageFeedbackComment}>
+        <div className={styles.messageFeedbackComment} ref={commentRegionRef}>
           {isCommentSent ? (
-            <p className={styles.commentSent}>Thank you, your feedback was sent.</p>
+            <p className={styles.commentSent} role='status'>
+              Thank you, your feedback was sent.
+            </p>
           ) : (
             <>
               <button
                 className={styles.commentToggle}
                 type='button'
                 aria-expanded={isCommentShowing}
-                onClick={() => setIsCommentShowing(!isCommentShowing)}
+                aria-controls={commentId}
+                onClick={() => {
+                  shouldScrollRef.current = !isCommentShowing
+                  setIsCommentShowing(!isCommentShowing)
+                }}
               >
                 <span>
                   Anything else? <small>(optional)</small>
                 </span>
-                <strong>{isCommentShowing ? 'Collapse' : 'Expand'}</strong>
+                <strong aria-hidden='true'>{isCommentShowing ? 'Collapse' : 'Expand'}</strong>
               </button>
               {isCommentShowing && (
                 <FeedbackCommentForm
+                  id={commentId}
                   value={comment}
                   onChange={(value) => setComment(value)}
                   onSubmit={handleCommentSubmit}

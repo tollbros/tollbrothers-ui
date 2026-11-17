@@ -4,12 +4,12 @@ import { GREEN_OSC_ICON, OSC_ICON } from './constants'
 
 import styles from './FeedbackOSC.module.scss'
 
-export const FeedbackOSC = ({ isOnline, chatPhoto, phone, showContactOptions = true, onAction = () => null }) => {
+export const FeedbackOSC = ({ isOnline, chatPhoto, phone, showOscOptions = true, onAction = () => null }) => {
   const phoneHref = phone ? `tel:${phone.replace(/\D/g, '')}` : null
   const photo = isOnline ? chatPhoto : null
   const fallbackIcon = isOnline ? GREEN_OSC_ICON : OSC_ICON
 
-  if (isOnline && !showContactOptions) return null
+  if (!showOscOptions) return null
 
   return (
     <div className={styles.root}>
@@ -25,20 +25,21 @@ export const FeedbackOSC = ({ isOnline, chatPhoto, phone, showContactOptions = t
             }}
           />
         </span>
-        <strong>
-          Our Online Sales Consultants {isOnline ? 'are online and ready to help.' : 'are offline right now.'}
-        </strong>
+        <div className={styles.message}>
+          {isOnline && <strong>Chat with an Online Sales Consultant</strong>}
+
+          {isOnline && <p className={styles.description}>A Toll Brothers expert is online and ready to help.</p>}
+
+          {!isOnline && (
+            <p className={styles.description}>
+              Our local experts can provide additional details. Share your contact information, and we will follow up
+              with you.
+            </p>
+          )}
+        </div>
       </div>
-
-      {!isOnline && (
-        <p className={styles.description}>
-          Our local experts can provide additional details. Share your contact information, and we will follow up with
-          you.
-        </p>
-      )}
-
       {phoneHref && (
-        <a className={styles.phone} href={phoneHref}>
+        <a className={styles.phone} href={phoneHref} aria-label={`Call ${phone}`}>
           Call {phone}
         </a>
       )}
@@ -60,7 +61,7 @@ export const FeedbackOSC = ({ isOnline, chatPhoto, phone, showContactOptions = t
             <path d='m3 7 9 6 9-6' />
           </svg>
         )}
-        {isOnline ? 'Chat with an OSC' : 'Contact Me'}
+        {isOnline ? 'Speak to an expert' : 'Contact Me'}
       </button>
     </div>
   )
